@@ -1,25 +1,6 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
+INCLUDE(LVBuildPlugin)
+
+LV_BUILD_INPUT_PLUGIN(mplayer
+  SOURCES      input_mplayer.c
+  COMPILE_DEFS -D_GNU_SOURCE # required for mremap()
 )
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
-# NOTE: This is required for mremap()
-ADD_DEFINITIONS(-D_GNU_SOURCE)
-
-SET(input_mplayer_SOURCES
-  input_mplayer.c
-)
-
-ADD_LIBRARY(input_mplayer MODULE ${input_mplayer_SOURCES})
-#-avoid-version
-
-TARGET_LINK_LIBRARIES(input_mplayer
-  ${LIBVISUAL_LIBRARIES}
-)
-
-INSTALL(TARGETS input_mplayer LIBRARY DESTINATION ${LV_INPUT_PLUGIN_DIR})

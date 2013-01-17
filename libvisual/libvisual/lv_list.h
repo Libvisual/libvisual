@@ -1,18 +1,14 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * List implementation from RCL.
- * Copyright (C) 2002, 2003, 2004
- *				Dennis Smit <ds@nerds-incorporated.org>,
- *				Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *				Tom Wimmenhove <nohup@nerds-incorporated.org>
+ * Copyright (C) 2002-2004 Dennis Smit, Sepp Wijnands, Tom Wimmenhove
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
- *
- * $Id: lv_list.h,v 1.19 2006/01/22 13:23:37 synap Exp $
+ *          Sepp Wijnands <mrrazz@nerds-incorporated.org>
+ *          Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,16 +32,10 @@
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_collection.h>
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__)
-#include <sys/queue.h>
-#endif
-
 /**
  * @defgroup VisList VisList
  * @{
  */
-
-VISUAL_BEGIN_DECLS
 
 #define VISUAL_LIST(obj)				(VISUAL_CHECK_CAST ((obj), VisList))
 
@@ -58,10 +48,10 @@ typedef struct _VisList VisList;
  * a void * to the data.
  */
 struct _VisListEntry {
-	VisListEntry		*prev;	/**< Previous entry in the list. */
-	VisListEntry		*next;	/**< Next entry in the list. */
+	VisListEntry *prev;	/**< Previous entry in the list. */
+	VisListEntry *next;	/**< Next entry in the list. */
 
-	void			*data;	/**< Pointer to the data for this entry. */
+	void         *data;	/**< Pointer to the data for this entry. */
 };
 
 /**
@@ -69,13 +59,13 @@ struct _VisListEntry {
  * VisCollection class.
  */
 struct _VisList {
-	VisCollection		 collection;	/**< The VisCollection data. */
-
-	VisListEntry		*head;		/**< Pointer to the beginning of the list. */
-	VisListEntry		*tail;		/**< Pointer to the end of the list. */
-
-	int			 count;		/**< Number of entries that are in the list. */
+	VisCollection  collection;  /**< The VisCollection data. */
+	VisListEntry  *head;        /**< Pointer to the beginning of the list. */
+	VisListEntry  *tail;        /**< Pointer to the end of the list. */
+	int            count;       /**< Number of entries that are in the list. */
 };
+
+LV_BEGIN_DECLS
 
 /**
  * Creates a new VisList structure.
@@ -83,7 +73,7 @@ struct _VisList {
  *
  * @return A newly allocated VisList.
  */
-VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
+LV_API VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
 
 /**
  * Initializes a new VisList
@@ -91,7 +81,7 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer);
  * @p list - newly generated list (output of @ref visual_list_new() )
  * @p destroyer - the function that cleans up the list upon @ref visual_list_destroy()
  */
-int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer);
+LV_API int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer);
 
 /**
  * Goes to the next entry in the list and return it's data element.
@@ -108,7 +98,7 @@ int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer);
  *
  * @return The data element of the next entry, or NULL.
  */
-void *visual_list_next (VisList *list, VisListEntry **le);
+LV_API void *visual_list_next (VisList *list, VisListEntry **le);
 
 /**
  * Go to the previous entry in the list and return it's data element.
@@ -125,7 +115,7 @@ void *visual_list_next (VisList *list, VisListEntry **le);
  *
  * @return The data element of the previous entry, or NULL.
  */
-void *visual_list_prev (VisList *list, VisListEntry **le);
+LV_API void *visual_list_prev (VisList *list, VisListEntry **le);
 
 /**
  * Get an data entry by index. This will give the pointer to an data
@@ -137,7 +127,7 @@ void *visual_list_prev (VisList *list, VisListEntry **le);
  *
  * @return The data element of the requested entry, or NULL.
  */
-void *visual_list_get (VisList *list, int index);
+LV_API void *visual_list_get (VisList *list, int index);
 
 /**
  * Get an data entry by index. This will give the pointer to an data
@@ -149,7 +139,7 @@ void *visual_list_get (VisList *list, int index);
  *
  * @return The data element of the requested entry, or NULL.
  */
-int visual_list_add_at_begin (VisList *list, void *data);
+LV_API int visual_list_add_at_begin (VisList *list, void *data);
 
 /**
  * Adds an entry at the end of the list.
@@ -160,7 +150,7 @@ int visual_list_add_at_begin (VisList *list, void *data);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL on failure.
  */
-int visual_list_add (VisList *list, void *data);
+LV_API int visual_list_add (VisList *list, void *data);
 
 /**
  * Chains an VisListEntry at the beginning of the list.
@@ -171,7 +161,7 @@ int visual_list_add (VisList *list, void *data);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
+LV_API int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
 
 /**
  * Chains an VisListEntry at the end of the list.
@@ -182,7 +172,7 @@ int visual_list_chain_at_begin (VisList *list, VisListEntry *le);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-int visual_list_chain (VisList *list, VisListEntry *le);
+LV_API int visual_list_chain (VisList *list, VisListEntry *le);
 
 /**
  * Unchain a VisListEntry from a VisList, entry won't be deleted. This function will only remove the
@@ -194,7 +184,7 @@ int visual_list_chain (VisList *list, VisListEntry *le);
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL
  * 	on failure.
  */
-int visual_list_unchain (VisList *list, VisListEntry *le);
+LV_API int visual_list_unchain (VisList *list, VisListEntry *le);
 
 /**
  * Insert an entry in the middle of a list. By adding it
@@ -207,7 +197,7 @@ int visual_list_unchain (VisList *list, VisListEntry *le);
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL, -VISUAL_ERROR_LIST_ENTRY_NULL or
  * 	-VISUAL_ERROR_NULL on failure.
  */
-int visual_list_insert (VisList *list, VisListEntry **le, void *data);
+LV_API int visual_list_insert (VisList *list, VisListEntry **le, void *data);
 
 /**
  * Removes an entry from the list.
@@ -217,7 +207,7 @@ int visual_list_insert (VisList *list, VisListEntry **le, void *data);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-int visual_list_delete (VisList *list, VisListEntry **le);
+LV_API int visual_list_delete (VisList *list, VisListEntry **le);
 
 /**
  * Removes and entry from the list and uses the VisListDestroyerFunc when present to clean up the data.
@@ -227,7 +217,7 @@ int visual_list_delete (VisList *list, VisListEntry **le);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_LIST_NULL or -VISUAL_ERROR_LIST_ENTRY_NULL on failure.
  */
-int visual_list_destroy (VisList *list, VisListEntry **le);
+LV_API int visual_list_destroy (VisList *list, VisListEntry **le);
 
 /**
  * Gets the amount of elements in a VisList
@@ -235,9 +225,9 @@ int visual_list_destroy (VisList *list, VisListEntry **le);
  * @p list - the list of which the element-count is requested
  * @return amount of elements currently in list (or -VISUAL_ERROR_COLLECTION_NULL on error)
  */
-int visual_list_count (VisList *list);
+LV_API int visual_list_count (VisList *list);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

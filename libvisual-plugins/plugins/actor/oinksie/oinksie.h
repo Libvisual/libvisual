@@ -69,7 +69,7 @@ typedef struct {
 
 	int highest;
 
-	float pcm[3][4096];
+	float pcm[3][512];
 	float freq[2][256];
 	float freqsmall[4];
 
@@ -121,8 +121,8 @@ typedef struct {
 	/* Palette vars */
 	OinksiePalFade		 pal_fades[256];
 	OinksiePalData		 pal_data;
-	VisPalette		 pal_cur;
-	VisPalette		 pal_old;
+	VisPalette		*pal_cur;
+	VisPalette		*pal_old;
 	int			 pal_startup;
 
 	/* Screen vars */

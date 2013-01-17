@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: libvisual.h,v 1.23 2006/01/22 13:23:36 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -37,7 +36,6 @@
 #include <libvisual/lv_time.h>
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_param.h>
-#include <libvisual/lv_config.h>
 #include <libvisual/lv_cpu.h>
 #include <libvisual/lv_bin.h>
 #include <libvisual/lv_event.h>
@@ -54,14 +52,9 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_morph.h>
 #include <libvisual/lv_transform.h>
-#include <libvisual/lv_bmp.h>
 #include <libvisual/lv_random.h>
 #include <libvisual/lv_collection.h>
-#include <libvisual/lv_hashmap.h>
-#include <libvisual/lv_cache.h>
-#include <libvisual/lv_ringbuffer.h>
 #include <libvisual/lv_rectangle.h>
-#include <libvisual/lv_thread.h>
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>
 #include <libvisual/lv_os.h>

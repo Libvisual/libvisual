@@ -3,8 +3,35 @@ of Libvisual.
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.5.0:
+New in 0.5.0 "Great Scott!"
 
+* Code rewritten in C++11 and C99
+
+Core
+* Major stability fixes and improved documentation
+* New PNG loader for LV::Video (Chong Kai Xiong)
+* Port of SIMD functions to ORC for portability (Chong Kai Xiong)
+* New lv-tool, a commandline tool for running visualizations (Daniel Hiepler)
+* New unit tests and benchmarks (Chong Kai Xiong)
+* Revamped plugin parameter system (Chong Kai Xiong)
+* New README with a markdown version for GitHub (Chong Kai Xiong)
+* Streamlined API and internal implementation (Chong Kai Xiong)
+* API is now C++11 based and wrapped for C (Chong Kai Xiong)
+
+Build
+* Replaced autotools with CMake (Chong Kai Xiong)
+* Code now builds with Clang and MinGW32 (Chong Kai Xiong)
+* New Android build support (Scott Sibley)
+
+Input
+* New Windows WaveIn plugin (Chong Kai Xiong)
+* New PulseAudio plugin (Scott Sibley)
+
+Actors
+* New lv_dump actor for dumping input PCM data (Chong Kai Xiong)
+* New lcdcontrol actor (Scott Sibley)
+* Most GL actors now support OpenGL ES 1.x (Chong Kai Xiong)
+* Dancing Particles actor now renders with proper configuration (Chong Kai Xiong, Scott Sibley)
 
 New in 0.4.0: xxxx-xx-xx:
 * Real time timestamping support. (Dennis)

@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_keysym.h,v 1.6 2006/02/13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,10 +23,6 @@
 #ifndef _LV_KEYSYM_H
 #define _LV_KEYSYM_H
 
-#include <libvisual/lv_defines.h>
-
-VISUAL_BEGIN_DECLS
-
 /**
  * Enumerate values used within the libvisual event system for keyboard events.
  *
@@ -38,27 +33,26 @@ VISUAL_BEGIN_DECLS
  * The basic keys are also mapped as in the ASCII table so basic
  * keyboard support is easy to implement within a libvisual client.
  *
- * @see visual_event_queue_add_keyboard
  */
 typedef enum {
-	VKEY_UNKNOWN		= 0,
+	VKEY_UNKNOWN	= 0,
 	VKEY_FIRST		= 0,
-	VKEY_BACKSPACE		= 8,
+	VKEY_BACKSPACE	= 8,
 	VKEY_TAB		= 9,
 	VKEY_CLEAR		= 12,
 	VKEY_RETURN		= 13,
 	VKEY_PAUSE		= 19,
 	VKEY_ESCAPE		= 27,
 	VKEY_SPACE		= 32,
-	VKEY_EXCLAIM		= 33,
-	VKEY_QUOTEDBL		= 34,
+	VKEY_EXCLAIM	= 33,
+	VKEY_QUOTEDBL	= 34,
 	VKEY_HASH		= 35,
 	VKEY_DOLLAR		= 36,
-	VKEY_AMPERSAND		= 38,
+	VKEY_AMPERSAND	= 38,
 	VKEY_QUOTE		= 39,
-	VKEY_LEFTPAREN		= 40,
-	VKEY_RIGHTPAREN		= 41,
-	VKEY_ASTERISK		= 42,
+	VKEY_LEFTPAREN	= 40,
+	VKEY_RIGHTPAREN	= 41,
+	VKEY_ASTERISK	= 42,
 	VKEY_PLUS		= 43,
 	VKEY_COMMA		= 44,
 	VKEY_MINUS		= 45,
@@ -75,11 +69,11 @@ typedef enum {
 	VKEY_8			= 56,
 	VKEY_9			= 57,
 	VKEY_COLON		= 58,
-	VKEY_SEMICOLON		= 59,
+	VKEY_SEMICOLON	= 59,
 	VKEY_LESS		= 60,
 	VKEY_EQUALS		= 61,
-	VKEY_GREATER		= 62,
-	VKEY_QUESTION		= 63,
+	VKEY_GREATER	= 62,
+	VKEY_QUESTION	= 63,
 	VKEY_AT			= 64,
 
 	/* Skip uppercase here because it's done via the VisKeyMod */
@@ -199,18 +193,18 @@ typedef enum {
  * @see visual_event_queue_add_keyboard
  */
 typedef enum {
-	VKMOD_NONE	= 0x0000,
-	VKMOD_LSHIFT	= 0x0001,
-	VKMOD_RSHIFT	= 0x0002,
-	VKMOD_LCTRL	= 0x0040,
-	VKMOD_RCTRL	= 0x0080,
-	VKMOD_LALT	= 0x0100,
-	VKMOD_RALT	= 0x0200,
-	VKMOD_LMETA	= 0x0400,
-	VKMOD_RMETA	= 0x0800,
-	VKMOD_NUM	= 0x1000,
-	VKMOD_CAPS	= 0x2000,
-	VKMOD_MODE	= 0x4000
+	VKMOD_NONE   = 0x0000,
+	VKMOD_LSHIFT = 0x0001,
+	VKMOD_RSHIFT = 0x0002,
+	VKMOD_LCTRL  = 0x0040,
+	VKMOD_RCTRL  = 0x0080,
+	VKMOD_LALT   = 0x0100,
+	VKMOD_RALT   = 0x0200,
+	VKMOD_LMETA  = 0x0400,
+	VKMOD_RMETA  = 0x0800,
+	VKMOD_NUM    = 0x1000,
+	VKMOD_CAPS   = 0x2000,
+	VKMOD_MODE   = 0x4000
 } VisKeyMod;
 
 #define VKMOD_CTRL	(VKMOD_LCTRL  | VKMOD_RCTRL)
@@ -224,10 +218,8 @@ typedef struct _VisKeySym VisKeySym;
  * Cantains data about the current keyboard state.
  */
 struct _VisKeySym {
-	VisKey		sym;	/**< Keyboard key to which everything relates. */
-	int		mod;	/**< Modifier vlags, Using key modifiers from the VisKeyMod enumerate. */
+	VisKey sym; /**< Keyboard key to which everything relates. */
+	int    mod; /**< Modifier vlags, Using key modifiers from the VisKeyMod enumerate. */
 };
-
-VISUAL_END_DECLS
 
 #endif /* _LV_KEYSYM_H */

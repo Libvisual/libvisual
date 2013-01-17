@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_error.h,v 1.40 2006/01/27 20:18:26 synap Exp $
+ *          Chong Kai Xiong <kaixiong@codeleft.sg>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,8 +31,6 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
-
 /* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
  * human readable string list as well!!! */
 /**
@@ -40,49 +38,31 @@ VISUAL_BEGIN_DECLS
  */
 enum {
 	/* Ok! */
-	VISUAL_OK,					/**< No error. */
+	VISUAL_OK,                          /**< No error. */
 
 	/* Standard error entries */
-	VISUAL_ERROR_GENERAL,				/**< General error. */
-	VISUAL_ERROR_NULL,				/**< Something is NULL that shouldn't be. */
-	VISUAL_ERROR_IMPOSSIBLE,			/**< The impossible happened, this should never happen. */
+	VISUAL_ERROR_GENERAL,               /**< General error. */
+	VISUAL_ERROR_NULL,                  /**< Something is NULL that shouldn't be. */
+	VISUAL_ERROR_IMPOSSIBLE,            /**< The impossible happened, this should never happen. */
     VISUAL_ERROR_FAILED_CHECK,          /**< Failed an assertion check */
 
 	/* Error entries for the VisActor system */
-	VISUAL_ERROR_ACTOR_NULL,			/**< The VisActor is NULL. */
-	VISUAL_ERROR_ACTOR_VIDEO_NULL,			/**< The VisVideo target member in the VisActor is NULL. */
-	VISUAL_ERROR_ACTOR_PLUGIN_NULL,			/**< The VisActor plugin in this context is NULL. */
-	VISUAL_ERROR_ACTOR_GL_NEGOTIATE,		/**< Tried depth forcing a GL VisACtor. */
+	VISUAL_ERROR_ACTOR_NULL,            /**< The VisActor is NULL. */
+	VISUAL_ERROR_ACTOR_VIDEO_NULL,      /**< The VisVideo target member in the VisActor is NULL. */
+	VISUAL_ERROR_ACTOR_PLUGIN_NULL,     /**< The VisActor plugin in this context is NULL. */
+	VISUAL_ERROR_ACTOR_GL_NEGOTIATE,    /**< Tried depth forcing a GL VisACtor. */
 
-	/* Error entries for the VisAudio system */
-	VISUAL_ERROR_AUDIO_NULL,			/**< The VisAudio is NULL. */
-	VISUAL_ERROR_AUDIO_SAMPLEPOOL_NULL,		/**< The VisAudioSamplePool is NULL. */
-	VISUAL_ERROR_AUDIO_SAMPLEPOOL_CHANNEL_NULL,	/**< The VisAudioSamplePoolChannel is NULL. */
-	VISUAL_ERROR_AUDIO_SAMPLE_NULL,			/**< The VisAudioSample is NULL. */
+	VISUAL_ERROR_AUDIO_NULL,            /**< The VisAudio is NULL. */
 
 	/* Error entries for the VisBMP system */
 	VISUAL_ERROR_BMP_NO_BMP,			/**< Not a bitmap file. */
 	VISUAL_ERROR_BMP_NOT_FOUND,			/**< File not found. */
-	VISUAL_ERROR_BMP_NOT_SUPPORTED,			/**< File format not supported. */
+	VISUAL_ERROR_BMP_NOT_SUPPORTED,		/**< File format not supported. */
 	VISUAL_ERROR_BMP_CORRUPTED,			/**< Bitmap file is corrupted. */
-
-	/* Error entries for the VisBuffer system */
-	VISUAL_ERROR_BUFFER_NULL,			/**< The VisBuffer is NULL. */
-	VISUAL_ERROR_BUFFER_OUT_OF_BOUNDS,		/**< The requested operation would be out of bounds. */
-
-	/* Error entries for the VisCache system */
-	VISUAL_ERROR_CACHE_NULL,			/**< The VisCache is NULL. */
 
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
 	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
-
-	/* Error entries for the VisColor system */
-	VISUAL_ERROR_COLOR_NULL,			/**< The VisColor is NULL. */
-
-	/* Error entries for the VisConfig system */
-	VISUAL_ERROR_CONFIG_REGISTRY_NULL,		/**< The VisConfigRegistry is NULL. */
-	VISUAL_ERROR_CONFIG_REGISTRY_SECTION_NULL,	/**< The VisConfigRegistrySection is NULL. */
 
 	/* Error entries for arch related errors and VisCPU system */
 	VISUAL_ERROR_CPU_INVALID_CODE,			/**< Can't run a section of code. */
@@ -94,21 +74,6 @@ enum {
 	/* Error entries for the VisEvent system */
 	VISUAL_ERROR_EVENT_NULL,			/**< The VisEvent is NULL. */
 	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is NULL. */
-
-	/* Error entries for the VisFourier system */
-	VISUAL_ERROR_FOURIER_NULL,			/**< The VisFourier is NULL. */
-	VISUAL_ERROR_FOURIER_NOT_INITIALIZED,		/**< The VisFourier subsystem is not initialized. */
-
-	/* Error entries for the VisGL system */
-	VISUAL_ERROR_GL_FUNCTION_NOT_SUPPORTED,		/**< The native callback for a gl related function is not present. */
-
-	/* Error entries for the VisHashlist system */
-	VISUAL_ERROR_HASHLIST_NULL,			/**< The VisHashlist is NULL. */
-
-	/* Error entries for the VisHashmap system */
-	VISUAL_ERROR_HASHMAP_NULL,			/**< The VisHashmap is NULL. */
-	VISUAL_ERROR_HASHMAP_NOT_IN_MAP,		/**< Key is not in hashmap. */
-	VISUAL_ERROR_HASHMAP_INVALID_KEY_TYPE,		/**< Key type is not valid. */
 
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
@@ -136,10 +101,6 @@ enum {
 	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't succesful. */
 	VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED,		/**< Scheduler operations are not supported on the platform. */
 
-	/* Error entries for the VisPalette system */
-	VISUAL_ERROR_PALETTE_NULL,			/**< The VisPalette is NULL. */
-	VISUAL_ERROR_PALETTE_SIZE,			/**< Given VisPalette entries are not of the same size. */
-
 	/* Error entries for the VisParam system */
 	VISUAL_ERROR_PARAM_NULL,			/**< The VisParamEntry is NULL. */
 	VISUAL_ERROR_PARAM_CONTAINER_NULL,		/**< The VisParamContainer is NULL. */
@@ -159,31 +120,6 @@ enum {
 	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
 	VISUAL_ERROR_PLUGIN_NOT_FOUND,          /**< The plugin can't be found */
 
-	/* Error entries for the VisRandom system */
-	VISUAL_ERROR_RANDOM_CONTEXT_NULL,		/**< The VisRandomContext is NULL. */
-
-	/* Error entries for the VisRectangle system */
-	VISUAL_ERROR_RECTANGLE_NULL,			/**< The VisRectangle is NULL. */
-	VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS,		/**< The VisRectangle operation is out of bounds. */
-
-	/* Error entries for the VisRingBuffer system */
-	VISUAL_ERROR_RINGBUFFER_NULL,			/**< The VisRingBuffer is NULL. */
-	VISUAL_ERROR_RINGBUFFER_ENTRY_NULL,		/**< The VisRingBufferEntry is NULL. */
-	VISUAL_ERROR_RINGBUFFER_DATAFUNC_NULL,		/**< The VisRingBufferDataFunc is NULL. */
-
-	/* Error entries for the VisSonginfo system */
-	VISUAL_ERROR_SONGINFO_NULL,			/**< The VisSongInfo is NULL. */
-
-	/* Error entries for the VisThread system */
-	VISUAL_ERROR_THREAD_NULL,			/**< The VisThread is NULL. */
-	VISUAL_ERROR_THREAD_NOT_INITIALIZED,		/**< The VisThread subsystem is not initialized. */
-	VISUAL_ERROR_THREAD_NOT_SUPPORTED,		/**< The VisThread subsystem couldn't find a threading fallback. */
-	VISUAL_ERROR_THREAD_NOT_ENABLED,		/**< The VisThread subsystem is disabled. */
-	VISUAL_ERROR_MUTEX_NULL,			/**< The VisMutex is NULL. */
-	VISUAL_ERROR_MUTEX_LOCK_FAILURE,		/**< Failed locking the VisMutex. */
-	VISUAL_ERROR_MUTEX_TRYLOCK_FAILURE,		/**< Failed trylocking the VisMutex. */
-	VISUAL_ERROR_MUTEX_UNLOCK_FAILURE,		/**< Failed unlocking the VisMutex. */
-
 	/* Error entries for the VisTransform system */
 	VISUAL_ERROR_TRANSFORM_NULL,			/**< The VisTransform is NULL. */
 	VISUAL_ERROR_TRANSFORM_NEGOTIATE,		/**< The VisTransform negotiate with the VisVideo failed. */
@@ -196,11 +132,6 @@ enum {
 	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */
 	VISUAL_ERROR_OBJECT_NOT_ALLOCATED,		/**< The VisObject is not allocated. */
 
-	/* Error entries for the VisTime system */
-	VISUAL_ERROR_TIME_NULL,				/**< The VisTime is NULL. */
-	VISUAL_ERROR_TIME_NO_USLEEP,			/**< visual_time_usleep is not working on this system. */
-	VISUAL_ERROR_TIMER_NULL,			/**< The VisTimer is NULL. */
-
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL,	/**< The VisVideoAttributeOptions is NULL. */
 	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */
@@ -210,6 +141,7 @@ enum {
 	VISUAL_ERROR_VIDEO_NO_ALLOCATED,		/**< The VisVideo doesn't have an allocated pixel buffer. */
 	VISUAL_ERROR_VIDEO_HAS_PIXELS,			/**< The VisVideo already points to a pixel buffer. */
 	VISUAL_ERROR_VIDEO_INVALID_BPP,			/**< The VisVideo it's bytes per pixel is invalid. */
+	VISUAL_ERROR_VIDEO_INVALID_PITCH,       /**< The VisVideo has an invalid pitch. */
 	VISUAL_ERROR_VIDEO_INVALID_DEPTH,		/**< The VisVideoDepth value is not valid. */
 	VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD,	/**< The VisVideoScaleMethod argument is not valid. */
 	VISUAL_ERROR_VIDEO_INVALID_ROTATE,		/**< The VisVideoRotateDegrees argument is not valid. */
@@ -236,6 +168,8 @@ enum {
  */
 typedef int (*VisErrorHandlerFunc) (int error, void *priv);
 
+LV_BEGIN_DECLS
+
 /**
  * Raise a libvisual error. With the standard error handler this will
  * do a raise(SIGTRAP). You can set your own error handler function using the
@@ -245,7 +179,7 @@ typedef int (*VisErrorHandlerFunc) (int error, void *priv);
  *
  * @return Returns the return value from the handler that is set.
  */
-int visual_error_raise (int error);
+LV_API int visual_error_raise (int error);
 
 /**
  * Sets the error handler callback. By using this function you
@@ -258,7 +192,7 @@ int visual_error_raise (int error);
  *
  * @return VISUAL_OK on success, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
-void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
+LV_API void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
 /**
  * Translates an error into a human readable string, the returned string should not be freed.
@@ -267,9 +201,39 @@ void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
  *
  * @return Human readable string, or NULL on failure.
  */
-const char *visual_error_to_string (int err);
+LV_API const char *visual_error_to_string (int err);
 
-VISUAL_END_DECLS
+LV_END_DECLS
+
+#if __cplusplus
+
+#include <string>
+#include <stdexcept>
+
+namespace LV {
+
+  class LV_API Error
+    : public std::runtime_error
+  {
+  public:
+
+    explicit Error (int code)
+        : std::runtime_error (visual_error_to_string (code))
+    {}
+
+    Error (int code, std::string const& reason)
+        : std::runtime_error (std::string (visual_error_to_string (code)) + ": " + reason)
+    {}
+
+    explicit Error (std::string const& msg)
+        : std::runtime_error (msg)
+    {}
+  };
+
+} // LV namespace
+
+#endif // __cplusplus
+
 
 /**
  * @}

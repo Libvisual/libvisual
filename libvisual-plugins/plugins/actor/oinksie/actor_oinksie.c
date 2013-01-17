@@ -1,10 +1,8 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: actor_oinksie.c,v 1.36 2006/01/27 20:19:17 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,62 +19,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "oinksie.h"
 
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
 typedef struct {
-	OinksiePrivate			 priv1;
-	OinksiePrivate			 priv2;
+	OinksiePrivate       priv1;
+	OinksiePrivate       priv2;
 
-	int				 color_mode;
+	int                  color_mode;
 
-	int				 depth;
-	uint8_t				*tbuf1;
-	uint8_t				*tbuf2;
-	uint8_t				*buf1;
-	uint8_t				*buf2;
-
-	VisVideoCustomCompositeFunc	 currentcomp;
+	VisVideoComposeFunc	 currentcomp;
 } OinksiePrivContainer;
 
-static int composite_blend1_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend2_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend3_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend4_32_c (VisVideo *dest, VisVideo *src);
-static int composite_blend5_32_c (VisVideo *dest, VisVideo *src);
-
-const VisPluginInfo *get_plugin_info(int *count);
+static void compose_blend1_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend2_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend3_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend4_32_c (VisVideo *dest, VisVideo *src);
+static void compose_blend5_32_c (VisVideo *dest, VisVideo *src);
 
 static int act_oinksie_init (VisPluginData *plugin);
 static int act_oinksie_cleanup (VisPluginData *plugin);
 static int act_oinksie_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_oinksie_resize (VisPluginData *plugin, int width, int height);
 static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_oinksie_palette (VisPluginData *plugin);
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
+static void act_oinksie_set_color_mode (OinksiePrivContainer *self, int mode);
+static void act_oinksie_set_acid_palette (OinksiePrivContainer *self, int palette);
 
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_oinksie_requisition,
 		.palette = act_oinksie_palette,
 		.render = act_oinksie_render,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "oinksie",
@@ -91,25 +77,27 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_oinksie_cleanup,
 		.events = act_oinksie_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_oinksie_init (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv;
-	VisRandomContext *rcontext;
-        VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+#if ENABLE_NLS
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("color mode", 1),
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("acid palette", 0),
-		VISUAL_PARAM_LIST_END
-	};
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_integer ("color_mode", N_("Color mode"),
+                                                          1,
+                                                          NULL),
+                                visual_param_new_integer ("acid_palette", N_("Acid palette"),
+                                                          0,
+                                                          NULL),
+                                NULL);
 
 /*
 	static VisParamEntry cmodeparamchoices[] = {
@@ -124,27 +112,24 @@ static int act_oinksie_init (VisPluginData *plugin)
 
 	/* FIXME: add UI to access the acid palette parameter */
 
-#if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
-#endif
-
-	priv = visual_mem_new0 (OinksiePrivContainer, 1);
+	OinksiePrivContainer *priv = visual_mem_new0 (OinksiePrivContainer, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-    visual_param_container_add_many (paramcontainer, params);
+	priv->priv1.pal_cur = visual_palette_new (256);
+	priv->priv1.pal_old = visual_palette_new (256);
 
-	visual_palette_allocate_colors (&priv->priv1.pal_cur, 256);
-	visual_palette_allocate_colors (&priv->priv1.pal_old, 256);
+	priv->priv2.pal_cur = visual_palette_new (256);
+	priv->priv2.pal_old = visual_palette_new (256);
 
-	visual_palette_allocate_colors (&priv->priv2.pal_cur, 256);
-	visual_palette_allocate_colors (&priv->priv2.pal_old, 256);
-
-	rcontext = visual_plugin_get_random_context (plugin);
+	VisRandomContext *rcontext = visual_plugin_get_random_context (plugin);
 	priv->priv1.rcontext = rcontext;
 	priv->priv2.rcontext = rcontext;
 
 	oinksie_init (&priv->priv1, 64, 64);
 	oinksie_init (&priv->priv2, 64, 64);
+
+	act_oinksie_set_color_mode (priv, 1);
+	act_oinksie_set_acid_palette (priv, 0);
 
 	return 0;
 }
@@ -156,25 +141,11 @@ static int act_oinksie_cleanup (VisPluginData *plugin)
 	oinksie_quit (&priv->priv1);
 	oinksie_quit (&priv->priv2);
 
-	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
-		if (priv->buf1)
-			visual_mem_free (priv->buf1);
+	visual_palette_free (priv->priv1.pal_cur);
+	visual_palette_free (priv->priv1.pal_old);
 
-		if (priv->buf2)
-			visual_mem_free (priv->buf2);
-
-		if (priv->tbuf1)
-			visual_mem_free (priv->tbuf1);
-
-		if (priv->tbuf2)
-			visual_mem_free (priv->tbuf2);
-	}
-
-	visual_palette_free_colors (&priv->priv1.pal_cur);
-	visual_palette_free_colors (&priv->priv1.pal_old);
-
-	visual_palette_free_colors (&priv->priv2.pal_cur);
-	visual_palette_free_colors (&priv->priv2.pal_old);
+	visual_palette_free (priv->priv2.pal_cur);
+	visual_palette_free (priv->priv2.pal_old);
 
 	visual_mem_free (priv);
 
@@ -206,34 +177,12 @@ static int act_oinksie_requisition (VisPluginData *plugin, int *width, int *heig
 	return 0;
 }
 
-static int act_oinksie_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_oinksie_resize (VisPluginData *plugin, int width, int height)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	visual_video_set_dimension (video, width, height);
-
-	oinksie_size_set (&priv->priv1, video->width, video->height);
-	oinksie_size_set (&priv->priv2, video->width, video->height);
-
-	priv->depth = video->depth;
-	if (priv->depth != VISUAL_VIDEO_DEPTH_8BIT) {
-		if (priv->buf1)
-			visual_mem_free (priv->buf1);
-
-		if (priv->buf2)
-			visual_mem_free (priv->buf2);
-
-		if (priv->tbuf1)
-			visual_mem_free (priv->tbuf1);
-
-		if (priv->tbuf2)
-			visual_mem_free (priv->tbuf2);
-
-		priv->buf1 = visual_mem_malloc0 (visual_video_get_size (video));
-		priv->buf2 = visual_mem_malloc0 (visual_video_get_size (video));
-		priv->tbuf1 = visual_mem_malloc0 (visual_video_get_size (video));
-		priv->tbuf2 = visual_mem_malloc0 (visual_video_get_size (video));
-	}
+	oinksie_size_set (&priv->priv1, width, height);
+	oinksie_size_set (&priv->priv2, width, height);
 
 	return 0;
 }
@@ -242,36 +191,21 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_oinksie_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
-
+				act_oinksie_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "color mode")) {
-					priv->color_mode = visual_param_entry_get_integer (param);
-
-					if (priv->color_mode == 0)
-						priv->currentcomp = composite_blend1_32_c;
-					else if (priv->color_mode == 1)
-						priv->currentcomp = composite_blend2_32_c;
-					else if (priv->color_mode == 2)
-						priv->currentcomp = composite_blend3_32_c;
-					else if (priv->color_mode == 3)
-						priv->currentcomp = composite_blend4_32_c;
-					else if (priv->color_mode == 4)
-						priv->currentcomp = composite_blend5_32_c;
-					else
-						priv->currentcomp = composite_blend2_32_c;
-				} else if (visual_param_entry_is (param, "acid palette")) {
-					priv->priv1.config.acidpalette = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "color mode")) {
+					act_oinksie_set_color_mode (priv, visual_param_get_value_integer (param));
+				} else if (visual_param_has_name (param, "acid palette")) {
+					act_oinksie_set_acid_palette (priv, visual_param_get_value_integer (param));
 				}
 
 				break;
@@ -297,43 +231,48 @@ static VisPalette *act_oinksie_palette (VisPluginData *plugin)
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer			 pcmbuf1;
-	VisBuffer			 pcmbuf2;
-	VisBuffer			 pcmmix;
-	VisBuffer			 spmbuf;
 
 	/* Left audio */
-	visual_buffer_set_data_pair (&pcmbuf1, priv->priv1.audio.pcm[0], sizeof (float) * 4096);
-	visual_audio_get_sample (audio, &pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+	VisBuffer *pcmbuf1 = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[0], sizeof (priv->priv1.audio.pcm[0]), FALSE);
+	visual_audio_get_sample (audio, pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-	visual_buffer_set_data_pair (&spmbuf, &priv->priv1.audio.freq[0], sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmbuf1, FALSE);
+	VisBuffer *spmbuf1 = visual_buffer_new_wrap_data (priv->priv1.audio.freq[0], sizeof (priv->priv1.audio.freq[0]), FALSE);
+	visual_audio_get_spectrum_for_sample (spmbuf1, pcmbuf1, FALSE);
+	visual_buffer_unref(pcmbuf1);
+	visual_buffer_unref(spmbuf1);
 
 	/* Right audio */
-	visual_buffer_set_data_pair (&pcmbuf2, priv->priv1.audio.pcm[1], sizeof (float) * 4096);
-	visual_audio_get_sample (audio, &pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	VisBuffer *pcmbuf2 = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[1], sizeof (priv->priv1.audio.pcm[1]), FALSE);
+	visual_audio_get_sample (audio, pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&spmbuf, priv->priv1.audio.freq[1], sizeof (float) * 256);
-	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmbuf2, FALSE);
+	VisBuffer *spmbuf2 = visual_buffer_new_wrap_data (priv->priv1.audio.freq[1], sizeof (priv->priv1.audio.freq[1]), FALSE);
+	visual_audio_get_spectrum_for_sample (spmbuf2, pcmbuf2, FALSE);
+	visual_buffer_unref (pcmbuf2);
+	visual_buffer_unref (spmbuf2);
 
 	/* Mix channels */
-	visual_buffer_set_data_pair (&pcmmix, priv->priv1.audio.pcm[2], sizeof (float) * 4096);
-	visual_audio_sample_buffer_mix_many (&pcmmix, TRUE, 2, &pcmbuf1, &pcmbuf2, 1.0, 1.0);
+	VisBuffer *pcmmix = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[2], sizeof (priv->priv1.audio.pcm[2]), FALSE);
+	visual_audio_get_sample_mixed_simple (audio, pcmmix, 2, VISUAL_AUDIO_CHANNEL_LEFT, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&spmbuf, priv->priv1.audio.freqsmall, sizeof (float) * 4);
-	visual_audio_get_spectrum_for_sample (&spmbuf, &pcmmix, FALSE);
+	VisBuffer *spmmix = visual_buffer_new_wrap_data (priv->priv1.audio.freqsmall, sizeof (priv->priv1.audio.freqsmall), FALSE);
+	visual_audio_get_spectrum_for_sample (spmmix, pcmmix, FALSE);
+	visual_buffer_unref (pcmmix);
+	visual_buffer_unref (spmmix);
 
 	/* Duplicate for second oinksie instance */
-	visual_mem_copy (&priv->priv2.audio.pcm, &priv->priv1.audio.pcm, sizeof (float) * 4096 * 3);
-	visual_mem_copy (&priv->priv2.audio.freq, &priv->priv1.audio.freq, sizeof (float) * 256 * 2);
-	visual_mem_copy (&priv->priv2.audio.freqsmall, &priv->priv1.audio.freqsmall, sizeof (float) * 4);
+	visual_mem_copy (priv->priv2.audio.pcm, priv->priv1.audio.pcm, sizeof (priv->priv1.audio.pcm));
+	visual_mem_copy (priv->priv2.audio.freq, priv->priv1.audio.freq, sizeof (priv->priv1.audio.freq));
+	visual_mem_copy (priv->priv2.audio.freqsmall, priv->priv1.audio.freqsmall, sizeof (priv->priv1.audio.freqsmall));
 
 	/* Audio energy */
-	priv->priv1.audio.energy = audio->energy;
-	priv->priv2.audio.energy = audio->energy;
+	priv->priv1.audio.energy = 0 /*audio->energy*/;
+	priv->priv2.audio.energy = 0 /*audio->energy*/;
 
 	/* Let's get rendering */
-	if (priv->depth == VISUAL_VIDEO_DEPTH_8BIT) {
+
+	VisVideoDepth video_depth = visual_video_get_depth (video);
+
+	if (video_depth == VISUAL_VIDEO_DEPTH_8BIT) {
 		oinksie_sample (&priv->priv1);
 
 		/* FIXME this is not pitch safe, will screw up region buffers.
@@ -342,220 +281,162 @@ static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 		priv->priv1.drawbuf = visual_video_get_pixels (video);
 		oinksie_render (&priv->priv1);
 	} else {
-		VisVideo vid1;
-		VisVideo vid2;
+		int width  = visual_video_get_width (video);
+		int height = visual_video_get_height (video);
 
-		visual_video_init (&vid1);
-		visual_video_init (&vid2);
+		VisVideo *vid1 = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_palette (vid1, oinksie_palette_get (&priv->priv1));
+
+		VisVideo *vid2 = visual_video_new_with_buffer (width, height, VISUAL_VIDEO_DEPTH_8BIT);
+		visual_video_set_palette (vid2, oinksie_palette_get (&priv->priv2));
+
+		priv->priv1.drawbuf = visual_video_get_pixels (vid1);
+		priv->priv2.drawbuf = visual_video_get_pixels (vid2);
 
 		oinksie_sample (&priv->priv1);
 		oinksie_sample (&priv->priv2);
 
-		priv->priv1.drawbuf = priv->buf1;
-		priv->priv2.drawbuf = priv->buf2;
-
 		oinksie_render (&priv->priv1);
 		oinksie_render (&priv->priv2);
 
-		visual_video_set_depth (&vid1, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (&vid1, video->width, video->height);
-		visual_video_set_buffer (&vid1, priv->buf1);
-		visual_video_set_palette (&vid1, oinksie_palette_get (&priv->priv1));
+		visual_video_blit (video, vid1, 0, 0, FALSE);
 
-		visual_video_blit_overlay (video, &vid1, 0, 0, FALSE);
+		visual_video_set_compose_type (vid2, VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM);
+		visual_video_set_compose_function (vid2, priv->currentcomp);
+		visual_video_blit (video, vid2, 0, 0, TRUE);
 
-		visual_video_set_depth (&vid2, VISUAL_VIDEO_DEPTH_8BIT);
-		visual_video_set_dimension (&vid2, video->width, video->height);
-		visual_video_set_buffer (&vid2, priv->buf2);
-		visual_video_set_palette (&vid2, oinksie_palette_get (&priv->priv2));
-
-		visual_video_composite_set_type (&vid2, VISUAL_VIDEO_COMPOSITE_TYPE_CUSTOM);
-		visual_video_composite_set_function (&vid2, priv->currentcomp);
-
-		visual_video_blit_overlay (video, &vid2, 0, 0, TRUE);
-
-		visual_object_unref (VISUAL_OBJECT (&vid1));
-		visual_object_unref (VISUAL_OBJECT (&vid2));
+		visual_video_unref (vid1);
+		visual_video_unref (vid2);
 	}
 
 	return 0;
 }
 
-static int composite_blend1_32_c (VisVideo *dest, VisVideo *src)
+static void act_oinksie_set_color_mode (OinksiePrivContainer *self, int mode)
+{
+	self->color_mode = mode;
+
+	switch (self->color_mode) {
+		case 0:	 self->currentcomp = compose_blend1_32_c; break;
+		case 1:	 self->currentcomp = compose_blend2_32_c; break;
+		case 2:	 self->currentcomp = compose_blend3_32_c; break;
+		case 3:	 self->currentcomp = compose_blend4_32_c; break;
+		case 4:	 self->currentcomp = compose_blend5_32_c; break;
+		default: self->currentcomp = compose_blend2_32_c; break;
+	}
+}
+
+static void act_oinksie_set_acid_palette (OinksiePrivContainer *self, int palette)
+{
+	self->priv1.config.acidpalette = palette;
+}
+
+static void compose_blend1_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
-			*destbuf = ((alpha * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((alpha * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
+			destbuf[0] = (alpha * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (alpha * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int composite_blend2_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend2_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
-			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((0 * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
+			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (0          * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int composite_blend3_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend3_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
-			*destbuf = ((0 * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
+			destbuf[0] = (0          * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (destbuf[0] * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int composite_blend4_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend4_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
 	uint8_t alpha = 128;
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
-			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((alpha * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((*srcbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+	int src_width  = visual_video_get_width	 (src);
+	int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
+			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (alpha      * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (srcbuf[0]  * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
 
-static int composite_blend5_32_c (VisVideo *dest, VisVideo *src)
+static void compose_blend5_32_c (VisVideo *dest, VisVideo *src)
 {
 	int i, j;
-	uint8_t *destbuf = visual_video_get_pixels (dest);
-	uint8_t *srcbuf = visual_video_get_pixels (src);
 
-	for (i = 0; i < src->height; i++) {
-		for (j = 0; j < src->width; j++) {
-			*destbuf = ((*destbuf * (*destbuf - *srcbuf) >> 8) + *srcbuf);
-			*(destbuf + 1) = ((*srcbuf * (*(destbuf + 1) - *(srcbuf + 1)) >> 8) + *(srcbuf + 1));
-			*(destbuf + 2) = ((*destbuf * (*(destbuf + 2) - *(srcbuf + 2)) >> 8) + *(srcbuf + 2));
+	uint8_t *destbuf = visual_video_get_pixels (dest);
+	uint8_t *srcbuf  = visual_video_get_pixels (src);
+
+    int src_width  = visual_video_get_width  (src);
+    int src_height = visual_video_get_height (src);
+
+	for (i = 0; i < src_height; i++) {
+		for (j = 0; j < src_width; j++) {
+			destbuf[0] = (destbuf[0] * (destbuf[0] - srcbuf[0]) >> 8) + srcbuf[0];
+			destbuf[1] = (srcbuf[0]  * (destbuf[1] - srcbuf[1]) >> 8) + srcbuf[1];
+			destbuf[2] = (destbuf[0] * (destbuf[2] - srcbuf[2]) >> 8) + srcbuf[2];
 
 			destbuf += 4;
-			srcbuf += 4;
+			srcbuf  += 4;
 		}
-
-		destbuf += dest->pitch - (dest->width * dest->bpp);
-		srcbuf += src->pitch - (src->width * src->bpp);
 	}
-
-	return VISUAL_OK;
 }
-
-/* FIXME make a color mode out of this one as well (yeah I was fooling around with mmx) */
-#if 0
-static int alpha_blend3_32_mmx (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, float alpha)
-{
-	uint32_t ialpha = (alpha * 255);
-	int i;
-
-	/* Reset some regs */
-	__asm __volatile
-		("\n\t emms"
-		 "\n\t pxor %%mm6, %%mm6"
-		 "\n\t pxor %%mm7, %%mm7"
-		 ::: "mm6", "mm7");
-
-	for (i = 0; i < size; i++) {
-		__asm __volatile
-			("\n\t movd %[spix1], %%mm0"
-			 "\n\t movd %[spix2], %%mm1"
-			 "\n\t movq %%mm0, %%mm3"       // [ 2 pixels ]
-			 "\n\t movd %[alpha], %%mm2"    // [ alpha ]
-			 "\n\t psllq $24, %%mm3"
-			 "\n\t movq %%mm0, %%mm4"
-			 "\n\t psrld $24, %%mm3"
-			 "\n\t psrld $24, %%mm4"
-			 "\n\t psllq $32, %%mm2"
-			 "\n\t psllq $16, %%mm3"
-			 "\n\t por %%mm4, %%mm2"
-			 "\n\t punpcklbw %%mm6, %%mm0"  /* interleaving source 1 */
-			 "\n\t por %%mm3, %%mm2"
-			 "\n\t punpcklbw %%mm6, %%mm1"  /* interleaving source 2 */
-			 "\n\t paddsw %%mm7, %%mm2"
-			 "\n\t psubsw %%mm1, %%mm0"     /* (src - dest) part */
-			 "\n\t pxor %%mm3, %%mm3"
-			 "\n\t pmullw %%mm2, %%mm0"     /* alpha * (src - dest) */
-			 "\n\t pxor %%mm4, %%mm4"
-			 "\n\t psrlw $8, %%mm0"         /* / 256 */
-			 "\n\t pxor %%mm2, %%mm2"
-			 "\n\t paddb %%mm1, %%mm0"      /* + dest */
-			 "\n\t packuswb %%mm0, %%mm0"
-			 "\n\t pxor %%mm1, %%mm1"
-			 "\n\t movd %%mm0, %[dest]"
-			 : [dest] "=m" (*dest)
-			 : [spix1] "m" (*src1)
-			 , [spix2] "m" (*src2)
-			 , [alpha] "m" (ialpha)
-			 : "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7");
-
-		dest += 4;
-		src1 += 4;
-		src2 += 4;
-	}
-
-	__asm __volatile
-		("\n\t emms");
-
-	return 0;
-}
-
-#endif

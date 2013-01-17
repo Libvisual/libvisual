@@ -39,6 +39,8 @@ void _inf_generate_colors(InfinitePrivate *priv)
 
 void _inf_change_color(InfinitePrivate *priv, int t2,int t1,int w)
 {
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
+
 	int i;
 
 	for (i=0;i<256;i++) {
@@ -47,9 +49,9 @@ void _inf_change_color(InfinitePrivate *priv, int t2,int t1,int w)
 		g=(priv->color_table[t1][i].g*w+priv->color_table[t2][i].g*(256-w))>>8;
 		b=(priv->color_table[t1][i].b*w+priv->color_table[t2][i].b*(256-w))>>8;
 
-		priv->pal.colors[i].r = r;
-		priv->pal.colors[i].g = g;
-		priv->pal.colors[i].b = b;
+		pal_colors[i].r = r;
+		pal_colors[i].g = g;
+		pal_colors[i].b = b;
 	}
 }
 
@@ -248,7 +250,7 @@ static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int
 		else
 			dxy = 1;
 
-		for (y1=y1; y1<y2; y1++) {
+		for (; y1<y2; y1++) {
 			cxy += dx;
 			if (cxy >= dy) {
 				x1+= dxy;
@@ -268,7 +270,7 @@ static void _inf_line(InfinitePrivate *priv, int x1, int y1, int x2, int y2, int
 		else
 			dxy = 1;
 
-		for (x1=x1; x1<x2; x1++) {
+		for (; x1<x2; x1++) {
 			cxy += dy;
 			if (cxy >= dx) {
 				y1+=dxy;

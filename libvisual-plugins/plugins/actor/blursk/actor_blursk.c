@@ -1,6 +1,4 @@
-/* $Id$
- * $URL$
- *
+/*
  * Copyright (C) 2009 Scott Sibley <scott@starlon.net>
  *
  * This file is part of Blurks-libvisual.
@@ -19,189 +17,171 @@
  * along with Blurks-libvisual.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libvisual/libvisual.h>
+#include "config.h"
+#include "gettext.h"
 #include "actor_blursk.h"
 #include "blursk.h"
-
-#include <string.h>
-#include <stddef.h>
-#include <stdlib.h>
+#include <libvisual/libvisual.h>
 #include <limits.h>
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 static int act_blursk_init (VisPluginData *plugin);
 static int act_blursk_cleanup (VisPluginData *plugin);
 static int act_blursk_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_blursk_resize (VisPluginData *plugin, int width, int height);
 static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_blursk_palette (VisPluginData *plugin);
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-        static VisActorPlugin actor[] = {{
+        static VisActorPlugin actor = {
                 .requisition = act_blursk_requisition,
                 .palette = act_blursk_palette,
                 .render = act_blursk_render,
                 .vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
-        }};
+        };
 
-        static VisPluginInfo info[] = {{
+        static VisPluginInfo info = {
                 .type = VISUAL_PLUGIN_TYPE_ACTOR,
 
                 .plugname = "blursk",
-                .name = "blursk plugin",
+                .name = "Blursk plugin",
                 .author = "Read AUTHORS",
                 .version = "0.0.1",
-                .about = "blursk visual plugin",
-                .help = "This is the libvisual port of blursk xmms visualization",
+                .about = N_("blursk visual plugin"),
+                .help = N_("This is the libvisual port of blursk xmms visualization"),
                 .license = VISUAL_PLUGIN_LICENSE_GPL,
 
                 .init = act_blursk_init,
                 .cleanup = act_blursk_cleanup,
                 .events = act_blursk_events,
 
-                .plugin = VISUAL_OBJECT (&actor[0])
-        }};
+                .plugin = VISUAL_OBJECT (&actor)
+        };
 
-        *count = sizeof (info) / sizeof (*info);
-
-        return info;
+        return &info;
 }
 
 static int act_blursk_init (VisPluginData *plugin) {
-    BlurskPrivate *priv;
-    VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-    VisParamEntry *param;
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
 
-    static VisParamEntry params[] = {
-        VISUAL_PARAM_LIST_ENTRY_COLOR   ("color", 0x00, 0xff, 0xff),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("color_style", "Rainbow"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("signal_color", "Normal signal"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("contour_lines", FALSE),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("hue_on_beats", FALSE),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("background", "Black bkgnd"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_style", "Random"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("transition_speed", "Medium switch"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_when", "Full blur"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("blur_stencil", "No stencil"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("fade_speed", "Medium fade"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("slow_motion", FALSE),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("signal_style", "Stereo spectrum"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("plot_style", "Line"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("thick_on_beats", TRUE),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("flash_style", "No flash"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("overall_effect", "Normal effect"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("floaters", "No floaters"),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("cpu_speed", "Fast CPU"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("beat_sensitivity", 4),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("config_string", ""),
-        VISUAL_PARAM_LIST_ENTRY_STRING  ("show_info", "Aever show info"),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("info_timeout", 4),
-        VISUAL_PARAM_LIST_ENTRY_INTEGER ("show_timestamp", TRUE),
-        VISUAL_PARAM_LIST_END
-    };
+    VisParamList *params = visual_plugin_get_params (plugin);
+    visual_param_list_add_many (params,
+                                visual_param_new_color_rgb ("color",
+                                                            N_("Color"),
+                                                            0x00, 0xff, 0xff,
+                                                            NULL),
+                                visual_param_new_string  ("color_style",
+                                                          N_("Color style"),
+                                                          "Rainbow",
+                                                          NULL),
+                                visual_param_new_string  ("signal_color",
+                                                          N_("Signal color"),
+                                                          "Normal signal",
+                                                          NULL),
+                                visual_param_new_bool    ("contour_lines",
+                                                          N_("Contour lines"),
+                                                          FALSE,
+                                                          NULL),
+                                visual_param_new_bool    ("hue_on_beats",
+                                                          N_("Hue change on beats"),
+                                                          FALSE,
+                                                          NULL),
+                                visual_param_new_string  ("background",
+                                                          N_("Background"),
+                                                          "Black bkgnd",
+                                                          NULL),
+                                visual_param_new_string  ("blur_style",
+                                                          N_("Blur style"),
+                                                          "Random",
+                                                          NULL),
+                                visual_param_new_string  ("transition_speed",
+                                                          N_("Transition speed"),
+                                                          "Medium switch",
+                                                          NULL),
+                                visual_param_new_string  ("blur_when",
+                                                          N_("When to blur"),
+                                                          "Full blur",
+                                                          NULL),
+                                visual_param_new_string  ("blur_stencil",
+                                                          N_("Blur stencil"),
+                                                          "No stencil",
+                                                          NULL),
+                                visual_param_new_string  ("fade_speed",
+                                                          N_("Fade speed"),
+                                                          "Medium fade",
+                                                          NULL),
+                                visual_param_new_bool    ("slow_motion",
+                                                          N_("Slow motion"),
+                                                          FALSE,
+                                                          NULL),
+                                visual_param_new_string  ("signal_style",
+                                                          N_("Signal type"),
+                                                          "Stereo spectrum",
+                                                          NULL),
+                                visual_param_new_string  ("plot_style",
+                                                          N_("Plot style"),
+                                                          "Line",
+                                                          NULL),
+                                visual_param_new_bool    ("thick_on_beats",
+                                                          N_("Thick on beats"),
+                                                          TRUE,
+                                                          NULL),
+                                visual_param_new_string  ("flash_style",
+                                                          N_("Flash style"),
+                                                          "No flash",
+                                                          NULL),
+                                visual_param_new_string  ("overall_effect",
+                                                          N_("Overall effect"),
+                                                          "Normal effect",
+                                                          NULL),
+                                visual_param_new_string  ("floaters",
+                                                          N_("Floaters"),
+                                                          "No floaters",
+                                                          NULL),
+                                visual_param_new_string  ("cpu_speed",
+                                                          N_("CPU speed"),
+                                                          "Fast CPU",
+                                                          NULL),
+                                visual_param_new_integer ("beat_sensitivity",
+                                                          N_("Beat sensitivity"),
+                                                          4,
+                                                          visual_param_in_range_integer (0, 10)),
+                                visual_param_new_string  ("config_string",
+                                                          N_("Config string"),
+                                                          "",
+                                                          NULL),
+                                visual_param_new_string  ("show_info",
+                                                          N_("Show info"),
+                                                          "Never show info",
+                                                          NULL),
+                                visual_param_new_integer ("info_timeout",
+                                                          N_("Info timeout"),
+                                                          4,
+                                                          visual_param_in_range_integer (0, INT_MAX)),
+                                visual_param_new_bool    ("show_timestamp",
+                                                          N_("Show timestamp"),
+                                                          TRUE,
+                                                          NULL),
+                                NULL);
 
     /* init plugin */
-    priv = visual_mem_new0 (BlurskPrivate, 1);
+    BlurskPrivate *priv = visual_mem_new0 (BlurskPrivate, 1);
     visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-    priv->plugin = plugin;
-
+    priv->plugin   = plugin;
     priv->rcontext = visual_plugin_get_random_context (plugin);
+    priv->pal      = visual_palette_new (256);
+    priv->pcmbuf   = visual_buffer_new_allocate (512 * sizeof (float));
 
-    visual_palette_allocate_colors (&priv->pal, 256);
+    config_default (&config);
 
-    visual_param_container_add_many (paramcontainer, params);
+    __blursk_init (priv);
 
-    param = visual_param_container_get(paramcontainer, "color");
-    visual_param_entry_set_annotation(param, "Color");
-
-    param = visual_param_container_get(paramcontainer, "color_style");
-    visual_param_entry_set_annotation(param, "Color style");
-
-    param = visual_param_container_get(paramcontainer, "signal_color");
-    visual_param_entry_set_annotation(param, "Signal color");
-
-    param = visual_param_container_get(paramcontainer, "contour_lines");
-    visual_param_entry_set_annotation(param, "Contour lines");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, 1);
-
-    param = visual_param_container_get(paramcontainer, "hue_on_beats");
-    visual_param_entry_set_annotation(param, "Huge on beats");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, 1);
-
-    param = visual_param_container_get(paramcontainer, "background");
-    visual_param_entry_set_annotation(param, "Background");
-
-    param = visual_param_container_get(paramcontainer, "blur_style");
-    visual_param_entry_set_annotation(param, "Blur style");
-
-    param = visual_param_container_get(paramcontainer, "blur_stencil");
-    visual_param_entry_set_annotation(param, "Blur stencil");
-
-    param = visual_param_container_get(paramcontainer, "fade_speed");
-    visual_param_entry_set_annotation(param, "Fade speed");
-
-    param = visual_param_container_get(paramcontainer, "slow_motion");
-    visual_param_entry_set_annotation(param, "Slow motion");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, 1);
-
-    param = visual_param_container_get(paramcontainer, "signal_style");
-    visual_param_entry_set_annotation(param, "Signal style");
-
-    param = visual_param_container_get(paramcontainer, "plot_style");
-    visual_param_entry_set_annotation(param, "Plot style");
-
-    param = visual_param_container_get(paramcontainer, "thick_on_beats");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, 1);
-    visual_param_entry_set_annotation(param, "Thick on beats");
-
-    param = visual_param_container_get(paramcontainer, "flash_style");
-    visual_param_entry_set_annotation(param, "Flash style");
-
-    param = visual_param_container_get(paramcontainer, "overall_effect");
-    visual_param_entry_set_annotation(param, "Overall effect");
-
-    param = visual_param_container_get(paramcontainer, "floaters");
-    visual_param_entry_set_annotation(param, "Floaters");
-
-    param = visual_param_container_get(paramcontainer, "cpu_speed");
-    visual_param_entry_set_annotation(param, "Cpu speed");
-
-    param = visual_param_container_get(paramcontainer, "beat_sensitivity");
-    visual_param_entry_set_annotation(param, "Beat sensitivity");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, 10);
-
-    param = visual_param_container_get(paramcontainer, "config_string");
-    visual_param_entry_set_annotation(param, "Config string");
-    param = visual_param_container_get(paramcontainer, "show_info");
-    visual_param_entry_set_annotation(param, "Show info");
-
-    param = visual_param_container_get(paramcontainer, "info_timeout");
-    visual_param_entry_set_annotation(param, "Info timeout");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, INT_MAX);
-
-    param = visual_param_container_get(paramcontainer, "show_timestamp");
-    visual_param_entry_set_annotation(param, "Show timestamp");
-    visual_param_entry_min_set_integer(param, 0);
-    visual_param_entry_max_set_integer(param, 1);
-
-    priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float), visual_buffer_destroyer_free);
-
-    config_default(&config);
-
-    __blursk_init(priv);
     return 0;
 }
 
@@ -211,9 +191,9 @@ static int act_blursk_cleanup (VisPluginData *plugin) {
 
     __blursk_cleanup (priv);
 
-    visual_palette_free_colors (&priv->pal);
+    visual_palette_free (priv->pal);
 
-    visual_object_unref (VISUAL_OBJECT (priv->pcmbuf));
+    visual_buffer_unref (priv->pcmbuf);
 
     visual_mem_free (priv);
 
@@ -244,18 +224,12 @@ static int act_blursk_requisition (VisPluginData *plugin, int *width, int *heigh
         return 0;
 }
 
-static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_blursk_resize (VisPluginData *plugin, int width, int height)
 {
         BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-        visual_video_set_dimension (video, width, height);
-
-        priv->video = video;
-
         priv->width = width;
         priv->height = height;
-
-        video->pitch = width;
 
         config.height = height;
         config.width = width;
@@ -266,7 +240,7 @@ static int act_blursk_dimension (VisPluginData *plugin, VisVideo *video, int wid
 static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
     BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT(plugin));
     VisEvent ev;
-    VisParamEntry *param;
+    VisParam *param;
     VisSongInfo *newsong;
 
     int size_update = 0;
@@ -280,8 +254,7 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
         {
 
             case VISUAL_EVENT_RESIZE:
-                act_blursk_dimension (plugin, ev.event.resize.video,
-                    ev.event.resize.width, ev.event.resize.height);
+                act_blursk_resize (plugin, ev.event.resize.width, ev.event.resize.height);
                 size_update = 1;
                 break;
 
@@ -321,7 +294,7 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
 static VisPalette *act_blursk_palette (VisPluginData *plugin) {
     BlurskPrivate *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
 
-    return &priv->pal;
+    return priv->pal;
 }
 
 static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio) {
@@ -334,10 +307,7 @@ static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 
         visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,
                         VISUAL_AUDIO_CHANNEL_LEFT,
-                        VISUAL_AUDIO_CHANNEL_RIGHT,
-                        1.0,
-                        1.0);
-
+                        VISUAL_AUDIO_CHANNEL_RIGHT);
 
         pcm = visual_buffer_get_data(priv->pcmbuf);
 

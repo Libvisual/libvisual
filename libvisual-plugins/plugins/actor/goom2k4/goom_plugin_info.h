@@ -100,14 +100,14 @@ struct _PLUGIN_INFO {
 	VisualFX ifs_fx;
 
 	/** image buffers */
-	guint32 *pixel;
-	guint32 *back;
+	uint32_t *pixel;
+	uint32_t *back;
 	Pixel *p1, *p2;
 	Pixel *conv;
   Pixel *outputBuf;
 
 	/** state of goom */
-	guint32 cycle;
+	uint32_t cycle;
 	GoomState states[STATES_MAX_NB];
 	int statesNumber;
 	int statesRangeMax;

@@ -528,7 +528,7 @@ void UtilStr::Keep( unsigned long inNumToKeep ) {
 void UtilStr::PoliteKeep( unsigned long inMaxLen, unsigned long inPos ) {
 	if ( length() > inMaxLen ) {
 		Remove( inPos + 1, length() - inMaxLen + 1 );
-		setChar( inPos, 'É' );
+		setChar( inPos, 0xC9 ); // e-acute
 	}
 }
 

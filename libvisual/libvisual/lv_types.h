@@ -1,10 +1,9 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: lv_types.h,v 1.11 2006/02/13 20:54:08 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -26,22 +25,13 @@
 
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
+#include <stdint.h>
 
-/* Fixed-size int types */
-
-#if defined(_LV_HAVE_STDINT_H)
-#  include <stdint.h>
-#elif defined(_LV_HAVE_INTTYPES_H)
-#  include <inttypes.h>
-#else
-#  error FIXME: No fixed-size int type defined
-#endif // _LV_HAVE_STDINT_H
-
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
 #define VISUAL_CHECK_CAST(uiobj, cast)	((cast*) (uiobj))
 #define VISUAL_TABLESIZE(table)			(sizeof (table) / sizeof (table[0]))
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_TYPES_H */

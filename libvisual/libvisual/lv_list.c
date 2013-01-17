@@ -1,18 +1,13 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2004-2006 Dennis Smit
  *
  * List implementation from RCL.
- * Copyright (C) 2002, 2003, 2004
- *				Dennis Smit <ds@nerds-incorporated.org>,
- *				Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *				Tom Wimmenhove <nohup@nerds-incorporated.org>
+ * Copyright (C) 2002-2004 Dennis Smit, Sepp Wijnands, Tom Wimmenhove
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Sepp Wijnands <mrrazz@nerds-incorporated.org>,
- *	    Tom Wimmenhove <nohup@nerds-incorporated.org>
- *
- * $Id: lv_list.c,v 1.30 2006/01/22 13:23:37 synap Exp $
+ *	        Sepp Wijnands <mrrazz@nerds-incorporated.org>,
+ *	        Tom Wimmenhove <nohup@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -45,7 +40,7 @@ struct _ListIterContext {
 };
 
 
-static int list_destroy (VisCollection *collection);
+static void list_destroy (VisCollection *collection);
 static int list_size (VisCollection *collection);
 static VisCollectionIter *list_iter (VisCollection *collection);
 
@@ -55,29 +50,27 @@ static void list_iter_next (VisCollectionIter *iter, VisCollection *collection, 
 static void *list_iter_getdata (VisCollectionIter *iter, VisCollection *collection, VisObject *itercontext);
 
 
-static int list_destroy (VisCollection *collection)
+static void list_destroy (VisCollection *collection)
 {
 	VisCollectionDestroyerFunc destroyer;
 	VisList *list = VISUAL_LIST (collection);
 	VisListEntry *le = NULL;
 	void *elem;
 
-	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_COLLECTION_NULL);
+	visual_return_if_fail (list != NULL);
 
 	destroyer = visual_collection_get_destroyer (collection);
 
 	/* Walk through the given list, possibly calling the destroyer for it */
-	if (destroyer == NULL) {
-		while ((elem = visual_list_next (list, &le)) != NULL)
-			visual_list_delete (list, &le);
-	} else {
+	if (destroyer) {
 		while ((elem = visual_list_next (list, &le)) != NULL) {
 			destroyer (elem);
 			visual_list_delete (list, &le);
 		}
+	} else {
+		while ((elem = visual_list_next (list, &le)) != NULL)
+			visual_list_delete (list, &le);
 	}
-
-	return VISUAL_OK;
 }
 
 static int list_size (VisCollection *collection)
@@ -96,9 +89,8 @@ static VisCollectionIter *list_iter (VisCollection *collection)
 	VisList *list = VISUAL_LIST (collection);
 
 	context = visual_mem_new0 (ListIterContext, 1);
+	visual_object_init (VISUAL_OBJECT (context), NULL);
 
-	/* Do the VisObject initialization for the ListIterContext */
-	visual_object_initialize (VISUAL_OBJECT (context), TRUE, NULL);
 	context->cur = list->head;
 
 	iter = visual_collection_iter_new (list_iter_assign, list_iter_next, list_iter_has_more,
@@ -163,12 +155,7 @@ VisList *visual_list_new (VisCollectionDestroyerFunc destroyer)
 	VisList *list;
 
 	list = visual_mem_new0 (VisList, 1);
-
 	visual_list_init (list, destroyer);
-
-	/* do the visobject initialization */
-	visual_object_set_allocated (VISUAL_OBJECT (list), TRUE);
-	visual_object_ref (VISUAL_OBJECT (list));
 
 	return list;
 }
@@ -184,9 +171,7 @@ int visual_list_init (VisList *list, VisCollectionDestroyerFunc destroyer)
 	visual_return_val_if_fail (list != NULL, -VISUAL_ERROR_LIST_NULL);
 
 	/* Do the VisObject initialization */
-	visual_object_clear (VISUAL_OBJECT (list));
-	visual_object_set_dtor (VISUAL_OBJECT (list), visual_collection_dtor);
-	visual_object_set_allocated (VISUAL_OBJECT (list), FALSE);
+	visual_object_init (VISUAL_OBJECT (list), visual_collection_dtor);
 
 	/* Set the VisCollection data */
 	visual_collection_set_destroyer (VISUAL_COLLECTION (list), destroyer);

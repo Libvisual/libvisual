@@ -3,10 +3,10 @@
 
 #include <libvisual/lv_defines.h>
 
-VISUAL_BEGIN_DECLS
+LV_BEGIN_DECLS
 
-char *visual_strdup(const char *s);
+LV_API char *visual_strdup(const char *s);
 
-VISUAL_END_DECLS
+LV_END_DECLS
 
 #endif /* _LV_UTIL_H */

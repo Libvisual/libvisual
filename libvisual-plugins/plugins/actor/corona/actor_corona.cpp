@@ -23,24 +23,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <gettext.h>
-
-#include <time.h>
-#include <sys/time.h>
-
-#include <libvisual/libvisual.h>
-
+#include "config.h"
+#include "gettext.h"
 #include "corona.h"
 #include "palette.h"
+#include <libvisual/libvisual.h>
 
-extern "C" const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
+
+extern "C" const VisPluginInfo *get_plugin_info ();
 
 namespace {
 
@@ -70,29 +61,27 @@ const int PALETTEDATA[][NB_PALETTES] = {
 	{ 3, 0, 0xc0c0ff, 128, 0xa0a0a0, 256, 0xffffff }                      // 22. clouds
 };
 
-  typedef struct {
-	  VisTime		 oldtime;
-	  VisPalette	 pal;
-	  Corona		*corona; /* The corona internal private struct */
-	  PaletteCycler	*pcyl;
-  	  TimedLevel	 tl;
-  } CoronaPrivate;
+  struct CoronaPrivate {
+	  LV::Time       oldtime;
+	  LV::Palette    pal;
+	  Corona*        corona; /* The corona internal private struct */
+	  PaletteCycler* pcyl;
+  	  TimedLevel     tl;
+  };
 
   int lv_corona_init (VisPluginData *plugin);
   int lv_corona_cleanup (VisPluginData *plugin);
   int lv_corona_requisition (VisPluginData *plugin, int *width, int *height);
-  int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+  int lv_corona_resize (VisPluginData *plugin, int width, int height);
   int lv_corona_events (VisPluginData *plugin, VisEventQueue *events);
   VisPalette *lv_corona_palette (VisPluginData *plugin);
   int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 }
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-extern "C" const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info ()
 {
-    static VisActorPlugin actor;
+	static VisActorPlugin actor;
 	static VisPluginInfo info;
 
 	actor.requisition = lv_corona_requisition;
@@ -116,8 +105,6 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
 
 	info.plugin = VISUAL_OBJECT (&actor);
 
-	*count = 1;
-
 	return &info;
 }
 
@@ -129,7 +116,7 @@ int lv_corona_init (VisPluginData *plugin)
 	CoronaPrivate *priv;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = new CoronaPrivate;
@@ -143,9 +130,9 @@ int lv_corona_init (VisPluginData *plugin)
 	priv->tl.lastbeat  = 0;
 	priv->tl.state     = normal_state;
 
-	visual_time_get (&priv->oldtime);
+	priv->oldtime = LV::Time::now ();
 
-	visual_palette_allocate_colors (&priv->pal, 256);
+	priv->pal.colors.resize (256);
 
 	return 0;
 }
@@ -153,8 +140,6 @@ int lv_corona_init (VisPluginData *plugin)
 int lv_corona_cleanup (VisPluginData *plugin)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-
-	visual_palette_free_colors (&priv->pal);
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -185,11 +170,9 @@ int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-int lv_corona_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+int lv_corona_resize (VisPluginData *plugin, int width, int height)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-
-	visual_video_set_dimension (video, width, height);
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -212,8 +195,7 @@ int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_corona_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_corona_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 
 				break;
 
@@ -237,45 +219,40 @@ VisPalette *lv_corona_palette (VisPluginData *plugin)
 int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer buffer;
-	VisBuffer pcmb;
 	float freq[2][256];
 	float pcm[256];
-	VisTime curtime;
-	VisTime difftime;
-	VisVideo vidcorona;
 	short freqdata[2][512]; // FIXME Move to floats
 	unsigned long timemilli = 0;
-	int i;
 
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
+	LV::BufferPtr buffer = LV::Buffer::create ();
+	LV::BufferPtr pcmb   = LV::Buffer::create ();
 
-	visual_audio_get_sample (audio, &pcmb, VISUAL_AUDIO_CHANNEL_LEFT);
-	visual_buffer_set_data_pair (&buffer, freq[0], sizeof (freq[0]));
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	pcmb->set (pcm, sizeof (pcm));
 
-	visual_audio_get_sample (audio, &pcmb, VISUAL_AUDIO_CHANNEL_RIGHT);
-	visual_buffer_set_data_pair (&buffer, freq[1], sizeof (freq[1]));
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	audio->get_sample (pcmb, VISUAL_AUDIO_CHANNEL_LEFT);
+	buffer->set (freq[0], sizeof (freq[0]));
+	audio->get_spectrum_for_sample (buffer, pcmb, true);
 
-	for (i = 0; i < 256; ++i) {
+	audio->get_sample (pcmb, VISUAL_AUDIO_CHANNEL_RIGHT);
+	buffer->set (freq[1], sizeof (freq[1]));
+	audio->get_spectrum_for_sample (buffer, pcmb, true);
+
+	for (unsigned int i = 0; i < 256; ++i) {
 		freqdata[0][i*2]   = freq[0][i];
 		freqdata[1][i*2]   = freq[1][i];
 		freqdata[0][i*2+1] = freq[0][i];
 		freqdata[1][i*2+1] = freq[1][i];
 	}
 
-	visual_time_get (&curtime);
+	LV::Time curtime  = LV::Time::now ();
+	LV::Time difftime = curtime - priv->oldtime;
 
-	visual_time_difference (&difftime, &priv->oldtime, &curtime);
-
-	timemilli = difftime.sec * 1000 + difftime.usec / 1000;
+	timemilli = difftime.to_msecs ();
 
 	priv->tl.timeStamp += timemilli;
+	priv->oldtime = curtime;
 
-	visual_time_copy (&priv->oldtime, &curtime);
-
-	for (i = 0; i < 512; ++i) {
+	for (unsigned int i = 0; i < 512; ++i) {
 		priv->tl.frequency[0][i] = freqdata[0][i] * 32768;
 		priv->tl.frequency[1][i] = freqdata[1][i] * 32768;
 	}
@@ -283,12 +260,12 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	priv->corona->update(&priv->tl); // Update Corona
 	priv->pcyl->update(&priv->tl);    // Update Palette Cycler
 
-	visual_video_init (&vidcorona);
-	visual_video_set_depth (&vidcorona, VISUAL_VIDEO_DEPTH_8BIT);
-	visual_video_set_dimension (&vidcorona, video->width, video->height);
-	visual_video_set_buffer (&vidcorona, priv->corona->getSurface());
-
-	visual_video_mirror (video, &vidcorona, VISUAL_VIDEO_MIRROR_Y);
+	LV::VideoPtr vidcorona = LV::Video::wrap (priv->corona->getSurface (),
+	                                          false,
+	                                          video->get_width (),
+	                                          video->get_height (),
+	                                          VISUAL_VIDEO_DEPTH_8BIT);
+	video->mirror (vidcorona, VISUAL_VIDEO_MIRROR_Y);
 
 	return 0;
 }

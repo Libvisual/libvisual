@@ -1,22 +1,65 @@
 #ifndef _LV_PLUGIN_REGISTRY_H
 #define _LV_PLUGIN_REGISTRY_H
 
+#include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
 
-VISUAL_BEGIN_DECLS
+#ifdef __cplusplus
 
-/**
- * Adds extra plugin registry paths.
- *
- * @param pathadd A string containing a path where plugins are located.
- *
- * @return VISUAL_OK on succes, -VISUAL_ERROR_LIBVISUAL_NO_PATHS on failure.
- */
-int visual_init_path_add (const char *path);
+#include <libvisual/lv_singleton.hpp>
+#include <libvisual/lv_plugin.h>
+#include <string>
+#include <memory>
 
-int visual_plugin_registry_initialize (void);
-int visual_plugin_registry_deinitialize (void);
+namespace LV {
 
-VISUAL_END_DECLS
+  typedef ::VisPluginType PluginType;
+
+  class LV_API PluginRegistry
+      : public Singleton<PluginRegistry>
+  {
+  public:
+
+      PluginRegistry (PluginRegistry const&) = delete;
+
+      static void init ();
+
+      /**
+       * Adds an extra plugin search path.
+       *
+       * @param path Path to plugin directory
+       */
+      void add_path (std::string const& path);
+
+      ~PluginRegistry ();
+
+      PluginRef const* find_plugin (PluginType type, std::string const& name) const;
+
+      bool has_plugin (PluginType type, std::string const& name) const;
+
+      PluginList const& get_plugins () const;
+      PluginList const& get_plugins_by_type (PluginType type) const;
+
+      VisPluginInfo const* get_plugin_info (PluginType type, std::string const& name) const;
+
+  private:
+
+      class Impl;
+
+      const std::unique_ptr<Impl> m_impl;
+
+      PluginRegistry ();
+  };
+
+} // LV namespace
+
+#endif /* __cplusplus */
+
+LV_BEGIN_DECLS
+
+LV_API int visual_plugin_registry_add_path (const char *path);
+LV_API int visual_plugin_registry_has_plugin (VisPluginType type, const char *name);
+
+LV_END_DECLS
 
 #endif /*_LV_PLUGIN_REGISTRY_H */

@@ -1,11 +1,10 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
- *	    Dennis Smit <ds@nerds-incorporated.org>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
- * $Id: actor_flower.c,v 1.11 2006/02/25 18:45:16 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,57 +21,46 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "config.h"
+#include "gettext.h"
+#include "main.h"
+#include "notch.h"
+#include <libvisual/libvisual.h>
 #include <math.h>
-#include <gettext.h>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <libvisual/libvisual.h>
-
-#include "main.h"
-#include "notch.h"
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define NOTCH_BANDS	32
 
-const VisPluginInfo *get_plugin_info (int *count);
-
 typedef struct {
-	VisTimer		 t;
-	FlowerInternal		 flower;
-	int			 nof_bands;
-	NOTCH_FILTER		*notch[NOTCH_BANDS];
-	VisRandomContext	*rcxt;
+	VisTimer         *t;
+	FlowerInternal    flower;
+	int               nof_bands;
+	NOTCH_FILTER     *notch[NOTCH_BANDS];
+	VisRandomContext *rcxt;
 } FlowerPrivate;
 
 static int lv_flower_init (VisPluginData *plugin);
 static int lv_flower_cleanup (VisPluginData *plugin);
 static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_flower_resize (VisPluginData *plugin, int width, int height);
 static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_flower_palette (VisPluginData *plugin);
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 /* Main plugin stuff */
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_flower_requisition,
 		.palette = lv_flower_palette,
 		.render = lv_flower_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "flower",
@@ -87,19 +75,17 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_flower_cleanup,
 		.events = lv_flower_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
-
-	return info;
+	return &info;
 }
 
 static int lv_flower_init (VisPluginData *plugin)
@@ -109,7 +95,7 @@ static int lv_flower_init (VisPluginData *plugin)
 	int i;
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (FlowerPrivate, 1);
@@ -126,6 +112,7 @@ static int lv_flower_init (VisPluginData *plugin)
 	priv->flower.tension = (visual_random_context_float (priv->rcxt) - 0.5) * 8.0;
 	priv->flower.continuity = (visual_random_context_float (priv->rcxt) - 0.5) * 16.0;
 
+	priv->flower.timer = visual_timer_new ();
 
 	priv->nof_bands = NOTCH_BANDS;
 
@@ -135,6 +122,7 @@ static int lv_flower_init (VisPluginData *plugin)
 		priv->notch[i] = init_notch (b);
 	}
 
+	priv->t = visual_timer_new ();
 
 	return 0;
 }
@@ -143,6 +131,8 @@ static int lv_flower_cleanup (VisPluginData *plugin)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
+	visual_timer_free (priv->flower.timer);
+	visual_timer_free (priv->t);
 	visual_mem_free (priv);
 
 	return 0;
@@ -167,12 +157,10 @@ static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height
 	return 0;
 }
 
-static int lv_flower_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int lv_flower_resize (VisPluginData *plugin, int width, int height)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	GLfloat ratio;
-
-	visual_video_set_dimension (video, width, height);
 
 	ratio = (GLfloat) width / (GLfloat) height;
 
@@ -198,8 +186,7 @@ static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_flower_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_flower_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			default: /* to avoid warnings */
@@ -218,8 +205,8 @@ static VisPalette *lv_flower_palette (VisPluginData *plugin)
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer pcmbuf;
-	VisBuffer freqbuf;
+	VisBuffer *pcmbuf;
+	VisBuffer *freqbuf;
 	float pcm[512];
 	float freqnorm[256];
 	float temp_bars[NOTCH_BANDS];
@@ -227,31 +214,33 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	int b;
 	int i;
 
-	visual_buffer_set_data_pair (&pcmbuf, pcm, sizeof (pcm));
-	visual_buffer_set_data_pair (&freqbuf, freqnorm, sizeof (freqnorm));
+	pcmbuf = visual_buffer_new ();
+	freqbuf = visual_buffer_new ();
 
-	visual_audio_get_sample_mixed_simple (audio, &pcmbuf, 2,
+	visual_buffer_set_data_pair (pcmbuf, pcm, sizeof (pcm));
+	visual_buffer_set_data_pair (freqbuf, freqnorm, sizeof (freqnorm));
+
+	visual_audio_get_sample_mixed_simple (audio, pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&freqbuf, &pcmbuf, TRUE);
+	visual_audio_get_spectrum_for_sample (freqbuf, pcmbuf, TRUE);
 
 	/* Activate the effect change timer */
-	if (visual_timer_is_active (&priv->t) == FALSE)
-		visual_timer_start (&priv->t);
+	if (!visual_timer_is_active (priv->t))
+		visual_timer_start (priv->t);
 
 	/* At 15 secs, do with new settings, reset timer */
-	if (visual_timer_has_passed_by_values (&priv->t, 15, 0)) {
+	if (visual_timer_is_past2 (priv->t, 15, 0)) {
 		priv->flower.tension_new = (-visual_random_context_float (priv->rcxt)) * 12.0;
 		priv->flower.continuity_new = (visual_random_context_float (priv->rcxt) - 0.5) * 32.0;
 
-		visual_timer_start (&priv->t);
+		visual_timer_start (priv->t);
 	}
 
 	/* Activate global timer */
-	if (visual_timer_is_active (&priv->flower.timer) == FALSE)
-		visual_timer_start (&priv->flower.timer);
-
+	if (!visual_timer_is_active (priv->flower.timer))
+		visual_timer_start (priv->flower.timer);
 
 	for (b=0; b<priv->nof_bands; b++)
 		temp_bars[b]=0.0;
@@ -301,6 +290,8 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	render_flower_effect (&priv->flower);
 
+	visual_buffer_unref (pcmbuf);
+	visual_buffer_unref (freqbuf);
+
 	return 0;
 }
-

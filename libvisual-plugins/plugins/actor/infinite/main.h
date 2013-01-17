@@ -39,7 +39,7 @@ typedef struct {
 	float pcm_data[2][512];
 	int plugwidth;
 	int plugheight;
-	VisPalette pal;
+	VisPalette *pal;
 
 	/* Random context for this plugin */
 	VisRandomContext *rcontext;

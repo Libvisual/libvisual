@@ -1,14 +1,28 @@
+INCLUDE(LVBuild)
+
 INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_BINARY_DIR}
-  ${PROJECT_SOURCE_DIR}/libvisual
-  ${PROJECT_BINARY_DIR}/libvisual
-  ${THREAD_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${ORC_INCLUDE_DIRS}
+  ${PNG_INCLUDE_DIRS}
 )
 
+ADD_DEFINITIONS(${PNG_DEFINITIONS})
+
 LINK_DIRECTORIES(
-  ${PROJECT_BINARY_DIR}/libvisual
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${ORC_LIBRARY_DIRS}
 )
+
+IF(VISUAL_OS_POSIX)
+  SET(PLATFORM_SPECIFIC_LIBS dl rt m)
+  SET(PLATFORM_SPECIFIC_SOURCE_DIR private/posix)
+ELSEIF(VISUAL_OS_WIN32)
+  SET(PLATFORM_SPECIFIC_LIBS m)
+  SET(PLATFORM_SPECIFIC_SOURCE_DIR private/windows)
+ENDIF()
 
 SET(libvisual_HEADERS
   libvisual.h
@@ -29,28 +43,22 @@ SET(libvisual_HEADERS
   lv_libvisual.h
   lv_songinfo.h
   lv_morph.h
-  lv_bmp.h
   lv_param.h
+  lv_param_validators.h
+  lv_param_value.h
   lv_mem.h
   lv_bits.h
   lv_cpu.h
   lv_color.h
-  lv_beat.h
   lv_time.h
   lv_random.h
   lv_error.h
   lv_checks.h
   lv_types.h
-  lv_thread.h
   lv_object.h
   lv_transform.h
   lv_rectangle.h
-  lv_ringbuffer.h
   lv_buffer.h
-  lv_config.h
-  lv_hashmap.h
-  lv_hashlist.h
-  lv_cache.h
   lv_collection.h
   lv_os.h
   lv_math.h
@@ -58,45 +66,26 @@ SET(libvisual_HEADERS
   lv_defines.h
   lv_alpha_blend.h
   lv_util.h
-  ${PROJECT_BINARY_DIR}/libvisual/lvconfig.h
+
+  lv_aligned_allocator.hpp
+  lv_module.hpp
+  lv_intrusive_ptr.hpp
+  lv_singleton.hpp
+  lv_util.hpp
+
+  ${CMAKE_CURRENT_BINARY_DIR}/lvconfig.h
 )
 
 SET(libvisual_SOURCES
-  lv_actor.c
-  lv_input.c
-  lv_event.c
-  lv_bin.c
-  lv_plugin.c
-  lv_plugin_registry.c
-  lv_video.c
-  lv_video_simd.c
   lv_mem.c
-  lv_audio.c
-  lv_fourier.c
   lv_list.c
   lv_log.c
-  lv_palette.c
-  lv_beat.c
-  lv_libvisual.c
-  lv_songinfo.c
-  lv_morph.c
-  lv_bmp.c
   lv_param.c
+  lv_param_value.c
+  lv_param_validators.c
   lv_cpu.c
-  lv_color.c
-  lv_time.c
-  lv_random.c
   lv_error.c
-  lv_thread.c
   lv_object.c
-  lv_transform.c
-  lv_rectangle.c
-  lv_config.c
-  lv_ringbuffer.c
-  lv_buffer.c
-  lv_cache.c
-  lv_hashmap.c
-  lv_hashlist.c
   lv_collection.c
   lv_os.c
   lv_math.c
@@ -104,31 +93,91 @@ SET(libvisual_SOURCES
   lv_alpha_blend.c
   lv_util.c
 
-  private/lv_video_convert.c
-  private/lv_video_fill.c
-  private/lv_video_scale.c
+  lv_actor.cpp
+  lv_audio.cpp
+  lv_bin.cpp
+  lv_buffer.cpp
+  lv_color.cpp
+  lv_event.cpp
+  lv_fourier.cpp
+  lv_input.cpp
+  lv_libvisual.cpp
+  lv_morph.cpp
+  lv_plugin.cpp
+  lv_random.cpp
+  lv_palette.cpp
+  lv_plugin_registry.cpp
+  lv_rectangle.cpp
+  lv_songinfo.cpp
+  lv_time.cpp
+  lv_transform.cpp
+  lv_video.cpp
+
+  lv_audio_c.cpp
+  lv_bin_c.cpp
+  lv_buffer_c.cpp
+  lv_color_c.cpp
+  lv_event_c.cpp
+  lv_fourier_c.cpp
+  lv_libvisual_c.cpp
+  lv_random_c.cpp
+  lv_palette_c.cpp
+  lv_plugin_registry_c.cpp
+  lv_rectangle_c.cpp
+  lv_songinfo_c.cpp
+  lv_time_c.cpp
+  lv_video_c.cpp
+
+  private/lv_audio_convert.cpp
+  private/lv_video_convert.cpp
+  private/lv_video_fill.cpp
+  private/lv_video_scale.cpp
+  private/lv_video_blit.cpp
+  private/lv_video_rotate.cpp
+  private/lv_video_blit_simd.cpp
+  private/lv_video_scale_simd.cpp
+  private/lv_video_bmp.cpp
+  private/lv_video_png.cpp
+  private/lv_buffer_ring.cpp
+
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_util.cpp
+
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
 )
 
-SET(LINK_LIBS
-  ${THREAD_LIBS}
-  m
+LV_GENERATE_ORC_INLINE_SOURCE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/lv_alpha_blend.orc
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h
+  HEADER
 )
 
-IF(NOT VISUAL_OS_WIN32)
-  LIST(APPEND LINK_LIBS dl)
-ENDIF(NOT VISUAL_OS_WIN32)
+LV_GENERATE_ORC_INLINE_SOURCE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/lv_math.orc
+  ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h
+  HEADER
+  INCLUDES math.h
+)
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 
 SET_TARGET_PROPERTIES(libvisual
   PROPERTIES
   OUTPUT_NAME visual-${LV_VERSION_SUFFIX}
-  VERSION ${LV_VERSION}
-  SOVERSION ${LV_VERSION_SUFFIX}
+  VERSION 0.0.0
+  SOVERSION 0
+  COMPILE_FLAGS -fvisibility=hidden
   LINK_FLAGS -Wl,--no-undefined
 )
 
-TARGET_LINK_LIBRARIES(libvisual ${LINK_LIBS})
+TARGET_LINK_LIBRARIES(libvisual
+  ${ORC_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${PLATFORM_SPECIFIC_LIBS}
+  ${PNG_LIBRARIES}
+)
 
 INSTALL(TARGETS libvisual DESTINATION ${CMAKE_INSTALL_LIBDIR})
 

@@ -1,0 +1,15 @@
+#ifndef _LV_VERSION_H
+#define _LV_VERSION_H
+
+
+#define LV_REVISION "@LV_REVISION@"
+
+
+/**
+ * Indicates at which version the API is.
+ */
+#define VISUAL_API_VERSION  4000
+
+  
+  
+#endif /* _LV_VERSION_H */

@@ -136,7 +136,7 @@ void PixPort::Un_Init() {
 
 	// Free buffer
 	if (mBits) {
-	  delete mBits;
+	  delete[] mBits;
 	  mBits = 0;
 	}
 	#endif

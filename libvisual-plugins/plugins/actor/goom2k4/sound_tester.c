@@ -13,7 +13,7 @@
 #define SPEED_MULT 0.99f
 
 
-void evaluate_sound(gint16 data[2][512], SoundInfo *info) {
+void evaluate_sound(int16_t data[2][512], SoundInfo *info) {
 
 	int i;
 	float difaccel;

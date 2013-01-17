@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_defines.h,v 1.7 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,24 +25,22 @@
 #define _LV_DEFINES_H
 
 #ifdef __cplusplus
-# define VISUAL_C_LINKAGE extern "C"
+# define LV_C_LINKAGE extern "C"
 #else
-# define VISUAL_C_LINKAGE
+# define LV_C_LINKAGE
 #endif /* __cplusplus */
 
 #ifdef __cplusplus
-# define VISUAL_BEGIN_DECLS	VISUAL_C_LINKAGE {
-# define VISUAL_END_DECLS	}
+# define LV_BEGIN_DECLS	LV_C_LINKAGE {
+# define LV_END_DECLS	}
 #else
-# define VISUAL_BEGIN_DECLS
-# define VISUAL_END_DECLS
+# define LV_BEGIN_DECLS
+# define LV_END_DECLS
 #endif /* __cplusplus */
 
 #ifndef NULL
 # ifndef __cplusplus
 #   define NULL ((void *) 0)
-# else
-#   define NULL 0
 # endif
 #endif /* NULL */
 
@@ -54,29 +52,71 @@
 #define TRUE	(1)
 #endif
 
-/* Compiler specific optimalization macros */
+/* Compiler specific optimization macros */
+
 #if __GNUC__ >= 3
-# ifndef __cplusplus
-#  define inline            inline __attribute__ ((always_inline))
-# endif
-# define VIS_ATTR_MALLOC    __attribute__ ((malloc))
-# define VIS_ATTR_PACKED    __attribute__ ((packed))
-# define VIS_LIKELY(x)      __builtin_expect (!!(x), 1)
-# define VIS_UNLIKELY(x)    __builtin_expect (!!(x), 0)
+# define LV_ATTR_MALLOC    __attribute__ ((malloc))
+# define LV_ATTR_PACKED    __attribute__ ((packed))
+# define LV_LIKELY(x)      __builtin_expect (!!(x), 1)
+# define LV_UNLIKELY(x)    __builtin_expect (!!(x), 0)
 #else
-# ifndef __cplusplus
-#  define inline            /* no inline */
-# endif
-# define VIS_ATTR_MALLOC    /* no malloc */
-# define VIS_ATTR_PACKED    /* no packed */
-# define VIS_LIKELY(x)      (x)
-# define VIS_UNLIKELY(x)    (x)
+# define LV_ATTR_MALLOC    /* no malloc */
+# define LV_ATTR_PACKED    /* no packed */
+# define LV_LIKELY(x)      (x)
+# define LV_UNLIKELY(x)    (x)
 #endif /* __GNUC__ >= 3 */
 
+/* Compile-time format arguments checking macros */
+
 #if defined __GNUC__
-#  define VIS_CHECK_PRINTF_FORMAT(a, b) __attribute__ ((__format__ (__printf__, a, b)))
+#  define LV_CHECK_PRINTF_FORMAT(a, b) __attribute__ ((__format__ (__printf__, a, b)))
 #else
-#  define VIS_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
+#  define LV_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
 #endif /* __GNUC__ */
+
+/* Restrict */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#  define LV_RESTRICT restrict
+#elif defined(__GNUC__) && __GNU__ >= 4
+#  define LV_RESTRICT __restrict__
+#elif defined(_MSC_VER) && _MSC_VER >= 1600
+#  define LV_RESTRICT __restrict
+#else
+#  define LV_RESTRICT
+#endif
+
+/* Symbol visibility macros */
+
+#if defined _WIN32 || defined __CYGWIN__
+  #define LV_DLL_IMPORT __declspec(dllimport)
+  #define LV_DLL_EXPORT __declspec(dllexport)
+  #define LV_DLL_LOCAL
+#else
+  #if __GNUC__ >= 4
+    #define LV_DLL_IMPORT __attribute__ ((visibility ("default")))
+    #define LV_DLL_EXPORT __attribute__ ((visibility ("default")))
+    #define LV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+  #else
+    #define LV_DLL_IMPORT
+    #define LV_DLL_EXPORT
+    #define LV_DLL_LOCAL
+  #endif
+#endif
+
+#ifdef libvisual_EXPORTS
+  #define LV_API LV_DLL_EXPORT
+#else
+  #define LV_API LV_DLL_IMPORT
+#endif
+
+#define LV_LOCAL LV_DLL_LOCAL
+
+#define LV_PLUGIN_EXPORT LV_DLL_EXPORT
+
+/* Utility macros */
+#ifdef _MSC_VER
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
 
 #endif /* _LV_DEFINES_H */

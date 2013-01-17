@@ -5,7 +5,7 @@
 #include "goom_config.h"
 
 /** change les donnees du SoundInfo */
-void evaluate_sound(gint16 data[2][512], SoundInfo *sndInfo);
+void evaluate_sound(int16_t data[2][512], SoundInfo *sndInfo);
 
 #endif
 

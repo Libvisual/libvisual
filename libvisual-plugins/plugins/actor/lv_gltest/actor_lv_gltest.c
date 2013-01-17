@@ -3,10 +3,8 @@
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	    Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
- *	    4Front Technologies
- *
- * $Id: actor_lv_gltest.c,v 1.27 2006/03/02 23:50:06 synap Exp $
+ *          Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and
+ *            4Front Technologies
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,24 +21,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "config.h"
+#include "gettext.h"
+#include <libvisual/libvisual.h>
 #include <math.h>
-#include <gettext.h>
 
+#ifdef USE_OPENGL_ES
+#include <GLES/gl.h>
+#include "common/GL/glu.h"
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 
-#include <libvisual/libvisual.h>
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define BARS	16
-
-const VisPluginInfo *get_plugin_info (int *count);
 
 static int xranges[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
 
@@ -59,7 +55,7 @@ typedef struct {
 static int lv_gltest_init (VisPluginData *plugin);
 static int lv_gltest_cleanup (VisPluginData *plugin);
 static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int lv_gltest_resize (VisPluginData *plugin, int width, int height);
 static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *lv_gltest_palette (VisPluginData *plugin);
 static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
@@ -69,24 +65,22 @@ static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue);
 static void draw_bars (GLtestPrivate *priv);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
 /* Main plugin stuff */
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = lv_gltest_requisition,
 		.palette = lv_gltest_palette,
 		.render = lv_gltest_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_gltest",
 		.name = "libvisual GL analyser",
-		.author = N_("Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.author = N_("Original by: Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
 		.version = "0.1",
 		.about = N_("Libvisual GL analyzer plugin"),
 		.help =  N_("This plugin shows an openGL bar analyzer like the xmms one"),
@@ -96,41 +90,35 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = lv_gltest_cleanup,
 		.events = lv_gltest_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
 
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTRIBUTE_OPTIONS_GL_ENTRY(actor[0].vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
-
-	return info;
+	return &info;
 }
 
 static int lv_gltest_init (VisPluginData *plugin)
 {
-	GLtestPrivate *priv;
-	VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
-
-	static VisParamEntry params[] = {
-		VISUAL_PARAM_LIST_ENTRY_INTEGER ("transparant bars",	TRUE),
-		VISUAL_PARAM_LIST_END
-	};
-
-	int x, y;
-
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (GLtestPrivate, 1);
+	GLtestPrivate *priv = visual_mem_new0 (GLtestPrivate, 1);
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
-	visual_param_container_add_many (paramcontainer, params);
+	VisParamList *params = visual_plugin_get_params (plugin);
+	visual_param_list_add_many (params,
+                                visual_param_new_bool ("transparent_bars",
+                                                       N_("Transparent bars"),
+                                                       TRUE,
+                                                       NULL),
+                                NULL);
 
 	/* GL setting up the rest! */
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -139,7 +127,11 @@ static int lv_gltest_init (VisPluginData *plugin)
 
 	glLoadIdentity ();
 
+#ifdef USE_OPENGL_ES
+	glFrustumf (-1, 1, -1, 1, 1.5, 10);
+#else
 	glFrustum (-1, 1, -1, 1, 1.5, 10);
+#endif
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
@@ -148,6 +140,8 @@ static int lv_gltest_init (VisPluginData *plugin)
 	glDepthFunc (GL_LESS);
 
 	glBlendFunc (GL_SRC_ALPHA,GL_ONE);
+
+	int x, y;
 
 	for (x = 0; x < 16; x++) {
 		for (y = 0; y < 16; y++) {
@@ -193,11 +187,10 @@ static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height
 	return 0;
 }
 
-static int lv_gltest_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+
+static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
 {
 	GLfloat ratio;
-
-	visual_video_set_dimension (video, width, height);
 
 	ratio = (GLfloat) width / (GLfloat) height;
 
@@ -217,20 +210,19 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisEvent ev;
-	VisParamEntry *param;
+	VisParam *param;
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				lv_gltest_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				lv_gltest_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 
 			case VISUAL_EVENT_PARAM:
 				param = ev.event.param.param;
 
-				if (visual_param_entry_is (param, "transparant bars")) {
-					priv->transparant = visual_param_entry_get_integer (param);
+				if (visual_param_has_name (param, "transparent_bars")) {
+					priv->transparant = visual_param_get_value_bool (param);
 
 					if (priv->transparant == FALSE)
 						glDisable (GL_BLEND);
@@ -254,22 +246,22 @@ static VisPalette *lv_gltest_palette (VisPluginData *plugin)
 static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	VisBuffer buffer;
-	VisBuffer pcmb;
-	float freq[256];
-	float pcm[256];
+
 	int i,c;
 	int y;
 	float ff;
 
-	visual_buffer_set_data_pair (&buffer, freq, sizeof (freq));
-	visual_buffer_set_data_pair (&pcmb, pcm, sizeof (pcm));
-
-	visual_audio_get_sample_mixed_simple (audio, &pcmb, 2,
+	VisBuffer *pcm_buffer = visual_buffer_new_allocate (512 * sizeof (float));
+	visual_audio_get_sample_mixed_simple (audio, pcm_buffer, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_audio_get_spectrum_for_sample (&buffer, &pcmb, TRUE);
+	VisBuffer *freq_buffer = visual_buffer_new_allocate (256 * sizeof (float));
+	visual_audio_get_spectrum_for_sample (freq_buffer, pcm_buffer, TRUE);
+
+	visual_buffer_unref (pcm_buffer);
+
+	float *freq = (float *) visual_buffer_get_data (freq_buffer);
 
 	for (y = BARS - 1; y > 0; y--)
 	{
@@ -305,45 +297,60 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	draw_bars (priv);
 
+	visual_buffer_unref (freq_buffer);
+
 	return 0;
 }
 
 /* Drawing stuff */
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2)
 {
-	if (y1 == y2) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    if (y1 == y2) {
 
-		glVertex3f (x1, y1, z1);
-		glVertex3f (x2, y1, z1);
-		glVertex3f (x2, y2, z2);
+        const GLfloat vertices[] = {
+            x1, y1, z1,
+            x2, y1, z1,
+            x2, y2, z2,
 
-		glVertex3f (x2, y2, z2);
-		glVertex3f (x1, y2, z2);
-		glVertex3f (x1, y1, z1);
-	} else {
-		glVertex3f (x1, y1, z1);
-		glVertex3f (x2, y1, z2);
-		glVertex3f (x2, y2, z2);
+            x2, y2, z2,
+            x1, y2, z2,
+            x1, y1, z1,
 
-		glVertex3f (x2, y2, z2);
-		glVertex3f (x1, y2, z1);
-		glVertex3f (x1, y1, z1);
-	}
+        };
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    } else {
+        const GLfloat vertices[] = {
+            x1, y1, z1,
+            x2, y1, z2,
+            x2, y2, z2,
+
+            x2, y2, z2,
+            x1, y2, z1,
+            x1, y1, z1,
+        };
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 static void draw_bar (GLtestPrivate *priv, GLfloat x_offset, GLfloat z_offset, GLfloat height, GLfloat red, GLfloat green, GLfloat blue)
 {
 	GLfloat width = 0.1;
 
-	glColor3f (red,green,blue);
+    glColor4f(red, green, blue, 1.0f);
+
 	draw_rectangle (priv, x_offset, height, z_offset, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0, z_offset, x_offset + width, 0, z_offset + 0.1);
 
-	glColor3f (0.5 * red, 0.5 * green, 0.5 * blue);
+    glColor4f(0.5 * red, 0.5 * green, 0.5 * blue, 1.0f);
 	draw_rectangle (priv, x_offset, 0.0, z_offset + 0.1, x_offset + width, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset, 0.0, z_offset, x_offset + width, height, z_offset );
 
-	glColor3f (0.25 * red, 0.25 * green, 0.25 * blue);
+    glColor4f(0.25 * red, 0.25 * green, 0.25 * blue, 1.0f);
 	draw_rectangle (priv, x_offset, 0.0, z_offset , x_offset, height, z_offset + 0.1);
 	draw_rectangle (priv, x_offset + width, 0.0, z_offset , x_offset + width, height, z_offset + 0.1);
 }
@@ -362,7 +369,6 @@ static void draw_bars (GLtestPrivate *priv)
 	glRotatef (priv->y_angle,0.0,1.0,0.0);
 	glRotatef (priv->z_angle,0.0,0.0,1.0);
 
-	glBegin (GL_TRIANGLES);
 	for (y = 0; y < 16; y++)
 	{
 		z_offset = -1.6 + ((15 - y) * 0.2);
@@ -376,8 +382,6 @@ static void draw_bars (GLtestPrivate *priv)
 			draw_bar (priv, x_offset, z_offset, priv->heights[y][x] * 0.2, r_base - (x * (r_base / 15.0)), x * (1.0 / 15), b_base);
 		}
 	}
-	glEnd ();
 
 	glPopMatrix ();
 }
-

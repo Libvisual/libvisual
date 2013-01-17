@@ -1,11 +1,9 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Remi Arquier <arquier@crans.org>
  *
  * Authors: Remi Arquier <arquier@crans.org>
- *	    Dennis Smit <ds@nerds-incorporated.org>
- *
- * $Id: jess.c,v 1.25 2006/01/27 20:19:14 synap Exp $
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,14 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <math.h>
-#include <string.h>
-#include <gettext.h>
+#include "config.h"
+#include "gettext.h"
 
 #include "def.h"
 #include "struct.h"
@@ -41,32 +33,30 @@
 #include "draw_low_level.h"
 #include "jess.h"
 
-const VisPluginInfo *get_plugin_info (int *count);
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 static int act_jess_init (VisPluginData *plugin);
 static int act_jess_cleanup (VisPluginData *plugin);
 static int act_jess_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int height);
+static int act_jess_resize (VisPluginData *plugin, int width, int height);
 static int act_jess_events (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_jess_palette (VisPluginData *plugin);
 static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static void jess_init (JessPrivate *priv);
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
-
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisActorPlugin actor[] = {{
+	static VisActorPlugin actor = {
 		.requisition = act_jess_requisition,
 		.palette = act_jess_palette,
 		.render = act_jess_render,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT |
 			VISUAL_VIDEO_DEPTH_32BIT
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "jess",
@@ -81,12 +71,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.cleanup = act_jess_cleanup,
 		.events = act_jess_events,
 
-		.plugin = VISUAL_OBJECT (&actor[0])
-	}};
+		.plugin = VISUAL_OBJECT (&actor)
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 static int act_jess_init (VisPluginData *plugin)
@@ -96,7 +84,7 @@ static int act_jess_init (VisPluginData *plugin)
 	visual_return_val_if_fail (plugin != NULL, -1);
 
 #if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
 	priv = visual_mem_new0 (JessPrivate, 1);
@@ -141,10 +129,10 @@ static int act_jess_init (VisPluginData *plugin)
 	priv->lys.E_moyen = 0;
 	priv->lys.dEdt_moyen = 0;
 
-	visual_palette_allocate_colors (&priv->jess_pal, 256);
+	priv->jess_pal = visual_palette_new (256);
 
-	visual_buffer_init (&priv->pcm_data1, priv->pcm_data[0], 512 * sizeof (float), NULL);
-	visual_buffer_init (&priv->pcm_data2, priv->pcm_data[1], 512 * sizeof (float), NULL);
+	priv->pcm_data1 = visual_buffer_new_wrap_data (priv->pcm_data[0], 512 * sizeof (float), FALSE);
+	priv->pcm_data2 = visual_buffer_new_wrap_data (priv->pcm_data[1], 512 * sizeof (float), FALSE);
 
 	start_ticks (priv);
 
@@ -189,7 +177,10 @@ static int act_jess_cleanup (VisPluginData *plugin)
 	if (priv->buffer != NULL)
 		visual_mem_free (priv->buffer);
 
-	visual_palette_free_colors (&priv->jess_pal);
+	visual_buffer_unref (priv->pcm_data1);
+	visual_buffer_unref (priv->pcm_data2);
+
+	visual_palette_free (priv->jess_pal);
 
 	visual_mem_free (priv);
 
@@ -224,23 +215,12 @@ static int act_jess_requisition (VisPluginData *plugin, int *width, int *height)
 	return 0;
 }
 
-static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width, int height)
+static int act_jess_resize (VisPluginData *plugin, int width, int height)
 {
-	JessPrivate *priv;
-
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	if (priv == NULL) {
-		visual_log (VISUAL_LOG_ERROR,
-				_("The given plugin doesn't have private info"));
-		return -1;
-	}
+	JessPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	priv->resx = width;
 	priv->resy = height;
-
-	visual_video_set_dimension (video, width, height);
 
 	if (priv->table1 != NULL)
 		visual_mem_free (priv->table1);
@@ -257,10 +237,6 @@ static int act_jess_dimension (VisPluginData *plugin, VisVideo *video, int width
 	if (priv->buffer != NULL)
 		visual_mem_free (priv->buffer);
 
-	priv->pitch = video->pitch;
-	priv->video = visual_video_depth_value_from_enum (video->depth);
-	priv->bpp = video->bpp;
-
 	ball_init (priv);
 	jess_init (priv);
 
@@ -274,8 +250,7 @@ static int act_jess_events (VisPluginData *plugin, VisEventQueue *events)
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
 			case VISUAL_EVENT_RESIZE:
-				act_jess_dimension (plugin, ev.event.resize.video,
-						ev.event.resize.width, ev.event.resize.height);
+				act_jess_resize (plugin, ev.event.resize.width, ev.event.resize.height);
 				break;
 			default: /* to avoid warnings */
 				break;
@@ -298,16 +273,16 @@ static VisPalette *act_jess_palette (VisPluginData *plugin)
 		return NULL;
 	}
 
-	return &priv->jess_pal;
+	return priv->jess_pal;
 }
 
 static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JessPrivate *priv;
-	VisBuffer fbuf[2];
+	VisBuffer* fbuf[2];
 	float freq[2][256];
 	short freqdata[2][256];
-	int i;
+	int i, depth;
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 	visual_return_val_if_fail (audio != NULL, -1);
@@ -321,14 +296,17 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 		return -1;
 	}
 
-	visual_audio_get_sample (audio, &priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
-	visual_audio_get_sample (audio, &priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_audio_get_sample (audio, priv->pcm_data1, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_audio_get_sample (audio, priv->pcm_data2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-	visual_buffer_set_data_pair (&fbuf[0], freq[0], sizeof (freq[0]));
-	visual_buffer_set_data_pair (&fbuf[1], freq[1], sizeof (freq[1]));
+	fbuf[0] = visual_buffer_new_wrap_data (freq[0], sizeof (freq[0]), FALSE);
+	fbuf[1] = visual_buffer_new_wrap_data (freq[1], sizeof (freq[1]), FALSE);
 
-	visual_audio_get_spectrum_for_sample (&fbuf[0], &priv->pcm_data1, FALSE);
-	visual_audio_get_spectrum_for_sample (&fbuf[1], &priv->pcm_data2, FALSE);
+	visual_audio_get_spectrum_for_sample (fbuf[0], priv->pcm_data1, FALSE);
+	visual_audio_get_spectrum_for_sample (fbuf[1], priv->pcm_data2, FALSE);
+
+	visual_buffer_unref (fbuf[0]);
+	visual_buffer_unref (fbuf[1]);
 
 	for (i = 0;i < 256; i++) {
 		freqdata[0][i] = freq[0][i] * 32768;
@@ -344,6 +322,19 @@ static int act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	C_E_moyen(priv, freqdata);
 	C_dEdt_moyen(priv);
 	C_dEdt(priv);
+
+	priv->pitch = visual_video_get_pitch (video);
+
+    depth = priv->video;
+	priv->video = visual_video_depth_value_from_enum (visual_video_get_depth (video));
+    if(depth != priv->video)
+    {
+        free(priv->buffer);
+        if(priv->video == 8)
+            priv->buffer = (uint8_t *)malloc(priv->resx * priv->resy);
+        else
+            priv->buffer = (uint8_t *)malloc(priv->resx * priv->resy * 4);
+    }
 
 	priv->pixel = ((uint8_t *) visual_video_get_pixels (video));
 

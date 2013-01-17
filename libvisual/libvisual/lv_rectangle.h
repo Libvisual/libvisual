@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
- * 
- * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Copyright (C) 2012      Libvisual team
+ *               2004-2006 Dennis Smit
  *
- * $Id: lv_rectangle.h,v 1.6 2006/01/22 13:23:37 synap Exp $
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,219 +31,260 @@
  * @{
  */
 
-VISUAL_BEGIN_DECLS
+#ifdef __cplusplus
 
-#define VISUAL_RECTANGLE(obj)				(VISUAL_CHECK_CAST ((obj, VisRectangle))
+#include <libvisual/lv_math.h>
 
+namespace LV {
+
+  class LV_API Rect
+  {
+  public:
+
+      int x;
+      int y;
+      int width;
+      int height;
+
+      Rect ()
+          : x (0), y (0), width (0), height (0)
+      {}
+
+      /**
+       * Creates a new Rect.
+       *
+       * @param x      X-coordinate of upper-left corner
+       * @param y      Y-coordinate of upper-left corner
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      Rect (int x_, int y_, int width_, int height_)
+          : x (x_), y (y_), width (width_), height (height_)
+      {}
+
+      /**
+       * Creates a new Rect of the given dimensions.
+       *
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      Rect (int width_, int height_)
+          : x (0), y (0), width (width_), height (height_)
+      {}
+
+      /**
+       * Sets rectangle extents
+       *
+       * @param x      X-coordinate of upper-left corner
+       * @param y      Y-coordinate of upper-left corner
+       * @param width  Width of rectangle
+       * @param height Height of rectangle
+       */
+      void set (int x_, int y_, int width_, int height_)
+      {
+          x = x_; y = y_; width = width_; height = height_;
+      }
+
+      /**
+       * Checks if this rectangle has a non-zero area
+       *
+       * @return true is rectangle has a non-zero area, false
+       *         otherwise
+       */
+      bool empty () const
+      {
+          return ( width <= 0 || height <= 0 );
+      }
+
+      /**
+       * Tests if a given point falls within this rectangle.
+       *
+       * @param x x position of point
+       * @param y y position of point
+       *
+       * @return true if within rectangle, false otherwise
+       */
+      bool contains (int x_, int y_) const
+      {
+          return ( x_ >= x && x_ <= x + width && y_ >= y && y_ <= y + height );
+      }
+
+      /**
+       * Tests if this rectangle completely contains with another
+       *
+       * @param r rectangle to test containment
+       *
+       * @return true if given rectangle completely contained, false
+       *         otherwise
+       */
+      bool contains (Rect const& r) const;
+
+      /**
+       * tests if this rectangle intersects with another
+       *
+       * @param r rectangle to test intersection with
+       *
+       * @return true if rectangles intersect, false otherwise
+       */
+      bool intersects (Rect const& r) const;
+
+      /**
+       * Clips a rectangle to this rectangle.
+       *
+       * @param r rectangle to clip
+       *
+       * @return Clipped rectangle
+       */
+      Rect clip (Rect const& r) const;
+
+      /**
+       * Normalizes this rectangle to the origin. The top-corner will
+       * be set to (0, 0)
+       *
+       * @param src rectangle to normalize to
+       */
+      void normalize ()
+      {
+          x = y = 0;
+      }
+
+      /**
+       * Normalizes this rectangle to another. The top-corner will be
+       * set to that of the given rectangle.
+       *
+       * @param src rectangle to normalize to
+       */
+      void normalize_to (Rect const& r)
+      {
+          x = r.x; y = r.y;
+      }
+
+      /**
+       * Transforms a point with relative coordinates in [(0,0),
+       * (1,1)] to absolute positions in this rectangle. (0,0) and
+       * (1,1) are respectively mapped to the top-left and
+       * bottom-right corners.
+       *
+       * @note Out of range coordinates are clamped.
+       *
+       * @see denormalize_points()
+       *
+       * @param fx Normalized X coordinate of point
+       * @param fy Normalized Y coordinate of point
+       * @param x  Integer variable to store the absolute X coordinate
+       * @param y  Integer variable to store the absolute Y coordinate
+       */
+      void denormalize_point (float fx, float fy, int32_t& x_, int32_t& y_) const
+      {
+          fx = clamp (fx, 0.0f, 1.0f);
+          fy = clamp (fx, 0.0f, 1.0f);
+
+          x_ = x + fx * width;
+          y_ = y + fy * height;
+      }
+
+      /**
+       * A fast array version of denormalize_point().
+       *
+       * @note Unlike denormalize_point(), out of range input
+       * coordinates are NOT clamped for performance reasons.
+       *
+       * @param fxlist input array of x coordinates, each in [0.0, 1.0]
+       * @param fylist input array of y coordinates, each in [0.0, 1.0]
+       * @param xlist  output array of x coordinates
+       * @param ylist  output array of y coordinates
+       * @param size   number of points
+       */
+      void denormalize_points (float const* fxlist, float const* fylist, int32_t* xlist, int32_t* ylist, unsigned int size) const;
+
+      /**
+       * Transform a point with relative coordinates in [(-1,-1),
+       * (1,1)] to absolute positions in this rectangle. (-1,-1) and (1,1)
+       * are respectively mapped to the top-left and bottom-right corners.
+       *
+       * @note Out of range coordinates are clamped.
+       *
+       * @see denormalize_points()
+       *
+       * @param fx Normalized X coordinate of point
+       * @param fy Normalized Y coordinate of point
+       * @param x  Integer variable to store the absolute X coordinate
+       * @param y  Integer variable to store the absolute Y coordinate
+       */
+      void denormalize_point_neg (float fx, float fy, int32_t& x_, int32_t& y_) const
+      {
+          fx = clamp (fx, -1.0f, 1.0f) * 0.5f + 0.5f;
+          fy = clamp (fy, -1.0f, 1.0f) * 0.5f + 0.5f;
+
+          x_ = x + fx * width;
+          y_ = y + fy * height;
+      }
+
+      /**
+       * A fast array version of denormalize_point_neg()
+       *
+       * @note Unlike denormalize_point_neg(), out of range input
+       * coordinates are NOT clamped for performance reasons.
+       *
+       * @param fxlist input array of x coordinates, each in [-1.0, 1.0]
+       * @param fylist input array of y coordinates, each in [-1,0, 1.0]
+       * @param xlist  output array of x coordinates
+       * @param ylist  output array of y coordinates
+       * @param size   number of points
+       */
+      void denormalize_points_neg (float const* fxlist, float const* fylist, int32_t* xlist, int32_t* ylist, unsigned int size) const;
+  };
+
+} // LV namespace
+
+#endif /* __cplusplus */
+
+#define VISUAL_RECTANGLE(obj)               (VISUAL_CHECK_CAST ((obj, VisRectangle))
+
+#ifdef __cplusplus
+typedef ::LV::Rect VisRectangle;
+#else
 typedef struct _VisRectangle VisRectangle;
+struct _VisRectangle;
+#endif
 
-/**
- * Using the VisRectangle structure you can define rectangular areas in for example
- * VisVideo buffers.
- */
-struct _VisRectangle {
-	VisObject	object;		/**< The VisObject data. */
-	int		x;		/**< X Position of the upper left corner. */
-	int		y;		/**< Y Position of the upper left corner. */
-	int		width;		/**< The width. */
-	int		height;		/**< The height. */
-};
+LV_BEGIN_DECLS
 
-/**
- * Creates a new VisRectangle.
- *
- * @param x X Position of the upper left corner.
- * @param y Y Position of the upper left corner.
- * @param width The width of the rectangle.
- * @param height The height of the rectangle.
- *
- * @return A newly allocated VisRectangle.
- */
-VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
+LV_API VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
+LV_API VisRectangle *visual_rectangle_new_empty (void);
 
-/**
- * Sets the values for a VisRectangle.
- *
- * @param rect Pointer to the VisRectangle in which the values are set.
- * @param x X Position of the upper left corner.
- * @param y Y Position of the upper left corner.
- * @param width The width of the rectangle.
- * @param height The height of the rectangle.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_set (VisRectangle *rect, int x, int y, int width, int height);
+LV_API void visual_rectangle_free (VisRectangle *rect);
 
-/**
- * Checks whether the src VisRectangle falls within the dest VisRectangle.
- *
- * @param dest Pointer to the destination VisRectangle in which the src should fall within.
- * @param src Pointer to the source VisRectangle that should fall within the destination.
- *
- * @return TRUE if the src partially falls within the dest, FALSE if not, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_position_within (VisRectangle *rect, int x, int y);
+LV_API void visual_rectangle_set  (VisRectangle *rect, int x, int y, int width, int height);
+LV_API void visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
 
-/**
- * Checks whether the src VisRectangle partially falls within the dest
- * VisRectangle.
- *
- * @param dest Pointer to the destination VisRectangle in which the src should partially fall within.
- * @param src Pointer to the source VisRectangle that should partially fall within the destination.
- *
- * @return TRUE if the src partially falls within the dest, FALSE if not, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_within_partially (VisRectangle *dest, VisRectangle *src);
+LV_API VisRectangle *visual_rectangle_clone (VisRectangle *rect);
 
-/**
- * Checks if a certain point is within the defined VisRectangle.
- *
- * @param rect Pointer to the VisRectangle to which the position is checked.
- * @param x X Position of the point to be checked.
- * @param y Y Position of the point to be checked.
- *
- * @return TRUE if within rectangle, FALSE if not, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_within (VisRectangle *dest, VisRectangle *src);
+LV_API void visual_rectangle_set_x      (VisRectangle *rect, int x);
+LV_API int  visual_rectangle_get_x      (VisRectangle *rect);
+LV_API void visual_rectangle_set_y      (VisRectangle *rect, int y);
+LV_API int  visual_rectangle_get_y      (VisRectangle *rect);
+LV_API void visual_rectangle_set_width  (VisRectangle *rect, int width);
+LV_API int  visual_rectangle_get_width  (VisRectangle *rect);
+LV_API void visual_rectangle_set_height (VisRectangle *rect, int height);
+LV_API int  visual_rectangle_get_height (VisRectangle *rect);
 
-/**
- * Copies the colors from one VisRectangle to another.
- *
- * @param dest Pointer to the destination VisRectangle.
- * @param src Pointer to the source VisRectangle in which dest is copied.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
+LV_API int  visual_rectangle_is_empty       (VisRectangle *rect);
+LV_API int  visual_rectangle_intersects     (VisRectangle *dest, VisRectangle *src);
+LV_API int  visual_rectangle_contains_point (VisRectangle *rect, int x, int y);
+LV_API int  visual_rectangle_contains_rect  (VisRectangle *dest, VisRectangle *src);
+LV_API void visual_rectangle_clip           (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
 
-/**
- * Clips two VisRectangles into one, This is done by using the within
- * parameter as the boundary for the src parameter, so src is adopten
- * so that is falls within the within parameter.  The final result is
- * stored in dest. It's legal to give the same VisRectangle for the
- * dest and src VisRectangle.
- *
- * @param dest Pointer to the destination VisRectangle.
- * @param within Pointer to the boundary VisRectangle.
- * @param src Pointer to the source VisRectangle which is boundary adopted to the within parameter.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL or -VISUAL_ERROR_RECTANGLE_OUT_OF_BOUNDS
- *	on failure.
- */
-int visual_rectangle_clip (VisRectangle *dest, VisRectangle *within, VisRectangle *src);
+LV_API void visual_rectangle_normalize    (VisRectangle *rect);
+LV_API void visual_rectangle_normalize_to (VisRectangle *dest, VisRectangle *src);
 
-/**
- * Normalizes the VisRectangle, this means that both the x and y
- * position are set to 0.
- *
- * @param rect Pointer to the VisRectangle that is to be normalized.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_normalise (VisRectangle *rect);
+LV_API void visual_rectangle_denormalize_point  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+LV_API void visual_rectangle_denormalize_points (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
+LV_API void visual_rectangle_denormalize_point_neg  (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
+LV_API void visual_rectangle_denormalize_points_neg (VisRectangle *rect, const float *fxlist, const float *fylist, int32_t *xlist, int32_t *ylist, unsigned int size);
 
-/**
- * Normalizes the VisRectangle to another VisRectangle, this means
- * that the x and y position of the destination VisRectangle is set to
- * that of the source VisRectangle.
- *
- * @param dest Pointer to the VisRectangle that is to be normalized.
- * @param src Pointer to the VisRectangle that is used as the source for normalization.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_normalise_to (VisRectangle *dest, VisRectangle *src);
-
-/**
- * Checks if a VisRectangle occupies an area. If either the width or
- * height is equal or lower than 0, this returns TRUE.
- *
- * @param rect Pointer to the VisRectangle that is checked for emptyness.
- *
- * @return VISUAL_OK on success, TRUE if it's empty, FALSE if not or
- *	-VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_is_empty (VisRectangle *rect);
-
-/**
- * Denormalises a set of floating point x y coordinates that are
- * ranging from 0.0 to 1.0 to absolute locations using the
- * VisRectangle as reference. The floating point coordinates are
- * clamped to 0.0 and 1.0. Don't use this function to do many
- * transforms, instead use visual_rectangle_denormalise_many_values.
- *
- * @see visual_rectangle_denormalise_many_values
- *
- * @param rect Pointer to the VisRectangle used as the reference.
- * @param fx Floating point X location ranging from 0.0 to 1.0.
- * @param fy Floating point Y location ranging from 0.0 to 1.0.
- * @param x Pointer to an integer in which the absolute X location is stored.
- * @param y Pointer to an integer in which the absolute Y location is stored.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_denormalise_values (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
-
-/**
- * Denormalises a list of floating point x y coordinates tht are
- * ranging from 0.0 to 1.0 to absolute locations using the
- * VisRectangle as reference. WARNING: Unlike
- * visual_rectangle_denormalise_values, the floating point locations
- * are NOT clamped. This is done because of performance reasons.
- *
- * @param rect Pointer to the VisRectangle used as the reference.
- * @param fxlist Pointer to a floating point X location ranging from 0.0 to 1.0 array.
- * @param fylist Pointer to a floating point Y location ranging from 0.0 to 1.0 array.
- * @param xlist  Pointer to an array of integers in which the absolute X location are stored.
- * @param ylist  Pointer to an array of integers in which the absolute Y location are stored.
- * @param size The size of the arrays for all X Y locations.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_denormalise_many_values (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
-
-/**
- * Denormalises a set of floating point x y coordinates that are
- * ranging from -1.0 to 1.0 to absolute locations using the
- * VisRectangle as reference. The floating point coordinates are
- * clamped to -1.0 and 1.0. Don't use this function to do many
- * transforms, instead use
- * visual_rectangle_denormalise_many_values_neg.
- *
- * @see visual_rectangle_denormalise_many_values_neg
- *
- * @param rect Pointer to the VisRectangle used as the reference.
- * @param fx Floating point X location ranging from -1.0 to 1.0.
- * @param fy Floating point Y location ranging from -1.0 to 1.0.
- * @param x Pointer to an integer in which the absolute X location is stored.
- * @param y Pointer to an integer in which the absolute Y location is stored.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_denormalise_values_neg (VisRectangle *rect, float fx, float fy, int32_t *x, int32_t *y);
-
-
-/**
- * Denormalises a list of floating point x y coordinates tht are
- * ranging from -1.0 to 1.0 to absolute locations using the
- * VisRectangle as reference. WARNING: Unlike
- * visual_rectangle_denormalise_values_neg, the floating point
- * locations are NOT clamped. This is done because of performance
- * reasons.
- *
- * @param rect Pointer to the VisRectangle used as the reference.
- * @param fxlist Pointer to a floating point X location ranging from -1.0 to 1.0 array.
- * @param fylist Pointer to a floating point Y location ranging from -1.0 to 1.0 array.
- * @param xlist Pointer to an array of integers in which the absolute X location are stored.
- * @param ylist Pointer to an array of integers in which the absolute Y location are stored.
- * @param size The size of the arrays for all X Y locations.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_RECTANGLE_NULL on failure.
- */
-int visual_rectangle_denormalise_many_values_neg (VisRectangle *rect, float *fxlist, float *fylist, int32_t *xlist, int32_t *ylist, int size);
-
-VISUAL_END_DECLS
+LV_END_DECLS
 
 /**
  * @}

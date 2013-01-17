@@ -118,7 +118,7 @@ bool Corona::setUpSurface(int width, int height) {
 	}
 
 	// Change the number of particles
-	int newsize = (int) (::sqrt(m_width * m_height) * 3.0);
+	int newsize = (int) (sqrt(float(m_width * m_height)) * 3.0);
 	if (newsize < 2000) newsize = 2000;
 	int oldsize = (int) nbParticules;
 	nbParticules = newsize;
@@ -338,7 +338,7 @@ void Corona::blurImage()
 	uint8_t *ptr = m_real_image + m_width;
 	int n = (m_real_height - 2) * m_width;
 
-	if (visual_cpu_get_mmx ()) {
+	if (visual_cpu_has_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 		__asm __volatile
 			("pxor %%mm6, %%mm6"
