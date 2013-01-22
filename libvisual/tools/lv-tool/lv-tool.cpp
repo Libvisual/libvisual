@@ -77,6 +77,25 @@ namespace {
                   info.url ? info.url : "<n/a>",
                   info.author, info.version, info.license,
                   info.about, info.help);
+
+	  VisPluginData *plugin;
+	  if(!(plugin = visual_plugin_load(info.type, info.name)))
+	  {
+	      std::printf("Failed to load plugin \"%s\". No further info available.\n", info.name);
+		  return;
+	  }
+
+	  visual_plugin_realize(plugin);
+		  
+	  VisParamList *plist = plugin->params;
+	  VisListEntry *le = nullptr;
+	  VisParam *param;
+	  while((param = VISUAL_PARAM(visual_list_next(visual_param_list_get_entries(plist), &le))) != nullptr)
+	  {
+	      std::printf("-> %s\n", visual_param_get_name(param));
+	  }
+
+	  visual_plugin_unload(plugin);
   }
 
 
