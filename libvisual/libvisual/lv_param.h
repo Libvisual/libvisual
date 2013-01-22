@@ -76,6 +76,15 @@ LV_API void visual_param_list_set_eventqueue (VisParamList *list, VisEventQueue 
 LV_API VisEventQueue *visual_param_list_get_eventqueue (VisParamList *list);
 
 /**
+ * Returns the list of the entries
+ *
+ * @param list Parameter list
+ *
+ * @return List of entries, or NULL on failure
+ */
+LV_API VisList *visual_param_list_get_entries (VisParamList *list);
+
+/**
  * Adds a new parameter entry.
  *
  * @param list  Parameter list

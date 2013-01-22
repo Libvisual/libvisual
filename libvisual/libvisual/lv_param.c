@@ -108,6 +108,13 @@ VisEventQueue *visual_param_list_get_eventqueue (VisParamList *self)
     return self->eventqueue;
 }
 
+VisList *visual_param_list_get_entries (VisParamList *self)
+{
+    visual_return_val_if_fail (self != NULL, NULL);
+
+    return self->entries;
+}
+
 int visual_param_list_add (VisParamList *self, VisParam *param)
 {
     visual_return_val_if_fail (self != NULL, FALSE);
