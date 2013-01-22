@@ -308,8 +308,7 @@ static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio)
 static int nastyfft_draw (NastyfftPrivate *priv, VisVideo *video)
 {
 	draw_scene (priv);
-	glFinish ();
-	//
+
 	return 0;
 }
 

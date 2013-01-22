@@ -402,7 +402,6 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 static int nebulus_draw (NebulusPrivate *priv, VisVideo *video)
 {
 	draw_scene ();
-	glFinish ();
 
 	nebulus_calc_fps (priv);
 
