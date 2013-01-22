@@ -241,13 +241,6 @@ static int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	return 0;
 }
 
-static int nebulus_calc_fps (NebulusPrivate *priv)
-{
-	// FIXME make
-	framerate = 25;
-	return 40;
-}
-
 static int nebulus_random_effect ()
 {
 	int i;
@@ -402,8 +395,6 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 static int nebulus_draw (NebulusPrivate *priv, VisVideo *video)
 {
 	draw_scene ();
-
-	nebulus_calc_fps (priv);
 
 	return 0;
 }
