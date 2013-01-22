@@ -6,7 +6,7 @@
 
 
 # path where actor plugins are
-ACTORPATH="/usr/local/lib/libvisual-0.5/actor"
+if [ -n $ACTORPATH ] ; then ACTORPATH="/usr/local/lib/libvisual-0.5/actor" ; fi
 
 
 
