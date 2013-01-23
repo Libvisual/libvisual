@@ -6,7 +6,7 @@
 
 
 # path where actor plugins are
-ACTORPATH="/usr/local/lib/libvisual-0.5/actor"
+if [ -n $ACTORPATH ] ; then ACTORPATH="/usr/local/lib/libvisual-0.5/actor" ; fi
 
 
 
@@ -40,7 +40,7 @@ SKIP_FRAMES=0
 WIDTH=320
 HEIGHT=200
 # render video
-DO_VIDEO=""
+DO_VIDEO=0
 
 
 # parse commandline arguments
@@ -155,7 +155,7 @@ for ACTOR in ${ACTORS[@]} ; do
             lv-tool -F${FRAMES} -s ${RANDOM} -d stdout -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
             convert -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 bgr:-'[0--1]' ${ACTOR}%03d.png
 
-            if [ -n $DO_VIDEO ] && [ $FRAMES -gt 1 ] ; then
+            if [ $DO_VIDEO -eq 1 ] && [ $FRAMES -gt 1 ] ; then
                 ffmpeg -i ${ACTOR}%03d.png -metadata title="libvisual ${ACTOR}" -vcodec libx264 -b:v 10000k ${ACTOR}.mp4
             fi
         ;;

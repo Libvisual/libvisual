@@ -231,7 +231,7 @@ namespace {
                   if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
                       visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
                   {
-                      std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+                      std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;
                   }
                   break;
