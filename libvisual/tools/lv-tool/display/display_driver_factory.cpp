@@ -28,10 +28,6 @@
 #include "stdout_sdl_driver.hpp"
 #endif
 
-#if HAVE_GLX
-#include "glx_driver.hpp"
-#endif
-
 #include <unordered_map>
 
 typedef std::unordered_map<std::string, DisplayDriverCreator> CreatorMap;
