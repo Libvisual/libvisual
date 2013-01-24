@@ -15,7 +15,7 @@ SET(LINK_DIRS "")
 
 # SDL driver
 IF(HAVE_SDL)
-  LIST(APPEND SOURCES display/stdout_sdl_driver.cpp)
+  LIST(APPEND SOURCES display/sdl_driver.cpp display/stdout_sdl_driver.cpp)
   LIST(APPEND INCLUDE_DIRS ${SDL_INCLUDE_DIR})
   LIST(APPEND LINK_LIBS ${SDL_LIBRARY})
 ENDIF()

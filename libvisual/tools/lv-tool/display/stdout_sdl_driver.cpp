@@ -59,12 +59,12 @@ namespace {
   void *rawbuffer = nullptr;
   void get_nearest_resolution (int& width, int& height);
 
-  class SDLDriver
+  class StdoutSDLDriver
       : public DisplayDriver
   {
   public:
 
-      SDLDriver (Display& display)
+      StdoutSDLDriver (Display& display)
           : m_display         (display)
           , m_screen          (0)
           , m_screen_video    (0)
@@ -76,7 +76,7 @@ namespace {
           , m_running         (false)
       {}
 
-      virtual ~SDLDriver ()
+      virtual ~StdoutSDLDriver ()
       {
           close ();
       }
@@ -390,7 +390,7 @@ namespace {
 
 } // anonymous namespace
 
-DisplayDriver* sdl_driver_new (Display& display)
+DisplayDriver* stdout_sdl_driver_new (Display& display)
 {
-    return new SDLDriver (display);
+    return new StdoutSDLDriver (display);
 }
