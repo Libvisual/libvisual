@@ -149,9 +149,10 @@ namespace {
                   "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
-                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n"
-                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n\n",
-                  "http://github.com/StarVisuals/libvisual",
+                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
+                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
+                  "\n",
+                  "http://libvisual.org",
                   name.c_str (),
                   width, height,
                   driver_name.c_str (),
@@ -181,7 +182,7 @@ namespace {
 		  {"morph",       required_argument, 0, 'm'},
 		  {"fps",         required_argument, 0, 'f'},
 		  {"seed",        required_argument, 0, 's'},
-          {"exclude",     required_argument, 0, 'x'},
+          	  {"exclude",     required_argument, 0, 'x'},
 		  {"framecount",  required_argument, 0, 'F'},
 		  {"depth",       required_argument, 0, 'c'},
 		  {0,             0,                 0,  0 }
