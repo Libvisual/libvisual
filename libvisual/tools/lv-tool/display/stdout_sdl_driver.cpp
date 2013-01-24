@@ -56,7 +56,10 @@ namespace {
       SDL_GLattr (-1)          // VISUAL_GL_ATTRIBUTE_LAST
   };
 
-  void *rawbuffer = nullptr;
+  /* buffer to use to store pixbufs of GL actors */
+  unsigned char *rawbuffer = nullptr;
+  unsigned char *rawbufferTmp = nullptr;
+	
   void get_nearest_resolution (int& width, int& height);
 
   class StdoutSDLDriver
@@ -105,6 +108,8 @@ namespace {
 
           m_screen_video.reset ();
 
+	  int bpp;
+	      
           if (depth == VISUAL_VIDEO_DEPTH_GL) {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
@@ -134,16 +139,20 @@ namespace {
                   }
               }
 
-              int bpp = videoinfo->vfmt->BitsPerPixel;
-              m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
+              bpp = videoinfo->vfmt->BitsPerPixel;
 
-			  rawbuffer = malloc(width*height*(bpp/8));
-				  
-          } else {
-              m_screen = SDL_SetVideoMode (width, height,
-                                           visual_video_depth_value_from_enum (depth),
-                                           videoflags);
+              /* memory where to copy pixelbuffer */
+	      rawbuffer = (unsigned char *) malloc(width*height*3);
+	      /* temporary buffer for flipping */
+	      rawbufferTmp = (unsigned char *) malloc(width*height*3);
+          } 
+	  else 
+	  {
+	      bpp = visual_video_depth_value_from_enum (depth);
           }
+
+	  /* create surface */
+	  m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
 
           // Recreate video object
           m_screen_video = LV::Video::wrap (m_screen->pixels,
@@ -167,7 +176,8 @@ namespace {
           if (!m_running)
               return;
 
-		  free(rawbuffer);
+          free(rawbuffer);
+	  free(rawbufferTmp);
           //m_screen_video.reset (); FIXME: Invalid pointer.
 
           SDL_Quit ();
@@ -246,26 +256,39 @@ namespace {
                   SDL_SetColors (m_screen, colors.data (), 0, 256);
               }
           }
-
+	      
           if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
-              SDL_GL_SwapBuffers ();
-          else
-              SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);
-
-	      /* write to stdout */
-		  if(m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
-		  {
-			  glFinish();
-			  glReadPixels(rect.x, rect.y, rect.width, rect.height, GL_BGR, GL_UNSIGNED_BYTE, rawbuffer);
-			  if(write(STDOUT_FILENO, rawbuffer, rect.width*rect.height*3) == -1)
-						  visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
-		  }
-		  else
-		  {
-			  if(write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
-						  visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
-		  }
+	  {	 
+	      /* flip image since glReadPixels() will flip image horizontally */
+	      //glScalef(1,-1,1);
+	      //glFinish();
 		  
+              /* flushhh */
+              SDL_GL_SwapBuffers ();
+		  
+	      /* read pixels */
+	      glReadPixels(rect.x, rect.y, rect.width, rect.height, GL_BGR, GL_UNSIGNED_BYTE, rawbuffer);
+
+	      /* flip image using the CPU :-/ */
+	      for(int line = 0; line < rect.height; line++)
+	      {
+	          for(int col = 0; col < rect.width*3; col++)
+		  {
+			rawbufferTmp[(line*rect.width*3)+col] = 
+			      rawbuffer[((rect.height-line)*rect.width*3)+col];			
+		  }
+	      }
+		  
+	      /* write to stdout */
+	      if(write(STDOUT_FILENO, rawbufferTmp, rect.width*rect.height*3) == -1)
+				      visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");	      
+	  }
+          else
+	  {
+              SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);      
+	      if(write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
+		      visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
+	  }	  	  
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
