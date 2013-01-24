@@ -230,7 +230,7 @@ namespace {
               // --depth
               case 'c': {
                   if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
-                      visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
+                      visual_video_depth_enum_from_value(color_depth) == -VISUAL_ERROR_VIDEO_INVALID_DEPTH)
                   {
                       std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;
@@ -398,24 +398,30 @@ int main (int argc, char **argv)
         // Select output colour depth
 
         VisVideoDepth depth;
-
-        if (color_depth == 0) {
-            // Pick the best display depth directly supported by actor
-
-            int depthflag = visual_actor_get_supported_depth (actor);
-
-            if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
-                depth = visual_video_depth_get_highest (depthflag);
-            }
-            else {
-                depth = visual_video_depth_get_highest_nogl (depthflag);
-            }
-        } else {
-            depth = visual_video_depth_enum_from_value (color_depth);
-        }
-
+	int depthflag = visual_actor_get_supported_depth (actor);
+	    
+	// Pick the best display depth directly supported by non GL actor
+	if(depthflag != VISUAL_VIDEO_DEPTH_GL)
+	{
+	    if (color_depth == 0) 
+	    {
+		depth = visual_video_depth_get_highest_nogl (depthflag);
+	    }
+	    // Pick user chosen colordepth
+	    else 
+	    {
+		depth = visual_video_depth_enum_from_value (color_depth);
+	    }
+	}
+	/* GL actor */
+	else
+	{
+		depth = visual_video_depth_get_highest (depthflag);
+	}
+	    
         bin.set_depth (depth);
 
+	    
         auto vidoptions = visual_actor_get_video_attribute_options(actor);
 
         // initialize display
