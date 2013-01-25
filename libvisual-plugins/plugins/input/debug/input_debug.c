@@ -31,12 +31,16 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 #define DEFAULT_FREQUENCY (OUTPUT_RATE/500)
 #define DEFAULT_AMPLITUDE 1.0
 
+#define UPLOAD_PERIOD_USECS  (((uint64_t) OUTPUT_SAMPLES * 1000000) / OUTPUT_RATE)
+
 typedef struct {
 	float frequency;
 	float ampltitude;
 
 	float angle;
 	float angle_step;
+
+	VisTime *last_upload_time;
 } DebugPriv;
 
 static int inp_debug_init (VisPluginData *plugin);
@@ -97,6 +101,8 @@ static int inp_debug_init (VisPluginData *plugin)
 	priv->frequency	 = DEFAULT_FREQUENCY;
 	priv->ampltitude = DEFAULT_AMPLITUDE;
 
+	priv->last_upload_time = NULL;
+
 	setup_wave (priv);
 
 	return 0;
@@ -104,6 +110,10 @@ static int inp_debug_init (VisPluginData *plugin)
 
 static int inp_debug_cleanup (VisPluginData *plugin)
 {
+	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	visual_time_free (priv->last_upload_time);
+
 	return 0;
 }
 
@@ -141,6 +151,30 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 	   increase/decrease in frequency due to error accumulation */
 
 	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+
+	/* Sleep for the appropriate amount of time to simulate blocking
+	 * due to buffer underruns */
+
+	VisTime *current_time = visual_time_new_now ();
+
+	if (!priv->last_upload_time) {
+		priv->last_upload_time = visual_time_clone (current_time);
+	}
+
+	VisTime *diff_time = visual_time_new ();
+	visual_time_diff (diff_time, current_time, priv->last_upload_time);
+
+	int64_t sleep_time = (int64_t) UPLOAD_PERIOD_USECS - (int64_t) visual_time_to_usecs (diff_time);
+	if (sleep_time > 0) {
+		visual_usleep (sleep_time);
+	}
+
+	visual_time_free (diff_time);
+	visual_time_free (priv->last_upload_time);
+
+	priv->last_upload_time = current_time;
+
+	/* Generate and upload samples */
 
 	int16_t data[OUTPUT_SAMPLES*2];
 	int i;
