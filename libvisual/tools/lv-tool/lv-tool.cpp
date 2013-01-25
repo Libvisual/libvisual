@@ -136,7 +136,7 @@ namespace {
   /** print commandline help */
   void print_help(std::string const& name)
   {
-      std::printf("libvisual commandline tool - %s\n"
+      std::printf("libvisual commandline tool - http://libvisual.org\n"
                   "Usage: %s [options]\n\n"
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
@@ -150,9 +150,9 @@ namespace {
                   "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
-                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n"
-                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n\n",
-                  "http://github.com/StarVisuals/libvisual",
+                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
+                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
+                  "\n",
                   name.c_str (),
                   width, height,
                   driver_name.c_str (),
@@ -160,6 +160,13 @@ namespace {
                   actor_name.c_str (),
                   morph_name.c_str (),
                   frame_rate);
+
+        std::printf("Available output drivers:\n");
+        for(auto driver_name : DisplayDriverFactory::instance().get_driver_list())
+        {
+            std::printf("\t%s\n", driver_name.c_str());
+        }
+
   }
 
 
@@ -182,7 +189,7 @@ namespace {
 		  {"morph",       required_argument, 0, 'm'},
 		  {"fps",         required_argument, 0, 'f'},
 		  {"seed",        required_argument, 0, 's'},
-          {"exclude",     required_argument, 0, 'x'},
+          	  {"exclude",     required_argument, 0, 'x'},
 		  {"framecount",  required_argument, 0, 'F'},
 		  {"depth",       required_argument, 0, 'c'},
 		  {0,             0,                 0,  0 }
@@ -230,7 +237,7 @@ namespace {
               // --depth
               case 'c': {
                   if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
-                      visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
+                      visual_video_depth_enum_from_value(color_depth) == -VISUAL_ERROR_VIDEO_INVALID_DEPTH)
                   {
                       std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;
@@ -398,24 +405,30 @@ int main (int argc, char **argv)
         // Select output colour depth
 
         VisVideoDepth depth;
-
-        if (color_depth == 0) {
-            // Pick the best display depth directly supported by actor
-
-            int depthflag = visual_actor_get_supported_depth (actor);
-
-            if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
-                depth = visual_video_depth_get_highest (depthflag);
-            }
-            else {
-                depth = visual_video_depth_get_highest_nogl (depthflag);
-            }
-        } else {
-            depth = visual_video_depth_enum_from_value (color_depth);
-        }
-
+	int depthflag = visual_actor_get_supported_depth (actor);
+	    
+	// Pick the best display depth directly supported by non GL actor
+	if(depthflag != VISUAL_VIDEO_DEPTH_GL)
+	{
+	    if (color_depth == 0) 
+	    {
+		depth = visual_video_depth_get_highest_nogl (depthflag);
+	    }
+	    // Pick user chosen colordepth
+	    else 
+	    {
+		depth = visual_video_depth_enum_from_value (color_depth);
+	    }
+	}
+	/* GL actor */
+	else
+	{
+		depth = visual_video_depth_get_highest (depthflag);
+	}
+	    
         bin.set_depth (depth);
 
+	    
         auto vidoptions = visual_actor_get_video_attribute_options(actor);
 
         // initialize display

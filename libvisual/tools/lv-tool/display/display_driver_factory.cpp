@@ -25,10 +25,7 @@
 
 #if HAVE_SDL
 #include "sdl_driver.hpp"
-#endif
-
-#if HAVE_GLX
-#include "glx_driver.hpp"
+#include "stdout_sdl_driver.hpp"
 #endif
 
 #include <unordered_map>
@@ -48,6 +45,7 @@ DisplayDriverFactory::DisplayDriverFactory ()
     add_driver ("stdout", stdout_driver_new);
 #if defined(HAVE_SDL)
     add_driver ("sdl", sdl_driver_new);
+    add_driver ("stdout_sdl", stdout_sdl_driver_new);
 #endif
 }
 

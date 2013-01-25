@@ -152,7 +152,7 @@ for ACTOR in ${ACTORS[@]} ; do
 
     case $MODE in
         single)
-            lv-tool -F${FRAMES} -s ${RANDOM} -d stdout -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
+            lv-tool -F${FRAMES} -s ${RANDOM} -d stdout_sdl -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
             convert -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 bgr:-'[0--1]' ${ACTOR}%03d.png
 
             if [ $DO_VIDEO -eq 1 ] && [ $FRAMES -gt 1 ] ; then
@@ -161,7 +161,7 @@ for ACTOR in ${ACTORS[@]} ; do
         ;;
 
         anim)
-            lv-tool -F${FRAMES} -s ${RANDOM} -d stdout -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
+            lv-tool -F${FRAMES} -s ${RANDOM} -d stdout_sdl -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
             montage -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 bgr:-'[0--1]' -coalesce -tile x1 -geometry '+0+0' ${ACTOR}%03d.png
         ;;
    esac
