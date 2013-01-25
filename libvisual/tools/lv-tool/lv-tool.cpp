@@ -135,7 +135,7 @@ namespace {
   /** print commandline help */
   void print_help(std::string const& name)
   {
-      std::printf("libvisual commandline tool - %s\n"
+      std::printf("libvisual commandline tool - http://libvisual.org\n"
                   "Usage: %s [options]\n\n"
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
@@ -152,7 +152,6 @@ namespace {
                   "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
                   "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
                   "\n",
-                  "http://libvisual.org",
                   name.c_str (),
                   width, height,
                   driver_name.c_str (),
@@ -160,6 +159,13 @@ namespace {
                   actor_name.c_str (),
                   morph_name.c_str (),
                   frame_rate);
+
+        std::printf("Available output drivers:\n");
+        for(auto driver_name : DisplayDriverFactory::instance().get_driver_list())
+        {
+            std::printf("\t%s\n", driver_name.c_str());
+        }
+
   }
 
 
