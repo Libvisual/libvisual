@@ -64,13 +64,16 @@ Configuration
             Linux.
 
             CMAKE_BUILD_TYPE
-            Build profile. Options: Release, Debug
+            Build profile.
+            Options: Release, Debug
 
             ENABLE_DOCS
-            Enable documentation. Options: yes, no
+            Enable documentation.
+            Options: yes, no
 
             ENABLE_PROFILING
-            Build with profiling information (for gprof)
+            Build with profiling information (for gprof).
+            Options: yes, no
 
      Compiler Selection:
 
