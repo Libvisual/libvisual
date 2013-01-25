@@ -109,7 +109,7 @@ namespace {
                   return nullptr;
               }
 
-              videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
+              videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
 
               if (videoinfo->hw_available)
                   videoflags |= SDL_HWSURFACE;
