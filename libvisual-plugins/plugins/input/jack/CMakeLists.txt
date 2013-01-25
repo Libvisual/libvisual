@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 LV_BUILD_INPUT_PLUGIN(jack
   SOURCES      input_jack.cpp
   INCLUDE_DIRS ${JACK_INCLUDE_DIRS}

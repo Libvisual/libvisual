@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 LV_BUILD_INPUT_PLUGIN(alsa
   SOURCES      input_alsa.c
   INCLUDE_DIRS ${ALSA_INCLUDE_DIR}

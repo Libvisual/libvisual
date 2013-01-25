@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 LV_BUILD_ACTOR_PLUGIN(nastyfft
   SOURCES      actor_nastyfft.c
   INCLUDE_DIRS ${OPENGL_INCLUDE_DIR}

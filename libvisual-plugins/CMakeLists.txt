@@ -313,10 +313,7 @@ SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Build plugins
-
-ADD_SUBDIRECTORY(plugins/actor)
-ADD_SUBDIRECTORY(plugins/input)
-ADD_SUBDIRECTORY(plugins/morph)
+ADD_SUBDIRECTORY(plugins)
 
 # Uninstallation
 # Script copied from CMake FAQ
