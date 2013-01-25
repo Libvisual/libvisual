@@ -99,7 +99,7 @@ namespace {
               print_plugin_info(*input.info);
       }
 
-      
+
       std::printf("===== ACTORS =====\n");
       auto const& actors =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
@@ -114,8 +114,8 @@ namespace {
           for (auto actor : actors)
               print_plugin_info(*actor.info);
       }
-      
-      
+
+
       std::printf("===== MORPHS =====\n");
       auto const& morphs =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
@@ -130,7 +130,7 @@ namespace {
           for (auto morph : morphs)
               print_plugin_info(*morph.info);
       }
-      
+
   }
 
   /** print commandline help */
@@ -179,21 +179,21 @@ namespace {
   int parse_args(int argc, char *argv[])
   {
       static struct option loptions[] = {
-		  {"help",        no_argument,       0, 'h'},
-		  {"plugin-help", no_argument,       0, 'p'},
-		  {"verbose",     no_argument,       0, 'v'},
-		  {"dimensions",  required_argument, 0, 'D'},
-		  {"driver",      required_argument, 0, 'd'},
-		  {"input",       required_argument, 0, 'i'},
-		  {"actor",       required_argument, 0, 'a'},
-		  {"morph",       required_argument, 0, 'm'},
-		  {"fps",         required_argument, 0, 'f'},
-		  {"seed",        required_argument, 0, 's'},
-          	  {"exclude",     required_argument, 0, 'x'},
-		  {"framecount",  required_argument, 0, 'F'},
-		  {"depth",       required_argument, 0, 'c'},
-		  {0,             0,                 0,  0 }
-	  };
+          {"help",        no_argument,       0, 'h'},
+          {"plugin-help", no_argument,       0, 'p'},
+          {"verbose",     no_argument,       0, 'v'},
+          {"dimensions",  required_argument, 0, 'D'},
+          {"driver",      required_argument, 0, 'd'},
+          {"input",       required_argument, 0, 'i'},
+          {"actor",       required_argument, 0, 'a'},
+          {"morph",       required_argument, 0, 'm'},
+          {"fps",         required_argument, 0, 'f'},
+          {"seed",        required_argument, 0, 's'},
+          {"exclude",     required_argument, 0, 'x'},
+          {"framecount",  required_argument, 0, 'F'},
+          {"depth",       required_argument, 0, 'c'},
+          {0,             0,                 0,  0 }
+      };
 
       int index, argument;
 
@@ -214,12 +214,12 @@ namespace {
 
               // --verbose
               case 'v': {
-				  VisLogSeverity v = visual_log_get_verbosity();
-				  v = (VisLogSeverity) ((int) v-1);
-				  
-				  if(v <= VISUAL_LOG_MIN)
-					  break;
-				  
+                  VisLogSeverity v = visual_log_get_verbosity();
+                  v = (VisLogSeverity) ((int) v-1);
+
+                  if(v <= VISUAL_LOG_MIN)
+                      break;
+
                   visual_log_set_verbosity(v);
                   break;
               }
@@ -359,10 +359,10 @@ int main (int argc, char **argv)
 
     // default loglevel
     visual_log_set_verbosity (VISUAL_LOG_ERROR);
-	
-	// initialize libvisual once (this is meant to be called only once,
+
+    // initialize libvisual once (this is meant to be called only once,
     // visual_init() after visual_quit() results in undefined state)
-	LV::System::init (argc, argv);
+    LV::System::init (argc, argv);
 
     try {
         // parse commandline arguments
@@ -405,30 +405,29 @@ int main (int argc, char **argv)
         // Select output colour depth
 
         VisVideoDepth depth;
-	int depthflag = visual_actor_get_supported_depth (actor);
-	    
-	// Pick the best display depth directly supported by non GL actor
-	if(depthflag != VISUAL_VIDEO_DEPTH_GL)
-	{
-	    if (color_depth == 0) 
-	    {
-		depth = visual_video_depth_get_highest_nogl (depthflag);
-	    }
-	    // Pick user chosen colordepth
-	    else 
-	    {
-		depth = visual_video_depth_enum_from_value (color_depth);
-	    }
-	}
-	/* GL actor */
-	else
-	{
-		depth = visual_video_depth_get_highest (depthflag);
-	}
-	    
+        int depthflag = visual_actor_get_supported_depth (actor);
+
+        // Pick the best display depth directly supported by non GL actor
+        if(depthflag != VISUAL_VIDEO_DEPTH_GL)
+        {
+            if (color_depth == 0)
+            {
+                depth = visual_video_depth_get_highest_nogl (depthflag);
+            }
+            // Pick user chosen colordepth
+            else
+            {
+                depth = visual_video_depth_enum_from_value (color_depth);
+            }
+        }
+        /* GL actor */
+        else
+        {
+            depth = visual_video_depth_get_highest (depthflag);
+        }
+
         bin.set_depth (depth);
 
-	    
         auto vidoptions = visual_actor_get_video_attribute_options(actor);
 
         // initialize display
