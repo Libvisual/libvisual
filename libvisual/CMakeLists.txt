@@ -199,9 +199,15 @@ IF(ENABLE_TOOLS)
   FIND_PACKAGE(OpenGL)
   SET(HAVE_GL ${OPENGL_FOUND})
 
-  ADD_SUBDIRECTORY(tools/tests)
   ADD_SUBDIRECTORY(tools/lv-tool)
   ADD_SUBDIRECTORY(tools/benchmarks)
+ENDIF()
+
+# Tests
+OPTION(ENABLE_TESTS "Build tests" no)
+IF(ENABLE_TESTS)
+  ENABLE_TESTING()
+  ADD_SUBDIRECTORY(tests)
 ENDIF()
 
 # Generate pkg-config file

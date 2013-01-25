@@ -220,7 +220,7 @@ int main (int argc, char *argv[])
 	if (argc > 2)
 		video = visual_video_load_from_file (argv[2]);
 	else
-		video = visual_video_load_from_file ("images/bg.bmp");
+		video = visual_video_load_from_file ("../images/bg.bmp");
 
 	actvid = visual_video_new ();
 	visual_actor_set_video (actor, actvid);

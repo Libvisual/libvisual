@@ -273,7 +273,7 @@ int main (int argc, char *argv[])
 	if (argc > 2)
 		tmpvid = visual_video_load_from_file (argv[2]);
 	else
-		tmpvid = visual_video_load_from_file ("images/bg.bmp");
+		tmpvid = visual_video_load_from_file ("../images/bg.bmp");
 
     video = LV::Video::wrap(tmpvid->get_pixels(), false, tmpvid->get_width(), tmpvid->get_height(), tmpvid->get_depth());
 
