@@ -25,6 +25,7 @@
 #include "config.h"
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
 #include <string>
 #include <cstdio>
@@ -425,6 +426,9 @@ int main (int argc, char **argv)
         if(!video)
             throw std::runtime_error("Failed to get VisVideo from display");
 
+        // Set the display title
+        display.set_title(_("lv-tool"));
+
         // put it all together
         bin.set_video(video);
         bin.realize();
@@ -469,7 +473,9 @@ int main (int argc, char **argv)
                         display.lock();
                         width = ev.event.resize.width;
                         height = ev.event.resize.height;
+
                         video = display.create(depth, vidoptions, width, height, true);
+                        display.set_title(_("lv-tool"));
 
                         bin.set_video (video);
                         bin.sync(false);

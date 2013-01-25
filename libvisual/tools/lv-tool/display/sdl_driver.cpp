@@ -24,7 +24,6 @@
 #include "sdl_driver.hpp"
 #include "display.hpp"
 #include "display_driver.hpp"
-#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 #include <SDL/SDL.h>
@@ -147,8 +146,6 @@ namespace {
                                             m_screen->h,
                                             depth);
           m_screen_video->ref();
-
-          set_title (_("lv-tool"));
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
