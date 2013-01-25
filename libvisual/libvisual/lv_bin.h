@@ -80,8 +80,8 @@ namespace LV {
 
 	  VisMorph* get_morph () const;
 
-	  void connect (VisActor* actor, VisInput* input);
-	  void connect (std::string const& actname, std::string const& inname);
+	  bool connect (VisActor* actor, VisInput* input);
+	  bool connect (std::string const& actname, std::string const& inname);
 
 	  void sync (bool noevent);
 

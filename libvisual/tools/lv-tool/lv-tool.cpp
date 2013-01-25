@@ -378,13 +378,16 @@ int main (int argc, char **argv)
         bin.switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
 
         // Let the bin manage plugins. There's a bug otherwise.
-        bin.connect(actor_name, input_name);
+        if (!bin.connect(actor_name, input_name)) {
+            throw std::runtime_error ("Failed to start pipeline with actor '" + actor_name + "' and input '" + input_name + "'");
+        }
 
         // initialize actor plugin
         std::cerr << "Loading actor '" << actor_name << "'...\n";
         auto actor = bin.get_actor();
-        if (!actor)
+        if (!actor) {
             throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
+        }
 
         // Set random seed
         if (have_seed) {
