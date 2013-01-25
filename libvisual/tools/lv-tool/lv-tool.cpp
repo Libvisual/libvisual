@@ -439,7 +439,7 @@ int main (int argc, char **argv)
         // create display
         auto video = display.create(depth, vidoptions, width, height, true);
         if(!video)
-            throw std::runtime_error("Failed to get VisVideo from display");
+            throw std::runtime_error("Failed to setup display for rendering");
 
         // Set the display title
         display.set_title(_("lv-tool"));
