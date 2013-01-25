@@ -74,7 +74,7 @@ Configuration
 
      Compiler Selection:
 
-         Use the enviroment variables CC and CXX to set the C and C++
+         Use the environment variables CC and CXX to set the C and C++
          compiler of your choice. Here is an example for Clang:
 
              CC=clang CXX=clang++ cmake <...>
