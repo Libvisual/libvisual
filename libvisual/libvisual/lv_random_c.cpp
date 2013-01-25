@@ -52,11 +52,4 @@ extern "C" {
       return rcontext->get_float ();
   }
 
-  int visual_random_context_decide (VisRandomContext *rcontext, float a)
-  {
-      visual_return_val_if_fail (rcontext != nullptr, 0.0);
-
-      return rcontext->decide (a);
-  }
-
 } // C extern

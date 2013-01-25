@@ -114,11 +114,4 @@ namespace LV {
   #endif
   }
 
-  bool RandomContext::decide (float a)
-  {
-      return get_float () <= a;
-  }
-
 } // LV namespace
-
-

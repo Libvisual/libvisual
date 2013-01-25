@@ -42,6 +42,9 @@ namespace LV {
 
   typedef uint32_t RandomSeed;
 
+  /**
+   * LV::RandomContext is a pseudorandom number generator.
+   */
   class LV_API RandomContext
   {
   public:
@@ -49,79 +52,51 @@ namespace LV {
 	typedef RandomSeed Seed;
 
 	/**
-	 * Creates a new VisRandomContext data structure.
+	 * Creates a new RandomContext with a given seed.
 	 *
-	 * @param seed The seed to be used to initialize the VisRandomContext with.
-	 *
-	 * @return A newly allocated VisRandomContext, or NULL on failure.
+	 * @param seed Initial seed for generating random number sequences
 	 */
 	explicit RandomContext (Seed seed);
 
 	~RandomContext ();
 
 	/**
-	 * Set the seed to for a VisRandomContext.
+	 * Sets the seed.
 	 *
-	 * @param rcontext Pointer to the VisRandomContext for which the seed it set.
-	 * @param seed The seed which is set in the VisRandomContext.
-	 *
-	 * @return VISUAL_OK on success, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
+	 * @param seed New seed
 	 */
 	void set_seed (uint32_t seed);
 
 	/**
-	 * Gives a random integer using the VisRandomContext as context for the randomizer.
+	 * Returns a random integer.
 	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 *
-	 * @return A pseudo random integer.
+	 * @return A random integer
 	 */
 	uint32_t get_int ();
 
 	/**
-	 * Gives a random integer ranging between min and max using the
-	 * VisRandomContext as context for the randomizer.  This function may
-	 * use floating point instructions. Remeber, this will break things if
-	 * used inside of MMX code.
+	 * Returns a random integer in a given range.
 	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 * @param min The minimum for the output.
-	 * @param max The maximum for the output.
+	 * @param min Lower bound
+	 * @param max Upper bound
 	 *
-	 * @return A pseudo random integer confirm to the minimum and maximum.
+	 * @return A random integer between min and max inclusive
 	 */
 	uint32_t get_int (unsigned int min, unsigned int max);
 
 	/**
-	 * Gives a random double precision floating point value
-	 * using the VisRandomContext as context for the randomizer.
+	 * Returns a random double-precision floating point value between 0.0 and 1.0.
 	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 *
-	 * @return A pseudo random integer.
+	 * @return A random value between 0.0 and 1.0
 	 */
 	double get_double ();
 
 	/**
-	 * Gives a random single precision floating point value
-	 * using the VisRandomContext as context for the randomizer.
+	 * Returns a random single-precision floating point value between 0.0 and 1.0.
 	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 *
-	 * @return A pseudo random integer.
+	 * @return A random value between 0.0 and 1.0
 	 */
 	float get_float ();
-
-	/**
-	 * Function which returns 1 with a propability of p (0.0 <= p <= 1.0)
-	 * using the VisRandomContext as context for the randomizer.
-	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 * @param p The float to be used in the decide.
-	 *
-	 * @returns 0 or 1, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
-	 */
-	bool decide (float p);
 
   private:
 
@@ -160,7 +135,6 @@ LV_API uint32_t visual_random_context_int       (VisRandomContext *rcontext);
 LV_API uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
 LV_API double   visual_random_context_double    (VisRandomContext *rcontext);
 LV_API float    visual_random_context_float     (VisRandomContext *rcontext);
-LV_API int      visual_random_context_decide    (VisRandomContext *rcontext, float a);
 
 LV_END_DECLS
 
