@@ -27,7 +27,6 @@
 #include <libvisual/libvisual.h>
 
 #include <SDL/SDL.h>
-#include <iostream>
 #include <array>
 
 namespace {
@@ -91,7 +90,7 @@ namespace {
 
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
-                  std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
+                  visual_log (VISUAL_LOG_ERROR, "Unable to initialize SDL: %s", SDL_GetError ());
                   return nullptr;
               }
           }
