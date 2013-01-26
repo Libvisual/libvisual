@@ -458,12 +458,49 @@ int main (int argc, char **argv)
         // rendering statistics
         uint64_t frames_drawn = 0;
 
+        // frame rate control state
+        int64_t const frame_period_us = frame_rate > 0 ? VISUAL_USEC_PER_SEC / frame_rate : 0;
+        LV::Time last_frame_time;
+
         // main loop
         bool running = true;
         bool visible = true;
 
         while (running)
         {
+            if (visible) {
+                // Control frame rate
+                if (frame_rate > 0) {
+                    if (frames_drawn > 0) {
+                        LV::Time diff_time = LV::Time::now () - last_frame_time;
+
+                        int64_t sleep_time = frame_period_us - int64_t (diff_time.to_usecs ());
+                        if (sleep_time > 0) {
+                            LV::Time::usleep (sleep_time);
+                        }
+                    }
+                }
+
+                display.lock ();
+
+                // Draw audio data and render
+                bin.run();
+
+                // Display rendering
+                display.update_all ();
+
+                display.unlock ();
+
+                // Record frame time
+                last_frame_time = LV::Time::now ();
+
+                // All frames rendered?
+                frames_drawn++;
+                if (frame_count > 0 && frames_drawn >= frame_count) {
+                    break;
+                }
+            }
+
             LV::Event ev;
 
             // Handle all events
@@ -582,25 +619,9 @@ int main (int argc, char **argv)
 
                 display.unlock();
             }
-
-            // Do a run cycle
-            if (!visible)
-                continue;
-
-            display.lock();
-
-            bin.run();
-
-            // All frames rendered?
-            frames_drawn++;
-            if (frame_count > 0 && frames_drawn >= frame_count)
-                running = false;
-
-            display.update_all();
-            display.unlock();
         }
 
-        /* Cleanup */
+        // Cleanup
         //visual_plugin_unload(visual_actor_get_plugin(actor));
         //visual_plugin_unload(visual_input_get_plugin(input));
 
