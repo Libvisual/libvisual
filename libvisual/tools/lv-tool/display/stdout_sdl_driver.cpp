@@ -59,7 +59,7 @@ namespace {
   /* buffer to use to store pixbufs of GL actors */
   unsigned char *rawbuffer = nullptr;
   unsigned char *rawbufferTmp = nullptr;
-	
+
   void get_nearest_resolution (int& width, int& height);
 
   class StdoutSDLDriver
@@ -108,8 +108,8 @@ namespace {
 
           m_screen_video.reset ();
 
-	  int bpp;
-	      
+          int bpp;
+
           if (depth == VISUAL_VIDEO_DEPTH_GL) {
               SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
 
@@ -142,17 +142,17 @@ namespace {
               bpp = videoinfo->vfmt->BitsPerPixel;
 
               /* memory where to copy pixelbuffer */
-	      rawbuffer = (unsigned char *) malloc(width*height*3);
-	      /* temporary buffer for flipping */
-	      rawbufferTmp = (unsigned char *) malloc(width*height*3);
-          } 
-	  else 
-	  {
-	      bpp = visual_video_depth_value_from_enum (depth);
+              rawbuffer = (unsigned char *) malloc(width*height*3);
+              /* temporary buffer for flipping */
+              rawbufferTmp = (unsigned char *) malloc(width*height*3);
+          }
+          else
+          {
+              bpp = visual_video_depth_value_from_enum (depth);
           }
 
-	  /* create surface */
-	  m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
+          /* create surface */
+          m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
 
           // Recreate video object
           m_screen_video = LV::Video::wrap (m_screen->pixels,
@@ -161,8 +161,6 @@ namespace {
                                             m_screen->h,
                                             depth);
           m_screen_video->ref();
-
-          set_title (_("lv-tool"));
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
@@ -177,7 +175,7 @@ namespace {
               return;
 
           free(rawbuffer);
-	  free(rawbufferTmp);
+          free(rawbufferTmp);
           //m_screen_video.reset (); FIXME: Invalid pointer.
 
           SDL_Quit ();
@@ -256,39 +254,35 @@ namespace {
                   SDL_SetColors (m_screen, colors.data (), 0, 256);
               }
           }
-	      
+
           if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
-	  {	 
-	      /* flip image since glReadPixels() will flip image horizontally */
-	      //glScalef(1,-1,1);
-	      //glFinish();
-		  
+          {
               /* flushhh */
               SDL_GL_SwapBuffers ();
-		  
-	      /* read pixels */
-	      glReadPixels(rect.x, rect.y, rect.width, rect.height, GL_BGR, GL_UNSIGNED_BYTE, rawbuffer);
 
-	      /* flip image using the CPU :-/ */
-	      for(int line = 0; line < rect.height; line++)
-	      {
-	          for(int col = 0; col < rect.width*3; col++)
-		  {
-			rawbufferTmp[(line*rect.width*3)+col] = 
-			      rawbuffer[((rect.height-line)*rect.width*3)+col];			
-		  }
-	      }
-		  
-	      /* write to stdout */
-	      if(write(STDOUT_FILENO, rawbufferTmp, rect.width*rect.height*3) == -1)
-				      visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");	      
-	  }
+              /* read pixels */
+              glReadPixels(rect.x, rect.y, rect.width, rect.height, GL_BGR, GL_UNSIGNED_BYTE, rawbuffer);
+
+              /* flip image using the CPU :-/ */
+              for(int line = 0; line < rect.height; line++)
+              {
+                  for(int col = 0; col < rect.width*3; col++)
+                  {
+                      rawbufferTmp[(line*rect.width*3)+col] =
+                          rawbuffer[((rect.height-line)*rect.width*3)+col];
+                  }
+              }
+
+              /* write to stdout */
+              if(write(STDOUT_FILENO, rawbufferTmp, rect.width*rect.height*3) == -1)
+                  visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
+          }
           else
-	  {
-              SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);      
-	      if(write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
-		      visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
-	  }	  	  
+          {
+              SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);
+              if(write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
+                  visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
+          }
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
@@ -312,57 +306,57 @@ namespace {
           while (SDL_PollEvent (&event)) {
 
               switch (event.type) {
-              case SDL_KEYUP:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_keyboard (VisKey(event.key.keysym.sym),
-                                                                     event.key.keysym.mod,
-                                                                     VISUAL_KEY_UP));
-                  break;
+                  case SDL_KEYUP:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_keyboard (VisKey(event.key.keysym.sym),
+                                                                         event.key.keysym.mod,
+                                                                         VISUAL_KEY_UP));
+                      break;
 
-              case SDL_KEYDOWN:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_keyboard (VisKey(event.key.keysym.sym),
-                                                                     event.key.keysym.mod,
-                                                                     VISUAL_KEY_DOWN));
-                  break;
+                  case SDL_KEYDOWN:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_keyboard (VisKey(event.key.keysym.sym),
+                                                                         event.key.keysym.mod,
+                                                                         VISUAL_KEY_DOWN));
+                      break;
 
-              case SDL_VIDEORESIZE:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_resize (event.resize.w,
-                                                                   event.resize.h));
+                  case SDL_VIDEORESIZE:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_resize (event.resize.w,
+                                                                       event.resize.h));
 
-                  create (m_display.get_video ()->get_depth (), nullptr, event.resize.w, event.resize.h, m_resizable);
-                  break;
+                      create (m_display.get_video ()->get_depth (), nullptr, event.resize.w, event.resize.h, m_resizable);
+                      break;
 
-              case SDL_MOUSEMOTION:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_mousemotion (event.motion.x,
-                                                                        event.motion.y));
-                  break;
+                  case SDL_MOUSEMOTION:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_mousemotion (event.motion.x,
+                                                                            event.motion.y));
+                      break;
 
-              case SDL_MOUSEBUTTONDOWN:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_mousebutton (event.button.button,
-                                                                        VISUAL_MOUSE_DOWN,
-                                                                        event.button.x,
-                                                                        event.button.y));
-                  break;
+                  case SDL_MOUSEBUTTONDOWN:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_mousebutton (event.button.button,
+                                                                            VISUAL_MOUSE_DOWN,
+                                                                            event.button.x,
+                                                                            event.button.y));
+                      break;
 
-              case SDL_MOUSEBUTTONUP:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_mousebutton (event.button.button,
-                                                                        VISUAL_MOUSE_UP,
-                                                                        event.button.x,
-                                                                        event.button.y));
-                  break;
+                  case SDL_MOUSEBUTTONUP:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_mousebutton (event.button.button,
+                                                                            VISUAL_MOUSE_UP,
+                                                                            event.button.x,
+                                                                            event.button.y));
+                      break;
 
-              case SDL_QUIT:
-                  visual_event_queue_add (&eventqueue,
-                                          visual_event_new_quit ());
-                  break;
+                  case SDL_QUIT:
+                      visual_event_queue_add (&eventqueue,
+                                              visual_event_new_quit ());
+                      break;
 
-              default:
-                  break;
+                  default:
+                      break;
               }
           }
       }
