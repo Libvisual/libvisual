@@ -28,10 +28,10 @@
 #include <libvisual/libvisual.h>
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
 #include <GL/gl.h>
-#include <iostream>
 #include <array>
+#include <vector>
+#include <cstring>
 
 namespace {
 
@@ -55,10 +55,6 @@ namespace {
       SDL_GL_ACCUM_ALPHA_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
       SDL_GLattr (-1)          // VISUAL_GL_ATTRIBUTE_LAST
   };
-
-  /* buffer to use to store pixbufs of GL actors */
-  unsigned char *rawbuffer = nullptr;
-  unsigned char *rawbufferTmp = nullptr;
 
   void get_nearest_resolution (int& width, int& height);
 
@@ -98,7 +94,7 @@ namespace {
 
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
-                  std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
+                  visual_log (VISUAL_LOG_ERROR, "Unable to init SDL VIDEO: %s", SDL_GetError ());
                   return nullptr;
               }
           }
@@ -141,17 +137,16 @@ namespace {
 
               bpp = videoinfo->vfmt->BitsPerPixel;
 
-              /* memory where to copy pixelbuffer */
-              rawbuffer = (unsigned char *) malloc(width*height*3);
-              /* temporary buffer for flipping */
-              rawbufferTmp = (unsigned char *) malloc(width*height*3);
+              unsigned int buffer_size = width * height * 3;
+              raw_buffer1.resize (buffer_size);
+              raw_buffer2.resize (buffer_size);
           }
           else
           {
               bpp = visual_video_depth_value_from_enum (depth);
           }
 
-          /* create surface */
+          // Create surface
           m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
 
           // Recreate video object
@@ -173,10 +168,6 @@ namespace {
       {
           if (!m_running)
               return;
-
-          free(rawbuffer);
-          free(rawbufferTmp);
-          //m_screen_video.reset (); FIXME: Invalid pointer.
 
           SDL_Quit ();
 
@@ -257,31 +248,35 @@ namespace {
 
           if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL)
           {
-              /* flushhh */
+              // Complete all GL commands
               SDL_GL_SwapBuffers ();
 
-              /* read pixels */
-              glReadPixels(rect.x, rect.y, rect.width, rect.height, GL_BGR, GL_UNSIGNED_BYTE, rawbuffer);
+              // Read pixels
+              glReadPixels (rect.x, rect.y, rect.width, rect.height, GL_BGR, GL_UNSIGNED_BYTE, raw_buffer1.data ());
 
-              /* flip image using the CPU :-/ */
-              for(int line = 0; line < rect.height; line++)
+              // Manually flip image on the CPU
+              // glReadPixels() returns a vertically-inverted image and there's no way to control this
+              std::size_t row_stride = rect.width * 3;
+              for (int y = 0; y < rect.height; y++)
               {
-                  for(int col = 0; col < rect.width*3; col++)
-                  {
-                      rawbufferTmp[(line*rect.width*3)+col] =
-                          rawbuffer[((rect.height-line)*rect.width*3)+col];
-                  }
+                  std::memcpy (raw_buffer2.data () + y * row_stride,
+                               raw_buffer1.data () + (rect.height - y - 1) * row_stride,
+                               row_stride);
               }
 
-              /* write to stdout */
-              if(write(STDOUT_FILENO, rawbufferTmp, rect.width*rect.height*3) == -1)
+              // Write to stdout
+              if (write (STDOUT_FILENO, raw_buffer2.data (), raw_buffer2.size ()) == -1) {
                   visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
+              }
           }
           else
           {
               SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);
-              if(write(STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
+
+              // Write to stdout
+              if (write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1) {
                   visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
+              }
           }
       }
 
@@ -375,6 +370,9 @@ namespace {
 
       bool m_active;
       bool m_running;
+
+      std::vector<uint8_t> raw_buffer1;
+      std::vector<uint8_t> raw_buffer2;
   };
 
   void get_nearest_resolution (int& width, int& height)
