@@ -32,6 +32,12 @@
 #include <array>
 #include <vector>
 #include <cstring>
+#include <unistd.h>
+
+// MinGW unistd.h doesn't have *_FILENO or SEEK_* defined
+#ifdef VISUAL_WITH_MINGW
+#  define STDOUT_FILENO 1
+#endif
 
 namespace {
 
