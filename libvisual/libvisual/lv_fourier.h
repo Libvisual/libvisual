@@ -50,7 +50,7 @@ namespace LV {
        * size. The current implementation does not use the Fast
        * Fourier Transform for non powers of 2.
        *
-       * note If samples_in is smaller than 2 * samples_out, the input
+       * @note If samples_in is smaller than 2 * samples_out, the input
        * will be padded with zeroes.
        *
        * @param samples_in  The number of samples provided to every
@@ -76,7 +76,7 @@ namespace LV {
       /**
        * Scales an ampltitude spectrum logarithmically.
        *
-       * \note Scaled values are guaranteed to be in [0.0, 1.0].
+       * @note Scaled values are guaranteed to be in [0.0, 1.0].
        *
        * @param output Array of output samples
        * @param input  Array of input samples with values in [0.0, 1.0]
