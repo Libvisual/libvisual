@@ -143,6 +143,7 @@ SET(libvisual_SOURCES
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_util.cpp
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_time_system.cpp
 
   ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h
   ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h

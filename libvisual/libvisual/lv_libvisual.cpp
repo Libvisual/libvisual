@@ -33,6 +33,7 @@
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_util.h"
+#include "private/lv_time_system.hpp"
 
 #include "gettext.h"
 
@@ -127,7 +128,7 @@ namespace LV
       visual_mem_initialize ();
 
       // Initialize high-resolution timer system
-      Time::init ();
+      TimeSystem::start ();
 
       // Initialize the plugin registry
       PluginRegistry::init ();
@@ -139,7 +140,7 @@ namespace LV
   System::~System ()
   {
       PluginRegistry::deinit ();
-      Time::deinit ();
+      TimeSystem::shutdown ();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));
   }

@@ -33,7 +33,6 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_singleton.hpp>
 #include <memory>
 
 namespace LV {
