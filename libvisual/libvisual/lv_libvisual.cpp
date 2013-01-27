@@ -129,9 +129,6 @@ namespace LV
       // Initialize high-resolution timer system
       Time::init ();
 
-      // Initialize FFT system
-      Fourier::init ();
-
       // Initialize the plugin registry
       PluginRegistry::init ();
 
@@ -142,7 +139,6 @@ namespace LV
   System::~System ()
   {
       PluginRegistry::deinit ();
-      Fourier::deinit ();
       Time::deinit ();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));

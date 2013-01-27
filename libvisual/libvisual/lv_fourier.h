@@ -38,24 +38,6 @@
 
 namespace LV {
 
-  class Fourier
-      : public Singleton<Fourier>
-  {
-  public:
-
-      static void init ();
-
-      ~Fourier ();
-
-  private:
-
-      class Impl;
-
-      const std::unique_ptr<Impl> m_impl;
-
-      Fourier ();
-  };
-
   class LV_API DFT
   {
   public:
