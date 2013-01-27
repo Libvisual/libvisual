@@ -191,7 +191,7 @@ void visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
 {
     visual_return_if_fail (bin != nullptr);
 
-    bin->switch_set_time (LV::Time (sec, usec * VISUAL_NSEC_PER_USEC));
+    bin->switch_set_time (LV::Time (sec, usec * VISUAL_NSECS_PER_USEC));
 }
 
 void visual_bin_run (VisBin *bin)

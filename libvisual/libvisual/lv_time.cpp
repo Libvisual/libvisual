@@ -81,7 +81,7 @@ namespace LV {
       QueryPerformanceCounter (&perf_counter);
 
       return Time (perf_counter.QuadPart / perf_counter_freq,
-                   ((perf_counter.QuadPart % perf_counter_freq) * VISUAL_NSEC_PER_SEC) / perf_counter_freq);
+                   ((perf_counter.QuadPart % perf_counter_freq) * VISUAL_NSECS_PER_SEC) / perf_counter_freq);
 #else
       struct timespec clock_time;
       clock_gettime (CLOCK_MONOTONIC, &clock_time);
@@ -96,11 +96,11 @@ namespace LV {
       // nanosleep() to work. This is a workaround using the Windows
       // Sleep() function.
   #if defined(VISUAL_WITH_MINGW)
-      Sleep (usecs / VISUAL_USEC_PER_MSEC);
+      Sleep (usecs / VISUAL_USECS_PER_MSEC);
   #elif defined(VISUAL_OS_ANDROID)
       timespec request;
-      request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
-      request.tv_nsec = VISUAL_NSEC_PER_USEC * (usecs % VISUAL_USEC_PER_SEC);
+      request.tv_sec  = usecs / VISUAL_USECS_PER_SEC;
+      request.tv_nsec = VISUAL_NSECS_PER_USEC * (usecs % VISUAL_USECS_PER_SEC);
       nanosleep (&request, nullptr);
   #else
       std::this_thread::sleep_for (std::chrono::microseconds (usecs));
