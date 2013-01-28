@@ -1,7 +1,8 @@
 #include <libvisual/libvisual.h>
 #include <SDL.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 SDL_Surface *screen;
 SDL_Color colors[256];
@@ -260,6 +261,12 @@ int main (int argc, char *argv[])
     visual_log_set_verbosity(VISUAL_LOG_DEBUG);
 	visual_init (&argc, &argv);
 
+	const char *image_file_path = argc > 2 ? argv[2] : "../images/bg.bmp";
+
+	if (!(video = LV::Video::create_from_file(image_file_path))) {
+		std::cerr << "Failed to load image file '" << image_file_path << "'\n";
+		return EXIT_FAILURE;
+	}
 
 	if (argc > 1)
 		actor = visual_actor_new (argv[1]);
@@ -267,16 +274,6 @@ int main (int argc, char *argv[])
 		actor = visual_actor_new ("corona");
 
 	visual_actor_realize (actor);
-
-	VisVideo *tmpvid;
-
-	if (argc > 2)
-		tmpvid = visual_video_load_from_file (argv[2]);
-	else
-		tmpvid = visual_video_load_from_file ("../images/bg.bmp");
-
-    video = LV::Video::wrap(tmpvid->get_pixels(), false, tmpvid->get_width(), tmpvid->get_height(), tmpvid->get_depth());
-
 
     scalevid = LV::Video::create(screen->w, screen->h, video->get_depth());
     scalevid->scale(video, interpol);
