@@ -31,7 +31,9 @@
 VisVideo *visual_video_new ()
 {
     auto self = LV::Video::create ();
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -39,7 +41,9 @@ VisVideo *visual_video_new ()
 VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth)
 {
     auto self = LV::Video::create (width, height, depth);
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -47,7 +51,9 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth)
 {
     auto self = LV::Video::wrap (buffer, owner, width, height, depth);
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -55,7 +61,9 @@ VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int 
 VisVideo *visual_video_load_from_file (const char *path)
 {
     auto self = LV::Video::create_from_file (path);
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -244,7 +252,9 @@ VisVideo* visual_video_new_sub (VisVideo *src, VisRectangle *area)
     visual_return_val_if_fail (area != nullptr, nullptr);
 
     LV::VideoPtr self = LV::Video::create_sub (LV::VideoPtr (src), *area);
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -254,7 +264,9 @@ VisVideo* visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width
     visual_return_val_if_fail (src != nullptr, nullptr);
 
     LV::VideoPtr self = LV::Video::create_sub (LV::VideoPtr (src), LV::Rect (x, y, width, height));
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -266,7 +278,9 @@ VisVideo* visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src
     visual_return_val_if_fail (srect != nullptr, nullptr);
 
     LV::VideoPtr self = LV::Video::create_sub (*drect, LV::VideoPtr (src), *srect);
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
@@ -479,17 +493,23 @@ VisVideo *visual_video_scale_depth_new (VisVideo*           src,
     visual_return_val_if_fail (src != nullptr, nullptr);
 
     auto self = LV::Video::create_scale_depth (LV::VideoPtr (src), width, height, depth, scale_method);
-    self->ref ();
+    if (self) {
+        self->ref ();
+    }
 
     return self.get ();
 }
 
 void visual_video_ref (VisVideo *self)
 {
+    visual_return_if_fail (self != nullptr);
+
     self->ref ();
 }
 
 void visual_video_unref (VisVideo *self)
 {
+    visual_return_if_fail (self != nullptr);
+
     self->unref ();
 }
