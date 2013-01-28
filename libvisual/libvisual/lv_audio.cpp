@@ -356,19 +356,27 @@ namespace LV {
                      VisAudioSampleFormatType  format,
                      VisAudioSampleChannelType channeltype)
   {
-      if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO) {
-          auto chan1 = Buffer::create (buffer->get_size () / 2);
-          auto chan2 = Buffer::create (buffer->get_size () / 2);
+      auto timestamp = Time::now ();
 
-          AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
+      switch (channeltype) {
+          case VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO: {
+              auto chan1 = Buffer::create (buffer->get_size () / 2);
+              auto chan2 = Buffer::create (buffer->get_size () / 2);
 
-          auto timestamp = Time::now ();
+              AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
 
-          auto sample1 = new AudioSample (chan1, timestamp, format, rate);
-          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, *sample1);
+              auto sample1 = new AudioSample (chan1, timestamp, format, rate);
+              m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, *sample1);
 
-          auto sample2 = new AudioSample (chan2, timestamp, format, rate);
-          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_RIGHT, *sample2);
+              auto sample2 = new AudioSample (chan2, timestamp, format, rate);
+              m_impl->add_channel (VISUAL_AUDIO_CHANNEL_RIGHT, *sample2);
+
+              return;
+          }
+          default: {
+              visual_log (VISUAL_LOG_CRITICAL, "Only stereo input is currently supported");
+              return;
+          }
       }
   }
 
