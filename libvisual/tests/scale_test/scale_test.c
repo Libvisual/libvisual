@@ -215,12 +215,12 @@ int main (int argc, char *argv[])
 
 	visual_actor_realize (actor);
 
-	video = visual_video_new ();
+	const char *image_file_path = argc > 2 ? argv[2] : "../images/bg.bmp";
 
-	if (argc > 2)
-		video = visual_video_load_from_file (argv[2]);
-	else
-		video = visual_video_load_from_file ("../images/bg.bmp");
+	if (!(video = visual_video_load_from_file (image_file_path))) {
+		fprintf (stderr, "Failed to load image file '%s'\n", image_file_path);
+		return EXIT_FAILURE;
+	}
 
 	actvid = visual_video_new ();
 	visual_actor_set_video (actor, actvid);
