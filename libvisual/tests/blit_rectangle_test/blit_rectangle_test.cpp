@@ -147,8 +147,8 @@ void sdl_init (int width, int height)
 {
 	if (SDL_Init (SDL_INIT_VIDEO) < 0)
 	{
-		fprintf (stderr, "Unable to init SDL VIDEO: %s\n", SDL_GetError ());
-		exit (0);
+		std::cerr << "Unable to init SDL: " << SDL_GetError () << std::endl;
+		std::exit (EXIT_FAILURE);
 	}
 
 	sdl_create (width, height);
@@ -285,13 +285,10 @@ int main (int argc, char *argv[])
 
     video32_actor = LV::Video::create(screen->w, screen->h, depth);
 
+	sdlvid = LV::Video::create(screen->w, screen->h, depth);
+	std::memset (sdlvid->get_pixels(), 0, sdlvid->get_pitch () * sdlvid->get_height());
 
-	srcbuf = (int32_t *)malloc (screen->pitch * screen->h);
-	memset (srcbuf, 0, screen->pitch * screen->h);
-
-    sdlvid = LV::Video::wrap(srcbuf, false, screen->w, screen->h, depth);
-
-    actvid = LV::Video::create(screen->w, screen->h, visual_video_depth_get_highest(visual_actor_get_supported_depth (actor)));
+	actvid = LV::Video::create(screen->w, screen->h, visual_video_depth_get_highest(visual_actor_get_supported_depth (actor)));
 
 	visual_actor_set_video (actor, actvid.get());
 
