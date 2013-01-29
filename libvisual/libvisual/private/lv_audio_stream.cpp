@@ -31,9 +31,7 @@ namespace LV {
 
   namespace {
 
-    uint64_t max_duration = VISUAL_USECS_PER_SEC;
-
-    int sample_rate = 44100;
+    uint64_t max_lifetime = VISUAL_USECS_PER_SEC;
 
   } // anonymous namespace
 
@@ -45,7 +43,6 @@ namespace LV {
       {
           BufferConstPtr buffer;
           Time           timestamp;
-          uint64_t       duration;
       };
 
       typedef std::list<Fragment> FragmentList;
@@ -67,7 +64,7 @@ namespace LV {
   void AudioStream::Impl::remove_stale_fragments (Time const& time)
   {
       fragments.remove_if ([&] (Fragment const& fragment) -> bool {
-          if ((time - fragment.timestamp).to_usecs () > fragment.duration + max_duration) {
+          if ((time - fragment.timestamp).to_usecs () > max_lifetime) {
               size -= fragment.buffer->get_size ();
               return true;
           }
@@ -98,8 +95,7 @@ namespace LV {
       m_impl->remove_stale_fragments (Time::now ());
 
       // Add fragment to list
-      uint64_t duration = (buffer->get_size () * VISUAL_USECS_PER_SEC) / sample_rate;
-      m_impl->fragments.push_back ({ buffer, timestamp, duration });
+      m_impl->fragments.push_back ({ buffer, timestamp });
       m_impl->size += buffer->get_size ();
   }
 
