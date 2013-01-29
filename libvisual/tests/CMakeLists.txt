@@ -7,3 +7,4 @@ INCLUDE_DIRECTORIES(
 ADD_SUBDIRECTORY(audio_test)
 ADD_SUBDIRECTORY(blit_rectangle_test)
 ADD_SUBDIRECTORY(scale_test)
+ADD_SUBDIRECTORY(time_test)
