@@ -131,7 +131,7 @@ namespace LV {
           }
       } else {
           fragment = m_impl->fragments.rend (); --fragment;
-          nbytes = std::min (nbytes, size);
+          nbytes = m_impl->size;
       }
 
       std::size_t write_offset = 0;
