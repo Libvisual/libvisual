@@ -48,7 +48,7 @@ namespace LV {
 
       ChannelList channels;
 
-      void add_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp);
+      void upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp);
 
       AudioChannel* get_channel (std::string const& name) const;
   };
@@ -88,12 +88,13 @@ namespace LV {
 
   } // anonymous
 
-  void Audio::Impl::add_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp)
+  void Audio::Impl::upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp)
   {
-      auto channel = make_unique<AudioChannel> (name);
-      channel->add_samples (samples, timestamp);
+      if (!get_channel (name)) {
+          channels[name] = std::move (make_unique<AudioChannel> (name));
+      }
 
-      channels[name] = std::move (channel);
+      channels[name]->add_samples (samples, timestamp);
   }
 
   AudioChannel* Audio::Impl::get_channel (std::string const& name) const
@@ -280,8 +281,8 @@ namespace LV {
 
               AudioConvert::deinterleave_stereo_samples (samples1, samples2, converted_buffer, VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT);
 
-              m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, samples1, timestamp);
-              m_impl->add_channel (VISUAL_AUDIO_CHANNEL_RIGHT, samples2, timestamp);
+              m_impl->upload_to_channel (VISUAL_AUDIO_CHANNEL_LEFT, samples1, timestamp);
+              m_impl->upload_to_channel (VISUAL_AUDIO_CHANNEL_RIGHT, samples2, timestamp);
 
               return;
           }
@@ -308,7 +309,7 @@ namespace LV {
                                      buffer,
                                      format);
 
-      m_impl->add_channel (channel_name, converted_buffer, timestamp);
+      m_impl->upload_to_channel (channel_name, converted_buffer, timestamp);
   }
 
 } // LV namespace
