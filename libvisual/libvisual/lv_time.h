@@ -148,13 +148,13 @@ namespace LV {
       //! Converts the time to milliseconds
       uint64_t to_msecs () const
       {
-          return sec * VISUAL_MSECS_PER_SEC + nsec / VISUAL_NSECS_PER_MSEC;
+          return uint64_t (sec) * VISUAL_MSECS_PER_SEC + nsec / VISUAL_NSECS_PER_MSEC;
       }
 
       //! Converts the time to microseconds
       uint64_t to_usecs () const
       {
-          return sec * VISUAL_USECS_PER_SEC + nsec / VISUAL_NSECS_PER_USEC;
+          return uint64_t (sec) * VISUAL_USECS_PER_SEC + nsec / VISUAL_NSECS_PER_USEC;
       }
 
       //! Sleeps for a period of time. This will yield the calling thread.
