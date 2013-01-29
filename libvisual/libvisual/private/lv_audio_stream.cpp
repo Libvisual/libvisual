@@ -109,12 +109,8 @@ namespace LV {
           return 0;
       }
 
-      std::size_t buffer_size = buffer->get_size ();
-
       // Truncate if read buffer is too small
-      if (buffer_size < nbytes) {
-          nbytes = buffer->get_size ();
-      }
+      nbytes = std::min (nbytes, buffer->get_size ());
 
       std::size_t size = 0;
       std::size_t offset = 0;
