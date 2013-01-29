@@ -91,12 +91,11 @@ namespace LV {
 
   void AudioStream::write (BufferConstPtr const& buffer, Time const& timestamp)
   {
-      // Invalid stale fragments
+      // Invalidate stale fragments
       m_impl->remove_stale_fragments (Time::now ());
 
       // Add fragment to list
       m_impl->fragments.push_back ({ buffer, timestamp });
-
       m_impl->size += buffer->get_size ();
   }
 
