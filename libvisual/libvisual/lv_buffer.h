@@ -150,7 +150,9 @@ namespace LV {
       /**
        * Copies all the data contained by the buffer into dest.
        */
-      void copy_data_to (void *dest);
+      void copy_to (void *dest, std::size_t size);
+
+      void copy_to (BufferPtr const& dest);
 
       /**
        * Copies data from another Buffer starting at a given offset.
@@ -247,7 +249,8 @@ LV_API int  visual_buffer_is_allocated    (VisBuffer *buffer);
 LV_API void visual_buffer_allocate        (VisBuffer *buffer, visual_size_t size);
 LV_API void visual_buffer_destroy_content (VisBuffer *buffer);
 
-LV_API void visual_buffer_copy_data_to (VisBuffer *src, void *dest);
+LV_API void visual_buffer_copy_to (VisBuffer *src, VisBuffer *dest);
+LV_API void visual_buffer_copy_to_data (VisBuffer *src, void *dest, visual_size_t size);
 
 LV_API void visual_buffer_put      (VisBuffer *dest, VisBuffer *src, visual_size_t offset);
 LV_API void visual_buffer_put_data (VisBuffer *dest, const void *data, visual_size_t size, visual_size_t offset);

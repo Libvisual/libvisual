@@ -130,6 +130,7 @@ SET(libvisual_SOURCES
 
   private/lv_audio_convert.cpp
   private/lv_video_convert.cpp
+  private/lv_audio_stream.cpp
   private/lv_video_fill.cpp
   private/lv_video_scale.cpp
   private/lv_video_blit.cpp
@@ -138,7 +139,6 @@ SET(libvisual_SOURCES
   private/lv_video_scale_simd.cpp
   private/lv_video_bmp.cpp
   private/lv_video_png.cpp
-  private/lv_buffer_ring.cpp
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp

@@ -113,11 +113,20 @@ void visual_buffer_destroy_content (VisBuffer *self)
     self->destroy_content ();
 }
 
-void visual_buffer_copy_data_to (VisBuffer *self, void *dest)
+void visual_buffer_copy_to (VisBuffer *self, VisBuffer *dest)
 {
    visual_return_if_fail (self != nullptr);
+   visual_return_if_fail (dest != nullptr);
 
-   self->copy_data_to (dest);
+   self->copy_to (dest);
+}
+
+void visual_buffer_copy_to_data (VisBuffer *self, void *dest, visual_size_t size)
+{
+   visual_return_if_fail (self != nullptr);
+   visual_return_if_fail (dest != nullptr);
+
+   self->copy_to (dest, size);
 }
 
 void visual_buffer_put (VisBuffer *self, VisBuffer *src, visual_size_t offset)

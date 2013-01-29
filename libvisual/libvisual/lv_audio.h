@@ -33,13 +33,8 @@
 
 #define VISUAL_AUDIO(obj) (VISUAL_CHECK_CAST ((obj), VisAudio))
 
-#define VISUAL_AUDIO_CHANNEL_LEFT   "front left 1"
-#define VISUAL_AUDIO_CHANNEL_RIGHT  "front right 1"
-
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_FRONT "front"
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_REAR  "rear"
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_RIGHT "left"
-#define VISUAL_AUDIO_CHANNEL_CATEGORY_LEFT  "right"
+#define VISUAL_AUDIO_CHANNEL_LEFT  "left"
+#define VISUAL_AUDIO_CHANNEL_RIGHT "right"
 
 typedef enum {
     VISUAL_AUDIO_SAMPLE_RATE_NONE = 0,
