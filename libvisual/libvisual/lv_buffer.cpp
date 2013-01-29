@@ -187,9 +187,7 @@ namespace LV {
       visual_return_if_fail (data != nullptr);
       visual_return_if_fail (offset < m_impl->size);
 
-      std::size_t amount = m_impl->size;
-      if (offset + size > m_impl->size)
-          amount = m_impl->size - offset;
+      std::size_t amount = std::min (m_impl->size - offset, offset + size);
 
       visual_mem_copy (static_cast<uint8_t*> (m_impl->data) + offset, data, amount);
   }

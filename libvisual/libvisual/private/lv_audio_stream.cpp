@@ -96,16 +96,24 @@ namespace LV {
 
       // Add fragment to list
       m_impl->fragments.push_back ({ buffer, timestamp });
+
       m_impl->size += buffer->get_size ();
   }
 
-  std::size_t AudioStream::read (BufferPtr const& data, std::size_t nbytes)
+  std::size_t AudioStream::read (BufferPtr const& buffer, std::size_t nbytes)
   {
       visual_return_val_if_fail (nbytes > 0, 0);
 
-      // Do nothing if there are no more fragments left
+      // Return if there are no fragments
       if (m_impl->fragments.empty ()) {
           return 0;
+      }
+
+      std::size_t buffer_size = buffer->get_size ();
+
+      // Truncate if read buffer is too small
+      if (buffer_size < nbytes) {
+          nbytes = buffer->get_size ();
       }
 
       std::size_t size = 0;
@@ -116,24 +124,26 @@ namespace LV {
       auto fragment = last_fragment;
 
       // Find the oldest fragment to read from
-      while (fragment != m_impl->fragments.rend ()) {
-          size += fragment->buffer->get_size ();
-          if (size >= nbytes) {
-              offset = size - nbytes;
-              break;
+      if (nbytes <= m_impl->size) {
+          while (fragment != m_impl->fragments.rend ()) {
+              size += fragment->buffer->get_size ();
+              if (size >= nbytes) {
+                  offset = size - nbytes;
+                  break;
+              }
+              ++fragment;
           }
-          ++fragment;
+      } else {
+          fragment = m_impl->fragments.rend (); --fragment;
+          nbytes = std::min (nbytes, size);
       }
-
-      // Adjust read size in the case where there is not enough data
-      nbytes = std::min (nbytes, size);
 
       std::size_t write_offset = 0;
 
       // Copy out a portion of the first fragment if its data is only partially needed
       if (offset > 0) {
           std::size_t size = fragment->buffer->get_size () - offset;
-          data->put (fragment->buffer->get_data (offset), size, write_offset);
+          buffer->put (fragment->buffer->get_data (offset), size, write_offset);
 
           // Finish if this is the only fragment
           if (fragment == last_fragment) {
@@ -141,18 +151,18 @@ namespace LV {
           }
 
           write_offset += size;
-          ++fragment;
+          --fragment;
       }
 
       // Copy out data in the remaining fragments
       while (fragment != last_fragment) {
-          data->put (fragment->buffer, write_offset);
+          buffer->put (fragment->buffer, write_offset);
           write_offset += fragment->buffer->get_size ();
-          ++fragment;
+          --fragment;
       }
 
       // Copy out data in the last fragment
-      data->put (m_impl->fragments.back ().buffer, write_offset);
+      buffer->put (fragment->buffer, write_offset);
 
       return nbytes;
   }

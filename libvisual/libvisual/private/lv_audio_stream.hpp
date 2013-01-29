@@ -49,7 +49,7 @@ namespace LV {
 
       void write (BufferConstPtr const& buffer, Time const& timestamp);
 
-      std::size_t read (BufferPtr const& data, std::size_t nbytes);
+      std::size_t read (BufferPtr const& buffer, std::size_t nbytes);
 
   private:
 
