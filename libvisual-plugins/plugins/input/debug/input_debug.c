@@ -28,7 +28,7 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define OUTPUT_RATE       44100
 #define OUTPUT_SAMPLES    1024
-#define DEFAULT_FREQUENCY (OUTPUT_RATE/500)
+#define DEFAULT_FREQUENCY (OUTPUT_RATE / 500.0)
 #define DEFAULT_AMPLITUDE 1.0
 
 #define UPLOAD_PERIOD_USECS  (((uint64_t) OUTPUT_SAMPLES * VISUAL_USECS_PER_SEC) / OUTPUT_RATE)
@@ -120,7 +120,7 @@ static int inp_debug_cleanup (VisPluginData *plugin)
 static void setup_wave (DebugPriv *priv)
 {
 	priv->angle = 0.0;
-	priv->angle_step = (2 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
+	priv->angle_step = (2.0 * VISUAL_MATH_PI * priv->frequency) / OUTPUT_RATE;
 }
 
 static void change_param (VisPluginData *plugin, VisParam *param)
@@ -176,14 +176,14 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 
 	/* Generate and upload samples */
 
-	int16_t data[OUTPUT_SAMPLES*2];
+	float data[OUTPUT_SAMPLES*2];
 	int i;
 
 	for(i = 0; i < OUTPUT_SAMPLES*2; i += 2) {
-		data[i] = data[i+1] = (int16_t) (65535/2 * priv->ampltitude * sin (priv->angle));
+		data[i] = data[i+1] = priv->ampltitude * sin (priv->angle);
 
 		priv->angle += priv->angle_step;
-		if (priv->angle >= 2 * VISUAL_MATH_PI) {
+		while (priv->angle >= 2 * VISUAL_MATH_PI) {
 			priv->angle -= 2 * VISUAL_MATH_PI;
 		}
 	}
@@ -192,7 +192,7 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 
 	visual_audio_input (audio, buffer,
 	                    VISUAL_AUDIO_SAMPLE_RATE_44100,
-	                    VISUAL_AUDIO_SAMPLE_FORMAT_S16,
+	                    VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
 	                    VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
 	visual_buffer_unref (buffer);
