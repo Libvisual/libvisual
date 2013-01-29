@@ -39,10 +39,9 @@ libvisual/lv_transform.cpp
 libvisual/lv_video.cpp
 libvisual/lv_video_c.cpp
 
-libvisual/private/lv_buffer_ring.cpp
+libvisual/private/lv_audio_stream.cpp
 
 libvisual/private/lv_video_bmp.cpp
-
 libvisual/private/lv_video_blit.cpp
 libvisual/private/lv_video_convert.cpp
 libvisual/private/lv_video_fill.cpp
