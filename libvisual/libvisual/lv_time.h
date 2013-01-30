@@ -156,14 +156,6 @@ namespace LV {
 
       //! Sleeps for a period of time. This will yield the calling thread.
       static void usleep (uint64_t usecs);
-
-      // FIXME: Find a better place to put these functions
-
-      //! Initializes LV's timer subsystem. DO NOT use.
-      static void init ();
-
-      //! Deinitializes LV's timer subsystem. DO NOT use.
-      static void deinit ();
   };
 
   class LV_API Timer
