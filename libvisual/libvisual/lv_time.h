@@ -40,10 +40,6 @@
 #define VISUAL_NSECS_PER_MSEC   1000000
 #define VISUAL_NSECS_PER_USEC   1000
 
-/**
- * The VisTime structure can contain seconds and microseconds for timing purpose.
- */
-
 #ifdef __cplusplus
 
 #include <memory>
@@ -51,6 +47,7 @@
 
 namespace LV {
 
+  //! Encodes time.
   class LV_API Time
   {
   public:

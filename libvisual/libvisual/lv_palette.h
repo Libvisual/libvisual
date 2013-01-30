@@ -39,9 +39,10 @@
 
 namespace LV {
 
-  /**
-   * Data type to describe the palette for an 8 bits screen depth.
-   */
+  //! Colour palette class for indexed colour modes
+  //!
+  //! @note This is currently only used for 8-bit images
+  //!
   struct LV_API Palette
   {
       std::vector<Color> colors;

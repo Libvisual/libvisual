@@ -188,6 +188,13 @@ struct _VisEventParam {
 	void		*param;		/**< The parameter entry which has been changed. */
 };
 
+/**
+ * The main event data structure.
+ *
+ * All events are encapsulated using the VisEvent structure.
+ *
+ * @see visual_event_new
+ */
 struct _VisEvent
 {
     VisEventType type;
@@ -205,13 +212,6 @@ struct _VisEvent
     } event;
 };
 
-/**
- * The main event data structure.
- *
- * All events are encapsulated using the VisEvent structure.
- *
- * @see visual_event_new
- */
 #ifdef __cplusplus
 
 #include <memory>

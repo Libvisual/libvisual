@@ -31,15 +31,13 @@
  * @{
  */
 
-/** s. version.h.in for current API version */
-
-
 #ifdef __cplusplus
 
 #include <libvisual/lv_singleton.hpp>
 #include <memory>
 #include <string>
 
+//! Libvisual namespace
 namespace LV {
 
   class LV_API System

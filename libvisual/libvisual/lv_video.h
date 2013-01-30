@@ -139,6 +139,7 @@ namespace LV {
   typedef IntrusivePtr<Video> VideoPtr;
   typedef IntrusivePtr<Video const> VideoConstPtr;
 
+  //! Canvas class for drawing operations
   class LV_API Video
   {
   public:

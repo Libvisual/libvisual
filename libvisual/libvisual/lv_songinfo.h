@@ -58,11 +58,12 @@ namespace LV {
       SONG_INFO_TYPE_ADVANCED = ::VISUAL_SONGINFO_TYPE_ADVANCED
   };
 
-  /**
-   * Song info class. Contains information about the current played
-   * song. Information like artist, album, song, elapsed time and even
-   * coverart can be set using the methods of the VisSongInfo system.
-   */
+  //!
+  //! Song information class.
+  //!
+  //! Contains information about a song such as artist, album, song, elapsed
+  //! time and cover art.
+  //!
   class LV_API SongInfo
   {
   public:
@@ -97,6 +98,11 @@ namespace LV {
        */
       void set_simple_name (std::string const& name);
 
+      /**
+       * Returns the simple song name.
+       *
+       * @return name
+       */
       std::string get_simple_name () const;
 
       /**
@@ -104,10 +110,15 @@ namespace LV {
        *
        * @note Advanced interface only
        *
-       * @param length length in seconds to set
+       * @param length length in seconds
        */
       void set_length (int length);
 
+      /**
+       * Returns the length of the song
+       *
+       * @return length in seconds
+       */
       int get_length () const;
 
       /**
