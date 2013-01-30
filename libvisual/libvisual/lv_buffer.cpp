@@ -205,17 +205,4 @@ namespace LV {
           put (data, size, offset);
   }
 
-  void Buffer::ref () const
-  {
-      m_ref_count++;
-  }
-
-  void Buffer::unref () const
-  {
-      m_ref_count--;
-      if (m_ref_count == 0) {
-          delete this;
-      }
-  }
-
 } // LV namespace

@@ -94,7 +94,6 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     unsigned int tile_height = dest_height / n_tile_rows;
 
     LV::VideoPtr sub = LV::Video::create(tile_width, tile_height, visual_video_get_depth(dest));
-    sub->ref();
 
     LV::Color col(255, 255, 255);
     sub->fill_color(col);
@@ -107,8 +106,6 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
     dest->blit(src, 0, 0, true);
 
     dest->blit(region, src, region, false);
-
-    sub->unref();
 
     return 0;
     for(unsigned int row = 0, y = 0; y < dest_height; row++, y += tile_height)
@@ -134,8 +131,6 @@ int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio,
             dest->blit(region, sub, sub->get_extents(), false);
         }
     }
-
-    sub->unref();
 
     return 0;
 }

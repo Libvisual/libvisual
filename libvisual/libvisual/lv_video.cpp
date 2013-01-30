@@ -198,18 +198,6 @@ namespace LV {
       // empty
   }
 
-  void Video::ref () const
-  {
-      m_ref_count++;
-  }
-
-  void Video::unref () const
-  {
-      if (--m_ref_count == 0) {
-          delete this;
-      }
-  }
-
   void Video::free_buffer ()
   {
       m_impl->pixel_rows.clear ();

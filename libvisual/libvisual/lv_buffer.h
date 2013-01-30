@@ -209,23 +209,10 @@ namespace LV {
        */
       void fill_with_pattern (void const* data, std::size_t size);
 
-      /**
-       * Adds a reference to this Buffer.
-       *
-       * @note Reserved for internal use by the C API.
-       * @todo Make this private.
-       */
-      void ref () const;
-
-      /**
-       * Removes a reference to this Buffer and destroys Buffer when no more references are left.
-       *
-       * @note Reserved for internal use by the C API.
-       * @todo Make this private.
-       */
-      void unref () const;
-
   private:
+
+      friend void intrusive_ptr_add_ref (Buffer const* buffer);
+      friend void intrusive_ptr_release (Buffer const* buffer);
 
       class Impl;
       const std::unique_ptr<Impl> m_impl;
@@ -235,24 +222,16 @@ namespace LV {
       Buffer ();
   };
 
-  inline void intrusive_ptr_add_ref (Buffer* buffer)
-  {
-      buffer->ref ();
-  }
-
-  inline void intrusive_ptr_release (Buffer* buffer)
-  {
-      buffer->unref ();
-  }
-
   inline void intrusive_ptr_add_ref (Buffer const* buffer)
   {
-      buffer->ref ();
+      buffer->m_ref_count++;
   }
 
   inline void intrusive_ptr_release (Buffer const* buffer)
   {
-      buffer->unref ();
+      if (--buffer->m_ref_count == 0) {
+          delete buffer;
+      }
   }
 
 } // LV namespace

@@ -429,9 +429,6 @@ namespace LV {
                                           int                  height,
                                           VisVideoDepth        depth,
                                           VisVideoScaleMethod  scale_method);
-      void ref () const;
-
-      void unref () const;
 
   private:
 
@@ -439,6 +436,9 @@ namespace LV {
       friend class VideoTransform;
       friend class VideoFill;
       friend class VideoBlit;
+
+      friend void intrusive_ptr_add_ref (Video const* video);
+      friend void intrusive_ptr_release (Video const* video);
 
       class Impl;
       const std::unique_ptr<Impl> m_impl;
@@ -448,24 +448,16 @@ namespace LV {
       Video ();
   };
 
-  inline void intrusive_ptr_add_ref (Video* video)
-  {
-      video->ref ();
-  }
-
-  inline void intrusive_ptr_release (Video* video)
-  {
-      video->unref ();
-  }
-
   inline void intrusive_ptr_add_ref (Video const* video)
   {
-      video->ref ();
+      video->m_ref_count++;
   }
 
   inline void intrusive_ptr_release (Video const* video)
   {
-      video->unref ();
+      if (--video->m_ref_count == 0) {
+          delete video;
+      }
   }
 
 } // LV namespace
