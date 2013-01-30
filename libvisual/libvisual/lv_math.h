@@ -95,7 +95,7 @@ LV_API void visual_math_simd_mul_floats_float (float *LV_RESTRICT dest, const fl
  * @param k     constant addend
  * @param count number of elements
  */
-LV_API void visual_math_simd_add_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float adder, visual_size_t count);
+LV_API void visual_math_simd_add_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float k, visual_size_t count);
 
 LV_API void visual_math_simd_mul_floats_floats (float *LV_RESTRICT dest, const float *LV_RESTRICT src1, const float *LV_RESTRICT src2, visual_size_t count);
 

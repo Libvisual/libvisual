@@ -113,7 +113,7 @@ typedef struct _VisPluginEnviron VisPluginEnviron;
 /* Plugin standard get_plugin_info method */
 
 /**
- * This is the signature for the 'get_plugin_info' function every libvisual plugin needs to have. The 
+ * This is the signature for the 'get_plugin_info' function every libvisual plugin needs to have. The
  * 'get_plugin_info' function provides libvisual plugin data and all the detailed information regarding
  * the plugin. This function is compulsory without it libvisual won't load the plugin.
  *
@@ -176,7 +176,7 @@ struct _VisPluginInfo {
 	const char *help;     /**< Help */
 	const char *license;  /**< License */
 	const char *url;	  /**< URL that points to further plugin info */
-		
+
 	VisPluginInitFunc	 init;     /**< The standard init function, every plugin has to implement this. */
 	VisPluginCleanupFunc cleanup;  /**< The standard cleanup function, every plugin has to implement this. */
 	VisPluginEventsFunc	 events;   /**< The standard event function, implementation is optional. */
@@ -319,10 +319,10 @@ LV_API int visual_plugin_unload (VisPluginData *plugin);
 /**
  * Private function to load a plugin.
  *
- * @param ref Pointer to the VisPluginRef containing information about
- *	the plugin that needs to be loaded.
+ * @param type Plugin type
+ * @param name Plugin name
  *
- * @return A newly created and loaded VisPluginData.
+ * @return A newly created and loaded VisPluginData, or NULL on failure.
  */
 LV_API VisPluginData *visual_plugin_load (VisPluginType type, const char *name);
 

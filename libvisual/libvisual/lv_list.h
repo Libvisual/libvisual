@@ -130,12 +130,10 @@ LV_API void *visual_list_prev (VisList *list, VisListEntry **le);
 LV_API void *visual_list_get (VisList *list, int index);
 
 /**
- * Get an data entry by index. This will give the pointer to an data
- * element based on the index in the list.
+ * Adds an entry at the beginning of the list.
  *
- * @param list Pointer to the VisList of which we want an element.
- * @param index Index to determine which entry we want. The index starts at
- * 	1.
+ * @param list Pointer to VisList of which we want an element.
+ * @param data A pointer to the data that needs to be added to the list.
  *
  * @return The data element of the requested entry, or NULL.
  */

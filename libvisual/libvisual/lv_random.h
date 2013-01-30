@@ -43,7 +43,7 @@ namespace LV {
   typedef uint32_t RandomSeed;
 
   /**
-   * LV::RandomContext is a pseudorandom number generator.
+   * Pseudorandom number generator class.
    */
   class LV_API RandomContext
   {
