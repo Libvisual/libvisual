@@ -3,6 +3,12 @@
 
 namespace LV {
 
+  //! Singleton class template.
+  //!
+  //! @tparam T Class to make singleton out of
+  //!
+  //! @note Singleton is implemented using the curiously recurring template pattern (CRTP).
+  //!
   template <class T>
   class Singleton
   {
@@ -12,14 +18,18 @@ namespace LV {
 
       Singleton const& operator= (Singleton const&) = delete;
 
-      static void deinit ()
+      //! Returns the singleton instance
+      //!
+      //! @return singleton instance
+      static T* instance () {
+          return m_instance;
+      }
+
+      //! Destroys the singleton instance
+      static void destroy ()
       {
           delete m_instance;
           m_instance = nullptr;
-      }
-
-      static T* instance () {
-          return m_instance;
       }
 
   protected:
