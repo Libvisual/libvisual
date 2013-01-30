@@ -25,13 +25,16 @@ ALIASES                =
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 SUBGROUPING            = YES
+TYPEDEF_HIDES_STRUCT   = YES
+BUILTIN_STL_SUPPORT    = YES
+MARKDOWN_SUPPORT       = YES
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_STATIC         = NO
-EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_CLASSES  = NO
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
@@ -54,7 +57,7 @@ SHOW_USED_FILES        = YES
 #---------------------------------------------------------------------------
 QUIET                  = NO
 WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
@@ -169,7 +172,8 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = "visual_log(severity, format, args)=" \
                          "LV_API=" \
                          "LV_BEGIN_DECLS=" \
-                         "LV_END_DECLS="
+                         "LV_END_DECLS=" \
+                         "__cplusplus"
 EXPAND_AS_DEFINED      = TRUE FALSE
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
