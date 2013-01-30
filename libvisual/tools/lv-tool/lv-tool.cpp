@@ -382,12 +382,7 @@ int main (int argc, char **argv)
             throw std::runtime_error ("Failed to start pipeline with actor '" + actor_name + "' and input '" + input_name + "'");
         }
 
-        // initialize actor plugin
-        std::cerr << "Loading actor '" << actor_name << "'...\n";
         auto actor = bin.get_actor();
-        if (!actor) {
-            throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
-        }
 
         // Set random seed
         if (have_seed) {
@@ -396,13 +391,6 @@ int main (int argc, char **argv)
 
             r_context.set_seed (seed);
             seed++;
-        }
-
-        // initialize input plugin
-        std::cerr << "Loading input '" << input_name << "'...\n";
-        auto input = bin.get_input();
-        if (!input) {
-            throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
         // Select output colour depth
@@ -616,11 +604,6 @@ int main (int argc, char **argv)
                 display.unlock();
             }
         }
-
-        // Cleanup
-        //visual_plugin_unload(visual_actor_get_plugin(actor));
-        //visual_plugin_unload(visual_input_get_plugin(input));
-
     }
     catch (std::exception& error) {
         std::cerr << error.what () << std::endl;
