@@ -461,6 +461,7 @@ int main (int argc, char **argv)
         // frame rate control state
         int64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
         LV::Time last_frame_time;
+        bool draw_frame = true;
 
         // main loop
         bool running = true;
@@ -468,19 +469,14 @@ int main (int argc, char **argv)
 
         while (running)
         {
-            if (visible) {
-                // Control frame rate
-                if (frame_rate > 0) {
-                    if (frames_drawn > 0) {
-                        LV::Time diff_time = LV::Time::now () - last_frame_time;
-
-                        int64_t sleep_time = frame_period_us - int64_t (diff_time.to_usecs ());
-                        if (sleep_time > 0) {
-                            LV::Time::usleep (sleep_time);
-                        }
-                    }
+            // Control frame rate
+            if (frame_rate > 0) {
+                if (frames_drawn > 0) {
+                    draw_frame = (LV::Time::now () - last_frame_time).to_usecs () >= frame_period_us;
                 }
+            }
 
+            if (draw_frame) {
                 display.lock ();
 
                 // Draw audio data and render
