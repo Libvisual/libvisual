@@ -59,7 +59,7 @@ namespace LV {
       /**
        * Returns the list of all available plugins of a given type.
        *
-       * @param Type of plugin
+       * @param type Type of plugin
        *
        * @return List of plugins of the given type
        */
