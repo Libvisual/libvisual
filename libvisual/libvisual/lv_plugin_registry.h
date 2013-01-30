@@ -25,8 +25,6 @@ namespace LV {
   {
   public:
 
-      static void init ();
-
       PluginRegistry (PluginRegistry const&) = delete;
 
       /** Destructor */
@@ -79,11 +77,15 @@ namespace LV {
 
   private:
 
+      friend class System;
+
       class Impl;
 
       const std::unique_ptr<Impl> m_impl;
 
       PluginRegistry ();
+
+      static void init ();
   };
 
 } // LV namespace
