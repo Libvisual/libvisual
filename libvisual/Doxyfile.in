@@ -22,13 +22,13 @@ INHERIT_DOCS           = YES
 DISTRIBUTE_GROUP_DOC   = NO
 TAB_SIZE               = 4
 ALIASES                =
-OPTIMIZE_OUTPUT_FOR_C  = YES
+OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 SUBGROUPING            = YES
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
-EXTRACT_ALL            = YES
+EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_STATIC         = NO
 EXTRACT_LOCAL_CLASSES  = YES
@@ -64,7 +64,7 @@ WARN_LOGFILE           =
 INPUT                  = @PROJECT_SOURCE_DIR@/libvisual/
 FILE_PATTERNS          =
 RECURSIVE              = YES
-EXCLUDE                =
+EXCLUDE                = @PROJECT_SOURCE_DIR@/libvisual/private
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXAMPLE_PATH           =
@@ -161,13 +161,16 @@ PERLMOD_MAKEVAR_PREFIX =
 # Configuration options related to the preprocessor
 #---------------------------------------------------------------------------
 ENABLE_PREPROCESSING   = YES
-MACRO_EXPANSION        = NO
-EXPAND_ONLY_PREDEF     = NO
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             =
-EXPAND_AS_DEFINED      =
+PREDEFINED             = "visual_log(severity, format, args)=" \
+                         "LV_API=" \
+                         "LV_BEGIN_DECLS=" \
+                         "LV_END_DECLS="
+EXPAND_AS_DEFINED      = TRUE FALSE
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
 # Configuration::addtions related to external references
