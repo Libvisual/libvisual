@@ -161,7 +161,6 @@ namespace {
                                             m_screen->w,
                                             m_screen->h,
                                             depth);
-          m_screen_video->ref();
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
