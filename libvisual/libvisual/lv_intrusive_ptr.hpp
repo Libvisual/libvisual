@@ -4,8 +4,17 @@
 namespace LV
 {
 
-  // An implementation of boost::intrusive_ptr
-
+  //! Intrusive smart pointer class template.
+  //!
+  //! @tparam T Class to reference count
+  //!
+  //! @note This is an implementation of boost::intrusive_ptr.
+  //!
+  //! The type T must have two functions overloaded:
+  //!
+  //! * void intrusive_ptr_add_ref(T* object) -- _Called to add a reference_
+  //! * void intrusive_ptr_release(T* object) -- _Called to remove a reference and destroy the object when not longer used_
+  //!
   template <typename T>
   class IntrusivePtr
   {
@@ -32,6 +41,7 @@ namespace LV
               intrusive_ptr_add_ref (m_ptr);
       }
 
+      //! Copy constructor
       IntrusivePtr (IntrusivePtr const& rhs)
           : m_ptr (rhs.m_ptr)
       {
@@ -46,12 +56,14 @@ namespace LV
           rhs.m_ptr = nullptr;
       }
 
+      //! Destructor
       ~IntrusivePtr ()
       {
           if (m_ptr)
               intrusive_ptr_release (m_ptr);
       }
 
+      //! Assignment operator
       template <class U>
       IntrusivePtr& operator= (IntrusivePtr<U> const& rhs)
       {
@@ -80,7 +92,7 @@ namespace LV
           return *this;
       }
 
-      //! Resets to pointer to null
+      //! Resets pointer to null
       void reset ()
       {
           IntrusivePtr ().swap (*this);
@@ -91,26 +103,31 @@ namespace LV
           IntrusivePtr (rhs).swap (*this);
       }
 
+      //! Returns the memory managed pointer
       T* get () const
       {
           return m_ptr;
       }
 
+      //! Dereference operator
       T& operator* () const
       {
           return *m_ptr;
       }
 
+      //! Member dereference operator
       T* operator-> () const
       {
           return m_ptr;
       }
 
+      //! Bool conversion operator
       explicit operator bool () const
       {
           return m_ptr != nullptr;
       }
 
+      //! Swaps pointer with another
       void swap (IntrusivePtr& rhs)
       {
           T* tmp = m_ptr;
