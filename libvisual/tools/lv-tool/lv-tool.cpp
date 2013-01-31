@@ -383,6 +383,11 @@ int main (int argc, char **argv)
         else if (parseRes > 0)
             throw std::runtime_error ("");
 
+        // Set system-wide random seed
+        if (have_seed) {
+            LV::System::instance()->set_rng_seed (seed);
+        }
+
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
@@ -394,15 +399,6 @@ int main (int argc, char **argv)
         }
 
         auto actor = bin.get_actor();
-
-        // Set random seed
-        if (have_seed) {
-            auto  plugin_data = visual_actor_get_plugin(actor);
-            auto& r_context   = *visual_plugin_get_random_context (plugin_data);
-
-            r_context.set_seed (seed);
-            seed++;
-        }
 
         // Select output colour depth
 

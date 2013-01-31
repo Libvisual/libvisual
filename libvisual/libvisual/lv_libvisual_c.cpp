@@ -34,4 +34,14 @@ extern "C" {
       LV::System::destroy ();
   }
 
+  void visual_set_rng_seed (VisRandomSeed seed)
+  {
+      LV::System::instance()->set_rng_seed (seed);
+  }
+
+  VisRandomContext *visual_get_rng (void)
+  {
+      return &LV::System::instance()->get_rng ();
+  }
+
 } // extern C

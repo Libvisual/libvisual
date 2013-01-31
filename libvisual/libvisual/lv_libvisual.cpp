@@ -74,16 +74,23 @@ namespace LV
             nullptr);
     }
 
+    RandomSeed random_seed ()
+    {
+        return RandomSeed (Time::now ().to_usecs ());
+    }
+
   } // anonymous namespace
 
   class System::Impl
   {
   public:
 
-      VisParamList *params;
+      VisParamList* params;
+      RandomContext rng;
 
       Impl ()
-          : params (nullptr)
+          : params { nullptr }
+          , rng    { random_seed () }
       {}
   };
 
@@ -113,6 +120,16 @@ namespace LV
   VisParamList *System::get_params () const
   {
       return m_impl->params;
+  }
+
+  RandomContext& System::get_rng () const
+  {
+      return m_impl->rng;
+  }
+
+  void System::set_rng_seed (VisRandomSeed seed)
+  {
+      m_impl->rng.set_seed (seed);
   }
 
   System::System (int& argc, char**& argv)

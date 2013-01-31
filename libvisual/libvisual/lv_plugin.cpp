@@ -179,7 +179,7 @@ VisPluginData *visual_plugin_load (VisPluginType type, const char *name)
 
     plugin->info     = info;
     plugin->realized = FALSE;
-    plugin->random   = new LV::RandomContext (LV::Time::now ().to_usecs ());
+    plugin->random   = new LV::RandomContext (LV::System::instance()->get_rng().get_int ());
 
     return plugin;
 }

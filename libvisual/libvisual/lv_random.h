@@ -112,9 +112,12 @@ namespace LV {
 
 #ifdef __cplusplus
 typedef ::LV::RandomContext VisRandomContext;
+typedef ::LV::RandomSeed    VisRandomSeed;
 #else
   typedef struct _VisRandomContext VisRandomContext;
   struct _VisRandomContext;
+
+  typedef uint32_t VisRandomSeed;
 #endif
 
 /**
@@ -127,10 +130,10 @@ typedef ::LV::RandomContext VisRandomContext;
 
 LV_BEGIN_DECLS
 
-LV_API VisRandomContext *visual_random_context_new  (uint32_t seed);
+LV_API VisRandomContext *visual_random_context_new  (VisRandomSeed seed);
 LV_API void              visual_random_context_free (VisRandomContext *rcontext);
 
-LV_API void     visual_random_context_set_seed  (VisRandomContext *rcontext, uint32_t seed);
+LV_API void     visual_random_context_set_seed  (VisRandomContext *rcontext, VisRandomSeed seed);
 LV_API uint32_t visual_random_context_int       (VisRandomContext *rcontext);
 LV_API uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
 LV_API double   visual_random_context_double    (VisRandomContext *rcontext);

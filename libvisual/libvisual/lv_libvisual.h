@@ -25,6 +25,7 @@
 #define _LV_LIBVISUAL_H
 
 #include <libvisual/lv_param.h>
+#include <libvisual/lv_random.h>
 
 /**
  * @defgroup Libvisual Libvisual
@@ -78,6 +79,18 @@ namespace LV {
        */
       VisParamList* get_params () const;
 
+      /**
+       * Returns the system-wide random number generator.
+       */
+      RandomContext& get_rng () const;
+
+      /**
+       * Sets the seed for the system-wide random number generator.
+       *
+       * @param seed seed
+       */
+      void set_rng_seed (RandomSeed seed);
+
   private:
 
       class Impl;
@@ -105,6 +118,10 @@ LV_API const char *visual_get_version (void);
 LV_API int visual_get_api_version (void);
 
 LV_API VisParamList *visual_get_params (void);
+
+LV_API void visual_set_rng_seed (VisRandomSeed seed);
+
+LV_API VisRandomContext *visual_get_rng (void);
 
 LV_END_DECLS
 
