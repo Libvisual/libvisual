@@ -29,12 +29,14 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include <libvisual/libvisual.h>
-
 #include "corona.h"
-#include <stdio.h>
+
+#include <libvisual/libvisual.h>
+#include <limits>
+#include <cstdio>
 #include <cstdlib>
 #include <cmath>
+
 using namespace std;
 
 
@@ -88,7 +90,7 @@ Corona::~Corona()
 }
 
 double Corona::random(double min, double max) const {
-	return LV::rand() * (max - min) / RAND_MAX + min;
+	return LV::rand() * (max - min) / std::numeric_limits<LV::RandomSeed>::max() + min;
 }
 
 bool Corona::setUpSurface(int width, int height) {

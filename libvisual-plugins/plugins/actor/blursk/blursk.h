@@ -30,11 +30,7 @@
 
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
 
-#ifdef RAND_MAX
-# define rand_0_to(n)   (int)((double)visual_rand() * (double)(n) / (RAND_MAX + 1.0))
-#else
-# define rand_0_to(n)   (visual_rand() % (n))
-#endif
+#define rand_0_to(n)   (visual_rand() % (n))
 
 #define MAX(a, b) (a > b ? a : b)
 #define MIN(a ,b) (a > b ? b : a)

@@ -72,11 +72,7 @@ IFSPoint;
 #define LRAND()            ((long) (goom_random(goomInfo->gRandom) & 0x7fffffff))
 #define NRAND(n)           ((int) (LRAND() % (n)))
 
-#if RAND_MAX < 0x10000
-#define MAXRAND (((float)(RAND_MAX<16)+((float)RAND_MAX)+1.0f)/127.0f)
-#else
 #define MAXRAND            (2147483648.0/127.0)           /* unsigned 1<<31 / 127.0 (cf goom_tools) as a float */
-#endif
 
 /*****************************************************/
 
