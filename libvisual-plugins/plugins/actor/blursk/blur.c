@@ -1356,7 +1356,7 @@ int blur(priv, beat, quiet)
         /* if this blur function needs random numbers, generate now */
         randval[0] = 0;
         for (j = 0; j < styles[i].nrandoms; j++)
-            randval[j] = rand();
+            randval[j] = visual_rand();
 
         /* choose a stencil */
         blur_stencil = bitmap_index(config.blur_stencil);

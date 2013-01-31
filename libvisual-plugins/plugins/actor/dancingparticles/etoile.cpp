@@ -201,7 +201,6 @@ FloatPoint eSetCenter(long time)
     }
   else
     {
-      //  srand(time/100);
       rot=matrix(p.rotspeed2,FloatPoint(cos(((double)time)/40.)*5,cos(((double)time)/124.)*5,cos(((double)time)/231.)*5));
       rot.ApplyMatrix (a,c);
 
@@ -215,5 +214,5 @@ FloatPoint eSetCenter(long time)
       a+= vectunite ;
     }
 
-  return a;//FloatPoint(200+(rand()%(width-200)),200+(rand()%(height-200)),0)
+  return a;//FloatPoint(200+(LV::rand()%(width-200)),200+(LV::rand()%(height-200)),0)
 }

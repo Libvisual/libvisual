@@ -1,9 +1,11 @@
+#include <libvisual/libvisual.h>
 #include "EgOSUtils.h"
 
 #include "CEgFileSpec.h"
 #include "CEgErr.h"
 #include "UtilStr.h"
 
+#include <limits>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -13,7 +15,6 @@
 #include <Sound.h>
 #include <Fonts.h>
 #endif
-
 
 #ifdef EG_WIN
 #include <windows.h>
@@ -82,8 +83,6 @@ void EgOSUtils::ShowFileErr( const CEgFileSpec& inFileSpec, CEgErr& inErr, bool 
 
 
 void EgOSUtils::Initialize( void* inModuleInstance ) {
-
-	srand( clock() );
 
 	#if EG_MAC
 
@@ -661,8 +660,8 @@ void EgOSUtils::ShowMsg( const char* inMsg ) {
 
 
 long EgOSUtils::Rnd( long min, long max ) {
-	long maxRnd 	= RAND_MAX;
-	long retNum 	= rand() * ( max - min + 1 ) / maxRnd + min;
+	long maxRnd 	= std::numeric_limits<LV::RandomSeed>::max();
+	long retNum 	= LV::rand() * ( max - min + 1 ) / maxRnd + min;
 
 	if ( retNum >= max )
 		return max;

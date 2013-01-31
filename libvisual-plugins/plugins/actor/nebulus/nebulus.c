@@ -250,7 +250,7 @@ static int nebulus_random_effect ()
 		rnd_effect += my_effect[i].value * 100;     /* 100 pour + de precision */
 	if (!rnd_effect)
 		return point_general->effect;
-	new_effect = rand() % rnd_effect;
+	new_effect = visual_rand() % rnd_effect;
 	rnd_effect = 0;
 	for (i = 0; i < EFFECT_NUMBER; i++) {
 		rnd_effect += my_effect[i].value * 100;     /* 100 pour + de precision */

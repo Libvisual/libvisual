@@ -38,6 +38,7 @@
 #include <stdio.h>
 
 #include "goom_config.h"
+#include <libvisual/libvisual.h>
 
 #ifdef HAVE_MMX
 #include "mmx.h"
@@ -279,7 +280,7 @@ init_ifs (PluginInfo *goomInfo, IfsData *data)
 	Fractal->Count = 0;
 	Fractal->Lx = (Fractal->Width - 1) / 2;
 	Fractal->Ly = (Fractal->Height - 1) / 2;
-	Fractal->Col = rand () % (width * height);	/* modif by JeKo */
+	Fractal->Col = visual_rand() % (width * height);	/* modif by JeKo */
 
 	Random_Simis (goomInfo, Fractal, Fractal->Components, 5 * MAX_SIMI);
 }
