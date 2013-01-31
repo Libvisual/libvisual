@@ -43,50 +43,23 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_ACTOR_PLUGIN_NULL] =		N_("VisActor it's plugin is NULL"),
 	[VISUAL_ERROR_ACTOR_GL_NEGOTIATE] =		N_("VisActor failed while trying to forcefully negotiate a GL surface"),
 
-	[VISUAL_ERROR_AUDIO_NULL] =         N_ ("VisAudio is NULL"),
-
-	[VISUAL_ERROR_BMP_NO_BMP] =			N_("Bitmap is not a bitmap file"),
-	[VISUAL_ERROR_BMP_NOT_FOUND] =			N_("Bitmap can not be found"),
-	[VISUAL_ERROR_BMP_NOT_SUPPORTED] =		N_("Bitmap is not supported"),
-	[VISUAL_ERROR_BMP_CORRUPTED] =			N_("Bitmap is corrupted"),
-
 	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
 	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
 
-	[VISUAL_ERROR_CPU_INVALID_CODE] =		N_("The code can not run on this architecture"),
-	[VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED] =	N_("CPU feature is not supported"),
-
 	[VISUAL_ERROR_ERROR_HANDLER_NULL] =		N_("Global error handler is NULL"),
-
-	[VISUAL_ERROR_EVENT_NULL] =			N_("VisEvent is NULL"),
-	[VISUAL_ERROR_EVENT_QUEUE_NULL] =		N_("VisEventQueue is NULL"),
 
 	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
 	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),
 
-	[VISUAL_ERROR_LIBVISUAL_NO_PATHS] =		N_("No paths were given to seek for plugins"),
-	[VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED] =	N_("Libvisual is already initialized"),
-	[VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED] =	N_("Libvisual is not initialized"),
-	[VISUAL_ERROR_LIBVISUAL_NO_REGISTRY] =		N_("Libvisual has not build a plugin registry"),
-
 	[VISUAL_ERROR_LIST_NULL] =			N_("VisList is NULL"),
 	[VISUAL_ERROR_LIST_ENTRY_NULL] =		N_("VisListEntry is NULL"),
 	[VISUAL_ERROR_LIST_ENTRY_INVALID] =		N_("VisListEntry is invalid"),
-
-	[VISUAL_ERROR_MEM_NULL] =			N_("Given memory pointer is NULL"),
 
 	[VISUAL_ERROR_MORPH_NULL] =			N_("VisMorph is NULL"),
 	[VISUAL_ERROR_MORPH_PLUGIN_NULL] =		N_("VisMorph it's plugin is NULL"),
 
 	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't succesful."),
 	[VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED] =		N_("Scheduler operations are not supported on the platform."),
-
-	[VISUAL_ERROR_PARAM_NULL] =			N_("VisParamEntry is NULL"),
-	[VISUAL_ERROR_PARAM_CONTAINER_NULL] =		N_("VisParamContainer is NULL"),
-	[VISUAL_ERROR_PARAM_NOT_FOUND] =		N_("VisParamEntry not found in VisParamContainer"),
-	[VISUAL_ERROR_PARAM_CALLBACK_NULL] =		N_("VisParamEntry it's change notify callback is NULL"),
-	[VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY] =	N_("VisParamEntry contains too many change notify callbacks"),
-	[VISUAL_ERROR_PARAM_INVALID_TYPE] =		N_("VisParamEntry is of invalid type"),
 
 	[VISUAL_ERROR_PLUGIN_NULL] =			N_("VisPluginData is NULL"),
 	[VISUAL_ERROR_PLUGIN_INFO_NULL] =		N_("VisPluginInfo is NULL"),
@@ -108,21 +81,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_OBJECT_NULL] =			N_("VisObject is NULL"),
 	[VISUAL_ERROR_OBJECT_NOT_ALLOCATED] =		N_("VisObject is not allocated"),
 
-	[VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL] =	N_("The VisVideoAttributeOptions is NULL."),
-	[VISUAL_ERROR_VIDEO_NULL] =			N_("VisVideo is NULL"),
-	[VISUAL_ERROR_VIDEO_HAS_ALLOCATED] =		N_("VisVideo has allocated pixel buffer"),
-	[VISUAL_ERROR_VIDEO_BUFFER_NULL] =		N_("VisVideo has no VisBuffer object"),
-	[VISUAL_ERROR_VIDEO_PIXELS_NULL] =		N_("VisVideo it's pixel buffer is NULL"),
-	[VISUAL_ERROR_VIDEO_NO_ALLOCATED] =		N_("VisVideo it's pixel buffer is not allocated"),
-	[VISUAL_ERROR_VIDEO_HAS_PIXELS] =		N_("VisVideo has pixel buffer"),
-	[VISUAL_ERROR_VIDEO_INVALID_PITCH] =	N_("VisVideo has an invalid pitch"),
-	[VISUAL_ERROR_VIDEO_INVALID_BPP] =		N_("VisVideo is of invalid bytes per pixel"),
 	[VISUAL_ERROR_VIDEO_INVALID_DEPTH] =		N_("VisVideo is of invalid depth"),
-	[VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD] =	N_("Invalid scale method given"),
-	[VISUAL_ERROR_VIDEO_INVALID_ROTATE] =		N_("Invalid rotate degrees given"),
-	[VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS] =		N_("Given coordinates are out of bounds"),
-	[VISUAL_ERROR_VIDEO_NOT_INDENTICAL] =		N_("Given VisVideos are not indentical"),
-	[VISUAL_ERROR_VIDEO_NOT_TRANSFORMED] =		N_("VisVideo is not depth transformed as requested")
 };
 
 static int log_and_exit (int error);

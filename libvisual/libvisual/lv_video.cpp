@@ -888,13 +888,9 @@ const char *visual_video_depth_name (VisVideoDepth depth)
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 {
-    if (visual_video_depth_is_sane (depth) == 0)
-        return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+    visual_return_val_if_fail (visual_video_depth_is_sane (depth), FALSE);
 
-    if ((depth & depthflag) > 0)
-        return TRUE;
-
-    return FALSE;
+    return (depth & depthflag) > 0;
 }
 
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)

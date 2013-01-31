@@ -53,7 +53,7 @@ namespace LV {
     }
     #endif // VISUAL_BIG_ENDIAN
 
-    int load_uncompressed (std::istream& fp, VideoPtr const& video, int depth)
+    bool load_uncompressed (std::istream& fp, VideoPtr const& video, int depth)
     {
         auto video_pixels = static_cast<uint8_t*> (video->get_pixels ());
         int video_pitch  = video->get_pitch ();
@@ -127,15 +127,15 @@ namespace LV {
                 break;
         }
 
-        return VISUAL_OK;
+        return true;
 
     err:
         visual_log (VISUAL_LOG_ERROR, "Bitmap data is not complete");
 
-        return -VISUAL_ERROR_BMP_CORRUPTED;
+        return false;
     }
 
-    int load_rle (std::istream& fp, VideoPtr const& video, int mode)
+    bool load_rle (std::istream& fp, VideoPtr const& video, int mode)
     {
         auto video_pixels = static_cast<uint8_t*> (video->get_pixels ());
         int video_pitch  = video->get_pitch ();
@@ -235,12 +235,12 @@ namespace LV {
             }
         } while (processing);
 
-        return VISUAL_OK;
+        return true;
 
     err:
         visual_log (VISUAL_LOG_ERROR, "Bitmap data is not complete");
 
-        return -VISUAL_ERROR_BMP_CORRUPTED;
+        return false;
     }
 
   } // anonymous namespace
@@ -263,7 +263,6 @@ namespace LV {
 
       /* Worker vars */
       uint8_t depth = 24;
-      int32_t error = 0;
 
       std::unique_ptr<Palette> palette;
 
@@ -390,9 +389,10 @@ namespace LV {
       fp.seekg (bf_bits, std::ios::beg);
 
       /* Load image data */
+      bool result = false;
       switch (bi_compression) {
           case BI_RGB:
-              error = load_uncompressed (fp, video, bi_bitcount);
+              result = load_uncompressed (fp, video, bi_bitcount);
               #if VISUAL_BIG_ENDIAN == 1
               if (error == VISUAL_OK)
                   flip_byte_order (video);
@@ -400,15 +400,15 @@ namespace LV {
               break;
 
           case BI_RLE4:
-              error = load_rle (fp, video, BI_RLE4);
+              result = load_rle (fp, video, BI_RLE4);
               break;
 
           case BI_RLE8:
-              error = load_rle (fp, video, BI_RLE8);
+              result = load_rle (fp, video, BI_RLE8);
               break;
       }
 
-      if (error != VISUAL_OK) {
+      if (!result) {
           fp.seekg (saved_stream_pos);
           return nullptr;
       }

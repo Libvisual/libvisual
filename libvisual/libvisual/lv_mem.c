@@ -143,14 +143,9 @@ void *visual_mem_realloc (void *ptr, visual_size_t nbytes)
 	return realloc (ptr, nbytes);
 }
 
-int visual_mem_free (void *ptr)
+void visual_mem_free (void *ptr)
 {
-	/* FIXME remove eventually, we keep it for now for explicit debug */
-	visual_return_val_if_fail (ptr != NULL, -VISUAL_ERROR_MEM_NULL);
-
 	free (ptr);
-
-	return VISUAL_OK;
 }
 
 static void *mem_copy_c (void *dest, const void *src, visual_size_t n)
