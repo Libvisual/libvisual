@@ -49,7 +49,7 @@ int main (int argc, char** argv)
         assert (output_data[i] == float (i*2+0.5) / int_max);
     }
 
-    LV::System::deinit ();
+    LV::System::destroy ();
 
     return EXIT_SUCCESS;
 }
