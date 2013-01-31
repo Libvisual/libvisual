@@ -22,6 +22,13 @@ namespace LV {
       struct rebind { typedef AlignedAllocator<U, alignment> other; };
   };
 
+  //! Aligned memory allocator.
+  //!
+  //! @tparam T         type of object to allocate
+  //! @tparam alignment alignment boundary
+  //!
+  //! AlignedAllocator is an implementation of the C++ Allocator concept for use with standard library containers.
+  //!
   template <typename T, std::size_t alignment>
   struct AlignedAllocator
   {

@@ -307,8 +307,7 @@ LV_API int visual_morph_requests_audio (VisMorph *morph);
  * @param src1 Pointer to a VisVideo that acts as the first source for the morph.
  * @param src2 Pointer to a VisVideo that acts as the second source for the morph.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_AUDIO_NULL,
- *  -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
+ * @return TRUE on success, FALSE otherwise
  */
 LV_API int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 

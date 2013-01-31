@@ -52,46 +52,21 @@ enum {
 	VISUAL_ERROR_ACTOR_PLUGIN_NULL,     /**< The VisActor plugin in this context is NULL. */
 	VISUAL_ERROR_ACTOR_GL_NEGOTIATE,    /**< Tried depth forcing a GL VisACtor. */
 
-	VISUAL_ERROR_AUDIO_NULL,            /**< The VisAudio is NULL. */
-
-	/* Error entries for the VisBMP system */
-	VISUAL_ERROR_BMP_NO_BMP,			/**< Not a bitmap file. */
-	VISUAL_ERROR_BMP_NOT_FOUND,			/**< File not found. */
-	VISUAL_ERROR_BMP_NOT_SUPPORTED,		/**< File format not supported. */
-	VISUAL_ERROR_BMP_CORRUPTED,			/**< Bitmap file is corrupted. */
-
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
 	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
 
-	/* Error entries for arch related errors and VisCPU system */
-	VISUAL_ERROR_CPU_INVALID_CODE,			/**< Can't run a section of code. */
-	VISUAL_ERROR_CPU_FEATURE_NOT_SUPPORTED,		/**< CPU Feature is not supported. */
-
 	/* Error entries for the VisError system */
 	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */
-
-	/* Error entries for the VisEvent system */
-	VISUAL_ERROR_EVENT_NULL,			/**< The VisEvent is NULL. */
-	VISUAL_ERROR_EVENT_QUEUE_NULL,			/**< The VisEventQueue is NULL. */
 
 	/* Error entries for the VisInput system */
 	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
 	VISUAL_ERROR_INPUT_PLUGIN_NULL,			/**< The VisInputPlugin is NULL. */
 
-	/* Error entries for the VisLibvisual system */
-	VISUAL_ERROR_LIBVISUAL_NO_PATHS,		/**< Paths can be added to plugin dir list. */
-	VISUAL_ERROR_LIBVISUAL_ALREADY_INITIALIZED,	/**< Libvisual is already initialized. */
-	VISUAL_ERROR_LIBVISUAL_NOT_INITIALIZED,		/**< Libvisual is not initialized. */
-	VISUAL_ERROR_LIBVISUAL_NO_REGISTRY,		/**< No internal plugin registry is set up. */
-
 	/* Error entries for the VisList system */
 	VISUAL_ERROR_LIST_NULL,				/**< The VisList is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_NULL,			/**< The VisListEntry is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_INVALID,		/**< The VisListEntry is invalid. */
-
-	/* Error entries for the VisMem system */
-	VISUAL_ERROR_MEM_NULL,				/**< The memory pointer given is NULL. */
 
 	/* Error entries for the VisMorph system */
 	VISUAL_ERROR_MORPH_NULL,			/**< The VisMorph is NULL. */
@@ -100,14 +75,6 @@ enum {
 	/* Error entries for the VisOS system */
 	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't succesful. */
 	VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED,		/**< Scheduler operations are not supported on the platform. */
-
-	/* Error entries for the VisParam system */
-	VISUAL_ERROR_PARAM_NULL,			/**< The VisParamEntry is NULL. */
-	VISUAL_ERROR_PARAM_CONTAINER_NULL,		/**< The VisParamContainer is NULL. */
-	VISUAL_ERROR_PARAM_NOT_FOUND,			/**< The requested VisParamEntry is not found. */
-	VISUAL_ERROR_PARAM_CALLBACK_NULL,		/**< The given param change callback is NULL. */
-	VISUAL_ERROR_PARAM_CALLBACK_TOO_MANY,		/**< Too many param change callbacks are registered. */
-	VISUAL_ERROR_PARAM_INVALID_TYPE,		/**< The VisParamEntry is of invalid type. */
 
 	/* Error entries for the VisPlugin system */
 	VISUAL_ERROR_PLUGIN_NULL,			/**< The VisPluginData is NULL. */
@@ -127,32 +94,13 @@ enum {
 	VISUAL_ERROR_TRANSFORM_VIDEO_NULL,		/**< The VisVideo target member in the VisTransform is NULL. */
 	VISUAL_ERROR_TRANSFORM_PALETTE_NULL,		/**< The VisPalette target member in this VisTransform is NULL. */
 
+	/* Error entries for the VisVideo system */
+	VISUAL_ERROR_VIDEO_INVALID_DEPTH,       /**< Depth is invalid */
+
 	/* Error entries for the VisObject system */
 	VISUAL_ERROR_OBJECT_DTOR_FAILED,		/**< The destructor assigned to a VisObject failed destroying the VisObject. */
 	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */
 	VISUAL_ERROR_OBJECT_NOT_ALLOCATED,		/**< The VisObject is not allocated. */
-
-	/* Error entries for the VisVideo system */
-	VISUAL_ERROR_VIDEO_ATTRIBUTE_OPTIONS_NULL,	/**< The VisVideoAttributeOptions is NULL. */
-	VISUAL_ERROR_VIDEO_NULL,			/**< The VisVideo is NULL. */
-	VISUAL_ERROR_VIDEO_HAS_ALLOCATED,		/**< The VisVideo has an allocated buffer. */
-	VISUAL_ERROR_VIDEO_BUFFER_NULL,			/**< The VisVideo has no VisBuffer object. */
-	VISUAL_ERROR_VIDEO_PIXELS_NULL,			/**< The VisVideo doesn't point to a pixel buffer. */
-	VISUAL_ERROR_VIDEO_NO_ALLOCATED,		/**< The VisVideo doesn't have an allocated pixel buffer. */
-	VISUAL_ERROR_VIDEO_HAS_PIXELS,			/**< The VisVideo already points to a pixel buffer. */
-	VISUAL_ERROR_VIDEO_INVALID_BPP,			/**< The VisVideo it's bytes per pixel is invalid. */
-	VISUAL_ERROR_VIDEO_INVALID_PITCH,       /**< The VisVideo has an invalid pitch. */
-	VISUAL_ERROR_VIDEO_INVALID_DEPTH,		/**< The VisVideoDepth value is not valid. */
-	VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD,	/**< The VisVideoScaleMethod argument is not valid. */
-	VISUAL_ERROR_VIDEO_INVALID_ROTATE,		/**< The VisVideoRotateDegrees argument is not valid. */
-	VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS,		/**< The X or Y value are greater than the VisVideo it's dimension. */
-	VISUAL_ERROR_VIDEO_NOT_INDENTICAL,		/**< The two VisVideo their configuration are not indentical. */
-	VISUAL_ERROR_VIDEO_NOT_TRANSFORMED,		/**< Could not depth transform a VisVideo. */
-
-	VISUAL_ERROR_BEAT_NULL,				/**< The VisBeat is NULL */
-	VISUAL_ERROR_BEAT_ADV_NULL,			/**< The VisBeatAdv is NULL */
-
-	VISUAL_ERROR_PARAM_ANNO_NULL,			/**< This ParamEntry's annotation field is NULL */
 
 	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
 };

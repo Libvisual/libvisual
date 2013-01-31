@@ -455,7 +455,6 @@ namespace LV {
       visual_return_if_fail (actor != nullptr);
 
       auto video = LV::Video::create();
-      video->ref();
       video->copy_attrs(m_impl->actvideo);
 
       auto depthflag = visual_actor_get_supported_depth (actor);
@@ -600,7 +599,6 @@ namespace LV {
           /* Allocate a private video for the main actor, so the morph
            * can draw to the framebuffer */
           auto privvid = Video::create ();
-          privvid->ref();
 
           visual_log (VISUAL_LOG_DEBUG, "actvideo->depth %d actmorph->video->depth %d",
                       m_impl->actvideo->get_depth (),

@@ -39,9 +39,10 @@
 
 namespace LV {
 
-  /**
-   * Data type to describe the palette for an 8 bits screen depth.
-   */
+  //! Colour palette class for indexed colour modes
+  //!
+  //! @note This is currently only used for 8-bit images
+  //!
   struct LV_API Palette
   {
       std::vector<Color> colors;
@@ -49,8 +50,7 @@ namespace LV {
       /**
        * Creates a new Palette object
        */
-      Palette ()
-      {}
+      Palette () = default;
 
       explicit Palette (unsigned int ncolors);
 
@@ -93,10 +93,7 @@ namespace LV {
       /**
        * Allocate an amount of colors for a VisPalette.
        *
-       * @param pal Pointer to the VisPalette for which colors are allocated.
-       * @param ncolors The number of colors allocated for the VisPalette.
-       *
-       * @return VISUAL_OK on succes, -VISUAL_ERROR_PALETTE_NULL on failure.
+       * @param size Number of colors to allocate
        */
       void allocate_colors (unsigned int size);
 
@@ -107,11 +104,10 @@ namespace LV {
        * so you have to unref it. The last VisColor in the VisPalette
        * is morphed with the first.
        *
-       * @param pal Pointer to the VisPalette in which the VisColors are cycled.
        * @param rate Selection of the VisColor from the VisPalette, goes from 0.0 to number of VisColors in the VisPalette
        *    and morphs between colors if needed.
        *
-       * @return A new VisColor, possibly a morph between two VisColors, NULL on failure.
+       * @return A new Color, possibly a morph between two Colors
        */
       Color color_cycle (float rate);
 

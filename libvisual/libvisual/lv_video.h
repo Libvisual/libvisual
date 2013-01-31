@@ -139,6 +139,7 @@ namespace LV {
   typedef IntrusivePtr<Video> VideoPtr;
   typedef IntrusivePtr<Video const> VideoConstPtr;
 
+  //! Canvas class for drawing operations
   class LV_API Video
   {
   public:
@@ -176,8 +177,16 @@ namespace LV {
        */
       static VideoPtr create_from_file (std::string const& path);
 
+      /**
+       * Creates a new Video object from a input data stream.
+       *
+       * @param input input stream
+       *
+       * @return a Video object containing the image, or nullptr on failure
+       */
       static VideoPtr create_from_stream (std::istream& input);
 
+      /** Destructor */
       ~Video ();
 
       /**
@@ -188,21 +197,36 @@ namespace LV {
        */
       void set_dimension (int width, int height);
 
+      /**
+       * Returns the video width.
+       *
+       * @return width in pixels
+       */
       int get_width () const;
 
+      /**
+       * Returns the video height.
+       *
+       * @return height in pixels
+       */
       int get_height () const;
 
       /**
        * Sets the video depth.
        *
-       * @param depth The depth choosen from the VisVideoDepth enumerate.
+       * @param depth video depth
        */
       void set_depth (VisVideoDepth depth);
 
+      /**
+       * Sets the video depth.
+       *
+       * @return video depth
+       */
       VisVideoDepth get_depth () const;
 
       /**
-       * Sets the pixel pitch i.e. row stride
+       * Sets the pixel pitch (or row stride).
        *
        * @note Use this only when the desired pitch is not equal to width * bytes per pixel.
        *
@@ -225,20 +249,23 @@ namespace LV {
       int get_bpp () const;
 
       /**
-       * Sets the buffer to a given memory block
+       * Sets the pixel buffer to a given memory block.
        *
-       * @param ptr Pointer to memory block
+       * @param ptr pointer to memory block
        */
       void set_buffer (void* ptr);
 
       /**
-       * Allocates a buffer for the VisVideo based on the set
-       * dimensions and pixel format
+       * Allocates a buffer based on the assigned dimensions and depth.
+       *
+       * @return true if successful, false otherwise
+       *
+       * @see set_dimensions(), set_depth(), set_pitch().
        */
       bool allocate_buffer ();
 
       /**
-       * Frees the buffer
+       * Frees the underlying pixel buffer.
        */
       void free_buffer ();
 
@@ -291,6 +318,11 @@ namespace LV {
        */
       bool compare_attrs_ignore_pitch (VideoConstPtr const& src) const;
 
+      /**
+       * Returns the size of the pixel buffer
+       *
+       * @return size in bytes
+       */
       std::size_t get_size () const;
 
       /**
@@ -300,6 +332,11 @@ namespace LV {
        */
       void set_palette (Palette const& palette);
 
+      /**
+       * Sets the color palette.
+       *
+       * @param palette palette
+       */
       void set_palette (Palette&& palette);
 
       /**
@@ -351,15 +388,23 @@ namespace LV {
       VisVideoComposeFunc get_compose_function (VideoConstPtr const& src, bool alpha);
 
       /**
-       * This function blits a VisVideo into another VisVideo. Placement can be done and there
-       * is support for the alpha channel.
+       * Draws a Video.
        *
-       * @param src   Video to blit
-       * @param x     x-coordinate of blit position
-       * @param y     y-coordinate of blit position
+       * @param src   Video to draw
+       * @param x     x-coordinate of draw position
+       * @param y     y-coordinate of draw position
        * @param alpha set to true if alpha channel is to be checked
        */
       void blit (VideoConstPtr const& src, int x, int y, bool alpha);
+
+      /**
+       * Draws a Video.
+       *
+       * @param drect Area to draw to
+       * @param src   Video to draw
+       * @param srect Area of Video to draw
+       * @param alpha set to true if alpha channel is to be checked
+       */
       void blit (Rect const& drect, VideoConstPtr const& src, Rect const& srect, bool alpha);
 
       void compose (VideoConstPtr const& src, int x, int y, VisVideoComposeFunc func);
@@ -428,9 +473,6 @@ namespace LV {
                                           int                  height,
                                           VisVideoDepth        depth,
                                           VisVideoScaleMethod  scale_method);
-      void ref () const;
-
-      void unref () const;
 
   private:
 
@@ -438,6 +480,9 @@ namespace LV {
       friend class VideoTransform;
       friend class VideoFill;
       friend class VideoBlit;
+
+      friend void intrusive_ptr_add_ref (Video const* video);
+      friend void intrusive_ptr_release (Video const* video);
 
       class Impl;
       const std::unique_ptr<Impl> m_impl;
@@ -447,24 +492,16 @@ namespace LV {
       Video ();
   };
 
-  inline void intrusive_ptr_add_ref (Video* video)
-  {
-      video->ref ();
-  }
-
-  inline void intrusive_ptr_release (Video* video)
-  {
-      video->unref ();
-  }
-
   inline void intrusive_ptr_add_ref (Video const* video)
   {
-      video->ref ();
+      video->m_ref_count++;
   }
 
   inline void intrusive_ptr_release (Video const* video)
   {
-      video->unref ();
+      if (--video->m_ref_count == 0) {
+          delete video;
+      }
   }
 
 } // LV namespace

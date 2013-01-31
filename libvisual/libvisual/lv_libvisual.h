@@ -31,15 +31,13 @@
  * @{
  */
 
-/** s. version.h.in for current API version */
-
-
 #ifdef __cplusplus
 
 #include <libvisual/lv_singleton.hpp>
 #include <memory>
 #include <string>
 
+//! Libvisual namespace
 namespace LV {
 
   class LV_API System
@@ -48,7 +46,7 @@ namespace LV {
   public:
 
       /**
-       * Initializes libvisual
+       * Initializes Libvisual.
        *
        * @param argc Number of arguments
        * @param argv Argument strings
@@ -60,23 +58,23 @@ namespace LV {
       ~System ();
 
       /**
-       * Returns the libvisual version.
+       * Returns the Libvisual version.
        *
        * @return version string
        */
       std::string get_version () const;
 
       /**
-       * Returns the libvisual API verison.
+       * Returns the Libvisual API verison.
 	   *
        * @return API version
        */
       int get_api_version () const;
 
       /**
-       * Returns a pointer to the libvisual global parameters.
+       * Returns a pointer to Libvisual system parameters.
        *
-       * @return A pointer to the libvisual global parameters.
+       * @return A pointer to Libvisual system parameters.
        */
       VisParamList* get_params () const;
 

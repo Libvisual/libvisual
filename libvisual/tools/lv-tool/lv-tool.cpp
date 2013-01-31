@@ -1,35 +1,35 @@
-/* Libvisual - The audio visualisation framework cli tool
- *
- * Copyright (C) 2012      Libvisual team
- *               2004-2006 Dennis Smit
- *
- * Authors: Daniel Hiepler <daniel@niftylight.de>
- *          Chong Kai Xiong <kaixiong@codeleft.sg>
- *          Dennis Smit <ds@nerds-incorporated.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+// lv-tool - Libvisual commandline tool
+//
+// Copyright (C) 2012-2013 Libvisual team
+//               2004-2006 Dennis Smit
+//
+// Authors: Daniel Hiepler <daniel@niftylight.de>
+//          Chong Kai Xiong <kaixiong@codeleft.sg>
+//          Dennis Smit <ds@nerds-incorporated.org>
+//
+// This file is part of lv-tool.
+//
+// lv-tool is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// lv-tool is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with lv-tool.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config.h"
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <iostream>
 #include <string>
 #include <cstdio>
-#include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include <getopt.h>
@@ -66,6 +66,12 @@ namespace {
 
   bool have_seed = 0;
   uint32_t seed = 0;
+
+  enum class CycleDir
+  {
+      PREV,
+      NEXT
+  };
 
   /** print info about libvisual plugin */
   void print_plugin_info(VisPluginInfo const& info)
@@ -320,32 +326,37 @@ namespace {
       return 0;
   }
 
-  void v_cycleActor (int prev)
+  std::string cycle_actor_name (std::string const& name, CycleDir dir)
   {
-      auto name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
-                       : visual_actor_get_next_by_name(actor_name.c_str());
+      auto cycler = (dir == CycleDir::NEXT) ? visual_actor_get_next_by_name
+                                            : visual_actor_get_prev_by_name;
 
-      if (!name) {
-          name = prev ? visual_actor_get_prev_by_name(0)
-                      : visual_actor_get_next_by_name(0);
+      auto new_name = cycler (name.c_str ());
+      if (!new_name) {
+          new_name = cycler (nullptr);
       }
 
-      actor_name = name;
+      // FIXME: this won't work if an actor's name is used as part of
+      // another actor's name
+      if (exclude_actors.find (new_name) != std::string::npos) {
+          return cycle_actor_name (new_name, dir);
+      }
 
-      if (std::strstr (exclude_actors.c_str(), name) != 0)
-          v_cycleActor(prev);
+      return new_name;
   }
 
 #if 0
-  void v_cycleMorph ()
+  std::string cycle_morph_name (std::string const& name, CycleDir dir)
   {
-      auto name = visual_morph_get_next_by_name(morph_name.c_str());
+      auto cycler = (dir == CycleDir::NEXT) ? visual_morph_get_next_by_name
+                                            : visual_morph_get_prev_by_name;
 
-      if(!name) {
-          name = visual_morph_get_next_by_name(0);
+      auto new_name = cycler (name.c_str ());
+      if (!new_name) {
+          new_name = cycler (nullptr);
       }
 
-      morph_name = name;
+      return new_name;
   }
 #endif
 
@@ -382,12 +393,7 @@ int main (int argc, char **argv)
             throw std::runtime_error ("Failed to start pipeline with actor '" + actor_name + "' and input '" + input_name + "'");
         }
 
-        // initialize actor plugin
-        std::cerr << "Loading actor '" << actor_name << "'...\n";
         auto actor = bin.get_actor();
-        if (!actor) {
-            throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
-        }
 
         // Set random seed
         if (have_seed) {
@@ -396,13 +402,6 @@ int main (int argc, char **argv)
 
             r_context.set_seed (seed);
             seed++;
-        }
-
-        // initialize input plugin
-        std::cerr << "Loading input '" << input_name << "'...\n";
-        auto input = bin.get_input();
-        if (!input) {
-            throw std::runtime_error ("Failed to load input '" + input_name + "'");
         }
 
         // Select output colour depth
@@ -461,6 +460,7 @@ int main (int argc, char **argv)
         // frame rate control state
         int64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
         LV::Time last_frame_time;
+        bool draw_frame = true;
 
         // main loop
         bool running = true;
@@ -468,19 +468,14 @@ int main (int argc, char **argv)
 
         while (running)
         {
-            if (visible) {
-                // Control frame rate
-                if (frame_rate > 0) {
-                    if (frames_drawn > 0) {
-                        LV::Time diff_time = LV::Time::now () - last_frame_time;
-
-                        int64_t sleep_time = frame_period_us - int64_t (diff_time.to_usecs ());
-                        if (sleep_time > 0) {
-                            LV::Time::usleep (sleep_time);
-                        }
-                    }
+            // Control frame rate
+            if (frame_rate > 0) {
+                if (frames_drawn > 0) {
+                    draw_frame = (LV::Time::now () - last_frame_time).to_usecs () >= frame_period_us;
                 }
+            }
 
+            if (draw_frame) {
                 display.lock ();
 
                 // Draw audio data and render
@@ -545,10 +540,10 @@ int main (int argc, char **argv)
                     case VISUAL_EVENT_MOUSEBUTTONDOWN:
                     {
                         // switch to next actor
-                        v_cycleActor(1);
+                        actor_name = cycle_actor_name (actor_name, CycleDir::NEXT);
 
                         std::cerr << "Switching to actor '" << actor_name << "'...\n";
-                        bin.switch_actor(actor_name);
+                        bin.switch_actor (actor_name);
 
                         break;
                     }
@@ -620,17 +615,12 @@ int main (int argc, char **argv)
                 display.unlock();
             }
         }
-
-        // Cleanup
-        //visual_plugin_unload(visual_actor_get_plugin(actor));
-        //visual_plugin_unload(visual_input_get_plugin(input));
-
     }
     catch (std::exception& error) {
         std::cerr << error.what () << std::endl;
     }
 
-    visual_quit ();
+    LV::System::destroy ();
 
     return EXIT_SUCCESS;
 }

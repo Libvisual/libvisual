@@ -40,10 +40,6 @@
 #define VISUAL_NSECS_PER_MSEC   1000000
 #define VISUAL_NSECS_PER_USEC   1000
 
-/**
- * The VisTime structure can contain seconds and microseconds for timing purpose.
- */
-
 #ifdef __cplusplus
 
 #include <memory>
@@ -51,6 +47,7 @@
 
 namespace LV {
 
+  //! Encodes time.
   class LV_API Time
   {
   public:
@@ -159,14 +156,6 @@ namespace LV {
 
       //! Sleeps for a period of time. This will yield the calling thread.
       static void usleep (uint64_t usecs);
-
-      // FIXME: Find a better place to put these functions
-
-      //! Initializes LV's timer subsystem. DO NOT use.
-      static void init ();
-
-      //! Deinitializes LV's timer subsystem. DO NOT use.
-      static void deinit ();
   };
 
   class LV_API Timer

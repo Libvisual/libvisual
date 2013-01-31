@@ -33,7 +33,7 @@ extern "C" {
 
   int visual_quit ()
   {
-      LV::System::deinit ();
+      LV::System::destroy ();
 
       return VISUAL_OK;
   }

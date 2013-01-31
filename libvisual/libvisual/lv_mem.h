@@ -127,10 +127,8 @@ LV_API void *visual_mem_realloc (void *ptr, visual_size_t nbytes) LV_ATTR_MALLOC
  * Frees allocated memory.
  *
  * @param ptr Frees memory to which ptr points to.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MEM_NULL on failure.
  */
-LV_API int visual_mem_free (void *ptr);
+LV_API void visual_mem_free (void *ptr);
 
 LV_API void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignment);
 LV_API void  visual_mem_free_aligned   (void* ptr);

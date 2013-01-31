@@ -209,7 +209,7 @@ VisPalette *visual_morph_get_palette (VisMorph *morph)
 
 int visual_morph_is_done (VisMorph *morph)
 {
-    visual_return_val_if_fail (morph != nullptr, -VISUAL_ERROR_MORPH_NULL);
+    visual_return_val_if_fail (morph != nullptr, TRUE);
 
     if (morph->mode == VISUAL_MORPH_MODE_SET)
         return FALSE;
@@ -248,10 +248,10 @@ int visual_morph_requests_audio (VisMorph *morph)
 
 int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2)
 {
-    visual_return_val_if_fail (morph != nullptr, -VISUAL_ERROR_MORPH_NULL);
-    visual_return_val_if_fail (audio != nullptr, -VISUAL_ERROR_AUDIO_NULL);
-    visual_return_val_if_fail (src1 != nullptr, -VISUAL_ERROR_VIDEO_NULL);
-    visual_return_val_if_fail (src2 != nullptr, -VISUAL_ERROR_VIDEO_NULL);
+    visual_return_val_if_fail (morph != nullptr, FALSE);
+    visual_return_val_if_fail (audio != nullptr, FALSE);
+    visual_return_val_if_fail (src1 != nullptr, FALSE);
+    visual_return_val_if_fail (src2 != nullptr, FALSE);
 
     auto morphplugin = get_morph_plugin (morph);
     if (!morphplugin) {
@@ -303,5 +303,5 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
     }
 
 
-    return VISUAL_OK;
+    return TRUE;
 }

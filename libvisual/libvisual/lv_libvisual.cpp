@@ -139,7 +139,7 @@ namespace LV
 
   System::~System ()
   {
-      PluginRegistry::deinit ();
+      PluginRegistry::destroy ();
       TimeSystem::shutdown ();
 
       visual_object_unref (VISUAL_OBJECT (m_impl->params));

@@ -37,13 +37,13 @@
 
 namespace LV {
 
+  //! Computes a Discrete Fourier Transform
   class LV_API DFT
   {
   public:
 
       /**
-       * Creates a DFT (Discrete Fourier Transform) object used to
-       * calculate amplitude spectrums over audio data.
+       * Creates a DFT object used to calculate amplitude spectrums over audio data.
        *
        * @note For optimal performance, use a power-of-2 spectrum
        * size. The current implementation does not use the Fast
@@ -62,6 +62,11 @@ namespace LV {
 
       ~DFT ();
 
+      /**
+       * Returns the output size of the DFT.
+       *
+       * @return Output size
+       */
       unsigned int get_spectrum_size () const;
 
       /**
@@ -73,7 +78,7 @@ namespace LV {
       void perform (float *output, float const* input);
 
       /**
-       * Scales an ampltitude spectrum logarithmically.
+       * Logarithmically scales an amplitude spectrum.
        *
        * @note Scaled values are guaranteed to be in [0.0, 1.0].
        *

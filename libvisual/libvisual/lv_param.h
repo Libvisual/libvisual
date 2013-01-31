@@ -94,7 +94,7 @@ LV_API VisList *visual_param_list_get_entries (VisParamList *list);
  *
  * @return TRUE on success, FALSE otherwise
  */
-LV_API int visual_param_list_add (VisParamList *list, VisParam *entry);
+LV_API int visual_param_list_add (VisParamList *list, VisParam *param);
 
 /**
  * Adds an array of parameters.
@@ -164,9 +164,10 @@ LV_API void visual_param_free (VisParam *param);
 /**
  * Adds a change notification callback.
  *
- * @param param    VisParam to add a change notification callback to.
- * @param callback The notification callback, which is called on changes in the VisParam.
- * @param data     Additional data to be passed to the callback function.
+ * @param param        VisParam object to add notification callback
+ * @param func         The notification callback, called on value changes
+ * @param data         Additional data to be passed to callback
+ * @param destroy_func Function called to destroy data (may be NULL)
  */
 LV_API VisClosure *visual_param_add_callback (VisParam *          param,
                                               VisParamChangedFunc func,
@@ -176,7 +177,7 @@ LV_API VisClosure *visual_param_add_callback (VisParam *          param,
 /**
  * Removes a change notification callback.
  *
- * @param param   VisParam object to remove callback from.
+ * @param param   VisParam object to remove callback from
  * @param closure The closure pointer that was given by the visual_param_add_callback().
  *
  * @return TRUE on successful removeal, FALSE otherwise

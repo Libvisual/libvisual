@@ -35,73 +35,75 @@
 LV_BEGIN_DECLS
 
 /**
- * Used to determine the severity of the log message using the visual_log
- * define.
+ * Message severity levels.
  *
- * @see visual_log
+ * @see visual_log()
  */
 typedef enum {
 	VISUAL_LOG_MIN,      /**< this should always remain the FIRST entry */
-	VISUAL_LOG_DEBUG,    /**< Debug message, to use for debug messages. */
-	VISUAL_LOG_INFO,     /**< Informative message, can be used for general info. */
-	VISUAL_LOG_WARNING,  /**< Warning message, use to warn the user. */
-	VISUAL_LOG_ERROR,    /**< Error message, use to notify the user of fatals. */
-	VISUAL_LOG_CRITICAL, /**< Critical message, when a critical situation happens. */
+	VISUAL_LOG_DEBUG,    /**< Debugging information */
+	VISUAL_LOG_INFO,     /**< Status and general information */
+	VISUAL_LOG_WARNING,  /**< Warnings */
+	VISUAL_LOG_ERROR,    /**< Errors */
+	VISUAL_LOG_CRITICAL, /**< Critical errors */
 	VISUAL_LOG_MAX,      /**< this should always remain the LAST entry */
 } VisLogSeverity;
 
+/**
+ * Contains information on the source of a log message.
+ *
+ * @see VisLogHandlerFunc
+ */
 typedef struct {
-	const char   *file;
-	const char   *func;
-	unsigned int  line;
+	const char   *file;  /**< Name of source file */
+	const char   *func;  /**< Name of function */
+	unsigned int  line;  /**< Line number in source file */
 } VisLogSource;
 
 /**
- * Functions that want to handle messages must match this signature.
+ * Function signature for log message handlers.
  *
- * @arg message The message that will be shown, exactly the same as that was passed
- * to visual_log(), but after formatting.
+ * @see visual_log()
  *
- * @arg funcname The name of the function that invokes visual_log(). On non-GNU systems
- * this will probably be NULL.
- *
- * @arg priv Private field to be used by the client. The library will never touch this.
+ * @param severity  Message severity level
+ * @param message   Message to log
+ * @param source    Information on the message origin
+ * @param user_data User data passed to message handler
  */
 typedef void (*VisLogHandlerFunc) (VisLogSeverity severity, const char *message,
-	const VisLogSource *source, void *priv);
+	const VisLogSource *source, void *user_data);
 
 /**
- * Set the log verbosity level. Any message of a lower severity then
- * the given level will be dropped.
+ * Sets the log verbosity level. Any message of a lower severity level will be dropped.
  *
- * @param level The verbosity level
+ * @param level Minimum severity level
  */
 LV_API void visual_log_set_verbosity (VisLogSeverity level);
 
 /**
- * Get the current library it's verbosity level.
+ * Returns the current log verbosity level.
  *
- * @return The verboseness level as a VisLogVerboseness enumerate value.
+ * @return level Current severity level threshold
  */
 LV_API VisLogSeverity visual_log_get_verbosity (void);
 
 /**
- * Set the callback function that handles info messages.
+ * Registers a log message handler for a severity level.
  *
- * @param handler The custom message handler callback.
- * @param priv Optional private data to pass on to the handler.
+ * @param severity  Message severity level
+ * @param handler   Message handler callback
+ * @param user_data User data passed to the handler during invocation
  */
-LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *priv);
+LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *user_data);
 
 /**
- * Logs a message
+ * Logs a message.
  *
- * @param severity Determines the severity of the message using VisLogSeverity.
- * @param format The format string of the log message.
- *
- * @see VisLogSeverity
+ * @param severity  Message severity level
+ * @param format    printf format string of the log message
+ * @param ...       Format string arguments
  */
-#define visual_log(severity,...)      \
+#define visual_log(severity,...)  \
 	_lv_log (severity,            \
 	         __FILE__,            \
 	         __LINE__,            \

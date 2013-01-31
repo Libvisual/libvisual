@@ -37,6 +37,7 @@
 
 namespace LV {
 
+  //! Class describing an axis-aligned rectangle.
   class LV_API Rect
   {
   public:
@@ -46,6 +47,9 @@ namespace LV {
       int width;
       int height;
 
+      /**
+       * Creates a new empty Rect.
+       */
       Rect ()
           : x (0), y (0), width (0), height (0)
       {}

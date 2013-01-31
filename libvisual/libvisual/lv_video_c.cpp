@@ -32,7 +32,7 @@ VisVideo *visual_video_new ()
 {
     auto self = LV::Video::create ();
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -42,7 +42,7 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
 {
     auto self = LV::Video::create (width, height, depth);
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -52,7 +52,7 @@ VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int 
 {
     auto self = LV::Video::wrap (buffer, owner, width, height, depth);
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -62,7 +62,7 @@ VisVideo *visual_video_load_from_file (const char *path)
 {
     auto self = LV::Video::create_from_file (path);
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -226,7 +226,7 @@ VisBuffer *visual_video_get_buffer (VisVideo *self)
 
     LV::BufferPtr buffer = self->get_buffer ();
     if (buffer) {
-        buffer->ref ();
+        LV::intrusive_ptr_add_ref (buffer.get ());
     }
 
     return buffer.get ();
@@ -253,7 +253,7 @@ VisVideo* visual_video_new_sub (VisVideo *src, VisRectangle *area)
 
     LV::VideoPtr self = LV::Video::create_sub (LV::VideoPtr (src), *area);
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -265,7 +265,7 @@ VisVideo* visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width
 
     LV::VideoPtr self = LV::Video::create_sub (LV::VideoPtr (src), LV::Rect (x, y, width, height));
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -279,7 +279,7 @@ VisVideo* visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src
 
     LV::VideoPtr self = LV::Video::create_sub (*drect, LV::VideoPtr (src), *srect);
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -494,7 +494,7 @@ VisVideo *visual_video_scale_depth_new (VisVideo*           src,
 
     auto self = LV::Video::create_scale_depth (LV::VideoPtr (src), width, height, depth, scale_method);
     if (self) {
-        self->ref ();
+        LV::intrusive_ptr_add_ref (self.get ());
     }
 
     return self.get ();
@@ -504,12 +504,12 @@ void visual_video_ref (VisVideo *self)
 {
     visual_return_if_fail (self != nullptr);
 
-    self->ref ();
+    LV::intrusive_ptr_add_ref (self);
 }
 
 void visual_video_unref (VisVideo *self)
 {
     visual_return_if_fail (self != nullptr);
 
-    self->unref ();
+    LV::intrusive_ptr_release (self);
 }
