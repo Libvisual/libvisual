@@ -4,6 +4,8 @@
 
 int main (int argc, char** argv)
 {
+    LV::System::init (argc, argv);
+
     using LV::Time;
 
     // TODO: Randomize test times
@@ -22,6 +24,8 @@ int main (int argc, char** argv)
     assert (time3.to_secs () == 1.25);
     assert (time3.to_msecs () == 1250);
     assert (time3.to_usecs () == 1250000);
+
+    LV::System::destroy ();
 
     return EXIT_SUCCESS;
 }

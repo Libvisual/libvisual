@@ -380,19 +380,10 @@ int main (int argc, char *argv[])
 		}
 	}
 out:
-	//visual_time_get (&end);
-
-/*
-	VisTime diff;
-
-	visual_time_difference (&diff, &start, &end);
-
-
-	printf ("Ran: %d:%d, drawn %d frames\n",
-			diff.tv_sec, diff.tv_usec, frames);
-*/
 
 	SDL_Quit ();
+
+	visual_quit ();
 
 	return EXIT_SUCCESS;
 }
