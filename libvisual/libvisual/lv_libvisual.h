@@ -100,6 +100,18 @@ namespace LV {
       System (int& argc, char**& argv);
   };
 
+  // FIXME: Move this into lv_random.h
+  /**
+   * Drop-in replacement for std::rand() using LV's system-wide random
+   * number generator.
+   *
+   * @return a random number
+   */
+  inline int rand ()
+  {
+      return System::instance()->get_rng ().get_int ();
+  }
+
 } // LV namespace
 
 #endif // __cplusplus
@@ -122,6 +134,12 @@ LV_API VisParamList *visual_get_params (void);
 LV_API void visual_set_rng_seed (VisRandomSeed seed);
 
 LV_API VisRandomContext *visual_get_rng (void);
+
+// FIXME: Move this into lv_random.h
+static inline int visual_rand (void)
+{
+    return visual_random_context_int (visual_get_rng ());
+}
 
 LV_END_DECLS
 
