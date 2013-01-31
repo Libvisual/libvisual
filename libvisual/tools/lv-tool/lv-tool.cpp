@@ -454,13 +454,13 @@ int main (int argc, char **argv)
         uint64_t frames_drawn = 0;
 
         // frame rate control state
-        int64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
+        uint64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
         LV::Time last_frame_time;
         bool draw_frame = true;
 
         // main loop
         bool running = true;
-        bool visible = true;
+        //bool visible = true;
 
         while (running)
         {
@@ -584,7 +584,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_VISIBILITY:
                     {
-                        visible = ev.event.visibility.is_visible;
+                        //visible = ev.event.visibility.is_visible;
                         break;
                     }
 
