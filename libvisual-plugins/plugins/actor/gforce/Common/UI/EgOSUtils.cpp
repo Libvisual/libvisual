@@ -660,7 +660,7 @@ void EgOSUtils::ShowMsg( const char* inMsg ) {
 
 
 long EgOSUtils::Rnd( long min, long max ) {
-	long maxRnd 	= std::numeric_limits<LV::RandomSeed>::max();
+	long maxRnd 	= std::numeric_limits<uint32_t>::max();
 	long retNum 	= LV::rand() * ( max - min + 1 ) / maxRnd + min;
 
 	if ( retNum >= max )

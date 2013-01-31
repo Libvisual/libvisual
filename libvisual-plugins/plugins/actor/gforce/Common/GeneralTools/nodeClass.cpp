@@ -911,7 +911,7 @@ void nodeClass::RandomizeSubs() {
 
 /* FIXME use VisRandomContext */
 long nodeClass::Rnd( long min, long max ) {
-	long maxRnd 	= std::numeric_limits<LV::RandomSeed>::max();
+	long maxRnd 	= std::numeric_limits<uint32_t>::max();
 	long retNum;
 
 	LV::Time curTime = LV::Time::now ();

@@ -96,7 +96,7 @@ ExprUserFcn ExprVirtualMachine::sZeroFcn = { 0, { 0 } };
 							case cATAN:	r = atan( r );	break;		\
 							case cTRNC:	r = trunc( r );	break;		\
 							case cWRAP:	r = r -	 floor( r );  break;	\
-							case cRND:	r = r * ( (float) LV::rand() ) / ( (float) std::numeric_limits<LV::RandomSeed>::max() ); break; \
+							case cRND:	r = r * ( (float) LV::rand() ) / ( (float) std::numeric_limits<uint32_t>::max() ); break; \
 							case cSQWV:	r = ( r >= -1 && r <= 1 ) ? 1 : 0;	break;	\
 							case cTRWV: r = fabs( .5 * r ); r = 2 * ( r - floor( r ) );  if ( r > 1 ) r = 2 - r;	break;	\
 							case cPOS:	if ( r < 0 ) r = 0;			break;		\

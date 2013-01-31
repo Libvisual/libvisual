@@ -107,7 +107,7 @@ namespace LV {
    *
    * @return a random number
    */
-  inline int rand ()
+  inline uint32_t rand ()
   {
       return System::instance()->get_rng ().get_int ();
   }
@@ -136,7 +136,7 @@ LV_API void visual_set_rng_seed (VisRandomSeed seed);
 LV_API VisRandomContext *visual_get_rng (void);
 
 // FIXME: Move this into lv_random.h
-static inline int visual_rand (void)
+static inline uint32_t visual_rand (void)
 {
     return visual_random_context_int (visual_get_rng ());
 }

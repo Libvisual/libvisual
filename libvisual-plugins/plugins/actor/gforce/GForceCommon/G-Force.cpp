@@ -723,7 +723,7 @@ void GForce::ManageParticleChanges() {
 	if ( mT > mNextParticleCheck && mParticlesOn ) {
 
 		// Generate a random probability value.
-		rndVar = ( (float) LV::rand() ) / ( (float) std::numeric_limits<LV::RandomSeed>::max() );
+		rndVar = ( (float) LV::rand() ) / ( (float) std::numeric_limits<uint32_t>::max() );
 
 		// Comparing that to the evalated probability of a new particle being spawned determines if a new one *should* be spawned
 		if ( rndVar < mParticleProbabilityFcn.Evaluate() ) {

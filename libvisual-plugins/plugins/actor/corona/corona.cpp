@@ -90,7 +90,7 @@ Corona::~Corona()
 }
 
 double Corona::random(double min, double max) const {
-	return LV::rand() * (max - min) / std::numeric_limits<LV::RandomSeed>::max() + min;
+	return LV::rand() * (max - min) / std::numeric_limits<uint32_t>::max() + min;
 }
 
 bool Corona::setUpSurface(int width, int height) {
