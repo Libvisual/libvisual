@@ -295,7 +295,6 @@ namespace LV {
 
           visual_log (VISUAL_LOG_DEBUG, "phase1 m_impl->privvid %p", (void *) m_impl->privvid.get ());
           if (m_impl->actmorph->video->get_depth () == VISUAL_VIDEO_DEPTH_GL) {
-              video->set_buffer (nullptr);
               video = m_impl->actvideo;
           } else
               video->allocate_buffer ();
