@@ -83,7 +83,7 @@ namespace LV
       VisParamList *params;
 
       Impl ()
-          : params (0)
+          : params (nullptr)
       {}
   };
 

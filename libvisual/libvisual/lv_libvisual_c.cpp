@@ -19,11 +19,9 @@ extern "C" {
       return LV::System::instance()->get_params ();
   }
 
-  int visual_init (int *argc, char ***argv)
+  void visual_init (int *argc, char ***argv)
   {
-      LV::System::init(*argc, *argv);
-
-      return VISUAL_OK;
+      LV::System::init (*argc, *argv);
   }
 
   int visual_is_initialized ()
@@ -31,11 +29,9 @@ extern "C" {
       return LV::System::instance() != nullptr;
   }
 
-  int visual_quit ()
+  void visual_quit ()
   {
       LV::System::destroy ();
-
-      return VISUAL_OK;
   }
 
 } // extern C

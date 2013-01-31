@@ -94,11 +94,11 @@ namespace LV {
 
 LV_BEGIN_DECLS
 
-LV_API int visual_init (int *argc, char ***argv);
+LV_API void visual_init (int *argc, char ***argv);
 
-LV_API int visual_is_initialized (void);
+LV_API int  visual_is_initialized (void);
 
-LV_API int visual_quit (void);
+LV_API void visual_quit (void);
 
 LV_API const char *visual_get_version (void);
 
