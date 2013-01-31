@@ -111,8 +111,12 @@ namespace LV {
 
       if (!vrect.contains (area))
       {
-          visual_log(VISUAL_LOG_DEBUG, "provided area (%d, %d, %d, %d) is not contained by source area (%d, %d, %d, %d)", area.x, area.y, area.width, area.height, vrect.x, vrect.y, vrect.width, vrect.height);
-          return VideoPtr ();
+          visual_log (VISUAL_LOG_DEBUG,
+                      "provided area (%d, %d, %d, %d) is not contained by "
+                      "source area (%d, %d, %d, %d)",
+                      area.x, area.y, area.width, area.height,
+                      vrect.x, vrect.y, vrect.width, vrect.height);
+          return nullptr;
       }
 
       self->m_impl->extents = area;
