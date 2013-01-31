@@ -26,7 +26,10 @@
 #include "simple_example.hpp"
 
 #include <functional>
+#include <array>
 
+#define DISPLAY_WIDTH     640
+#define DISPLAY_HEIGHT    480
 #define ACTOR_PLUGIN_NAME "lv_analyzer"
 #define INPUT_PLUGIN_NAME "debug"
 #define MORPH_PLUGIN_NAME "slide_left"
@@ -67,13 +70,14 @@ namespace {
 SimpleExample::SimpleExample ()
     : m_actor_name (ACTOR_PLUGIN_NAME)
     , m_input_name (INPUT_PLUGIN_NAME)
-    , m_morph_name (INPUT_PLUGIN_NAME)
+    , m_morph_name (MORPH_PLUGIN_NAME)
 {
     m_bin.set_supported_depth (VISUAL_VIDEO_DEPTH_ALL);
 
-    create_display (640, 480, m_bin.get_depth ());
-    m_bin.set_video (m_screen);
     m_bin.connect (m_actor_name, m_input_name);
+
+    create_display (DISPLAY_WIDTH, DISPLAY_HEIGHT, m_bin.get_depth ());
+    m_bin.set_video (m_screen);
 
     SDL_WM_SetCaption (m_actor_name.c_str (), 0);
 
@@ -81,6 +85,8 @@ SimpleExample::SimpleExample ()
 
     m_bin.realize ();
     m_bin.sync (false);
+
+    m_bin.switch_set_style (VISUAL_SWITCH_STYLE_DIRECT);
 
     m_bin.switch_set_style (VISUAL_SWITCH_STYLE_MORPH);
     m_bin.switch_set_steps (10);
@@ -94,6 +100,9 @@ SimpleExample::~SimpleExample ()
 
 LV::VideoPtr SimpleExample::create_display (int width, int height, VisVideoDepth depth)
 {
+    m_screen.reset ();
+    m_sdl_screen = nullptr;
+
     if (depth == VISUAL_VIDEO_DEPTH_GL) {
         int flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_RESIZABLE;
 
@@ -110,7 +119,6 @@ LV::VideoPtr SimpleExample::create_display (int width, int height, VisVideoDepth
     }
 
     if (!m_sdl_screen) {
-        m_screen.reset ();
         return nullptr;
     }
 
@@ -123,20 +131,26 @@ void SimpleExample::resize_display (int width, int height)
 {
     create_display (width, height, m_bin.get_depth ());
 
+    m_bin.set_video (m_screen);
     m_bin.sync (false);
 }
 
-void SimpleExample::set_palette (LV::Palette const& palette)
+void SimpleExample::set_palette (LV::Palette const& pal)
 {
-    SDL_Color sdl_palette[256];
-
-    for (unsigned int i = 0; i < 256; i++) {
-        sdl_palette[i].r = m_palette.colors[i].r;
-        sdl_palette[i].g = m_palette.colors[i].g;
-        sdl_palette[i].b = m_palette.colors[i].b;
+    if (pal.empty ()) {
+        return;
     }
 
-    SDL_SetColors (m_sdl_screen, sdl_palette, 0, 256);
+    std::array<SDL_Color, 256> colors;
+    visual_mem_set (colors.data (), 0, sizeof (colors));
+
+    for (unsigned int i = 0; i < pal.size(); i++) {
+        colors[i].r = pal.colors[i].r;
+        colors[i].g = pal.colors[i].g;
+        colors[i].b = pal.colors[i].b;
+    }
+
+    SDL_SetColors (m_sdl_screen, colors.data (), 0, 256);
 }
 
 bool SimpleExample::handle_events ()
@@ -176,7 +190,7 @@ bool SimpleExample::handle_events ()
 
 void SimpleExample::morph_to_actor (std::string const& actor_name, std::string const& morph_name)
 {
-    m_bin.set_morph (morph_name);
+    //m_bin.set_morph (morph_name);
     m_bin.switch_actor (actor_name);
 
     m_actor_name = actor_name;
@@ -195,14 +209,32 @@ void SimpleExample::render ()
         m_bin.run ();
         SDL_UnlockSurface (m_sdl_screen);
 
-        set_palette (m_bin.get_palette ());
+        if (m_screen->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
+            set_palette (m_screen->get_palette ());
+        }
+
         SDL_Flip (m_sdl_screen);
     }
 }
 
 void SimpleExample::run ()
 {
-    while (handle_events ()) {
+    while (true) {
         render ();
+
+        if (!handle_events ()) {
+            break;
+        }
+
+        if (m_bin.depth_changed ())
+        {
+            int depthflag = m_bin.get_depth ();
+            VisVideoDepth depth = visual_video_depth_get_highest (depthflag);
+
+            create_display (m_screen->get_width (), m_screen->get_height (), depth);
+            m_bin.set_video (m_screen);
+
+            m_bin.sync (true);
+        }
     }
 }
