@@ -54,7 +54,7 @@ int main (int argc, char** argv)
         exit_code = EXIT_FAILURE;
     }
 
-    visual_quit ();
+    LV::System::destroy ();
 
     return exit_code;
 }
