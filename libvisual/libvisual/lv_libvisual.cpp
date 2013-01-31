@@ -92,8 +92,12 @@ namespace LV
 
   void System::init (int& argc, char**& argv)
   {
-      if (!m_instance)
-          m_instance = new System (argc, argv);
+      if (m_instance) {
+          visual_log (VISUAL_LOG_WARNING, "Attempt to initialize LV a second time");
+          return;
+      }
+
+      m_instance = new System (argc, argv);
   }
 
   std::string System::get_version () const
