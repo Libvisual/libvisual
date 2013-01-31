@@ -27,9 +27,9 @@
 #include "display/display_driver_factory.hpp"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <iostream>
 #include <string>
 #include <cstdio>
-#include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include <getopt.h>
@@ -66,6 +66,12 @@ namespace {
 
   bool have_seed = 0;
   uint32_t seed = 0;
+
+  enum class CycleDir
+  {
+      PREV,
+      NEXT
+  };
 
   /** print info about libvisual plugin */
   void print_plugin_info(VisPluginInfo const& info)
@@ -320,32 +326,37 @@ namespace {
       return 0;
   }
 
-  void v_cycleActor (int prev)
+  std::string cycle_actor_name (std::string const& name, CycleDir dir)
   {
-      auto name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
-                       : visual_actor_get_next_by_name(actor_name.c_str());
+      auto cycler = (dir == CycleDir::NEXT) ? visual_actor_get_next_by_name
+                                            : visual_actor_get_prev_by_name;
 
-      if (!name) {
-          name = prev ? visual_actor_get_prev_by_name(0)
-                      : visual_actor_get_next_by_name(0);
+      auto new_name = cycler (name.c_str ());
+      if (!new_name) {
+          new_name = cycler (nullptr);
       }
 
-      actor_name = name;
+      // FIXME: this won't work if an actor's name is used as part of
+      // another actor's name
+      if (exclude_actors.find (new_name) != std::string::npos) {
+          return cycle_actor_name (new_name, dir);
+      }
 
-      if (std::strstr (exclude_actors.c_str(), name) != 0)
-          v_cycleActor(prev);
+      return new_name;
   }
 
 #if 0
-  void v_cycleMorph ()
+  std::string cycle_morph_name (std::string const& name, CycleDir dir)
   {
-      auto name = visual_morph_get_next_by_name(morph_name.c_str());
+      auto cycler = (dir == CycleDir::NEXT) ? visual_morph_get_next_by_name
+                                            : visual_morph_get_prev_by_name;
 
-      if(!name) {
-          name = visual_morph_get_next_by_name(0);
+      auto new_name = cycler (name.c_str ());
+      if (!new_name) {
+          new_name = cycler (nullptr);
       }
 
-      morph_name = name;
+      return new_name;
   }
 #endif
 
@@ -529,10 +540,10 @@ int main (int argc, char **argv)
                     case VISUAL_EVENT_MOUSEBUTTONDOWN:
                     {
                         // switch to next actor
-                        v_cycleActor(1);
+                        actor_name = cycle_actor_name (actor_name, CycleDir::NEXT);
 
                         std::cerr << "Switching to actor '" << actor_name << "'...\n";
-                        bin.switch_actor(actor_name);
+                        bin.switch_actor (actor_name);
 
                         break;
                     }
