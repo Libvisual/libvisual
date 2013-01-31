@@ -288,11 +288,6 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
             morph->rate = 1;
 
     } else if (morph->mode == VISUAL_MORPH_MODE_TIME) {
-        /**
-         * @todo: We might want to have a bigger type here, but long longs aren't atomic
-         * on most architectures, so that won't do for now, maybe when we can lock (for threading)
-         * we can look into that
-         */
         double usec_elapsed = visual_timer_elapsed_usecs (morph->timer);
         double usec_morph = visual_time_to_usecs (morph->morphtime);
 
