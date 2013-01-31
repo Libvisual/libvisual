@@ -1,10 +1,8 @@
-#include <unistd.h>
+#include "test.h"
 #include <stdlib.h>
 
 #include <SDL.h>
-
 #include <libvisual/libvisual.h>
-
 
 SDL_Surface *screen;
 SDL_Color colors[256];
