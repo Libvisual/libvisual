@@ -73,7 +73,6 @@ SimpleExample::SimpleExample ()
     , m_morph_name (MORPH_PLUGIN_NAME)
 {
     m_bin.set_supported_depth (VISUAL_VIDEO_DEPTH_ALL);
-
     m_bin.connect (m_actor_name, m_input_name);
 
     create_display (DISPLAY_WIDTH, DISPLAY_HEIGHT, m_bin.get_depth ());
@@ -110,6 +109,7 @@ LV::VideoPtr SimpleExample::create_display (int width, int height, VisVideoDepth
         SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 8);
         SDL_GL_SetAttribute (SDL_GL_BLUE_SIZE, 8);
         SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, 16);
 
         m_sdl_screen = SDL_SetVideoMode (width, height, 24, flags);
     } else {
@@ -199,9 +199,9 @@ void SimpleExample::morph_to_actor (std::string const& actor_name, std::string c
 
 void SimpleExample::render ()
 {
-    bool is_opengl = (m_bin.get_depth () == VISUAL_VIDEO_DEPTH_GL);
+    auto screen_depth = m_screen->get_depth ();
 
-    if (is_opengl) {
+    if (screen_depth == VISUAL_VIDEO_DEPTH_GL) {
         m_bin.run ();
         SDL_GL_SwapBuffers ();
     } else {
@@ -209,7 +209,7 @@ void SimpleExample::render ()
         m_bin.run ();
         SDL_UnlockSurface (m_sdl_screen);
 
-        if (m_screen->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
+        if (screen_depth == VISUAL_VIDEO_DEPTH_8BIT) {
             set_palette (m_screen->get_palette ());
         }
 
