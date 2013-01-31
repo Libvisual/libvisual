@@ -91,47 +91,64 @@ typedef void *(*VisMemSet32Func)(void *dest, int c, visual_size_t n);
 
 LV_BEGIN_DECLS
 
-void visual_mem_initialize (void);
-
 /**
- * Allocates @a nbytes of uninitialized memory.
+ * Allocates a block of memory.
  *
- * @param nbytes N bytes of mem requested to be allocated.
+ * @param size Size in bytes
  *
- * @return On success, a pointer to a new allocated memory block
- * of size @a nbytes, on failure, program is aborted.
+ * @return Pointer to newly allocated memory block, or NULL on failure
  */
 LV_API void *visual_mem_malloc (visual_size_t nbytes) LV_ATTR_MALLOC;
 
 /**
- * Allocates @a nbytes of memory initialized to 0.
+ * Allocates a block of memory with its content zeroed.
  *
- * @param nbytes N bytes of mem requested to be allocated.
+ * @param size Size in bytes
  *
- * @return On success, a pointer to a new allocated memory initialized
- * to 0 of size @a nbytes, on failure, program is aborted.
+ * @return Pointer to newly allocated memory block with its contents
+ * zeroed, or NULL on failure
  */
-LV_API void *visual_mem_malloc0 (visual_size_t nbytes) LV_ATTR_MALLOC;
+LV_API void *visual_mem_malloc0 (visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Reallocates memory, can be used to grow a buffer.
  *
- * @param ptr Pointer that is to be reallocated.
- * @param nbytes The size of the new buffer.
+ * @param ptr  Pointer to memory block to be reallocated
+ * @param size Size in bytes
  *
- * @return On success, a pointer to the new reallocated memory, on failure NULL.
+ * @return pointer to the reallocated memory block, or NULL on failure
  */
-LV_API void *visual_mem_realloc (void *ptr, visual_size_t nbytes) LV_ATTR_MALLOC;
+LV_API void *visual_mem_realloc (void *ptr, visual_size_t size) LV_ATTR_MALLOC;
 
 /**
- * Frees allocated memory.
+ * Frees a memory block allocated by visual_mem_malloc() and visual_mem_realloc().
  *
- * @param ptr Frees memory to which ptr points to.
+ * @param ptr Frees memory to which ptr points to
+ *
+ * @note visual_mem_free() accepts NULL pointers.
  */
 LV_API void visual_mem_free (void *ptr);
 
+/**
+ * Allocates a memory block aligned to a given address boundary.
+ *
+ * @param size      Size in bytes
+ * @param alignment Address alignment
+ *
+ * @return pointer to newly allocated memory block at the specified alignment
+ *
+ * @note Memory allocated by this function must be fred by visual_mem_free_aligned().
+ */
 LV_API void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignment);
-LV_API void  visual_mem_free_aligned   (void* ptr);
+
+/**
+ * Frees a memory block allocated by visual_mem_alloc_aligned().
+ *
+ * @param ptr Pointer to memory block
+ *
+ * @note visual_mem_free_aligned() accepts NULL pointers.
+ */
+LV_API void visual_mem_free_aligned (void *ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 extern LV_API VisMemCopyFunc visual_mem_copy;
@@ -142,10 +159,14 @@ extern LV_API VisMemSet16Func visual_mem_set16;
 extern LV_API VisMemSet32Func visual_mem_set32;
 
 /**
- * Convenient macro to request @a n_structs structures of type @a struct_type
- * initialized to 0.
+ * Convenience macro to allocate an array with visual_mem_malloc0().
+ *
+ * @param struct_type Type of struct
+ * @param n_structs   Number of elements
+ *
+ * @return pointer to newly allocated array
  */
-#define visual_mem_new0(struct_type, n_structs)           \
+#define visual_mem_new0(struct_type, n_structs) \
     ((struct_type *) visual_mem_malloc0 (((visual_size_t) sizeof (struct_type)) * ((visual_size_t) (n_structs))))
 
 LV_END_DECLS
