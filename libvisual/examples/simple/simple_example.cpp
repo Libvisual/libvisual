@@ -82,10 +82,7 @@ SimpleExample::SimpleExample ()
     m_bin.realize ();
     m_bin.sync (false);
 
-    m_bin.switch_set_style (VISUAL_SWITCH_STYLE_DIRECT);
-
     m_bin.switch_set_style (VISUAL_SWITCH_STYLE_MORPH);
-    m_bin.switch_set_steps (10);
     m_bin.set_morph (m_morph_name);
 }
 

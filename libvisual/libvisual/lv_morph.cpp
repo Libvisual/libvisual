@@ -114,8 +114,6 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     morph->morphtime = visual_time_new ();
     morph->timer = visual_timer_new ();
     visual_morph_set_progress (morph, 0.0);
-    visual_morph_set_steps (morph, 0);
-    morph->stepsdone = 0;
 
     visual_morph_set_mode (morph, VISUAL_MORPH_MODE_SET);
 
@@ -187,13 +185,6 @@ void visual_morph_set_progress (VisMorph *morph, float progress)
     morph->progress = progress;
 }
 
-void visual_morph_set_steps (VisMorph *morph, int steps)
-{
-    visual_return_if_fail (morph != nullptr);
-
-    morph->steps = steps;
-}
-
 void visual_morph_set_mode (VisMorph *morph, VisMorphMode mode)
 {
     visual_return_if_fail (morph != nullptr);
@@ -219,15 +210,8 @@ int visual_morph_is_done (VisMorph *morph)
         if (morph->mode == VISUAL_MORPH_MODE_TIME)
             visual_timer_stop (morph->timer);
 
-        if (morph->mode == VISUAL_MORPH_MODE_STEPS)
-            morph->stepsdone = 0;
-
         return TRUE;
     }
-
-    /* Always be sure ;) */
-    if (morph->mode == VISUAL_MORPH_MODE_STEPS && morph->steps == morph->stepsdone)
-        return TRUE;
 
     return FALSE;
 }
@@ -281,13 +265,7 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
     visual_video_set_palette (morph->dest, visual_morph_get_palette (morph));
 
     /* On automatic morphing increase the progress. */
-    if (morph->mode == VISUAL_MORPH_MODE_STEPS) {
-        morph->progress += (1.000 / morph->steps);
-        morph->stepsdone++;
-
-        morph->progress = std::min (morph->progress, 1.0f);
-
-    } else if (morph->mode == VISUAL_MORPH_MODE_TIME) {
+    if (morph->mode == VISUAL_MORPH_MODE_TIME) {
         double usec_elapsed = visual_timer_elapsed_usecs (morph->timer);
         double usec_morph = visual_time_to_usecs (morph->morphtime);
 

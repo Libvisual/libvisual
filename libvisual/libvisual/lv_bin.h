@@ -111,11 +111,7 @@ namespace LV {
 
 	  void switch_set_style (VisBinSwitchStyle style);
 
-	  void switch_set_steps (int steps);
-
 	  void switch_set_automatic (bool automatic);
-
-	  void switch_set_rate (float rate);
 
 	  void switch_set_mode (VisMorphMode mode);
 
@@ -178,9 +174,7 @@ LV_API void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
 LV_API void visual_bin_switch_actor    (VisBin *bin, VisActor *actor);
 LV_API void visual_bin_switch_finalize (VisBin *bin);
 LV_API void visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
-LV_API void visual_bin_switch_set_steps (VisBin *bin, int steps);
 LV_API void visual_bin_switch_set_automatic (VisBin *bin, int automatic);
-LV_API void visual_bin_switch_set_rate (VisBin *bin, float rate);
 LV_API void visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode);
 LV_API void visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 

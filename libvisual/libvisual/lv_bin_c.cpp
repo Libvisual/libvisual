@@ -159,25 +159,11 @@ void visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style)
     bin->switch_set_style (style);
 }
 
-void visual_bin_switch_set_steps (VisBin *bin, int steps)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_steps (steps);
-}
-
 void visual_bin_switch_set_automatic (VisBin *bin, int automatic)
 {
     visual_return_if_fail (bin != nullptr);
 
     bin->switch_set_automatic (automatic);
-}
-
-void visual_bin_switch_set_rate (VisBin *bin, float rate)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_rate (rate);
 }
 
 void visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode)

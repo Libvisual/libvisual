@@ -50,9 +50,6 @@ namespace LV {
       int          morphstyle;
       bool         morphing;
       bool         morphautomatic;
-      int          morphsteps;
-      int          morphstepsdone;
-      float        morphrate;
       VisMorphMode morphmode;
       Time         morphtime;
 
@@ -107,9 +104,6 @@ namespace LV {
       , morphstyle      (0)
       , morphing        (false)
       , morphautomatic  (true)
-      , morphsteps      (0)
-      , morphstepsdone  (0)
-      , morphrate       (0.0)
       , morphmode       (VISUAL_MORPH_MODE_TIME)
       , morphtime       (4, 0)
       , depthpreferred  (VISUAL_BIN_DEPTH_HIGHEST)
@@ -588,11 +582,7 @@ namespace LV {
                   visual_morph_set_mode (m_impl->morph, VISUAL_MORPH_MODE_SET);
 
               visual_morph_set_time (m_impl->morph, &m_impl->morphtime);
-              visual_morph_set_steps (m_impl->morph, m_impl->morphsteps);
           }
-
-          m_impl->morphrate = 0;
-          m_impl->morphstepsdone = 0;
 
           visual_log (VISUAL_LOG_DEBUG, "phase 1");
           /* Allocate a private video for the main actor, so the morph
@@ -698,19 +688,9 @@ namespace LV {
       m_impl->morphstyle = style;
   }
 
-  void Bin::switch_set_steps (int steps)
-  {
-      m_impl->morphsteps = steps;
-  }
-
   void Bin::switch_set_automatic (bool automatic)
   {
       m_impl->morphautomatic = automatic;
-  }
-
-  void Bin::switch_set_rate (float rate)
-  {
-      m_impl->morphrate = rate;
   }
 
   void Bin::switch_set_mode (VisMorphMode mode)

@@ -42,12 +42,9 @@
  * Morph morphing methods.
  */
 typedef enum {
-    VISUAL_MORPH_MODE_SET,      /**< Morphing is done by a rate set,
-                                  * nothing is automated here. */
-    VISUAL_MORPH_MODE_STEPS,    /**< Morphing is done by setting a number of steps,
-                                  * the morph will be automated. */
-    VISUAL_MORPH_MODE_TIME      /**< Morphing is done by setting a target time when the morph should be done,
-                                  * This is as well automated. */
+    VISUAL_MORPH_MODE_SET,      /**< Morph progress is directly set */
+    VISUAL_MORPH_MODE_TIME      /**< Morph progress is automatically
+                                     measured and set using real time */
 } VisMorphMode;
 
 typedef struct _VisMorph VisMorph;
