@@ -249,13 +249,6 @@ namespace LV {
       int get_bpp () const;
 
       /**
-       * Sets the pixel buffer to a given memory block.
-       *
-       * @param ptr pointer to memory block
-       */
-      void set_buffer (void* ptr);
-
-      /**
        * Allocates a buffer based on the assigned dimensions and depth.
        *
        * @return true if successful, false otherwise
@@ -529,8 +522,6 @@ LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *sr
 
 LV_API void        visual_video_set_palette (VisVideo *video, VisPalette *pal);
 LV_API VisPalette* visual_video_get_palette (VisVideo *video);
-
-LV_API void visual_video_set_buffer (VisVideo *video, void *ptr);
 
 LV_API void visual_video_set_dimension (VisVideo *video, int width, int height);
 

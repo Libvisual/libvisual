@@ -58,6 +58,7 @@ namespace LV {
 
       ~Impl ();
 
+      void set_buffer (void* ptr);
       void precompute_row_table ();
   };
 
