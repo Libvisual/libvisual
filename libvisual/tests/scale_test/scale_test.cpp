@@ -56,6 +56,8 @@ int main (int argc, char *argv[])
 
         SDL_WM_SetCaption ("LV::Video scale test", NULL);
 
+        auto screen = lv_video_wrap_sdl_surface (sdl_screen);
+
         // Load image
 
         auto const image_file_path = (argc > 1) ? argv[1] : "../images/landscape.png";
@@ -79,7 +81,6 @@ int main (int argc, char *argv[])
         bool running = true;
 
         while (running) {
-            auto screen = lv_video_wrap_sdl_surface (sdl_screen);
             screen->scale (image, scale_method);
             SDL_Flip (sdl_screen);
 
@@ -109,6 +110,7 @@ int main (int argc, char *argv[])
                         if (!sdl_screen) {
                             throw std::runtime_error {"Failed to resize window"};
                         }
+                        screen = lv_video_wrap_sdl_surface (sdl_screen);
                         break;
 
                     case SDL_QUIT:
