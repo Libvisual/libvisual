@@ -157,10 +157,11 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     bin_ = new LV::Bin();
     bin_->set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
 
-    actor_ = visual_actor_new(actor_plugin_.c_str());
+    bin_->connect(actor_plugin_, input_plugin_);
 
-    input_ = visual_input_new(input_plugin_.c_str());
-    
+    actor_ = bin_->get_actor();
+    input_ = bin_->get_input();
+
     // Set depth
     int depthflag = visual_actor_get_supported_depth(actor_);
 
@@ -169,8 +170,6 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     // ----
 
     bin_->set_depth(depth_);
-
-    bin_->connect(actor_, input_);
 
     video_ = visual_video_new_with_buffer(cols_, rows_, depth_);
 
@@ -181,8 +180,7 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     bin_->set_video(video_);
     bin_->realize();
     bin_->set_morph(morph_plugin_);
-    bin_->switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
-    bin_->switch_set_automatic(true);
+    bin_->use_morph(false);
     bin_->sync(true);
     bin_->depth_changed();
 
