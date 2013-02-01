@@ -144,8 +144,7 @@ static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
 	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
-	if (priv->filename)
-		free (priv->filename);
+	visual_mem_free (priv->filename);
 
 	if (priv->source) {
 		g_object_unref (priv->source);
@@ -300,7 +299,7 @@ static int act_gdkpixbuf_load_file (PixbufPrivate *priv, const char *filename)
 		priv->target = NULL;
 	}
 
-	free (priv->filename);
+	visual_mem_free (priv->filename);
 	priv->filename = visual_strdup (filename);
 
 	priv->source = gdk_pixbuf_new_from_file (filename, NULL);
