@@ -24,6 +24,7 @@
 #include "lv_morph.h"
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
+#include <algorithm>
 
 namespace {
 
@@ -112,7 +113,7 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     morph->morphpal = visual_palette_new (256);
     morph->morphtime = visual_time_new ();
     morph->timer = visual_timer_new ();
-    visual_morph_set_rate (morph, 0);
+    visual_morph_set_progress (morph, 0.0);
     visual_morph_set_steps (morph, 0);
     morph->stepsdone = 0;
 
@@ -179,11 +180,11 @@ void visual_morph_set_time (VisMorph *morph, VisTime *time)
     visual_time_copy (morph->morphtime, time);
 }
 
-void visual_morph_set_rate (VisMorph *morph, float rate)
+void visual_morph_set_progress (VisMorph *morph, float progress)
 {
     visual_return_if_fail (morph != nullptr);
 
-    morph->rate = rate;
+    morph->progress = progress;
 }
 
 void visual_morph_set_steps (VisMorph *morph, int steps)
@@ -214,7 +215,7 @@ int visual_morph_is_done (VisMorph *morph)
     if (morph->mode == VISUAL_MORPH_MODE_SET)
         return FALSE;
 
-    if (morph->rate >= 1.0) {
+    if (morph->progress >= 1.0) {
         if (morph->mode == VISUAL_MORPH_MODE_TIME)
             visual_timer_stop (morph->timer);
 
@@ -266,37 +267,32 @@ int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo
         visual_timer_start (morph->timer);
 
     if (morphplugin->palette)
-        morphplugin->palette (morph->plugin, morph->rate, audio, morph->morphpal, src1, src2);
+        morphplugin->palette (morph->plugin, morph->progress, audio, morph->morphpal, src1, src2);
     else {
         auto src1_pal = visual_video_get_palette (src1);
         auto src2_pal = visual_video_get_palette (src2);
 
         if (src1_pal && src2_pal)
-            visual_palette_blend (morph->morphpal, src1_pal, src2_pal, morph->rate);
+            visual_palette_blend (morph->morphpal, src1_pal, src2_pal, morph->progress);
     }
 
-    morphplugin->apply (morph->plugin, morph->rate, audio, morph->dest, src1, src2);
+    morphplugin->apply (morph->plugin, morph->progress, audio, morph->dest, src1, src2);
 
     visual_video_set_palette (morph->dest, visual_morph_get_palette (morph));
 
-    /* On automatic morphing increase the rate. */
+    /* On automatic morphing increase the progress. */
     if (morph->mode == VISUAL_MORPH_MODE_STEPS) {
-        morph->rate += (1.000 / morph->steps);
+        morph->progress += (1.000 / morph->steps);
         morph->stepsdone++;
 
-        if (morph->rate > 1.0)
-            morph->rate = 1;
+        morph->progress = std::min (morph->progress, 1.0f);
 
     } else if (morph->mode == VISUAL_MORPH_MODE_TIME) {
         double usec_elapsed = visual_timer_elapsed_usecs (morph->timer);
         double usec_morph = visual_time_to_usecs (morph->morphtime);
 
-        morph->rate = usec_elapsed / usec_morph;
-
-        if (morph->rate > 1.0)
-            morph->rate = 1;
+        morph->progress = std::min (usec_elapsed / usec_morph, 1.0);
     }
-
 
     return TRUE;
 }

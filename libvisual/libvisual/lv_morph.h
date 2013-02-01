@@ -62,7 +62,7 @@ typedef struct _VisMorphPlugin VisMorphPlugin;
  * a palette function isn't set.
  *
  * @arg plugin Pointer to the VisPluginData instance structure.
- * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
+ * @arg progress A float between 0.0 and 1.0 that tells how far the morph has proceeded.
  * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
  * @arg pal A pointer to the target VisPalette in which the morph between the two palettes is saved. Should have
  *  256 VisColor entries.
@@ -71,7 +71,7 @@ typedef struct _VisMorphPlugin VisMorphPlugin;
  *
  * @return 0 on succes -1 on error.
  */
-typedef int (*VisPluginMorphPaletteFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal,
+typedef int (*VisPluginMorphPaletteFunc)(VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal,
         VisVideo *src1, VisVideo *src2);
 
 /**
@@ -80,14 +80,14 @@ typedef int (*VisPluginMorphPaletteFunc)(VisPluginData *plugin, float rate, VisA
  * the morph plugin and here is the morphing done.
  *
  * @arg plugin Pointer to the VisPluginData instance structure.
- * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
+ * @arg progress A float between 0.0 and 1.0 that tells how far the morph has proceeded.
  * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
  * @arg src1 A pointer to the first VisVideo source.
  * @arg src2 A pointer to the second VisVideo source.
  *
  * @return 0 on succes -1 on error.
  */
-typedef int (*VisPluginMorphApplyFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest,
+typedef int (*VisPluginMorphApplyFunc)(VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest,
         VisVideo *src1, VisVideo *src2);
 
 /**
@@ -106,9 +106,8 @@ struct _VisMorph {
     VisPluginData *plugin;    /**< Pointer to the plugin itself. */
     VisVideo      *dest;      /**< Destination video, this is where
                                  * the result of the morph gets drawn. */
-    float          rate;      /**< The rate of morph, 0 draws the first video source
-                                 * 1 the second video source, 0.5 is a 50/50, final
-                                 * content depends on the plugin being used. */
+    float          progress;  /**< Progress of morph, ranges from
+                                 * 0.0 (initial) to 1.0 (completion) */
     VisPalette    *morphpal;  /**< Morph plugins can also set a palette for indexed
                                  * color depths. */
     VisTime       *morphtime; /**< Amount of time which the morphing should take. */
@@ -238,13 +237,9 @@ LV_API void visual_morph_set_time (VisMorph *morph, VisTime *time);
  * and the content of the result depends on the morph plugin being used.
  *
  * @param morph Pointer to a VisMorph to which the rate needs to be set.
- * @param rate Value that sets the rate of the current morph. The rate
- *    contains the amount that is currently being morphed and needs to be
- *    manually adjust. The morph system doesn't increase the rate itself.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
+ * @param progress progress of morph [0.0, 1.0]
  */
-LV_API void visual_morph_set_rate (VisMorph *morph, float rate);
+LV_API void visual_morph_set_progress (VisMorph *morph, float rate);
 
 /**
  * Used to set the number of steps that a morph will take to finish.

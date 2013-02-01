@@ -38,7 +38,7 @@ namespace {
 
   int lv_morph_checkers_init    (VisPluginData *plugin);
   int lv_morph_checkers_cleanup (VisPluginData *plugin);
-  int lv_morph_checkers_apply   (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+  int lv_morph_checkers_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 } // anonymous namespace
 
@@ -97,7 +97,7 @@ namespace {
       return 0;
   }
 
-  int lv_morph_checkers_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+  int lv_morph_checkers_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
   {
       auto priv = static_cast<CheckerPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
 

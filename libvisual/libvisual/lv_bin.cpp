@@ -578,7 +578,7 @@ namespace LV {
           !m_impl->depthfromGL) {
 
           if (m_impl->morph && m_impl->morph->plugin) {
-              visual_morph_set_rate (m_impl->morph, 0);
+              visual_morph_set_progress (m_impl->morph, 0.0);
 
               visual_morph_set_video (m_impl->morph, m_impl->actvideo.get ());
 

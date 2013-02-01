@@ -31,7 +31,7 @@ static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *sr
 
 static int lv_morph_alpha_init (VisPluginData *plugin);
 static int lv_morph_alpha_cleanup (VisPluginData *plugin);
-static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static int lv_morph_alpha_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -78,7 +78,7 @@ static int lv_morph_alpha_cleanup (VisPluginData *plugin)
 	return 0;
 }
 
-static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static int lv_morph_alpha_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	visual_return_val_if_fail (dest != NULL, -1);
 	visual_return_val_if_fail (src1 != NULL, -1);
@@ -89,7 +89,7 @@ static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *au
 	                    visual_video_get_pixels (src2),
 	                    visual_video_get_size (dest),
 	                    visual_video_get_depth (dest),
-	                    rate);
+	                    progress);
 
 	return 0;
 }
