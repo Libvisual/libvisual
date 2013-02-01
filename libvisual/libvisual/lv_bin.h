@@ -38,11 +38,6 @@
 #define VISUAL_BIN(obj) (VISUAL_CHECK_CAST ((obj), VisBin))
 
 typedef enum {
-	VISUAL_SWITCH_STYLE_DIRECT,
-	VISUAL_SWITCH_STYLE_MORPH
-} VisBinSwitchStyle;
-
-typedef enum {
 	VISUAL_BIN_DEPTH_LOWEST,
 	VISUAL_BIN_DEPTH_HIGHEST
 } VisBinDepth;
@@ -106,7 +101,7 @@ namespace LV {
 
 	  void switch_finalize ();
 
-	  void switch_set_style (VisBinSwitchStyle style);
+	  void use_morph (bool use);
 
 	  void switch_set_automatic (bool automatic);
 
@@ -170,9 +165,6 @@ LV_API const VisPalette* visual_bin_get_palette (VisBin *bin);
 LV_API void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
 LV_API void visual_bin_switch_actor    (VisBin *bin, VisActor *actor);
 LV_API void visual_bin_switch_finalize (VisBin *bin);
-LV_API void visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
-LV_API void visual_bin_switch_set_automatic (VisBin *bin, int automatic);
-LV_API void visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode);
 LV_API void visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 
 LV_API void visual_bin_run (VisBin *bin);

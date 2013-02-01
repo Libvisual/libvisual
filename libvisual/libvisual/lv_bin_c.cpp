@@ -152,25 +152,11 @@ void visual_bin_switch_finalize (VisBin *bin)
     bin->switch_finalize ();
 }
 
-void visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style)
+void visual_bin_use_morph (VisBin *bin, int use)
 {
     visual_return_if_fail (bin != nullptr);
 
-    bin->switch_set_style (style);
-}
-
-void visual_bin_switch_set_automatic (VisBin *bin, int automatic)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_automatic (automatic);
-}
-
-void visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_mode (mode);
+    bin->use_morph (use);
 }
 
 void visual_bin_switch_set_time (VisBin *bin, long sec, long usec)
