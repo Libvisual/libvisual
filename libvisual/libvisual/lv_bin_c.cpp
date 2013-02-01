@@ -19,25 +19,11 @@ void visual_bin_realize (VisBin *bin)
     bin->realize ();
 }
 
-void visual_bin_set_actor (VisBin *bin, VisActor *actor)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->set_actor (actor);
-}
-
 VisActor *visual_bin_get_actor (VisBin *bin)
 {
     visual_return_val_if_fail (bin != nullptr, nullptr);
 
     return bin->get_actor ();
-}
-
-void visual_bin_set_input (VisBin *bin, VisInput *input)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->set_input (input);
 }
 
 VisInput *visual_bin_get_input (VisBin *bin)
@@ -61,14 +47,7 @@ VisMorph *visual_bin_get_morph (VisBin *bin)
     return bin->get_morph ();
 }
 
-void visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->connect (actor, input);
-}
-
-void visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname)
+void visual_bin_connect (VisBin *bin, const char *actname, const char *inname)
 {
     visual_return_if_fail (bin != nullptr);
 
@@ -131,18 +110,11 @@ const VisPalette *visual_bin_get_palette (VisBin *bin)
     return &bin->get_palette ();
 }
 
-void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
+void visual_bin_switch_actor (VisBin *bin, const char *actname)
 {
     visual_return_if_fail (bin != nullptr);
 
     bin->switch_actor (actname);
-}
-
-void visual_bin_switch_actor (VisBin *bin, VisActor *actor)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_actor (actor);
 }
 
 void visual_bin_switch_finalize (VisBin *bin)

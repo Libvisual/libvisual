@@ -63,19 +63,13 @@ namespace LV {
 
 	  void realize ();
 
-	  void set_actor (VisActor* actor);
-
 	  VisActor* get_actor () const;
-
-	  void set_input (VisInput* input);
-
 	  VisInput* get_input () const;
 
 	  void set_morph (std::string const& morphname);
 
 	  VisMorph* get_morph () const;
 
-	  bool connect (VisActor* actor, VisInput* input);
 	  bool connect (std::string const& actname, std::string const& inname);
 
 	  void sync (bool noevent);
@@ -97,7 +91,6 @@ namespace LV {
 	  Palette const& get_palette () const;
 
 	  void switch_actor (std::string const& actname);
-	  void switch_actor (VisActor *actor);
 
 	  void switch_finalize ();
 
@@ -116,6 +109,10 @@ namespace LV {
 	  class Impl;
 
       const std::unique_ptr<Impl> m_impl;
+
+      // FIXME: Remove
+	  bool connect (VisActor* actor, VisInput* input);
+	  void switch_actor (VisActor *actor);
   };
 
 } // LV namespace
@@ -136,17 +133,13 @@ LV_API void    visual_bin_free (VisBin *bin);
 
 LV_API void visual_bin_realize (VisBin *bin);
 
-LV_API void      visual_bin_set_actor (VisBin *bin, VisActor *actor);
 LV_API VisActor *visual_bin_get_actor (VisBin *bin);
-
-LV_API void      visual_bin_set_input (VisBin *bin, VisInput *input);
 LV_API VisInput *visual_bin_get_input (VisBin *bin);
 
 LV_API void      visual_bin_set_morph (VisBin *bin, const char *morphname);
 LV_API VisMorph *visual_bin_get_morph (VisBin *bin);
 
-LV_API void visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input);
-LV_API void visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname);
+LV_API void visual_bin_connect (VisBin *bin, const char *actname, const char *inname);
 
 LV_API void visual_bin_sync (VisBin *bin, int noevent);
 
@@ -162,8 +155,7 @@ LV_API int visual_bin_depth_changed (VisBin *bin);
 
 LV_API const VisPalette* visual_bin_get_palette (VisBin *bin);
 
-LV_API void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
-LV_API void visual_bin_switch_actor    (VisBin *bin, VisActor *actor);
+LV_API void visual_bin_switch_actor (VisBin *bin, const char *name);
 LV_API void visual_bin_switch_finalize (VisBin *bin);
 LV_API void visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 

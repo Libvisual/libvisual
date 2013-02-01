@@ -32,21 +32,16 @@ namespace LV {
   {
   public:
 
-      bool managed;
-
       VisActor* actor;
       VideoPtr  actvideo;
       VideoPtr  privvid;
 
-      bool      actmorphmanaged;
       VideoPtr  actmorphvideo;
       VisActor* actmorph;
 
-      bool      inputmanaged;
       VisInput* input;
 
       bool         use_morph;
-      bool         morphmanaged;
       VisMorph*    morph;
       bool         morphing;
       VisMorphMode morphmode;
@@ -66,6 +61,9 @@ namespace LV {
       ~Impl ();
 
       VisVideoDepth get_suitable_depth (VisVideoDepth depth);
+
+	  void set_actor (VisActor* actor);
+	  void set_input (VisInput* input);
   };
 
   VisVideoDepth Bin::Impl::get_suitable_depth (VisVideoDepth depthflag)
@@ -92,14 +90,10 @@ namespace LV {
 
 
   Bin::Impl::Impl ()
-      : managed (false)
-      , actor           (nullptr)
-      , actmorphmanaged (false)
+      : actor           (nullptr)
       , actmorph        (nullptr)
-      , inputmanaged    (false)
       , input           (nullptr)
       , use_morph       (false)
-      , morphmanaged    (false)
       , morph           (nullptr)
       , morphing        (false)
       , morphtime       (4, 0)
@@ -130,6 +124,32 @@ namespace LV {
           visual_object_unref (VISUAL_OBJECT (actmorph));
   }
 
+  void Bin::Impl::set_actor (VisActor *new_actor)
+  {
+      if (actor) {
+          visual_object_unref (VISUAL_OBJECT (actor));
+      }
+
+      actor = new_actor;
+
+      if (actor) {
+          visual_object_ref (VISUAL_OBJECT (actor));
+      }
+  }
+
+  void Bin::Impl::set_input (VisInput* new_input)
+  {
+      if (input) {
+          visual_object_unref (VISUAL_OBJECT (input));
+      }
+
+      input = new_input;
+
+      if (input) {
+          visual_object_ref (VISUAL_OBJECT (input));
+      }
+  }
+
   Bin::Bin ()
       : m_impl (new Impl)
   {
@@ -153,37 +173,9 @@ namespace LV {
           visual_morph_realize (m_impl->morph);
   }
 
-  void Bin::set_actor (VisActor *actor)
-  {
-      if (m_impl->actor) {
-          visual_object_unref (VISUAL_OBJECT (m_impl->actor));
-      }
-
-      m_impl->actor = actor;
-      m_impl->managed = false;
-
-      if (m_impl->actor) {
-          visual_object_ref (VISUAL_OBJECT (m_impl->actor));
-      }
-  }
-
   VisActor* Bin::get_actor () const
   {
       return m_impl->actor;
-  }
-
-  void Bin::set_input (VisInput* input)
-  {
-      if (m_impl->input) {
-          visual_object_unref (VISUAL_OBJECT (m_impl->input));
-      }
-
-      m_impl->input = input;
-      m_impl->inputmanaged = false;
-
-      if (m_impl->input) {
-          visual_object_ref (VISUAL_OBJECT (m_impl->input));
-      }
   }
 
   VisInput *Bin::get_input () const
@@ -199,8 +191,6 @@ namespace LV {
       VisMorph* morph = visual_morph_new (morphname.c_str ());
 
       m_impl->morph = morph;
-      m_impl->morphmanaged = true;
-
       visual_return_if_fail (morph->plugin != nullptr);
 
       VisVideoDepth depthflag = visual_morph_get_supported_depth (morph);
@@ -223,8 +213,8 @@ namespace LV {
       visual_return_val_if_fail (actor != nullptr, false);
       visual_return_val_if_fail (input != nullptr, false);
 
-      set_actor (actor);
-      set_input (input);
+      m_impl->set_actor (actor);
+      m_impl->set_input (input);
 
       auto depthflag = visual_actor_get_supported_depth (actor);
 
@@ -253,9 +243,6 @@ namespace LV {
       if (!connect (actor, input)) {
           return false;
       }
-
-      m_impl->managed = true;
-      m_impl->inputmanaged = true;
 
       return true;
   }
@@ -310,22 +297,17 @@ namespace LV {
                   video->get_pitch (), m_impl->depthold,
                   m_impl->depthforcedmain, noevent);
 
-      if (m_impl->managed) {
-          if (m_impl->depthold == VISUAL_VIDEO_DEPTH_GL)
-              visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, false, true);
-          else
-              visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, noevent, true);
-      } else {
-          if (m_impl->depthold == VISUAL_VIDEO_DEPTH_GL)
-              visual_actor_video_negotiate (m_impl->actor, VISUAL_VIDEO_DEPTH_NONE, false, true);
-          else
-              visual_actor_video_negotiate (m_impl->actor, VISUAL_VIDEO_DEPTH_NONE, noevent, false);
+      if (m_impl->depthold == VISUAL_VIDEO_DEPTH_GL) {
+          visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, false, true);
+      }
+      else {
+          visual_actor_video_negotiate (m_impl->actor, m_impl->depthforcedmain, noevent, true);
       }
 
       visual_log (VISUAL_LOG_DEBUG, "pitch after main actor negotiate %d", video->get_pitch ());
 
       /* Morphing actor */
-      if (m_impl->actmorphmanaged && m_impl->morphing && m_impl->use_morph) {
+      if (m_impl->morphing && m_impl->use_morph) {
 
           auto actvideo = m_impl->actmorphvideo;
           if (!actvideo) {
@@ -345,10 +327,7 @@ namespace LV {
           visual_log (VISUAL_LOG_DEBUG, "phase3 pitch of real framebuffer %d",
                       m_impl->actvideo->get_pitch ());
 
-          if (m_impl->actmorphmanaged)
-              visual_actor_video_negotiate (m_impl->actmorph, m_impl->depthforced, false, true);
-          else
-              visual_actor_video_negotiate (m_impl->actmorph, VISUAL_VIDEO_DEPTH_NONE, false, false);
+          visual_actor_video_negotiate (m_impl->actmorph, m_impl->depthforced, false, true);
       }
 
       visual_log (VISUAL_LOG_DEBUG, "end sync function");
@@ -426,12 +405,9 @@ namespace LV {
       visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s",
 				  actname.c_str (), m_impl->actor->plugin->info->plugname);
 
-      /* Destroy if there already is a managed one */
-      if (m_impl->actmorphmanaged) {
-          if (m_impl->actmorph) {
-              visual_object_unref (VISUAL_OBJECT (m_impl->actmorph));
-			  m_impl->actmorphvideo = nullptr;
-          }
+      if (m_impl->actmorph) {
+          visual_object_unref (VISUAL_OBJECT (m_impl->actmorph));
+          m_impl->actmorphvideo = nullptr;
       }
 
       /* Create a new managed actor */
@@ -533,7 +509,6 @@ namespace LV {
       visual_actor_set_video (actor, video.get ());
 
       m_impl->actmorphvideo = video;
-      m_impl->actmorphmanaged = true;
 
       visual_log (VISUAL_LOG_INFO, "switching... ******************************************");
       switch_actor (actor);
@@ -619,16 +594,12 @@ namespace LV {
   {
       visual_log (VISUAL_LOG_DEBUG, "Completing actor switch...");
 
-      if (m_impl->managed) {
-          //visual_object_unref (VISUAL_OBJECT (m_impl->actor));
-      }
+      //visual_object_unref (VISUAL_OBJECT (m_impl->actor));
 
       /* Copy over the depth to be sure, and for GL plugins */
       /* m_impl->actvideo->set_depth (m_impl->actmorphvideo->get_depth ()); */
 
-      if (m_impl->actmorphmanaged) {
-          m_impl->actmorphvideo = nullptr;
-      }
+      m_impl->actmorphvideo = nullptr;
 
       if (m_impl->privvid) {
           m_impl->privvid = nullptr;
@@ -641,7 +612,7 @@ namespace LV {
 
       m_impl->morphing = false;
 
-      if (m_impl->morphmanaged && m_impl->morph) {
+      if (m_impl->morph) {
           visual_object_unref (VISUAL_OBJECT (m_impl->morph));
           m_impl->morph = nullptr;
       }
@@ -689,23 +660,13 @@ namespace LV {
        * else we can get into trouble especially with GL, also when
        * switching away from a GL plugin this is needed */
       if (m_impl->morphing) {
-          /* We realize here, because it doesn't realize
-           * on switch, the reason for this is so that after a
-           * switch call, especially in a managed bin the
-           * depth can be requested and set, this is important
-           * for openGL plugins, the realize method checks
-           * for double realize itself so we don't have
-           * to check this, it's a bit hacky */
           visual_return_if_fail (m_impl->actmorph != nullptr);
           visual_return_if_fail (m_impl->actmorph->plugin != nullptr);
 
           if (!m_impl->actmorph->plugin->realized) {
               visual_actor_realize (m_impl->actmorph);
 
-              if (m_impl->actmorphmanaged)
-                  visual_actor_video_negotiate (m_impl->actmorph, m_impl->depthforced, false, true);
-              else
-                  visual_actor_video_negotiate (m_impl->actmorph, VISUAL_VIDEO_DEPTH_NONE, false, false);
+              visual_actor_video_negotiate (m_impl->actmorph, m_impl->depthforced, false, true);
           }
 
           /* When we've got multiple switch events without a sync we need
@@ -714,10 +675,7 @@ namespace LV {
           if (!m_impl->actor->plugin->realized) {
               visual_actor_realize (m_impl->actor);
 
-              if (m_impl->managed)
-                  visual_actor_video_negotiate (m_impl->actor, m_impl->depthforced, false, true);
-              else
-                  visual_actor_video_negotiate (m_impl->actor, VISUAL_VIDEO_DEPTH_NONE, false, false);
+              visual_actor_video_negotiate (m_impl->actor, m_impl->depthforced, false, true);
           }
 
           /* When the style is DIRECT or the context is GL we shouldn't try
@@ -733,8 +691,6 @@ namespace LV {
           }
       }
 
-      /* We realize here because in a managed bin the depth for openGL is
-       * requested after the connect, thus we can realize there yet */
       visual_actor_realize (m_impl->actor);
 
       visual_actor_run (m_impl->actor, m_impl->input->audio);
