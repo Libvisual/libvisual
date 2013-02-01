@@ -38,16 +38,9 @@
  */
 
 #define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
-#define VISUAL_ACTOR_PLUGINENVIRON(obj) (VISUAL_CHECK_CAST ((obj), VisActorPluginEnviron))
 #define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
 
-/**
- * Name defination of the standard VisActorPluginEnviron element for an actor plugin.
- */
-#define VISUAL_ACTOR_PLUGIN_ENVIRON	"Libvisual:core:actor:environ"
-
 typedef struct _VisActor VisActor;
-typedef struct _VisActorPluginEnviron VisActorPluginEnviron;
 typedef struct _VisActorPlugin VisActorPlugin;
 
 /* Actor plugin methods */
@@ -100,13 +93,6 @@ struct _VisActor {
 	VisVideo      *fitting;
 	VisPalette    *ditherpal;
 	VisSongInfo   *songcompare;
-};
-
-struct _VisActorPluginEnviron {
-	VisObject object;  /**< The VisObject data. */
-
-	int       fps;     /**< The desired fps, set by the plugin, optionally read by
-	                      * the display target. */
 };
 
 /**

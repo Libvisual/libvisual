@@ -238,13 +238,6 @@ int visual_actor_init (VisActor *actor, const char *actorname)
         actplugin->songinfo = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
     }
 
-    /* Adding the VisActorPluginEnviron */
-    auto actenviron = visual_mem_new0 (VisActorPluginEnviron, 1);
-    visual_object_init (VISUAL_OBJECT (actenviron), nullptr);
-
-    auto enve = visual_plugin_environ_new (VISUAL_ACTOR_PLUGIN_ENVIRON, VISUAL_OBJECT (actenviron));
-    visual_plugin_environ_add (actor->plugin, enve);
-
     return VISUAL_OK;
 }
 

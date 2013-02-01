@@ -37,7 +37,6 @@
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginInfo))
 #define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginData))
-#define VISUAL_PLUGINENVIRON(obj)			(VISUAL_CHECK_CAST ((obj), VisPluginEnviron))
 
 /**
  * Indicates at which version the plugin API is.
@@ -107,7 +106,6 @@ typedef enum {
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
 typedef struct _VisPluginData VisPluginData;
-typedef struct _VisPluginEnviron VisPluginEnviron;
 
 
 /* Plugin standard get_plugin_info method */
@@ -204,20 +202,6 @@ struct _VisPluginData {
 	                                     * semi reproduce visuals. */
 
 	int                  realized;    /**< Flag that indicates if the plugin is realized. */
-
-	VisList             *environment; /**< Misc environment specific data. */
-};
-
-/**
- * The VisPluginEnviron is used to setup a pre realize/init environment for plugins.
- * Some types of plugins might need this internally and thus this system provides this function.
- */
-struct _VisPluginEnviron {
-	VisObject   object;       /**< The VisObject data. */
-
-	const char *type;         /**< Almost the same as _VisPluginInfo.type. */
-
-	VisObject  *environment;  /**< VisObject that contains environ specific data. */
 };
 
 LV_BEGIN_DECLS
@@ -342,47 +326,6 @@ LV_API int visual_plugin_realize (VisPluginData *plugin);
  * @return The VISUAL_PLUGIN_API_VERSION define value.
  */
 LV_API int visual_plugin_get_api_version (void);
-
-/**
- * Creates a VisPluginEnviron structure.
- *
- * @param type The Environ type that is requested.
- * @param envobj The VisObject connected to this Environ type.
- *
- * @return A newly allocated VisPluginEnviron, or NULL on failure.
- */
-LV_API VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj);
-
-/**
- * Adds a VisPluginEnviron to the plugin its environment list.
- *
- * @param plugin Pointer to the VisPluginData to which the VisPluginEnviron is added.
- * @param enve Pointer to the VisPluginEnviron that is added to the VisPluginData.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL,
- *	-VISUAL_ERROR_NULL or error values returned by visual_list_add() on failure.
- */
-LV_API int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve);
-
-/**
- * Removes a VisPluginEnviron from the plugin it's environment list.
- *
- * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is removed.
- * @param type The Environ type that is removed.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_NULL on failure.
- */
-LV_API int visual_plugin_environ_remove (VisPluginData *plugin, const char *type);
-
-/**
- * Retrieves a VisPluginEnviron from the plugin it's environment list.
- *
- * @param plugin Pointer to the VisPluginData from which the VisPluginEnviron is requested.
- * @param type The Environ type that is requested.
- *
- * @return The requested VisPluginEnviron it's environ specific VisObject, or NULL on failure
- */
-VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type);
 
 LV_END_DECLS
 

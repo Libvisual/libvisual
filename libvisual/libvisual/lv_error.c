@@ -64,7 +64,6 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_PLUGIN_NULL] =			N_("VisPluginData is NULL"),
 	[VISUAL_ERROR_PLUGIN_INFO_NULL] =		N_("VisPluginInfo is NULL"),
 	[VISUAL_ERROR_PLUGIN_REF_NULL] =		N_("VisPluginRef is NULL"),
-	[VISUAL_ERROR_PLUGIN_ENVIRON_NULL] =		N_("VisPluginEnvironElement is NULL"),
 	[VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER] =	N_("Plugin does not have an event handler"),
 	[VISUAL_ERROR_PLUGIN_HANDLE_NULL] =		N_("Plugin handle is NULL"),
 	[VISUAL_ERROR_PLUGIN_ALREADY_REALIZED] =	N_("Plugin is already realized"),

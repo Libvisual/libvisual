@@ -77,7 +77,6 @@ struct _VisTransform {
 
     VisPluginData   *plugin;        /**< Pointer to the plugin itself. */
 
-    /* Video management and fake environments when needed */
     VisVideo    *video;         /**< Pointer to the target display video.
                          * @see visual_transform_set_video */
     VisPalette  *pal;           /**< Pointer to the VisPalette that is to be transformed.
