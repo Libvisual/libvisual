@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
 
         // Load image
 
-        auto const image_file_path = (argc > 1) ? argv[1] : "../images/test.png";
+        auto const image_file_path = (argc > 1) ? argv[1] : "../images/landscape.png";
 
         auto image = LV::Video::create_from_file (image_file_path);
 

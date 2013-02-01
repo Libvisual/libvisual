@@ -32,9 +32,13 @@ GNU Public License (GPL) v2.
 
 The tools in tools/ are licensed under the GPLv2.
 
+The images in tests/images are licensed under Creative Commons
+(CC). See tests/images/license.txt for details.
+
 Full license texts:
 * LGPL v2.1: http://www.gnu.org/licenses/lgpl-2.1.html
 * GPL v2.0 : http://www.gnu.org/licenses/gpl-2.0.html
+* CC       : http://creativecommons.org/licenses/
 
 Development
 -----------
