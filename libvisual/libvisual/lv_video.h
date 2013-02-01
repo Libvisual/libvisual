@@ -219,7 +219,7 @@ namespace LV {
       void set_depth (VisVideoDepth depth);
 
       /**
-       * Sets the video depth.
+       * Returns the video depth.
        *
        * @return video depth
        */
@@ -253,7 +253,7 @@ namespace LV {
        *
        * @return true if successful, false otherwise
        *
-       * @see set_dimensions(), set_depth(), set_pitch().
+       * @see set_dimension(), set_depth(), set_pitch().
        */
       bool allocate_buffer ();
 
