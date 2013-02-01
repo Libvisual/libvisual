@@ -97,9 +97,6 @@ namespace LV {
 
 	  VisVideoDepth get_depth () const;
 
-      // FIXME: Added to make lv-tool compile. Remove this.
-      void force_actor_depth (VisVideoDepth depth);
-
 	  bool depth_changed ();
 
 	  Palette const& get_palette () const;

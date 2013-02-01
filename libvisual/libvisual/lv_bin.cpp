@@ -417,11 +417,6 @@ namespace LV {
       return true;
   }
 
-  void Bin::force_actor_depth (VisVideoDepth depth)
-  {
-      m_impl->depthforcedmain = depth;
-  }
-
   Palette const& Bin::get_palette () const
   {
       if (m_impl->morphing)
