@@ -247,8 +247,9 @@ LV_API VisActor *visual_actor_new (const char *actorname);
  * @return VISUAL_OK on success, -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or
  *	error values returned by visual_plugin_realize () on failure.
  *
+ * @return VISUAL_OK on success
  */
-LV_API void visual_actor_realize (VisActor *actor);
+LV_API int visual_actor_realize (VisActor *actor);
 
 /**
  * Gives a pointer to the song info data within the VisActor. This song info data can be used

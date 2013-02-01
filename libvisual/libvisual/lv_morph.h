@@ -166,8 +166,10 @@ LV_API VisMorph *visual_morph_new (const char *name);
  * This also calls the plugin init() method.
  *
  * @param morph Morph object
+ *
+ * @return VISUAL_OK on success
  */
-LV_API void visual_morph_realize (VisMorph *morph);
+LV_API int visual_morph_realize (VisMorph *morph);
 
 /**
  * Returns a morph's supported colour depths.

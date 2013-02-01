@@ -129,12 +129,12 @@ int visual_morph_init (VisMorph *morph, const char *morphname)
     return VISUAL_OK;
 }
 
-void visual_morph_realize (VisMorph *morph)
+int visual_morph_realize (VisMorph *morph)
 {
-    visual_return_if_fail (morph != nullptr);
-    visual_return_if_fail (morph->plugin != nullptr);
+    visual_return_val_if_fail (morph != nullptr, VISUAL_ERROR_MORPH_NULL);
+    visual_return_val_if_fail (morph->plugin != nullptr, VISUAL_ERROR_MORPH_PLUGIN_NULL);
 
-    visual_plugin_realize (morph->plugin);
+    return visual_plugin_realize (morph->plugin);
 }
 
 VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph)

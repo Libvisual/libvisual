@@ -248,12 +248,12 @@ int visual_actor_init (VisActor *actor, const char *actorname)
     return VISUAL_OK;
 }
 
-void visual_actor_realize (VisActor *actor)
+int visual_actor_realize (VisActor *actor)
 {
-    visual_return_if_fail (actor != nullptr);
-    visual_return_if_fail (actor->plugin != nullptr);
+    visual_return_val_if_fail (actor != nullptr, VISUAL_ERROR_ACTOR_NULL);
+    visual_return_val_if_fail (actor->plugin != nullptr, VISUAL_ERROR_ACTOR_PLUGIN_NULL);
 
-    visual_plugin_realize (actor->plugin);
+    return visual_plugin_realize (actor->plugin);
 }
 
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
