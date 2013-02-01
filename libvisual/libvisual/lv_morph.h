@@ -26,7 +26,6 @@
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_plugin.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_time.h>
 
@@ -103,10 +102,6 @@ struct _VisMorph {
     VisTime       *morphtime; /**< Amount of time which the morphing should take. */
     VisTimer      *timer;     /**< Private entry that holds the time elapsed from
                                  * the beginning of the switch. */
-    int            steps;     /**< Private entry that contains the number of steps
-                                 * a morph suppose to take. */
-    int            stepsdone; /**< Private entry that contains the number of steps done. */
-
     VisMorphMode   mode;      /**< Private entry that holds the mode of morphing. */
 };
 
