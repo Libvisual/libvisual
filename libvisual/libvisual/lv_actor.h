@@ -209,7 +209,7 @@ LV_API const char *visual_actor_get_next_by_name (const char *name);
  *
  * @return A new Actor, or NULL on failure
  */
-LV_API VisActor *visual_actor_new (const char *actorname);
+LV_API VisActor *visual_actor_new (const char *name);
 
 /**
  * Realize an Actor.
