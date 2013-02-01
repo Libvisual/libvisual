@@ -102,7 +102,6 @@ namespace LV {
       , morphmanaged    (false)
       , morph           (nullptr)
       , morphing        (false)
-      , morphmode       (VISUAL_MORPH_MODE_TIME)
       , morphtime       (4, 0)
       , depthpreferred  (VISUAL_BIN_DEPTH_HIGHEST)
       , depthflag       (VISUAL_VIDEO_DEPTH_NONE)
@@ -566,7 +565,7 @@ namespace LV {
           if (m_impl->morph && m_impl->morph->plugin) {
               visual_morph_set_progress (m_impl->morph, 0.0);
               visual_morph_set_video (m_impl->morph, m_impl->actvideo.get ());
-              visual_morph_set_mode (m_impl->morph, m_impl->morphmode);
+              visual_morph_set_mode (m_impl->morph, VISUAL_MORPH_MODE_TIME);
               visual_morph_set_time (m_impl->morph, &m_impl->morphtime);
           }
 
