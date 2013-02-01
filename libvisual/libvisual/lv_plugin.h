@@ -236,7 +236,7 @@ LV_API VisPluginInfo *visual_plugin_info_new (void);
  * @param dest Pointer to the destination VisPluginInfo in which some data is copied.
  * @param src Pointer to the source VisPluginInfo from which some data is copied.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_INFO_NULL on failure.
+ * @return VISUAL_OK on success
  */
 LV_API int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* src);
 
@@ -246,7 +246,7 @@ LV_API int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* sr
  * @param plugin Pointer to a VisPluginData of which the events need to be pumped into
  *	the handler.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER on failure.
+ * @return VISUAL_OK on success
  */
 LV_API int visual_plugin_events_pump (VisPluginData *plugin);
 
@@ -331,7 +331,7 @@ LV_API VisPluginData *visual_plugin_load (VisPluginType type, const char *name);
  *
  * @param plugin Pointer to the VisPluginData that needs to be realized.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED on failure.
+ * @return VISUAL_OK on success
  */
 LV_API int visual_plugin_realize (VisPluginData *plugin);
 

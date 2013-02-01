@@ -132,7 +132,7 @@ LV_API VisPluginData *visual_morph_get_plugin (VisMorph *morph);
  *
  * @see visual_morph_get_prev_by_name()
  *
- * @param name The name of the current plugin, or NULL to get the first.
+ * @param name Name of the current plugin, or NULL to retrieve the first.
  *
  * @return The name of the next plugin within the list.
  */
@@ -143,7 +143,7 @@ LV_API const char *visual_morph_get_next_by_name (const char *name);
  *
  * @see visual_morph_get_next_by_name()
  *
- * @param name The name of the current plugin. or NULL to get the last.
+ * @param name Name of the current plugin. or NULL to retrieve the last.
  *
  * @return The name of the previous plugin within the list.
  */

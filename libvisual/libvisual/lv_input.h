@@ -96,9 +96,9 @@ LV_BEGIN_DECLS
 LV_API VisPluginData *visual_input_get_plugin (VisInput *input);
 
 /**
- * Gives the next input plugin based on the name of a plugin.
+ * Returns the name of the next available input plugin.
  *
- * @see visual_input_get_prev_by_name
+ * @see visual_input_get_prev_by_name()
  *
  * @param name Name of current plugin, or NULL to get the first
  *
@@ -129,7 +129,7 @@ LV_API const char *visual_input_get_prev_by_name (const char *name);
 LV_API VisInput *visual_input_new (const char *name);
 
 /**
- * Realizes the Input.
+ * Realizes an Input.
  *
  * @param input Input object
  *
