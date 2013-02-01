@@ -125,10 +125,6 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     morph_timeout_ = val->asInt();
     delete val;
 
-    val = v->CFG_Fetch(section, "morph-steps", new Json::Value(4));
-    int morphsteps = val->asInt();
-    delete val;
-
     val = v->CFG_Fetch_Raw(section, "skip-actors", new Json::Value(""));
     skip_actors_ = val->asString();
     delete val;
@@ -185,11 +181,8 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     bin_->set_video(video_);
     bin_->realize();
     bin_->set_morph(morph_plugin_);
-    bin_->switch_set_steps(morphsteps);
     bin_->switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
     bin_->switch_set_automatic(true);
-    bin_->switch_set_rate(.5);
-    bin_->switch_set_mode(VISUAL_MORPH_MODE_STEPS);
     bin_->sync(true);
     bin_->depth_changed();
 
