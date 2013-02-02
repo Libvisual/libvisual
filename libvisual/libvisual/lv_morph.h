@@ -89,21 +89,7 @@ typedef int (*VisPluginMorphApplyFunc) (VisPluginData *plugin,
 /**
  * Morph class.
  */
-struct _VisMorph {
-    VisObject      object;    /**< Parent */
-
-    VisPluginData *plugin;    /**< Pointer to the plugin itself. */
-    VisVideo      *dest;      /**< Destination video, this is where
-                                 * the result of the morph gets drawn. */
-    float          progress;  /**< Progress of morph, ranges from
-                                 * 0.0 (initial) to 1.0 (completion) */
-    VisPalette    *morphpal;  /**< Morph plugins can also set a palette for indexed
-                                 * color depths */
-    VisTime       *morphtime; /**< Amount of time which the morphing should take */
-    VisTimer      *timer;     /**< Private entry that holds the time elapsed from
-                                 * the beginning of the switch */
-    VisMorphMode   mode;      /**< Private entry that holds the mode of morphing */
-};
+struct _VisMorph;
 
 /**
  * Morph plugin class.

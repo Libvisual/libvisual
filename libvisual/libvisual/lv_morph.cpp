@@ -36,6 +36,17 @@ namespace {
 
 } // anonymous namespace
 
+struct _VisMorph {
+    VisObject      object;
+    VisPluginData *plugin;
+    VisVideo      *dest;
+    float          progress;
+    VisPalette    *morphpal;
+    VisTime       *morphtime;
+    VisTimer      *timer;
+    VisMorphMode   mode;
+};
+
 static int visual_morph_init (VisMorph *morph, const char *morphname);
 
 static void morph_dtor (VisObject *object);

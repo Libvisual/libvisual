@@ -191,7 +191,7 @@ namespace LV {
       VisMorph* morph = visual_morph_new (morphname.c_str ());
 
       m_impl->morph = morph;
-      visual_return_if_fail (morph->plugin != nullptr);
+      visual_return_if_fail (visual_morph_get_plugin (morph) != nullptr);
 
       VisVideoDepth depthflag = visual_morph_get_supported_depth (morph);
 
@@ -537,7 +537,7 @@ namespace LV {
           visual_actor_get_video (m_impl->actmorph)->get_depth () != VISUAL_VIDEO_DEPTH_GL &&
           !m_impl->depthfromGL) {
 
-          if (m_impl->morph && m_impl->morph->plugin) {
+          if (m_impl->morph && visual_morph_get_plugin (m_impl->morph)) {
               visual_morph_set_progress (m_impl->morph, 0.0);
               visual_morph_set_video (m_impl->morph, m_impl->actvideo.get ());
               visual_morph_set_mode (m_impl->morph, VISUAL_MORPH_MODE_TIME);
@@ -706,7 +706,7 @@ namespace LV {
 
               visual_actor_run (m_impl->actmorph, visual_input_get_audio (m_impl->input));
 
-              if (!m_impl->morph || !m_impl->morph->plugin) {
+              if (!m_impl->morph || !visual_morph_get_plugin (m_impl->morph)) {
                   switch_finalize ();
                   return;
               }
