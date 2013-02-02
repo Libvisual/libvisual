@@ -1,8 +1,8 @@
+#include "test.h"
 #include <libvisual/libvisual.h>
 #include <vector>
 #include <cstring>
 #include <cstdint>
-#include <cassert>
 #include <limits>
 
 const unsigned int sample_count = 256;
@@ -34,19 +34,19 @@ int main (int argc, char** argv)
 
     audio.get_sample (output_buffer, VISUAL_AUDIO_CHANNEL_LEFT);
     for (unsigned int i = 0; i < sample_count; i++) {
-        assert (output_data[i] == float (i*2) / int_max);
+        LV_TEST_ASSERT (output_data[i] == float (i*2) / int_max);
     }
 
     audio.get_sample (output_buffer, VISUAL_AUDIO_CHANNEL_RIGHT);
     for (unsigned int i = 0; i < sample_count; i++) {
-        assert (output_data[i] == float (i*2+1) / int_max);
+        LV_TEST_ASSERT (output_data[i] == float (i*2+1) / int_max);
     }
 
     // Check correctness of stereo-to-mono downmixing
 
     audio.get_sample_mixed_simple (output_buffer, 2, VISUAL_AUDIO_CHANNEL_LEFT, VISUAL_AUDIO_CHANNEL_RIGHT);
     for (unsigned int i = 0; i < sample_count; i++) {
-        assert (output_data[i] == float (i*2+0.5) / int_max);
+        LV_TEST_ASSERT (output_data[i] == float (i*2+0.5) / int_max);
     }
 
     LV::System::destroy ();
