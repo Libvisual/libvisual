@@ -32,7 +32,7 @@ int lv_morph_slide_cleanup (VisPluginData *plugin)
     return 0;
 }
 
-int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+int lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
     SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -50,9 +50,9 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
     visual_mem_set (destbuf, 0, visual_video_get_size (dest));
 
     if (priv->slide_type == SLIDE_RIGHT || priv->slide_type == SLIDE_UP)
-        rate = 1.0 - rate;
+        progress = 1.0 - progress;
 
-    diff1 = dest_pitch * rate;
+    diff1 = dest_pitch * progress;
     diff1 -= diff1 % visual_video_get_bpp (dest);
 
     if (diff1 > dest_pitch)
@@ -60,7 +60,7 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
     diff2 = dest_pitch - diff1;
 
-    hadd = dest_height * rate;
+    hadd = dest_height * progress;
 
     switch (priv->slide_type) {
         case SLIDE_LEFT:

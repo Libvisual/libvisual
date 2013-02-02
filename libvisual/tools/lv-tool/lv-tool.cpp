@@ -391,7 +391,7 @@ int main (int argc, char **argv)
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
-        bin.switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
+        bin.use_morph(false);
 
         // Let the bin manage plugins. There's a bug otherwise.
         if (!bin.connect(actor_name, input_name)) {
@@ -403,7 +403,7 @@ int main (int argc, char **argv)
         // Select output colour depth
 
         VisVideoDepth depth;
-        int depthflag = visual_actor_get_supported_depth (actor);
+        int depthflag = visual_actor_get_supported_depths (actor);
 
         // Pick the best display depth directly supported by non GL actor
         if(depthflag != VISUAL_VIDEO_DEPTH_GL)
@@ -454,13 +454,13 @@ int main (int argc, char **argv)
         uint64_t frames_drawn = 0;
 
         // frame rate control state
-        int64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
+        uint64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
         LV::Time last_frame_time;
         bool draw_frame = true;
 
         // main loop
         bool running = true;
-        bool visible = true;
+        //bool visible = true;
 
         while (running)
         {
@@ -584,7 +584,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_VISIBILITY:
                     {
-                        visible = ev.event.visibility.is_visible;
+                        //visible = ev.event.visibility.is_visible;
                         break;
                     }
 

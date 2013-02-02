@@ -60,17 +60,6 @@ namespace LV {
 
 } // LV namespace
 
-static void plugin_environ_dtor (VisObject *object);
-static void plugin_dtor (VisObject *object);
-
-static void plugin_environ_dtor (VisObject *object)
-{
-    auto enve = VISUAL_PLUGINENVIRON (object);
-
-    if (enve->environment)
-        visual_object_unref (enve->environment);
-}
-
 static void plugin_dtor (VisObject *object)
 {
     auto plugin = VISUAL_PLUGINDATA (object);
@@ -81,8 +70,6 @@ static void plugin_dtor (VisObject *object)
         visual_object_unref (VISUAL_OBJECT (plugin->params));
 
     delete plugin->eventqueue;
-
-    visual_object_unref (VISUAL_OBJECT (plugin->environment));
 }
 
 int visual_plugin_events_pump (VisPluginData *plugin)
@@ -144,7 +131,6 @@ VisPluginData *visual_plugin_new ()
     visual_object_init (VISUAL_OBJECT (plugin), plugin_dtor);
 
     plugin->params = visual_param_list_new ();
-    plugin->environment = visual_list_new (nullptr);
     plugin->eventqueue = new LV::EventQueue;
 
     return plugin;
@@ -206,70 +192,3 @@ int visual_plugin_get_api_version ()
 {
     return VISUAL_PLUGIN_API_VERSION;
 }
-
-VisPluginEnviron *visual_plugin_environ_new (const char *type, VisObject *envobj)
-{
-    VisPluginEnviron *enve;
-
-    enve = visual_mem_new0 (VisPluginEnviron, 1);
-
-    /* Do the VisObject initialization */
-    visual_object_init (VISUAL_OBJECT (enve), plugin_environ_dtor);
-
-    enve->type = type;
-    enve->environment = envobj;
-
-    return enve;
-}
-
-int visual_plugin_environ_add (VisPluginData *plugin, VisPluginEnviron *enve)
-{
-    visual_return_val_if_fail (plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
-    visual_return_val_if_fail (enve != nullptr, -VISUAL_ERROR_PLUGIN_ENVIRON_NULL);
-    visual_return_val_if_fail (enve->type != nullptr, -VISUAL_ERROR_NULL);
-
-    visual_plugin_environ_remove (plugin, enve->type);
-
-    return visual_list_add (plugin->environment, enve);
-}
-
-int visual_plugin_environ_remove (VisPluginData *plugin, const char *type)
-{
-    visual_return_val_if_fail (plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
-    visual_return_val_if_fail (type != nullptr, -VISUAL_ERROR_NULL);
-
-    VisPluginEnviron *enve;
-    VisListEntry *le = nullptr;
-
-    while ((enve = static_cast<VisPluginEnviron*>(visual_list_next (plugin->environment, &le))) != nullptr) {
-
-        /* Remove from list */
-        if (std::strcmp (enve->type, type) == 0) {
-            visual_list_delete (plugin->environment, &le);
-
-            visual_object_unref (VISUAL_OBJECT (enve));
-
-            return VISUAL_OK;
-        }
-    }
-
-    return VISUAL_OK;
-}
-
-VisObject *visual_plugin_environ_get (VisPluginData *plugin, const char *type)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
-    visual_return_val_if_fail (type != nullptr, nullptr);
-
-    VisPluginEnviron *enve;
-    VisListEntry *le = nullptr;
-
-    while ((enve = static_cast<VisPluginEnviron*> (visual_list_next (plugin->environment, &le))) != nullptr) {
-
-        if (std::strcmp (enve->type, type) == 0)
-            return enve->environment;
-    }
-
-    return nullptr;
-}
-

@@ -19,25 +19,11 @@ void visual_bin_realize (VisBin *bin)
     bin->realize ();
 }
 
-void visual_bin_set_actor (VisBin *bin, VisActor *actor)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->set_actor (actor);
-}
-
 VisActor *visual_bin_get_actor (VisBin *bin)
 {
     visual_return_val_if_fail (bin != nullptr, nullptr);
 
     return bin->get_actor ();
-}
-
-void visual_bin_set_input (VisBin *bin, VisInput *input)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->set_input (input);
 }
 
 VisInput *visual_bin_get_input (VisBin *bin)
@@ -61,14 +47,7 @@ VisMorph *visual_bin_get_morph (VisBin *bin)
     return bin->get_morph ();
 }
 
-void visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->connect (actor, input);
-}
-
-void visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname)
+void visual_bin_connect (VisBin *bin, const char *actname, const char *inname)
 {
     visual_return_if_fail (bin != nullptr);
 
@@ -131,18 +110,11 @@ const VisPalette *visual_bin_get_palette (VisBin *bin)
     return &bin->get_palette ();
 }
 
-void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname)
+void visual_bin_switch_actor (VisBin *bin, const char *actname)
 {
     visual_return_if_fail (bin != nullptr);
 
     bin->switch_actor (actname);
-}
-
-void visual_bin_switch_actor (VisBin *bin, VisActor *actor)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_actor (actor);
 }
 
 void visual_bin_switch_finalize (VisBin *bin)
@@ -152,39 +124,11 @@ void visual_bin_switch_finalize (VisBin *bin)
     bin->switch_finalize ();
 }
 
-void visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style)
+void visual_bin_use_morph (VisBin *bin, int use)
 {
     visual_return_if_fail (bin != nullptr);
 
-    bin->switch_set_style (style);
-}
-
-void visual_bin_switch_set_steps (VisBin *bin, int steps)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_steps (steps);
-}
-
-void visual_bin_switch_set_automatic (VisBin *bin, int automatic)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_automatic (automatic);
-}
-
-void visual_bin_switch_set_rate (VisBin *bin, float rate)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_rate (rate);
-}
-
-void visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_set_mode (mode);
+    bin->use_morph (use);
 }
 
 void visual_bin_switch_set_time (VisBin *bin, long sec, long usec)

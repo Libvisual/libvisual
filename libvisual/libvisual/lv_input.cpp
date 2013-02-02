@@ -33,7 +33,14 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
   }
 
-} // Anonymous namespace
+} // anonymous namespace
+
+struct _VisInput {
+    VisObject                   object;
+    VisPluginData              *plugin;
+    VisAudio                   *audio;
+    VisInputUploadCallbackFunc  callback;
+};
 
 static int visual_input_init (VisInput *input, const char *inputname);
 
@@ -137,6 +144,13 @@ int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callb
     visual_object_set_private (VISUAL_OBJECT (input), priv);
 
     return VISUAL_OK;
+}
+
+VisAudio *visual_input_get_audio (VisInput *input)
+{
+    visual_return_val_if_fail (input != nullptr, nullptr);
+
+    return input->audio;
 }
 
 int visual_input_run (VisInput *input)

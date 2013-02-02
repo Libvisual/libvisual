@@ -67,7 +67,25 @@ namespace LV {
       // empty
   }
 
-  /* Precomputation functions */
+  void Video::Impl::set_buffer (void* ptr)
+  {
+      if (buffer->is_allocated ()) {
+          visual_log (VISUAL_LOG_ERROR,
+                      "Cannot set a new pixel buffer for Video objects "
+                      "with allocated buffers");
+          return;
+      }
+
+      buffer->set_data (ptr);
+
+      pixel_rows.clear ();
+
+      if (buffer->get_data ()) {
+          pixel_rows.resize (height);
+          precompute_row_table ();
+      }
+  }
+
   void Video::Impl::precompute_row_table ()
   {
       auto ptr = static_cast<uint8_t *> (buffer->get_data ());
@@ -123,7 +141,7 @@ namespace LV {
       self->m_impl->parent  = src;
 
       self->set_attrs (area.width, area.height, src->m_impl->pitch, src->m_impl->depth);
-      self->set_buffer (src->get_pixel_ptr (area.x, area.y));
+      self->m_impl->set_buffer (src->get_pixel_ptr (area.x, area.y));
 
       self->m_impl->compose_type = src->m_impl->compose_type;
       self->m_impl->compose_func = src->m_impl->compose_func;
@@ -155,7 +173,7 @@ namespace LV {
 
       self->set_depth (depth);
       self->set_dimension (width, height);
-      self->set_buffer (data);
+      self->m_impl->set_buffer (data);
 
       return self;
   }
@@ -292,24 +310,6 @@ namespace LV {
   Palette& Video::get_palette ()
   {
       return m_impl->palette;
-  }
-
-  void Video::set_buffer (void *ptr)
-  {
-      if (m_impl->buffer->is_allocated ()) {
-          visual_log (VISUAL_LOG_ERROR,
-                      "Trying to set a screen buffer on a Video object pointing to an allocated screen buffer");
-          return;
-      }
-
-      m_impl->buffer->set_data (ptr);
-
-      m_impl->pixel_rows.clear ();
-
-      if (m_impl->buffer->get_data ()) {
-          m_impl->pixel_rows.resize (m_impl->height);
-          m_impl->precompute_row_table ();
-      }
   }
 
   void Video::set_dimension (int width, int height)

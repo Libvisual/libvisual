@@ -59,7 +59,6 @@ std::string CFG::CFG_Source() {
 
 bool CFG::CFG_Init( std::string path ) {
 
-    std::cout << "wtf\n";
     std::ifstream stream_in;
     std::ofstream stream_out;
 

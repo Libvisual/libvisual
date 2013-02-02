@@ -23,7 +23,7 @@ namespace {
           visual_actor_realize (m_actor);
 
           if (!forced_depth) {
-              auto supported_depths = visual_actor_get_supported_depth (m_actor);
+              auto supported_depths = visual_actor_get_supported_depths (m_actor);
               depth = visual_video_depth_get_highest (supported_depths);
           }
 

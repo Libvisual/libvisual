@@ -31,16 +31,13 @@ namespace {
 
       virtual void operator() (unsigned int max_runs)
       {
-          float rate = 0.0;
+          float progress = 0.0;
 
           for (unsigned int i = 0; i < max_runs; i++) {
-              visual_morph_set_rate (m_morph, rate);
+              visual_morph_set_progress (m_morph, progress);
               visual_morph_run (m_morph, &m_audio, m_src1.get (), m_src2.get ());
 
-              rate += 0.1;
-
-              if (rate > 1.0)
-                  rate = 0.0;
+              progress = std::min (progress + 0.1, 1.0);
           }
       }
 

@@ -38,11 +38,6 @@
 #define VISUAL_BIN(obj) (VISUAL_CHECK_CAST ((obj), VisBin))
 
 typedef enum {
-	VISUAL_SWITCH_STYLE_DIRECT,
-	VISUAL_SWITCH_STYLE_MORPH
-} VisBinSwitchStyle;
-
-typedef enum {
 	VISUAL_BIN_DEPTH_LOWEST,
 	VISUAL_BIN_DEPTH_HIGHEST
 } VisBinDepth;
@@ -68,19 +63,13 @@ namespace LV {
 
 	  void realize ();
 
-	  void set_actor (VisActor* actor);
-
 	  VisActor* get_actor () const;
-
-	  void set_input (VisInput* input);
-
 	  VisInput* get_input () const;
 
 	  void set_morph (std::string const& morphname);
 
 	  VisMorph* get_morph () const;
 
-	  bool connect (VisActor* actor, VisInput* input);
 	  bool connect (std::string const& actname, std::string const& inname);
 
 	  void sync (bool noevent);
@@ -97,25 +86,17 @@ namespace LV {
 
 	  VisVideoDepth get_depth () const;
 
-      // FIXME: Added to make lv-tool compile. Remove this.
-      void force_actor_depth (VisVideoDepth depth);
-
 	  bool depth_changed ();
 
 	  Palette const& get_palette () const;
 
 	  void switch_actor (std::string const& actname);
-	  void switch_actor (VisActor *actor);
 
 	  void switch_finalize ();
 
-	  void switch_set_style (VisBinSwitchStyle style);
-
-	  void switch_set_steps (int steps);
+	  void use_morph (bool use);
 
 	  void switch_set_automatic (bool automatic);
-
-	  void switch_set_rate (float rate);
 
 	  void switch_set_mode (VisMorphMode mode);
 
@@ -128,6 +109,10 @@ namespace LV {
 	  class Impl;
 
       const std::unique_ptr<Impl> m_impl;
+
+      // FIXME: Remove
+	  bool connect (VisActor* actor, VisInput* input);
+	  void switch_actor (VisActor *actor);
   };
 
 } // LV namespace
@@ -148,17 +133,13 @@ LV_API void    visual_bin_free (VisBin *bin);
 
 LV_API void visual_bin_realize (VisBin *bin);
 
-LV_API void      visual_bin_set_actor (VisBin *bin, VisActor *actor);
 LV_API VisActor *visual_bin_get_actor (VisBin *bin);
-
-LV_API void      visual_bin_set_input (VisBin *bin, VisInput *input);
 LV_API VisInput *visual_bin_get_input (VisBin *bin);
 
 LV_API void      visual_bin_set_morph (VisBin *bin, const char *morphname);
 LV_API VisMorph *visual_bin_get_morph (VisBin *bin);
 
-LV_API void visual_bin_connect (VisBin *bin, VisActor *actor, VisInput *input);
-LV_API void visual_bin_connect_by_names (VisBin *bin, const char *actname, const char *inname);
+LV_API void visual_bin_connect (VisBin *bin, const char *actname, const char *inname);
 
 LV_API void visual_bin_sync (VisBin *bin, int noevent);
 
@@ -174,14 +155,8 @@ LV_API int visual_bin_depth_changed (VisBin *bin);
 
 LV_API const VisPalette* visual_bin_get_palette (VisBin *bin);
 
-LV_API void visual_bin_switch_actor_by_name (VisBin *bin, const char *actname);
-LV_API void visual_bin_switch_actor    (VisBin *bin, VisActor *actor);
+LV_API void visual_bin_switch_actor (VisBin *bin, const char *name);
 LV_API void visual_bin_switch_finalize (VisBin *bin);
-LV_API void visual_bin_switch_set_style (VisBin *bin, VisBinSwitchStyle style);
-LV_API void visual_bin_switch_set_steps (VisBin *bin, int steps);
-LV_API void visual_bin_switch_set_automatic (VisBin *bin, int automatic);
-LV_API void visual_bin_switch_set_rate (VisBin *bin, float rate);
-LV_API void visual_bin_switch_set_mode (VisBin *bin, VisMorphMode mode);
 LV_API void visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
 
 LV_API void visual_bin_run (VisBin *bin);

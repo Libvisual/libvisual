@@ -44,153 +44,118 @@ typedef struct _VisInput VisInput;
 typedef struct _VisInputPlugin VisInputPlugin;
 
 /**
- * Callback function that is set using visual_input_set_callback should use this signature.
+ * Function type and signature for input custom PCM data callbacks.
  *
- * @see visual_input_set_callback
+ * @see visual_input_set_callback()
  *
- * @arg input Pointer to the VisInput structure.
- *
- * @arg audio Pointer to the VisAudio containing all the audio information, and in which
- * data needs to be set within the callback.
- *
- * @arg priv Private field to be used by the client. The library will never touch this.
+ * @param input     Input object
+ * @param audio     Audio object to upload data to
+ * @param user_data Data set in visual_input_set_callback()
  */
-typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void *priv);
-
-/* Input plugin methods */
+typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void *user_data);
 
 /**
- * An input plugin needs this signature for the sample upload function. The sample upload function
- * is used to retrieve sample information when a input is being used to retrieve the
- * audio sample.
+ * Function type and siganture of VisInput upload() method.
  *
- * @arg plugin Pointer to the VisPluginData instance structure.
- * @arg audio Pointer to the VisAudio in which the new sample data is set.
+ * @param plugin Plugin object
+ * @param audio  Audio object to upload data to
  *
- * @return 0 on succes -1 on error.
+ * @return 0 on success, -1 on error.
  */
 typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
 
 /**
- * The VisInput structure encapsulates the input plugin and provides
- * abstract interfaces to the input. The VisInput system provides
- * PCM data to the visualisation elements of libvisual. This can be done
- * through both plugins and callback functions.
- *
- * Members in the structure shouldn't be accessed directly but instead
- * it's adviced to use the methods provided.
- *
- * @see visual_input_new
+ * Input class.
  */
-struct _VisInput {
-    VisObject                    object;    /**< The VisObject data. */
-
-    VisPluginData               *plugin;    /**< Pointer to the plugin itself. */
-    VisAudio                    *audio;     /**< Pointer to the VisAudio structure
-                                               * that contains the audio analyse
-                                               * results. @see visual_audio_analyse */
-    VisInputUploadCallbackFunc   callback;  /**< Callback function when a callback
-                                               * is used instead of a plugin. */
-    VisSongInfo                 *songinfo;
-};
+struct _VisInput;
 
 /**
- * The VisInputPlugin structure is the main data structure
- * for the input plugin.
- *
- * The input plugin is used to retrieve PCM samples from
- * certain sources.
+ * Input plugin class.
  */
 struct _VisInputPlugin {
-    VisObject                object;    /**< The VisObject data. */
-    VisPluginInputUploadFunc upload;    /**< The sample upload function. This is the main function
-                                           * of the plugin which uploads sample data into
-                                           * libvisual. */
+    VisObject                object;    /**< Parent class. */
+    VisPluginInputUploadFunc upload;    /**< Sample upload function */
 };
 
 LV_BEGIN_DECLS
 
 /**
- * Gives the encapsulated VisPluginData from a VisInput.
+ * Returns the plugin object that backs an Input.
  *
- * @param input Pointer of a VisInput of which the VisPluginData needs to be returned.
+ * @param input Input object
  *
- * @return VisPluginData that is encapsulated in the VisInput, possibly NULL.
+ * @return Plugin object, or NULL if none
  */
 LV_API VisPluginData *visual_input_get_plugin (VisInput *input);
 
 /**
- * Gives a list of input plugins in the current plugin registry.
+ * Returns the name of the next available input plugin.
  *
- * @return An VisList of VisPluginRef's containing the input plugins in the plugin registry.
- */
-LV_API VisList *visual_input_get_list (void);
-
-/**
- * Gives the next input plugin based on the name of a plugin.
+ * @see visual_input_get_prev_by_name()
  *
- * @see visual_input_get_prev_by_name
+ * @param name Name of current plugin, or NULL to get the first
  *
- * @param name The name of the current plugin, or NULL to get the first.
- *
- * @return The name of the next plugin within the list.
+ * @return Name of next available plugin
  */
 LV_API const char *visual_input_get_next_by_name (const char *name);
 
 /**
- * Gives the previous input plugin based on the name of a plugin.
+ * Returns the name of the previous available input plugin.
  *
- * @see visual_input_get_next_by_name
+ * @see visual_input_get_next_by_name()
  *
- * @param name The name of the current plugin. or NULL to get the last.
+ * @param name Name of current plugin, or NULL to get the last
  *
- * @return The name of the previous plugin within the list.
+ * @return Name of previous available plugin
  */
 LV_API const char *visual_input_get_prev_by_name (const char *name);
 
 /**
- * Creates a new VisInput from name, the plugin will be loaded but won't be realized.
+ * Creates a new Input with a plugin of a given name.
  *
- * @param inputname
- *  The name of the plugin to load, or NULL to simply allocate a new
- *  input.
+ * @see visual_input_realize()
  *
- * @return A newly allocated VisInput, optionally containing a loaded plugin. Or NULL on failure.
+ * @param name Name of plugin to load, or NULL to allocate an empty object
+ *
+ * @return A new Input, or NULL on failure.
  */
-LV_API VisInput *visual_input_new (const char *inputname);
+LV_API VisInput *visual_input_new (const char *name);
 
 /**
- * Realize the VisInput. This also calls the plugin init function.
+ * Realizes an Input.
  *
- * @param input Pointer to a VisInput that needs to be realized.
+ * @param input Input object
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or error values returned by
- *  visual_plugin_realize () on failure.
+ * @return VISUAL_OK on success
  */
 LV_API int visual_input_realize (VisInput *input);
 
-
 /**
- * Sets a callback function for VisInput. Callback functions can be used instead of plugins. Using
- * a callback function you can implement an in app PCM data upload function which is like the
- * upload callback that is used for input plugins.
+ * Sets a PCM data callback for this Input.
  *
- * @param input Pointer to a VisInput that to which a callback needs to be set.
- * @param callback The in app callback function that should be used instead of a plugin.
- * @param priv A private that can be read within the callback function.
+ * Used for adding a custom upload function.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL on failure.
+ * @note Setting a callback will bypass the plugin upload() method.
+ *
+ * @param input     Input object
+ * @param callback  Callback
+ * @param user_data Pointer passed to callback during invocations
+ *
+ * @return VISUAL_OK on success
  */
-LV_API int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv);
+LV_API int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *user_data);
+
+LV_API VisAudio *visual_input_get_audio (VisInput *audio);
 
 /**
- * This is called to run a VisInput. This function will call the plugin to upload it's samples and run it
- * through the visual_audio_analyze function. If a callback is set it will use the callback instead of
- * the plugin.
+ * Runs the Input.
  *
- * @param input A pointer to a VisInput that needs to be runned.
+ * This function will call the plugin upload() method to retrieve audio samples. If a custom callback is set
+ * via visual_input_set_callback(), the callback will be used instead.
  *
- * @return VISUAL_OK on success, -VISUAL_ERROR_INPUT_NULL or -VISUAL_ERROR_INPUT_PLUGIN_NULL on failure.
+ * @param input Input object
+ *
+ * @return VISUAL_OK on success
  */
 LV_API int visual_input_run (VisInput *input);
 

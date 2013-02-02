@@ -98,7 +98,7 @@ LV_BEGIN_DECLS
  *
  * @return Pointer to newly allocated memory block, or NULL on failure
  */
-LV_API void *visual_mem_malloc (visual_size_t nbytes) LV_ATTR_MALLOC;
+LV_API void *visual_mem_malloc (visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Allocates a block of memory with its content zeroed.

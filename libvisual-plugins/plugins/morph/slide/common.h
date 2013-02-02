@@ -20,7 +20,7 @@ int lv_morph_slide_init (VisPluginData *plugin, SlideType type);
 
 int lv_morph_slide_cleanup (VisPluginData *plugin);
 
-int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+int lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 extern VisMorphPlugin morph;
 
