@@ -53,7 +53,7 @@ LCDControl::~LCDControl() {
 }
 
 int LCDControl::Start() {
-    std::string file = ((std::string)getenv("HOME")) + "/.lcdcontrol_config.js";
+    std::string file = std::string(getenv("HOME")) + "/.lcdcontrol_config.js";
 
     if((active_ = CFG_Init(file)))
     {

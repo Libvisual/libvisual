@@ -403,7 +403,7 @@ int main (int argc, char **argv)
         // Select output colour depth
 
         VisVideoDepth depth;
-        int depthflag = visual_actor_get_supported_depth (actor);
+        int depthflag = visual_actor_get_supported_depths (actor);
 
         // Pick the best display depth directly supported by non GL actor
         if(depthflag != VISUAL_VIDEO_DEPTH_GL)

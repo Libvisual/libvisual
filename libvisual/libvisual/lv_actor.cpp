@@ -37,16 +37,24 @@ namespace {
       return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
   }
 
-} // LV namespace
+} // anonymous namespace
 
-
-static void actor_dtor (VisObject *object);
-
-static VisActorPlugin *get_actor_plugin (VisActor *actor);
-static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced);
-static int negotiate_video (VisActor *actor, int noevent);
+struct _VisActor {
+	VisObject      object;      /**< Parent */
+	VisPluginData *plugin;      /**< Plugin object */
+	VisVideo      *video;
+	VisVideo      *transform;
+	VisVideo      *fitting;
+	VisPalette    *ditherpal;
+	VisSongInfo   *songcompare;
+};
 
 static int visual_actor_init (VisActor *actor, const char *actorname);
+static void actor_dtor (VisObject *object);
+static VisActorPlugin *get_actor_plugin (VisActor *actor);
+
+static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, bool noevent, bool forced);
+static int negotiate_video (VisActor *actor, bool noevent);
 
 static void actor_dtor (VisObject *object)
 {
@@ -55,7 +63,7 @@ static void actor_dtor (VisObject *object)
     if (actor->plugin) {
         {
             // FIXME: Hack to free songinfo
-            VisActorPlugin *actplugin = (VisActorPlugin *) actor->plugin->info->plugin;
+            VisActorPlugin *actplugin = reinterpret_cast<VisActorPlugin*> (actor->plugin->info->plugin);
             visual_songinfo_free (actplugin->songinfo);
         }
 
@@ -201,11 +209,11 @@ VisActor *visual_actor_new (const char *actorname)
     return actor;
 }
 
-int visual_actor_init (VisActor *actor, const char *actorname)
+int visual_actor_init (VisActor *actor, const char *name)
 {
     visual_return_val_if_fail (actor != nullptr, -VISUAL_ERROR_ACTOR_NULL);
 
-    if (actorname && get_actor_plugin_list ().empty ()) {
+    if (name && get_actor_plugin_list ().empty ()) {
         visual_log (VISUAL_LOG_ERROR, "the plugin list is empty");
 
         return -VISUAL_ERROR_PLUGIN_NO_LIST;
@@ -215,26 +223,27 @@ int visual_actor_init (VisActor *actor, const char *actorname)
     visual_object_init (VISUAL_OBJECT (actor), actor_dtor);
 
     /* Reset the VisActor data */
-    actor->plugin = nullptr;
-    actor->video = nullptr;
+    actor->plugin    = nullptr;
+    actor->video     = nullptr;
     actor->transform = nullptr;
-    actor->fitting = nullptr;
+    actor->fitting   = nullptr;
     actor->ditherpal = nullptr;
 
     actor->songcompare = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
 
-    if (!actorname)
+    if (!name) {
         return VISUAL_OK;
+    }
 
-    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, actorname)) {
+    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name)) {
         return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
     }
 
-    actor->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, actorname);
+    actor->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, name);
 
     // FIXME: Hack to initialize songinfo
     {
-        VisActorPlugin *actplugin = (VisActorPlugin *) actor->plugin->info->plugin;
+        auto actplugin = reinterpret_cast<VisActorPlugin*> (actor->plugin->info->plugin);
         actplugin->songinfo = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
     }
 
@@ -247,6 +256,13 @@ int visual_actor_realize (VisActor *actor)
     visual_return_val_if_fail (actor->plugin != nullptr, VISUAL_ERROR_ACTOR_PLUGIN_NULL);
 
     return visual_plugin_realize (actor->plugin);
+}
+
+VisVideo *visual_actor_get_video (VisActor *actor)
+{
+    visual_return_val_if_fail (actor != nullptr, nullptr);
+
+    return actor->video;
 }
 
 VisSongInfo *visual_actor_get_songinfo (VisActor *actor)
@@ -274,10 +290,8 @@ VisPalette *visual_actor_get_palette (VisActor *actor)
     }
 
     if (actor->transform &&
-        visual_video_get_depth (actor->video) == VISUAL_VIDEO_DEPTH_8BIT) {
-
+        actor->video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
         return actor->ditherpal;
-
     } else {
         return actplugin->palette (visual_actor_get_plugin (actor));
     }
@@ -310,30 +324,35 @@ int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth rundepth, int n
 
     // Set up any required intermediary pixel buffers
 
-    auto depthflag = visual_actor_get_supported_depth (actor);
+    auto supported_depths = visual_actor_get_supported_depths (actor);
 
-	if (!visual_video_depth_is_supported (depthflag, visual_video_get_depth (actor->video)) ||
-			(forced && visual_video_get_depth (actor->video) != rundepth))
+	if (!visual_video_depth_is_supported (supported_depths, actor->video->get_depth ()) ||
+        (forced && actor->video->get_depth () != rundepth)) {
         return negotiate_video_with_unsupported_depth (actor, rundepth, noevent, forced);
-    else
+    }
+    else {
         return negotiate_video (actor, noevent);
+    }
 
     return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
-static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, int noevent, int forced)
+static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDepth rundepth, bool noevent, bool forced)
 {
     auto actplugin = get_actor_plugin (actor);
-    visual_return_val_if_fail (actplugin != nullptr, -VISUAL_ERROR_IMPOSSIBLE);
 
-    auto depthflag = visual_actor_get_supported_depth (actor);
-
-    auto req_depth = forced ? rundepth : visual_video_depth_get_highest_nogl (depthflag);
-
-    /* If there is only GL (which gets returned by highest nogl if
-     * nothing else is there, stop here */
-    if (req_depth == VISUAL_VIDEO_DEPTH_GL)
+    if (forced && rundepth == VISUAL_VIDEO_DEPTH_GL) {
         return -VISUAL_ERROR_ACTOR_GL_NEGOTIATE;
+    }
+
+    auto supported_depths = visual_actor_get_supported_depths (actor);
+
+    if (supported_depths == VISUAL_VIDEO_DEPTH_NONE) {
+        visual_log (VISUAL_LOG_ERROR, "Cannot find supported colour depth for rendering actor!");
+        return -VISUAL_ERROR_IMPOSSIBLE;
+    }
+
+    auto req_depth = forced ? rundepth : visual_video_depth_get_highest_nogl (supported_depths);
 
     int req_width  = visual_video_get_width (actor->video);
     int req_height = visual_video_get_height (actor->video);
@@ -342,8 +361,9 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
 
     actor->transform = visual_video_new_with_buffer (req_width, req_height, req_depth);
 
-    if (visual_video_get_depth (actor->video) == VISUAL_VIDEO_DEPTH_8BIT)
+    if (actor->video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
         actor->ditherpal = visual_palette_new (256);
+    }
 
     if (!noevent) {
         visual_event_queue_add (actor->plugin->eventqueue,
@@ -353,23 +373,23 @@ static int negotiate_video_with_unsupported_depth (VisActor *actor, VisVideoDept
     return VISUAL_OK;
 }
 
-static int negotiate_video (VisActor *actor, int noevent)
+static int negotiate_video (VisActor *actor, bool noevent)
 {
     auto actplugin = get_actor_plugin (actor);
     visual_return_val_if_fail (actplugin != nullptr, -VISUAL_ERROR_IMPOSSIBLE);
 
-    int req_width  = visual_video_get_width  (actor->video);
-    int req_height = visual_video_get_height (actor->video);
+    int req_width  = actor->video->get_width ();
+    int req_height = actor->video->get_height ();
 
     actplugin->requisition (visual_actor_get_plugin (actor), &req_width, &req_height);
 
     // Size fitting enviroment
-    if (req_width != visual_video_get_width (actor->video) || req_height != visual_video_get_height (actor->video)) {
-        if (visual_video_get_depth (actor->video) != VISUAL_VIDEO_DEPTH_GL) {
-            actor->fitting = visual_video_new_with_buffer (req_width, req_height, visual_video_get_depth (actor->video));
+    if (req_width != actor->video->get_width () || req_height != actor->video->get_height ()) {
+        if (actor->video->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
+            actor->fitting = visual_video_new_with_buffer (req_width, req_height, actor->video->get_depth ());
         }
 
-        visual_video_set_dimension (actor->video, req_width, req_height);
+        actor->video->set_dimension (req_width, req_height);
     }
 
     // FIXME: This should be moved into the if block above. It's out
@@ -392,14 +412,15 @@ static int negotiate_video (VisActor *actor, int noevent)
  * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
  *  -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
  */
-VisVideoDepth visual_actor_get_supported_depth (VisActor *actor)
+VisVideoDepth visual_actor_get_supported_depths (VisActor *actor)
 {
     visual_return_val_if_fail (actor != nullptr, VISUAL_VIDEO_DEPTH_NONE);
     visual_return_val_if_fail (actor->plugin != nullptr, VISUAL_VIDEO_DEPTH_NONE);
 
     auto actplugin = get_actor_plugin (actor);
-    if (!actplugin)
+    if (!actplugin) {
         return VISUAL_VIDEO_DEPTH_NONE;
+    }
 
     return actplugin->vidoptions.depth;
 }
@@ -451,9 +472,9 @@ void visual_actor_run (VisActor *actor, VisAudio *audio)
 
     /* Songinfo handling */
     if (!visual_songinfo_compare (actor->songcompare, actplugin->songinfo) ||
-        visual_songinfo_get_elapsed (actor->songcompare) != visual_songinfo_get_elapsed (actplugin->songinfo)) {
+        actor->songcompare->get_elapsed () != actplugin->songinfo->get_elapsed ()) {
 
-        visual_songinfo_mark (actplugin->songinfo);
+        actplugin->songinfo->mark ();
 
         visual_event_queue_add (visual_plugin_get_eventqueue (plugin),
                                 visual_event_new_newsong (actplugin->songinfo));
@@ -461,9 +482,9 @@ void visual_actor_run (VisActor *actor, VisAudio *audio)
         visual_songinfo_copy (actor->songcompare, actplugin->songinfo);
     }
 
-    auto video = actor->video;
+    auto video     = actor->video;
     auto transform = actor->transform;
-    auto fitting = actor->fitting;
+    auto fitting   = actor->fitting;
 
     /*
      * This needs to happen before palette, render stuff, always, period.
@@ -473,23 +494,25 @@ void visual_actor_run (VisActor *actor, VisAudio *audio)
     visual_plugin_events_pump (actor->plugin);
 
     /* Set the palette to the target video */
-    visual_video_set_palette (video, visual_actor_get_palette (actor));
+    auto palette = visual_actor_get_palette (actor);
+    if (palette) {
+        video->set_palette (*palette);
+    }
 
-    /* Yeah some transformation magic is going on here when needed */
-    if (transform && (visual_video_get_depth (transform) != visual_video_get_depth (video))) {
+    if (transform && (transform->get_depth () != video->get_depth ())) {
         actplugin->render (plugin, transform, audio);
 
-        if (visual_video_get_depth (transform) == VISUAL_VIDEO_DEPTH_8BIT) {
-            visual_video_set_palette (transform, visual_actor_get_palette (actor));
-            visual_video_convert_depth (video, transform);
+        if (transform->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
+            transform->set_palette (*visual_actor_get_palette (actor));
         } else {
-            visual_video_set_palette (transform, actor->ditherpal);
-            visual_video_convert_depth (video, transform);
+            transform->set_palette (*actor->ditherpal);
         }
+
+        video->convert_depth (transform);
     } else {
-        if (fitting && (visual_video_get_width (fitting) != visual_video_get_width (video) || visual_video_get_height (fitting) != visual_video_get_height (video))) {
+        if (fitting && (fitting->get_width () != video->get_width () || fitting->get_height () != video->get_height ())) {
             actplugin->render (plugin, fitting, audio);
-            visual_video_blit (video, fitting, 0, 0, FALSE);
+            video->blit (fitting, 0, 0, false);
         } else {
             actplugin->render (plugin, video, audio);
         }

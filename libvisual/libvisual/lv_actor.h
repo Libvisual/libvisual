@@ -84,16 +84,7 @@ typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, 
 /**
  * Actor class.
  */
-struct _VisActor {
-	VisObject      object;      /**< Parent */
-	VisPluginData *plugin;      /**< Plugin object */
-	VisVideo      *video;       /**< Video target */
-
-	VisVideo      *transform;
-	VisVideo      *fitting;
-	VisPalette    *ditherpal;
-	VisSongInfo   *songcompare;
-};
+struct _VisActor;
 
 /**
  * Actor plugin class.
@@ -249,7 +240,7 @@ LV_API int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth run_dept
  *
  * @return Set of supported colour depths
  */
-LV_API VisVideoDepth visual_actor_get_supported_depth (VisActor *actor);
+LV_API VisVideoDepth visual_actor_get_supported_depths (VisActor *actor);
 
 LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
@@ -262,6 +253,8 @@ LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *
  * @param video Video target
  */
 LV_API void visual_actor_set_video (VisActor *actor, VisVideo *video);
+
+LV_API VisVideo *visual_actor_get_video (VisActor *actor);
 
 /**
  * Runs an actor.

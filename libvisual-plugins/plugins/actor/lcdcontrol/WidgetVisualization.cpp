@@ -163,7 +163,7 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     input_ = bin_->get_input();
 
     // Set depth
-    int depthflag = visual_actor_get_supported_depth(actor_);
+    int depthflag = visual_actor_get_supported_depths(actor_);
 
     depth_ = visual_video_depth_get_highest_nogl(depthflag);
 
@@ -270,7 +270,7 @@ void  WidgetVisualization::Resize(int rows, int cols, int old_rows, int old_cols
     visual_video_free_buffer(video_);
 
     // Set depth
-    int depthflag = visual_actor_get_supported_depth(actor_);
+    int depthflag = visual_actor_get_supported_depths(actor_);
 
     depth_ = visual_video_depth_get_highest_nogl(depthflag);
 
@@ -404,7 +404,7 @@ void WidgetVisualization::UpdatePCM()
     {
         // Set depth
 
-        int depthflag = visual_actor_get_supported_depth(actor_);
+        int depthflag = visual_actor_get_supported_depths(actor_);
     
 
         depth_ = visual_video_depth_get_highest_nogl(depthflag);
