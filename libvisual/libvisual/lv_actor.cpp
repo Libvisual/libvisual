@@ -97,7 +97,8 @@ namespace LV {
   }
 
   Actor::Actor (std::string const& name)
-      : m_impl (new Impl)
+      : m_impl      {new Impl}
+      , m_ref_count {1}
   {
       if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name)) {
           throw std::runtime_error {"Actor plugin not found"};
