@@ -112,7 +112,7 @@ namespace LV {
   Bin::Impl::~Impl ()
   {
       if (actor)
-          visual_object_unref (VISUAL_OBJECT (actor));
+          visual_actor_unref (actor);
 
       if (input)
           visual_object_unref (VISUAL_OBJECT (input));
@@ -121,19 +121,19 @@ namespace LV {
           visual_object_unref (VISUAL_OBJECT (morph));
 
       if (actmorph)
-          visual_object_unref (VISUAL_OBJECT (actmorph));
+          visual_actor_unref (actmorph);
   }
 
   void Bin::Impl::set_actor (VisActor *new_actor)
   {
       if (actor) {
-          visual_object_unref (VISUAL_OBJECT (actor));
+          visual_actor_unref (actor);
       }
 
       actor = new_actor;
 
       if (actor) {
-          visual_object_ref (VISUAL_OBJECT (actor));
+          visual_actor_ref (actor);
       }
   }
 
@@ -406,7 +406,7 @@ namespace LV {
 				  actname.c_str (), visual_actor_get_plugin (m_impl->actor)->info->plugname);
 
       if (m_impl->actmorph) {
-          visual_object_unref (VISUAL_OBJECT (m_impl->actmorph));
+          visual_actor_unref (m_impl->actmorph);
           m_impl->actmorphvideo = nullptr;
       }
 
@@ -594,7 +594,7 @@ namespace LV {
   {
       visual_log (VISUAL_LOG_DEBUG, "Completing actor switch...");
 
-      //visual_object_unref (VISUAL_OBJECT (m_impl->actor));
+      //visual_actor_unref (m_impl->actor);
 
       /* Copy over the depth to be sure, and for GL plugins */
       /* m_impl->actvideo->set_depth (m_impl->actmorphvideo->get_depth ()); */

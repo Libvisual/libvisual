@@ -25,25 +25,159 @@
 
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_types.h>
-#include <libvisual/lv_audio.h>
 #include <libvisual/lv_video.h>
-#include <libvisual/lv_palette.h>
 #include <libvisual/lv_plugin.h>
-#include <libvisual/lv_songinfo.h>
-#include <libvisual/lv_event.h>
+#include <libvisual/lv_audio.h>
 
 /**
  * @defgroup VisActor VisActor
  * @{
  */
 
-#define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
-#define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
+#ifdef __cplusplus
+
+#include <libvisual/lv_intrusive_ptr.hpp>
+#include <string>
+#include <memory>
+
+namespace LV
+{
+
+  class Actor;
+
+  typedef LV::IntrusivePtr<Actor> ActorPtr;
+
+  //! Actor class.
+  class LV_API Actor
+  {
+  public:
+
+      /**
+       * Creates a new Actor with a plugin of a given name.
+       *
+       * @see realize()
+       *
+       * @param name Name of plugin to load
+       */
+      static ActorPtr load (std::string const& name);
+
+      ~Actor ();
+
+      /**
+       * Returns the plugin object.
+       *
+       * @return Plugin object, or nullptr if none
+       */
+      VisPluginData* get_plugin ();
+
+      /**
+       * Realizes this Actor.
+       *
+       * @return true on success, false otherwise
+       */
+      bool realize ();
+
+      /**
+       * Returns the song information used by this Actor for display.
+       *
+       * @return Song information
+       */
+      SongInfo const* get_songinfo ();
+
+      /**
+       * Returns the color palette used.
+       *
+       * @note Called only when rendering in 8-bit colour mode.
+       *
+       * @return Colour palette
+       */
+      Palette const* get_palette ();
+
+      /**
+       * Configures actor to automatically work with the video target set with set_video().
+       *
+       * @note This method setups any necessary scaling and depth conversion necessary.
+       *
+       * @see set_video()
+       *
+       * @param run_depth Desired colour depth used for rendering. Use VISUAL_VIDEO_DEPTH_NONE for auto selection
+       * @param noevent   Set to TRUE to stop events
+       * @param forced    Set to TRUE If run_depth is set
+       *
+       * @return true on success, false otherwise
+       */
+      bool video_negotiate (VisVideoDepth run_depth, bool noevent, bool forced);
+
+      /**
+       * Returns the set of colour depths natively supported.
+       *
+       * @return Set of supported colour depths
+       */
+      VisVideoDepth get_supported_depths ();
+
+      VisVideoAttrOptions const* get_video_attribute_options ();
+
+      /**
+       * Sets the video target for rendering.
+       *
+       * @see video_negotiate()
+       *
+       * @param video Video target
+       */
+      void set_video (VideoPtr const& video);
+
+      VideoPtr const& get_video ();
+
+      /**
+       * Runs this actor.
+       *
+       * Each call pumps events to the actor for handling and passes
+       * in the audio data for visualising.
+       *
+       * @note Scaling and depth conversions are automatically performed.
+       *
+       * @param audio Audio data to visualise
+       */
+      void run (VisAudio *audio);
+
+  private:
+
+      friend void intrusive_ptr_add_ref (Actor const* actor);
+      friend void intrusive_ptr_release (Actor const* actor);
+
+      class Impl;
+      const std::unique_ptr<Impl> m_impl;
+
+      mutable unsigned int m_ref_count;
+
+      explicit Actor (std::string const& name);
+  };
+
+  inline void intrusive_ptr_add_ref (Actor const* actor)
+  {
+      actor->m_ref_count++;
+  }
+
+  inline void intrusive_ptr_release (Actor const* actor)
+  {
+      if (--actor->m_ref_count == 0) {
+          delete actor;
+      }
+  }
+
+} // LV namespace
+
+typedef LV::Actor VisActor;
+
+#else
 
 typedef struct _VisActor VisActor;
-typedef struct _VisActorPlugin VisActorPlugin;
+struct _VisActor;
 
-/* Actor plugin methods */
+#endif /* __cplusplus */
+
+#define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
+#define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
 
 /**
  * An actor plugin needs this signature for the requisition function. The requisition function
@@ -82,13 +216,9 @@ typedef VisPalette *(*VisPluginActorPaletteFunc)(VisPluginData *plugin);
 typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /**
- * Actor class.
- */
-struct _VisActor;
-
-/**
  * Actor plugin class.
  */
+typedef struct _VisActorPlugin VisActorPlugin;
 struct _VisActorPlugin {
 	VisObject                     object;         /**< The VisObject data. */
 	VisPluginActorRequisitionFunc requisition;    /**< Returns the preferred rendering dimensions */
@@ -101,172 +231,31 @@ struct _VisActorPlugin {
 
 LV_BEGIN_DECLS
 
-/**
- * Returns the plugin object that backs an actor.
- *
- * @param actor Actor object
- *
- * @return Plugin object, or NULL if none
- */
 LV_API VisPluginData *visual_actor_get_plugin (VisActor *actor);
 
-/**
- * Returns the name of the previous available GL actor plugin.
- *
- * @see visual_actor_get_next_by_name_gl()
- *
- * @param name Name of current actor plugin, or NULL to retrieve the first
- *
- * @return Name of previous available GL actor plugin
- */
-LV_API const char *visual_actor_get_prev_by_name_gl (const char *name);
-
-/**
- * Returns the name of the next available GL actor plugin.
- *
- * @see visual_actor_get_prev_by_name_gl()
- *
- * @param name Name of current actor plugin, or NULL to retrieve the last.
- *
- * @return Name of next available GL actor plugin
- */
-LV_API const char *visual_actor_get_next_by_name_gl (const char *name);
-
-/**
- * Returns the name of the previous available non-GL actor plugin.
- *
- * @see visual_actor_get_next_by_name_nogl()
- *
- * @param name Name of current actor plugin, or NULL to retrieve the first.
- *
- * @return Name of previous available non-GL actor plugin
- */
+LV_API const char *visual_actor_get_prev_by_name_gl   (const char *name);
+LV_API const char *visual_actor_get_next_by_name_gl   (const char *name);
 LV_API const char *visual_actor_get_prev_by_name_nogl (const char *name);
-
-/**
- * Returns the name of the next available non-GL actor plugin.
- *
- * @see visual_actor_get_prev_by_name_nogl()
- *
- * @param name Name of current actor plugin, or NULL to retrieve the last.
- *
- * @return Name of next available non-GL actor plugin
- */
 LV_API const char *visual_actor_get_next_by_name_nogl (const char *name);
+LV_API const char *visual_actor_get_prev_by_name      (const char *name);
+LV_API const char *visual_actor_get_next_by_name      (const char *name);
 
-/**
- * Returns the name of the next available actor plugin.
- *
- * @see visual_actor_get_next_by_name()
- *
- * @param name Name of current actor plugin, or NULL to retrieve the last.
- *
- * @return Name of next available actor plugin
- */
-LV_API const char *visual_actor_get_prev_by_name (const char *name);
+LV_API VisActor *visual_actor_new     (const char *name);
+LV_API int       visual_actor_realize (VisActor *actor);
+LV_API void      visual_actor_run     (VisActor *actor, VisAudio *audio);
+LV_API void      visual_actor_ref     (VisActor *actor);
+LV_API void      visual_actor_unref   (VisActor *actor);
 
-/**
- * Returns the name of the next available actor plugin.
- *
- * @see visual_actor_get_prev_by_name()
- *
- * @param name Name of current actor plugin, or NULL to retrieve the last.
- *
- * @return Name of next available actor plugin
- */
-LV_API const char *visual_actor_get_next_by_name (const char *name);
-
-
-/**
- * Creates a new Actor with a plugin of a given name.
- *
- * @see visual_actor_realize()
- *
- * @param name Name of plugin to load, or NULL to allocate an empty object
- *
- * @return A new Actor, or NULL on failure
- */
-LV_API VisActor *visual_actor_new (const char *name);
-
-/**
- * Realize an Actor.
- *
- * @param actor Actor object
- *
- * @return VISUAL_OK on success
- */
-LV_API int visual_actor_realize (VisActor *actor);
-
-/**
- * Returns the song information used by the Actor for display.
- *
- * @param actor Actor object
- *
- * @return Song information
- */
 LV_API VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
+LV_API VisPalette  *visual_actor_get_palette  (VisActor *actor);
 
-/**
- * Returns the color palette of an Actor.
- *
- * @note Called only when rendering in 8-bit colour mode.
- *
- * @param actor Actor object
- *
- * @return Palette
- */
-LV_API VisPalette *visual_actor_get_palette (VisActor *actor);
-
-/**
- * Configures an actor to automatically work with the video target set with visual_actor_set_video().
- *
- * @note This function setups any necessary scaling and depth conversion necessary.
- *
- * @see visual_actor_set_video
- *
- * @param actor     Actor object
- * @param run_depth Desired colour depth used for rendering. Use VISUAL_VIDEO_DEPTH_NONE for auto selection
- * @param noevent   Set to TRUE to stop events
- * @param forced    Set to TRUE If run_depth is set
- *
- * @return VISUAL_OK on success
- */
-LV_API int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth run_depth, int noevent, int forced);
-
-/**
- * Returns colour depths natively supported by the actor.
- *
- * @param actor Actor object
- *
- * @return Set of supported colour depths
- */
-LV_API VisVideoDepth visual_actor_get_supported_depths (VisActor *actor);
-
+LV_API VisVideoDepth        visual_actor_get_supported_depths        (VisActor *actor);
 LV_API VisVideoAttrOptions *visual_actor_get_video_attribute_options (VisActor *actor);
 
-/**
- * Sets the video target for an actor.
- *
- * @see visual_actor_video_negotiate
- *
- * @param actor Actor
- * @param video Video target
- */
-LV_API void visual_actor_set_video (VisActor *actor, VisVideo *video);
-
+LV_API void      visual_actor_set_video (VisActor *actor, VisVideo *video);
 LV_API VisVideo *visual_actor_get_video (VisActor *actor);
 
-/**
- * Runs an actor.
- *
- * At each call, visual_actor_run() pumps events to the actor for handling and passes in the audio data for visualising.
- *
- * @note Scaling and depth conversions are automatically performed.
- *
- * @param actor Actor object
- * @param audio Audio data to visualise
- */
-LV_API void visual_actor_run (VisActor *actor, VisAudio *audio);
+LV_API int visual_actor_video_negotiate (VisActor *actor, VisVideoDepth run_depth, int noevent, int forced);
 
 LV_END_DECLS
 
