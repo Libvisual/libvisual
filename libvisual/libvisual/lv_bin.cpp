@@ -693,7 +693,7 @@ namespace LV {
 
       visual_actor_realize (m_impl->actor);
 
-      visual_actor_run (m_impl->actor, m_impl->input->audio);
+      visual_actor_run (m_impl->actor, visual_input_get_audio (m_impl->input));
 
       if (m_impl->morphing) {
           visual_return_if_fail (m_impl->actmorph != nullptr);
@@ -704,7 +704,7 @@ namespace LV {
               visual_actor_get_video (m_impl->actmorph)->get_depth () != VISUAL_VIDEO_DEPTH_GL &&
               visual_actor_get_video (m_impl->actor)->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
 
-              visual_actor_run (m_impl->actmorph, m_impl->input->audio);
+              visual_actor_run (m_impl->actmorph, visual_input_get_audio (m_impl->input));
 
               if (!m_impl->morph || !m_impl->morph->plugin) {
                   switch_finalize ();
@@ -714,7 +714,7 @@ namespace LV {
               /* Same goes for the morph, we realize it here for depth changes
                * (especially the openGL case */
               visual_morph_realize (m_impl->morph);
-              visual_morph_run (m_impl->morph, m_impl->input->audio, visual_actor_get_video (m_impl->actor), visual_actor_get_video (m_impl->actmorph));
+              visual_morph_run (m_impl->morph, visual_input_get_audio (m_impl->input), visual_actor_get_video (m_impl->actor), visual_actor_get_video (m_impl->actmorph));
 
               if (visual_morph_is_done (m_impl->morph))
                   switch_finalize ();

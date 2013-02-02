@@ -67,14 +67,7 @@ typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
 /**
  * Input class.
  */
-struct _VisInput {
-    VisObject                    object;    /**< Parent */
-
-    VisPluginData               *plugin;    /**< Plugin object */
-    VisAudio                    *audio;     /**< Audio object used for uploads */
-    VisInputUploadCallbackFunc   callback;  /**< Custom data generation callback */
-    VisSongInfo                 *songinfo;  /**< Song information */
-};
+struct _VisInput;
 
 /**
  * Input plugin class.
@@ -151,6 +144,8 @@ LV_API int visual_input_realize (VisInput *input);
  * @return VISUAL_OK on success
  */
 LV_API int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *user_data);
+
+LV_API VisAudio *visual_input_get_audio (VisInput *audio);
 
 /**
  * Runs the Input.
