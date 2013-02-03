@@ -24,8 +24,6 @@
 #ifndef _LV_RECTANGLE_H
 #define _LV_RECTANGLE_H
 
-#include <libvisual/lv_object.h>
-
 /**
  * @defgroup VisRectangle VisRectangle
  * @{

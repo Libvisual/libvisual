@@ -24,7 +24,6 @@
 #ifndef _LV_INPUT_H
 #define _LV_INPUT_H
 
-#include <libvisual/lv_object.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_plugin.h>
 

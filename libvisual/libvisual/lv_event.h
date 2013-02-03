@@ -3,7 +3,6 @@
 
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_video.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_keysym.h>
 
 /**
@@ -296,7 +295,7 @@ LV_API VisEvent *visual_event_new_mousemotion (int dx, int dy);
  * @param y Absolute Y value for the mouse location.
  */
 LV_API VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
-    
+
 /**
  * Creates a resize event.
  *
@@ -304,7 +303,7 @@ LV_API VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, 
  * @param height New height
  */
 LV_API VisEvent *visual_event_new_resize (int width, int height);
-    
+
 /**
  * Creates a new song change event.
  */
@@ -316,7 +315,7 @@ LV_API VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
  * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
  */
 LV_API VisEvent *visual_event_new_param (void *param);
-    
+
 /**
  * Creates a quit event
  */

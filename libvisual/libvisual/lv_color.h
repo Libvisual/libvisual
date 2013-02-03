@@ -24,7 +24,7 @@
 #ifndef _LV_COLOR_H
 #define _LV_COLOR_H
 
-#include <libvisual/lv_object.h>
+#include <libvisual/lv_types.h>
 
 /**
  * @defgroup VisColor VisColor

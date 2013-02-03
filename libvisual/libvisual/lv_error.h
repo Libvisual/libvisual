@@ -49,10 +49,6 @@ enum {
 	/* Error entries for the VisActor system */
 	VISUAL_ERROR_ACTOR_VIDEO_NULL,      /**< The VisVideo target member in the VisActor is NULL. */
 
-	/* Error entries for the VisCollection system */
-	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
-	VISUAL_ERROR_COLLECTION_ITER_NULL,		/**< The VisCollectionIter is NULL. */
-
 	/* Error entries for the VisError system */
 	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */
 
@@ -61,17 +57,8 @@ enum {
 	VISUAL_ERROR_LIST_ENTRY_NULL,			/**< The VisListEntry is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_INVALID,		/**< The VisListEntry is invalid. */
 
-	/* Error entries for the VisOS system */
-	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't succesful. */
-	VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED,		/**< Scheduler operations are not supported on the platform. */
-
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_INVALID_DEPTH,       /**< Depth is invalid */
-
-	/* Error entries for the VisObject system */
-	VISUAL_ERROR_OBJECT_DTOR_FAILED,		/**< The destructor assigned to a VisObject failed destroying the VisObject. */
-	VISUAL_ERROR_OBJECT_NULL,			/**< The VisObject is NULL. */
-	VISUAL_ERROR_OBJECT_NOT_ALLOCATED,		/**< The VisObject is not allocated. */
 
 	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
 };

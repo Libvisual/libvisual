@@ -24,7 +24,6 @@
 #define _LV_PLUGIN_H
 
 #include <libvisual/lvconfig.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param.h>
 #include <libvisual/lv_random.h>

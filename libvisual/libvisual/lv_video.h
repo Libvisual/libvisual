@@ -121,7 +121,6 @@ struct _VisVideo;
 typedef void (*VisVideoComposeFunc)(VisVideo *dest, VisVideo *src);
 
 struct _VisVideoAttrOptions {
-    VisObject      object;
     VisVideoDepth  depth;
     VisGLAttrEntry gl_attrs[VISUAL_GL_ATTRIBUTE_LAST];
 };

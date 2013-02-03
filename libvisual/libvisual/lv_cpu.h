@@ -24,7 +24,7 @@
 #ifndef _LV_CPU_H
 #define _LV_CPU_H
 
-#include <libvisual/lv_object.h>
+#include <libvisual/lv_types.h>
 
 /**
  * @defgroup VisCPU VisCPU
@@ -52,7 +52,6 @@ typedef struct _VisCPU VisCPU;
  * @see visual_cpu_get_info
  */
 struct _VisCPU {
-	VisObject	object;			/**< The VisObject data. */
 	VisCPUType	type;			/**< Contains the CPU/arch type. */
 	int		nrcpu;			/**< Contains the number of CPUs in the system. */
 

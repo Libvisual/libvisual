@@ -26,7 +26,6 @@
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_palette.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_event.h>
 #include <libvisual/lv_param_value.h>
 #include <libvisual/lv_param_validators.h>
@@ -48,7 +47,7 @@ typedef void (*VisDestroyFunc)       (void *data);
 
 LV_BEGIN_DECLS
 
-LV_API VisClosure *visual_closure_new  (void *func, void *data, void *destroy_func);
+LV_API VisClosure *visual_closure_new  (void *func, void *data, VisDestroyFunc destroy_func);
 LV_API void        visual_closure_free (VisClosure *self);
 
 /**
@@ -87,7 +86,7 @@ LV_API VisEventQueue *visual_param_list_get_event_queue (VisParamList *list);
  *
  * @return List of entries, or NULL on failure
  */
-LV_API VisList *visual_param_list_get_entries (VisParamList *list);
+LV_API VisParam** visual_param_list_get_entries (VisParamList *list);
 
 /**
  * Adds a new parameter entry.

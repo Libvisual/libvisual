@@ -30,7 +30,6 @@
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_checks.h>
 #include <libvisual/lv_error.h>
-#include <libvisual/lv_object.h>
 
 #include <libvisual/lv_bits.h>
 #include <libvisual/lv_time.h>
@@ -44,7 +43,6 @@
 #include <libvisual/lv_input.h>
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_fourier.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_plugin.h>
 #include <libvisual/lv_video.h>
@@ -52,7 +50,6 @@
 #include <libvisual/lv_songinfo.h>
 #include <libvisual/lv_morph.h>
 #include <libvisual/lv_random.h>
-#include <libvisual/lv_collection.h>
 #include <libvisual/lv_rectangle.h>
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>

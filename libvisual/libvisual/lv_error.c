@@ -38,21 +38,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_IMPOSSIBLE] =			N_("An impossible event occurred"),
 	[VISUAL_ERROR_FAILED_CHECK] =       N_("Assertion check failed"),
 
-	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
-	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
-
 	[VISUAL_ERROR_ERROR_HANDLER_NULL] =		N_("Global error handler is NULL"),
-
-	[VISUAL_ERROR_LIST_NULL] =			N_("VisList is NULL"),
-	[VISUAL_ERROR_LIST_ENTRY_NULL] =		N_("VisListEntry is NULL"),
-	[VISUAL_ERROR_LIST_ENTRY_INVALID] =		N_("VisListEntry is invalid"),
-
-	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't succesful."),
-	[VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED] =		N_("Scheduler operations are not supported on the platform."),
-
-	[VISUAL_ERROR_OBJECT_DTOR_FAILED] =		N_("VisObject destruction failed"),
-	[VISUAL_ERROR_OBJECT_NULL] =			N_("VisObject is NULL"),
-	[VISUAL_ERROR_OBJECT_NOT_ALLOCATED] =		N_("VisObject is not allocated"),
 
 	[VISUAL_ERROR_VIDEO_INVALID_DEPTH] =		N_("VisVideo is of invalid depth"),
 };

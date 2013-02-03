@@ -23,7 +23,7 @@
 #define _LV_PARAM_VALUE_H
 
 #include <libvisual/lvconfig.h>
-#include <libvisual/lv_defines.h>
+#include <libvisual/lv_types.h>
 #include <libvisual/lv_checks.h>
 #include <libvisual/lv_color.h>
 #include <libvisual/lv_palette.h>

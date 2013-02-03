@@ -23,8 +23,13 @@
 #include "lv_param.h"
 #include "lv_common.h"
 #include "lv_util.h"
-#include <stdarg.h>
-#include <string.h>
+#include <map>
+#include <list>
+#include <cstdarg>
+#include <cstring>
+
+typedef std::map<std::string, VisParam*> ParamEntries;
+typedef std::list<VisClosure*>           HandlerList;
 
 struct _VisClosure
 {
@@ -40,12 +45,12 @@ struct _VisParam
     VisParamValue  value;
     VisParamValue  default_value;
     VisClosure *   validator;
-    VisList *      changed_handlers;
+    HandlerList    changed_handlers;
     VisParamList * parent;
 };
 
 struct _VisParamList {
-    VisList *       entries;
+    ParamEntries    entries;
     VisEventQueue * eventqueue;
 };
 
@@ -54,11 +59,11 @@ static inline int validate_param_value (VisParamValue *value, VisClosure *valida
     return (* (VisParamValidateFunc) validator->func) (value, validator->data);
 }
 
-VisClosure *visual_closure_new (void *func, void *data, void *destroy_func)
+VisClosure *visual_closure_new (void *func, void *data, VisDestroyFunc destroy_func)
 {
     VisClosure *self = visual_mem_new0 (VisClosure, 1);
 
-    self->func = func;
+    self->func = reinterpret_cast<void(*)(void)> (func);
     self->data = data;
     self->destroy_func = destroy_func;
 
@@ -78,20 +83,24 @@ void visual_closure_free (VisClosure *self)
 
 VisParamList *visual_param_list_new (void)
 {
-    VisParamList *self = visual_mem_new0 (VisParamList, 1);
+    auto self = new VisParamList;
 
-    self->entries = visual_list_new ((VisCollectionDestroyerFunc) visual_param_free);
+    self->eventqueue = nullptr;
 
     return self;
 }
 
 void visual_param_list_free (VisParamList *self)
 {
-    if (!self)
+    if (!self) {
         return;
+    }
 
-    visual_object_unref (VISUAL_OBJECT (self->entries));
-    visual_mem_free (self);
+    for (auto& entry : self->entries) {
+        visual_param_free (entry.second);
+    }
+
+    delete self;
 }
 
 void visual_param_list_set_event_queue (VisParamList *self, VisEventQueue *eventqueue)
@@ -108,11 +117,12 @@ VisEventQueue *visual_param_list_get_event_queue (VisParamList *self)
     return self->eventqueue;
 }
 
-VisList *visual_param_list_get_entries (VisParamList *self)
+VisParam** visual_param_list_get_entries (VisParamList *self)
 {
     visual_return_val_if_fail (self != NULL, NULL);
 
-    return self->entries;
+    //return self->entries;
+    return NULL;
 }
 
 int visual_param_list_add (VisParamList *self, VisParam *param)
@@ -120,10 +130,12 @@ int visual_param_list_add (VisParamList *self, VisParam *param)
     visual_return_val_if_fail (self != NULL, FALSE);
     visual_return_val_if_fail (param != NULL, FALSE);
 
-    if (visual_list_add (self->entries, param)) {
-        param->parent = self;
-        return TRUE;
+    auto old_param = self->entries[param->name];
+    if (old_param) {
+        visual_param_free (old_param);
     }
+
+    self->entries[param->name] = param;
 
     return FALSE;
 }
@@ -171,16 +183,11 @@ int visual_param_list_remove (VisParamList *self, const char *name)
     visual_return_val_if_fail (self != NULL, FALSE);
     visual_return_val_if_fail (name != NULL, FALSE);
 
-    VisListEntry *le = NULL;
-    VisParam *param;
-
-    while ((param = visual_list_next (self->entries, &le)) != NULL) {
-
-        if (strcmp (param->name, name) == 0) {
-            visual_list_delete (self->entries, &le);
-
-            return TRUE;
-        }
+    auto entry = self->entries.find (name);
+    if (entry != self->entries.end ()) {
+        visual_param_free (entry->second);
+        self->entries.erase (entry);
+        return TRUE;
     }
 
     return FALSE;
@@ -191,14 +198,9 @@ VisParam *visual_param_list_get (VisParamList *self, const char *name)
     visual_return_val_if_fail (self != NULL, NULL);
     visual_return_val_if_fail (name != NULL, NULL);
 
-    VisListEntry *le = NULL;
-    VisParam *param;
-
-    while ((param = visual_list_next (self->entries, &le)) != NULL) {
-        param = le->data;
-
-        if (strcmp (param->name, name) == 0)
-            return param;
+    auto entry = self->entries.find (name);
+    if (entry != self->entries.end ()) {
+        return entry->second;
     }
 
     return NULL;
@@ -220,7 +222,7 @@ VisParam *visual_param_new (const char * name,
         visual_return_val_if_fail (validate_param_value (&value, validator), NULL);
     }
 
-    VisParam *self = visual_mem_new0 (VisParam, 1);
+    auto self = new VisParam;
 
     self->name        = visual_strdup (name);
     self->description = visual_strdup (description);
@@ -228,8 +230,6 @@ VisParam *visual_param_new (const char * name,
 
     visual_param_value_set (&self->value, type, default_value);
     visual_param_value_set (&self->default_value, type, default_value);
-
-    self->changed_handlers = visual_list_new ((VisCollectionDestroyerFunc) visual_closure_free);
 
     return self;
 }
@@ -247,9 +247,11 @@ void visual_param_free (VisParam *self)
 
     visual_closure_free (self->validator);
 
-    visual_object_unref (VISUAL_OBJECT (self->changed_handlers));
+    for (auto closure : self->changed_handlers) {
+        visual_closure_free (closure);
+    }
 
-    visual_mem_free (self);
+    delete self;
 }
 
 VisClosure *visual_param_add_callback (VisParam *          self,
@@ -260,8 +262,8 @@ VisClosure *visual_param_add_callback (VisParam *          self,
     visual_return_val_if_fail (self != NULL, NULL);
     visual_return_val_if_fail (func != NULL, NULL);
 
-    VisClosure *closure = visual_closure_new (func, priv, destroy_func);
-    visual_list_add (self->changed_handlers, closure);
+    VisClosure *closure = visual_closure_new (reinterpret_cast<void*> (func), priv, destroy_func);
+    self->changed_handlers.push_back (closure);
 
     return closure;
 }
@@ -270,14 +272,14 @@ int visual_param_remove_callback (VisParam *self, VisClosure *to_remove)
 {
     visual_return_val_if_fail (self != NULL, FALSE);
 
-    VisListEntry *le = NULL;
-    VisClosure *closure;
+    auto entry = std::find (self->changed_handlers.begin (),
+                            self->changed_handlers.end (),
+                            to_remove);
 
-    while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL) {
-        if (closure == to_remove) {
-            visual_list_delete (self->changed_handlers, &le);
-            return TRUE;
-        }
+    if (entry != self->changed_handlers.end ()) {
+        visual_closure_free (*entry);
+        self->changed_handlers.erase (entry);
+        return TRUE;
     }
 
     return FALSE;
@@ -309,10 +311,7 @@ void visual_param_notify_callbacks (VisParam *self)
 {
     visual_return_if_fail (self != NULL);
 
-    VisListEntry *le = NULL;
-    VisClosure *closure;
-
-    while ((closure = visual_list_next (self->changed_handlers, &le)) != NULL) {
+    for (auto closure : self->changed_handlers) {
         (*(VisParamChangedFunc) (closure->func)) (self, closure->data);
     }
 }
