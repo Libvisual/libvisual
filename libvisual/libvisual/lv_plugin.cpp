@@ -184,7 +184,12 @@ int visual_plugin_realize (VisPluginData *plugin)
     visual_param_list_set_event_queue (params, plugin->eventqueue);
 
     visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
-    plugin->info->init (plugin);
+
+    if (!plugin->info->init (plugin)) {
+        visual_log (VISUAL_LOG_ERROR, "Failed to initialise plugin");
+        return FALSE;
+    }
+
     plugin->realized = TRUE;
 
     return TRUE;
