@@ -61,7 +61,7 @@ namespace LV {
   InputPtr Input::load (std::string const& name)
   {
       try {
-          return new Input{name};
+          return {new Input{name}, false};
       }
       catch (std::exception& error) {
           visual_log (VISUAL_LOG_ERROR, "%s", error.what ());

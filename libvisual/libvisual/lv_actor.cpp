@@ -82,7 +82,7 @@ namespace LV {
   ActorPtr Actor::load (std::string const& name)
   {
       try {
-          return new Actor (name);
+          return {new Actor (name), false};
       }
       catch (std::exception& error) {
           visual_log (VISUAL_LOG_ERROR, "%s", error.what ());

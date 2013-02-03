@@ -76,7 +76,7 @@ namespace LV {
   MorphPtr Morph::load (std::string const& name)
   {
       try {
-          return new Morph {name};
+          return {new Morph {name}, false};
       }
       catch (std::exception& error)
       {
