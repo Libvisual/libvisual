@@ -43,7 +43,7 @@
 #define VISUAL_PLUGIN_LICENSE_LGPL	"LGPL"
 #define VISUAL_PLUGIN_LICENSE_BSD	"BSD"
 
-#define VISUAL_PLUGIN_VERSION_TAG		"__lv_plugin_libvisual_api_version"
+#define VISUAL_PLUGIN_VERSION_TAG   "__lv_plugin_libvisual_api_version"
 #define VISUAL_PLUGIN_API_VERSION_VALIDATOR \
     LV_C_LINKAGE LV_PLUGIN_EXPORT const int __lv_plugin_libvisual_api_version = VISUAL_PLUGIN_API_VERSION; \
     LV_C_LINKAGE LV_PLUGIN_EXPORT const VisPluginInfo* get_plugin_info (void);
@@ -122,8 +122,6 @@ typedef int (*VisPluginEventsFunc)(VisPluginData *plugin, VisEventQueue *events)
  * and is filled within the plugin itself.
  */
 struct _VisPluginInfo {
-	VisObject      object;   /**< Parent */
-
 	VisPluginType  type;     /**< Plugin type  */
 	const char    *plugname; /**< The plugin name as it's saved in the registry. */
 
@@ -139,7 +137,7 @@ struct _VisPluginInfo {
 	VisPluginCleanupFunc cleanup;  /**< cleanup() method */
 	VisPluginEventsFunc	 events;   /**< events() method (may be NULL) */
 
-	int flags;            /**< Plugin flags from the VisPluginFlags enumerate. */
+	int flags;            /**< Plugin flags */
 
 	void *plugin;         /**< Pointer to type-specific data */
 };
