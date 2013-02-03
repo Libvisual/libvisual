@@ -113,6 +113,7 @@ static int inp_debug_cleanup (VisPluginData *plugin)
 	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	visual_time_free (priv->last_upload_time);
+	visual_mem_free (priv);
 
 	return 0;
 }
