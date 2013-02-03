@@ -165,7 +165,7 @@ namespace LV {
       m_impl->morph = morph;
       visual_return_if_fail (visual_morph_get_plugin (morph) != nullptr);
 
-      VisVideoDepth depthflag = visual_morph_get_supported_depth (morph);
+      VisVideoDepth depthflag = visual_morph_get_supported_depths (morph);
 
       if (visual_video_depth_is_supported (depthflag, m_impl->actvideo->get_depth ()) <= 0) {
           visual_object_unref (VISUAL_OBJECT (morph));

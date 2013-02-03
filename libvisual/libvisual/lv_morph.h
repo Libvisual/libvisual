@@ -46,7 +46,158 @@ typedef enum {
                                      measured and set using real time */
 } VisMorphMode;
 
+#ifdef __cplusplus
+
+#include <libvisual/lv_intrusive_ptr.hpp>
+#include <string>
+#include <memory>
+
+namespace LV {
+
+  class Morph;
+
+  typedef LV::IntrusivePtr<Morph> MorphPtr;
+
+  //! Morph class
+  class LV_API Morph
+  {
+  public:
+
+      /**
+       * Creates a new Morph wit a plugin of a given name.
+       *
+       * @see realize()
+       *
+       * @param name Name of plugin to load
+       *
+       * @return New morph, or nullptr if plugin failed to load
+       */
+      static MorphPtr load (std::string const& name);
+
+      Morph (Morph const& morph) = delete;
+
+      ~Morph ();
+
+      Morph& operator= (Morph const&) = delete;
+
+      /**
+       * Returns the plugin object.
+       *
+       * @return Plugin object
+       */
+      VisPluginData* get_plugin ();
+
+      /**
+       * Realizes a morph.
+       *
+       * This also calls the plugin init() method.
+       *
+       * @return true on success, false otherwise
+       */
+      bool realize ();
+
+      /**
+       * Returns the set of colour depths natively supported.
+       *
+       * @return Set of supported depths
+       */
+      VisVideoDepth get_supported_depths ();
+
+      VisVideoAttrOptions const* get_video_attribute_options ();
+
+      /**
+       * Sets the video target for rendering.
+       *
+       * @param video Video target
+       */
+      void set_video (VideoPtr const& video);
+
+      /**
+       * Sets the morph duration.
+       *
+       * @param time Duration
+       */
+      void set_time (Time const& time);
+
+      /**
+       * Sets the progress of a morph.
+       *
+       * @param progress Progress of morph (must be in [0.0, 1.0])
+       */
+      void set_progress (float progress);
+
+      /**
+       * Sets the method of morphing to apply.
+       *
+       * @param mode Method of morphing
+       */
+      void set_mode (VisMorphMode mode);
+
+      /**
+       * Returns the colour palette used.
+       *
+       * @note Only 8-bit morphs will have colour palettes.
+       *
+       * @return Colour palette, or nullptr if there is none
+       */
+      Palette const* get_palette ();
+
+      /**
+       * Determines if morph has completed.
+       *
+       * @return true if completed, false otherwise
+       */
+      bool is_done ();
+
+      /**
+       * Runs the morph.
+       *
+       * @note The rendering will be performed on the Video set with set_video().
+       *
+       * @param audio Audio data
+       * @param src1  First source Video
+       * @param src2  Second source Video
+       *
+       * @return true on success, false otherwise
+       */
+      bool run (Audio const& audio, VideoPtr const& src1, VideoPtr const& src2);
+
+private:
+
+      friend void intrusive_ptr_add_ref (Morph const* morph);
+      friend void intrusive_ptr_release (Morph const* morph);
+
+      class Impl;
+      const std::unique_ptr<Impl> m_impl;
+
+      mutable unsigned int m_ref_count;
+
+      explicit Morph (std::string const& name);
+  };
+
+  inline void intrusive_ptr_add_ref (Morph const* morph)
+  {
+      morph->m_ref_count++;
+  }
+
+  inline void intrusive_ptr_release (Morph const* morph)
+  {
+      if (--morph->m_ref_count == 0) {
+          delete morph;
+      }
+  }
+
+} // LV namespace
+
+typedef LV::Morph VisMorph;
+
+#else
+
 typedef struct _VisMorph VisMorph;
+struct _VisMorph;
+
+#endif
+
 typedef struct _VisMorphPlugin VisMorphPlugin;
 
 /**
@@ -87,11 +238,6 @@ typedef int (*VisPluginMorphApplyFunc) (VisPluginData *plugin,
                                         VisVideo      *src2);
 
 /**
- * Morph class.
- */
-struct _VisMorph;
-
-/**
  * Morph plugin class.
  */
 struct _VisMorphPlugin {
@@ -103,15 +249,6 @@ struct _VisMorphPlugin {
 };
 
 LV_BEGIN_DECLS
-
-/**
- * Returns the plugin backing the morph object.
- *
- * @param morph Morph object
- *
- * @return Plugin object, or NULL if none
- */
-LV_API VisPluginData *visual_morph_get_plugin (VisMorph *morph);
 
 /**
  * Returns the name of the next available morph plugin.
@@ -135,117 +272,25 @@ LV_API const char *visual_morph_get_next_by_name (const char *name);
  */
 LV_API const char *visual_morph_get_prev_by_name (const char *name);
 
-/**
- * Creates a new morph object from name.
- *
- * @param name Name of morph plugin, or NULL to create an empty object.
- *
- * @see visual_morph_realize()
- *
- * @return A new morph object, or NULL on failure
- */
-LV_API VisMorph *visual_morph_new (const char *name);
+LV_API VisMorph *visual_morph_new   (const char *name);
+LV_API void      visual_morph_ref   (VisMorph *morph);
+LV_API void      visual_morph_unref (VisMorph *morph);
 
-/**
- * Realizes a morph.
- *
- * This also calls the plugin init() method.
- *
- * @param morph Morph object
- *
- * @return VISUAL_OK on success
- */
-LV_API int visual_morph_realize (VisMorph *morph);
-
-/**
- * Returns a morph's supported colour depths.
- *
- * @param morph Morph object
- *
- * @return Supported depths
- */
-LV_API VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph);
-
+LV_API VisPluginData       *visual_morph_get_plugin                  (VisMorph *morph);
+LV_API VisVideoDepth        visual_morph_get_supported_depths        (VisMorph *morph);
 LV_API VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
+LV_API int                  visual_morph_requests_audio              (VisMorph *morph);
 
-/**
- * Sets the video rendering target for a morph.
- *
- * @param morph Morph object
- * @param video Video target
- */
-LV_API void visual_morph_set_video (VisMorph *morph, VisVideo *video);
-
-/**
- * Sets the duration of a morph.
- *
- * @param morph Morph object
- * @param time  Duration
- */
-LV_API void visual_morph_set_time (VisMorph *morph, VisTime *time);
-
-/**
- * Sets the progress of a morph.
- *
- * @param morph    Morph object
- * @param progress Progress of morph (must be in [0.0, 1.0])
- */
+LV_API void visual_morph_set_video    (VisMorph *morph, VisVideo *video);
+LV_API void visual_morph_set_time     (VisMorph *morph, VisTime *time);
 LV_API void visual_morph_set_progress (VisMorph *morph, float progress);
+LV_API void visual_morph_set_mode     (VisMorph *morph, VisMorphMode mode);
 
-/**
- * Used to set the method of morphing.
- *
- * @param morph Pointer to a VisMorph to which the method of morphing is set.
- * @param mode Method of morphing that is of type VisMorphMode.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
- */
-LV_API void visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
-
-/**
- * Returns the palette used by morph.
- *
- * @param morph Morph object.
- *
- * @note Only 8-bit morphs will have colour palettes.
- *
- * @return Palette object, or NULL if morph uses none
- */
-LV_API VisPalette *visual_morph_get_palette (VisMorph *morph);
-
-/**
- * Determines if morph has completed.
- *
- * @param morph Morph object
- *
- * @return TRUE if completed, FALSE otherwise
- */
+LV_API int visual_morph_realize (VisMorph *morph);
+LV_API int visual_morph_run     (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 LV_API int visual_morph_is_done (VisMorph *morph);
 
-/**
- * Determines if morph requires audio data.
- *
- * @param morph Morph object
- *
- * @return TRUE if yes, FALSE otherwise
- */
-LV_API int visual_morph_requests_audio (VisMorph *morph);
-
-/**
- * Runs the morph.
- *
- * The rendering will be done onto the Video set with visual_morph_set_video().
- *
- * @note that all the VisVideo structures being used need to be clones.
- *
- * @param morph Morph object
- * @param audio Audio data
- * @param src1  First source Video
- * @param src2  Second source Video
- *
- * @return TRUE on success, FALSE otherwise
- */
-LV_API int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
+LV_API VisPalette *visual_morph_get_palette (VisMorph *morph);
 
 LV_END_DECLS
 

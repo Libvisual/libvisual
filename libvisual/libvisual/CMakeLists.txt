@@ -122,6 +122,7 @@ SET(libvisual_SOURCES
   lv_fourier_c.cpp
   lv_input_c.cpp
   lv_libvisual_c.cpp
+  lv_morph_c.cpp
   lv_random_c.cpp
   lv_palette_c.cpp
   lv_plugin_registry_c.cpp
