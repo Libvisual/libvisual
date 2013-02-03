@@ -165,7 +165,7 @@ static int act_gstreamer_cleanup (VisPluginData *plugin)
 
         gst_buffer_unref (priv->buffer);
 
-#if GLIB_VERSION_CUR_STABLE >= GLIB_2_32
+#if GLIB_VERSION_CUR_STABLE >= GLIB_VERSION_2_32
         g_mutex_clear (priv->mutex);
         g_slice_free (GMutex, priv->mutex);
 #else
