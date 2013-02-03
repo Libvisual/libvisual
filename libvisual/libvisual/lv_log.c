@@ -37,7 +37,7 @@ typedef struct {
 
 static VisLogSeverity verbosity = VISUAL_LOG_WARNING;
 
-static const char *log_prefixes[VISUAL_LOG_CRITICAL+1] = {
+static const char *log_prefixes[VISUAL_LOG_NUM_LEVELS] = {
 	"DEBUG    ",
 	"INFO     ",
 	"WARNING  ",
@@ -45,14 +45,14 @@ static const char *log_prefixes[VISUAL_LOG_CRITICAL+1] = {
 	"CRITICAL "
 };
 
-static LogHandler log_handlers[VISUAL_LOG_CRITICAL+1];
+static LogHandler log_handlers[VISUAL_LOG_NUM_LEVELS];
 
 static void output_to_stderr (VisLogSeverity severity, const char *msg,
     VisLogSource const *source);
 
 static int is_valid_severity (VisLogSeverity severity)
 {
-    return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_CRITICAL);
+    return (severity >= VISUAL_LOG_DEBUG && severity < VISUAL_LOG_NUM_LEVELS);
 }
 
 static const char *shorten_filename (const char* filename, unsigned int parts)

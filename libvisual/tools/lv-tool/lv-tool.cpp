@@ -220,13 +220,13 @@ namespace {
 
               // --verbose
               case 'v': {
-                  VisLogSeverity v = visual_log_get_verbosity();
-                  v = (VisLogSeverity) ((int) v-1);
+                  VisLogSeverity level = visual_log_get_verbosity ();
+                  level = VisLogSeverity (int (level) - 1);
 
-                  if(v <= VISUAL_LOG_MIN)
-                      break;
+                  if (int (level) >= 0) {
+                      visual_log_set_verbosity (level);
+                  }
 
-                  visual_log_set_verbosity(v);
                   break;
               }
 

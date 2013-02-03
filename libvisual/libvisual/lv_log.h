@@ -40,13 +40,13 @@ LV_BEGIN_DECLS
  * @see visual_log()
  */
 typedef enum {
-	VISUAL_LOG_MIN,      /**< this should always remain the FIRST entry */
-	VISUAL_LOG_DEBUG,    /**< Debugging information */
-	VISUAL_LOG_INFO,     /**< Status and general information */
-	VISUAL_LOG_WARNING,  /**< Warnings */
-	VISUAL_LOG_ERROR,    /**< Errors */
-	VISUAL_LOG_CRITICAL, /**< Critical errors */
-	VISUAL_LOG_MAX,      /**< this should always remain the LAST entry */
+	VISUAL_LOG_DEBUG,     /**< Debugging information */
+	VISUAL_LOG_INFO,      /**< Status and general information */
+	VISUAL_LOG_WARNING,   /**< Warnings */
+	VISUAL_LOG_ERROR,     /**< Errors */
+	VISUAL_LOG_CRITICAL,  /**< Critical errors */
+
+	VISUAL_LOG_NUM_LEVELS /**< Number of log severity levels in total */
 } VisLogSeverity;
 
 /**
