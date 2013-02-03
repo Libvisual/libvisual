@@ -98,8 +98,7 @@ typedef enum {
 typedef enum {
     VISUAL_PLUGIN_TYPE_ACTOR,
     VISUAL_PLUGIN_TYPE_INPUT,
-    VISUAL_PLUGIN_TYPE_MORPH,
-    VISUAL_PLUGIN_TYPE_TRANSFORM
+    VISUAL_PLUGIN_TYPE_MORPH
 } VisPluginType;
 
 #ifdef __cplusplus

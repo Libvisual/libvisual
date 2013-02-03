@@ -56,7 +56,6 @@ SET(libvisual_HEADERS
   lv_checks.h
   lv_types.h
   lv_object.h
-  lv_transform.h
   lv_rectangle.h
   lv_buffer.h
   lv_collection.h
@@ -110,7 +109,6 @@ SET(libvisual_SOURCES
   lv_rectangle.cpp
   lv_songinfo.cpp
   lv_time.cpp
-  lv_transform.cpp
   lv_video.cpp
 
   lv_actor_c.cpp

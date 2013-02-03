@@ -86,13 +86,6 @@ enum {
 	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
 	VISUAL_ERROR_PLUGIN_NOT_FOUND,          /**< The plugin can't be found */
 
-	/* Error entries for the VisTransform system */
-	VISUAL_ERROR_TRANSFORM_NULL,			/**< The VisTransform is NULL. */
-	VISUAL_ERROR_TRANSFORM_NEGOTIATE,		/**< The VisTransform negotiate with the VisVideo failed. */
-	VISUAL_ERROR_TRANSFORM_PLUGIN_NULL,		/**< The VisTransform plugin in this context is NULL. */
-	VISUAL_ERROR_TRANSFORM_VIDEO_NULL,		/**< The VisVideo target member in the VisTransform is NULL. */
-	VISUAL_ERROR_TRANSFORM_PALETTE_NULL,		/**< The VisPalette target member in this VisTransform is NULL. */
-
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_INVALID_DEPTH,       /**< Depth is invalid */
 

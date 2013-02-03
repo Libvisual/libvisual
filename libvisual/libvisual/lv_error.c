@@ -70,12 +70,6 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_PLUGIN_NO_LIST] =			N_("Plugin list can not be found in memory"),
 	[VISUAL_ERROR_PLUGIN_NOT_FOUND] =       N_("Plugin cannot be found"),
 
-	[VISUAL_ERROR_TRANSFORM_NULL] =			N_("VisTransform is NULL"),
-	[VISUAL_ERROR_TRANSFORM_NEGOTIATE] =		N_("The VisTransform negotiate with the target VisVideo failed"),
-	[VISUAL_ERROR_TRANSFORM_PLUGIN_NULL] =		N_("The VisTransform it's plugin is NULL"),
-	[VISUAL_ERROR_TRANSFORM_VIDEO_NULL] =		N_("The VisTransform it's video is NULL"),
-	[VISUAL_ERROR_TRANSFORM_PALETTE_NULL] =		N_("The VisTransform it's palette is NULL"),
-
 	[VISUAL_ERROR_OBJECT_DTOR_FAILED] =		N_("VisObject destruction failed"),
 	[VISUAL_ERROR_OBJECT_NULL] =			N_("VisObject is NULL"),
 	[VISUAL_ERROR_OBJECT_NOT_ALLOCATED] =		N_("VisObject is not allocated"),
