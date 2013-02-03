@@ -61,7 +61,11 @@ namespace LV
        */
       static ActorPtr load (std::string const& name);
 
+      Actor (Actor const&) = delete;
+
       ~Actor ();
+
+      Actor& operator= (Actor const&) = delete;
 
       /**
        * Returns the plugin object.

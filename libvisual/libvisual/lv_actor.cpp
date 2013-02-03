@@ -50,7 +50,8 @@ namespace LV {
   };
 
   Actor::Impl::Impl ()
-      : ditherpal   {nullptr}
+      : plugin      (nullptr)
+      , ditherpal   {nullptr}
       , songcompare {SONG_INFO_TYPE_NULL}
   {
       // nothing
