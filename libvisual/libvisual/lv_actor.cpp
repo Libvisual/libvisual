@@ -237,15 +237,6 @@ namespace LV {
       return VISUAL_OK;
   }
 
-  /**
-   * Gives the by the plugin natively supported depths
-   *
-   * @param actor Pointer to a VisActor of which the supported depth of it's
-   *    encapsulated plugin is requested.
-   *
-   * @return an OR value of the VISUAL_VIDEO_DEPTH_* values which can be checked against using AND on success,
-   *  -VISUAL_ERROR_ACTOR_NULL, -VISUAL_ERROR_PLUGIN_NULL or -VISUAL_ERROR_ACTOR_PLUGIN_NULL on failure.
-   */
   VisVideoDepth Actor::get_supported_depths ()
   {
       return m_impl->get_supported_depths ();
@@ -253,9 +244,7 @@ namespace LV {
 
   VisVideoAttrOptions const* Actor::get_video_attribute_options ()
   {
-      auto actplugin = m_impl->get_actor_plugin ();
-
-      return actplugin ? &actplugin->vidoptions : nullptr;
+      return &m_impl->get_actor_plugin ()->vidoptions;
   }
 
   void Actor::set_video (VideoPtr const& video)
