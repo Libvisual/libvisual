@@ -14,40 +14,40 @@ namespace {
 
       ActorBench (std::string const& actor_name, unsigned int width, unsigned height, VisVideoDepth depth, bool forced_depth)
           : Benchmark { "ActorBench" }
-          , m_actor { visual_actor_new (actor_name.c_str ()) }
+          , m_actor { LV::Actor::load (actor_name) }
       {
           if (!m_actor) {
               throw std::invalid_argument ("Cannot load actor '" + actor_name);
           }
 
-          visual_actor_realize (m_actor);
+          m_actor->realize ();
 
           if (!forced_depth) {
-              auto supported_depths = visual_actor_get_supported_depths (m_actor);
+              auto supported_depths = m_actor->get_supported_depths ();
               depth = visual_video_depth_get_highest (supported_depths);
           }
 
           auto m_dest = LV::Video::create (640, 400, depth);
 
-          visual_actor_set_video (m_actor, m_dest.get ());
-          visual_actor_video_negotiate (m_actor, depth, false, false);
+          m_actor->set_video (m_dest);
+          m_actor->video_negotiate (depth, false, false);
       }
 
       virtual void operator() (unsigned int max_runs)
       {
           for (unsigned int i = 0; i < max_runs; i++)
-              visual_actor_run (m_actor, &m_audio);
+              m_actor->run (m_audio);
       }
 
       virtual ~ActorBench ()
       {
-          visual_object_unref (VISUAL_OBJECT (m_actor));
+          // nothing
       }
 
   private:
 
-      VisActor* m_actor;
-      LV::Audio m_audio;
+      LV::ActorPtr m_actor;
+      LV::Audio    m_audio;
   };
 
   std::unique_ptr<ActorBench> make_benchmark (int& argc, char**& argv)
