@@ -79,7 +79,11 @@ namespace LV {
 
       Audio ();
 
+      Audio (Audio const&) = delete;
+
       ~Audio ();
+
+      Audio& operator= (Audio const&) = delete;
 
       bool get_sample (BufferPtr const& buffer, std::string const& channel_name);
 
