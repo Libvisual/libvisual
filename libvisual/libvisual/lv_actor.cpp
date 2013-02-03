@@ -261,10 +261,9 @@ namespace LV {
       m_impl->video = video;
   }
 
-  void Actor::run (VisAudio *audio)
+  void Actor::run (Audio const& audio)
   {
       visual_return_if_fail (m_impl->video);
-      visual_return_if_fail (audio != nullptr);
 
       auto actplugin = m_impl->get_actor_plugin ();
       if (!actplugin) {
@@ -301,7 +300,7 @@ namespace LV {
       auto fitting   = m_impl->fitting;
 
       if (transform && (transform->get_depth () != video->get_depth ())) {
-          actplugin->render (plugin, transform.get (), audio);
+          actplugin->render (plugin, transform.get (), const_cast<Audio*> (&audio));
 
           if (transform->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
               transform->set_palette (*get_palette ());
@@ -312,10 +311,10 @@ namespace LV {
           video->convert_depth (transform);
       } else {
           if (fitting && (fitting->get_width () != video->get_width () || fitting->get_height () != video->get_height ())) {
-              actplugin->render (plugin, fitting.get (), audio);
+              actplugin->render (plugin, fitting.get (), const_cast<Audio*> (&audio));
               video->blit (fitting, 0, 0, false);
           } else {
-              actplugin->render (plugin, video.get (), audio);
+              actplugin->render (plugin, video.get (), const_cast<Audio*> (&audio));
           }
       }
   }

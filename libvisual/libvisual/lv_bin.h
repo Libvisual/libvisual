@@ -63,7 +63,7 @@ namespace LV {
 
 	  void realize ();
 
-	  VisActor* get_actor () const;
+	  ActorPtr const& get_actor () const;
 	  InputPtr const& get_input () const;
 
 	  void set_morph (std::string const& morphname);
@@ -111,8 +111,8 @@ namespace LV {
       const std::unique_ptr<Impl> m_impl;
 
       // FIXME: Remove
-	  bool connect (VisActor* actor, InputPtr const& input);
-	  void switch_actor (VisActor *actor);
+	  bool connect (ActorPtr const& actor, InputPtr const& input);
+	  void switch_actor (ActorPtr const& actor);
   };
 
 } // LV namespace

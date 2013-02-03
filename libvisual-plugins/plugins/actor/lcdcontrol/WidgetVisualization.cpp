@@ -159,7 +159,7 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
 
     bin_->connect(actor_plugin_, input_plugin_);
 
-    actor_ = bin_->get_actor();
+    actor_ = bin_->get_actor().get();
 
     // Set depth
     int depthflag = visual_actor_get_supported_depths(actor_);
@@ -202,7 +202,7 @@ void WidgetVisualization::DoParams() {
     // params
     Json::Value *actorVal = visitor_->CFG_Fetch_Raw(section_, std::string("params.") + actor_plugin_);
     if(actorVal) {
-        VisActor *actor = visual_bin_get_actor(bin_);;
+        VisActor *actor = visual_bin_get_actor(bin_);
         VisPluginData *plugin = visual_actor_get_plugin(actor);
         VisParamList *params = visual_plugin_get_params(plugin);
         Json::Value::Members members = actorVal->getMemberNames();
@@ -442,7 +442,7 @@ void WidgetVisualization::VisualMorph() {
 
     bin_->set_morph(morph_plugin_);
     bin_->switch_actor(actor_plugin_);
-    actor_ = bin_->get_actor();
+    actor_ = bin_->get_actor().get();
 
     DoParams();
 }

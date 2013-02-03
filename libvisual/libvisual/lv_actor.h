@@ -142,7 +142,7 @@ namespace LV
        *
        * @param audio Audio data to visualise
        */
-      void run (VisAudio *audio);
+      void run (Audio const& audio);
 
   private:
 

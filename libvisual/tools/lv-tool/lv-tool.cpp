@@ -403,7 +403,7 @@ int main (int argc, char **argv)
         // Select output colour depth
 
         VisVideoDepth depth;
-        int depthflag = visual_actor_get_supported_depths (actor);
+        int depthflag = actor->get_supported_depths ();
 
         // Pick the best display depth directly supported by non GL actor
         if(depthflag != VISUAL_VIDEO_DEPTH_GL)
@@ -426,7 +426,7 @@ int main (int argc, char **argv)
 
         bin.set_depth (depth);
 
-        auto vidoptions = visual_actor_get_video_attribute_options(actor);
+        auto vidoptions = actor->get_video_attribute_options ();
 
         // initialize display
         Display display (driver_name);
@@ -497,7 +497,7 @@ int main (int argc, char **argv)
             // Handle all events
             display.drain_events(localqueue);
 
-            auto pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin.get_actor()));
+            auto pluginqueue = visual_plugin_get_eventqueue (bin.get_actor()->get_plugin ());
 
             while (localqueue.poll(ev))
             {

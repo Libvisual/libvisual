@@ -165,8 +165,9 @@ int visual_actor_realize (VisActor *self)
 void visual_actor_run (VisActor *self, VisAudio *audio)
 {
     visual_return_if_fail (self != nullptr);
+    visual_return_if_fail (audio != nullptr);
 
-    self->run (audio);
+    self->run (*audio);
 }
 
 VisPluginData *visual_actor_get_plugin (VisActor *self)

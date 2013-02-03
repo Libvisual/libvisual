@@ -23,7 +23,7 @@ VisActor *visual_bin_get_actor (VisBin *bin)
 {
     visual_return_val_if_fail (bin != nullptr, nullptr);
 
-    return bin->get_actor ();
+    return bin->get_actor ().get ();
 }
 
 VisInput *visual_bin_get_input (VisBin *bin)

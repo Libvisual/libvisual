@@ -69,8 +69,7 @@ class WidgetVisualization : public Widget {
     public:
     LV::Video *video_;
     LV::Bin *bin_;
-    VisActor *actor_;
-    VisInput *input_;
+    LV::Actor *actor_;
     VisAudio *audio_;
 
     VisVideoDepth depth_;
