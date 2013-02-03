@@ -42,40 +42,40 @@ typedef struct {
 	VisRandomContext *rcxt;
 } FlowerPrivate;
 
-static int lv_flower_init (VisPluginData *plugin);
-static int lv_flower_cleanup (VisPluginData *plugin);
-static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_flower_resize (VisPluginData *plugin, int width, int height);
-static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_flower_palette (VisPluginData *plugin);
-static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         lv_flower_init        (VisPluginData *plugin);
+static void        lv_flower_cleanup     (VisPluginData *plugin);
+static void        lv_flower_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_flower_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_flower_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_flower_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_flower_palette     (VisPluginData *plugin);
+
 
 /* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = lv_flower_requisition,
-		.palette = lv_flower_palette,
-		.render = lv_flower_render,
+		.palette     = lv_flower_palette,
+		.render      = lv_flower_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "flower",
-		.name = "libvisual Pseudotoad flower, yellow rose of texas",
-		.author = N_("Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.1",
-		.about = N_("Libvisual yellow rose of texas port"),
-		.help =  N_("This renders an awesome responsive flower"),
-		.license = VISUAL_PLUGIN_LICENSE_GPL,
+		.name     = "libvisual Pseudotoad Flower, Yellow Rose of Texas",
+		.author   = N_("Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.1",
+		.about    = N_("Libvisual yellow rose of texas port"),
+		.help     = N_("This renders an awesome responsive flower"),
+		.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-		.init = lv_flower_init,
-		.cleanup = lv_flower_cleanup,
-		.events = lv_flower_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = lv_flower_init,
+		.cleanup  = lv_flower_cleanup,
+		.events   = lv_flower_events,
+		.plugin   = &actor
 	};
 
 	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
@@ -124,21 +124,19 @@ static int lv_flower_init (VisPluginData *plugin)
 
 	priv->t = visual_timer_new ();
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_flower_cleanup (VisPluginData *plugin)
+static void lv_flower_cleanup (VisPluginData *plugin)
 {
 	FlowerPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_timer_free (priv->flower.timer);
 	visual_timer_free (priv->t);
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_flower_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -153,11 +151,9 @@ static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-static int lv_flower_resize (VisPluginData *plugin, int width, int height)
+static void lv_flower_resize (VisPluginData *plugin, int width, int height)
 {
 	FlowerPrivate *priv = visual_plugin_get_private (plugin);
 	GLfloat ratio;
@@ -175,8 +171,6 @@ static int lv_flower_resize (VisPluginData *plugin, int width, int height)
 
 	priv->flower.width = width;
 	priv->flower.height = height;
-
-	return 0;
 }
 
 static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
@@ -194,7 +188,7 @@ static int lv_flower_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *lv_flower_palette (VisPluginData *plugin)
@@ -202,7 +196,7 @@ static VisPalette *lv_flower_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_plugin_get_private (plugin);
 	VisBuffer *pcmbuf;
@@ -292,6 +286,4 @@ static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 
 	visual_buffer_unref (pcmbuf);
 	visual_buffer_unref (freqbuf);
-
-	return 0;
 }

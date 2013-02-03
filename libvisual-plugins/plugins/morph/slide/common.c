@@ -11,28 +11,26 @@ VisMorphPlugin morph = {
 
 int lv_morph_slide_init (VisPluginData *plugin, SlideType type)
 {
+#if ENABLE_NLS
+    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+#endif
+
     SlidePrivate *priv = visual_mem_new0 (SlidePrivate, 1);
     visual_plugin_set_private (plugin, priv);
 
     priv->slide_type = type;
 
-#if ENABLE_NLS
-    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
-#endif
-
-    return 0;
+    return TRUE;
 }
 
-int lv_morph_slide_cleanup (VisPluginData *plugin)
+void lv_morph_slide_cleanup (VisPluginData *plugin)
 {
     SlidePrivate *priv = visual_plugin_get_private (plugin);
 
     visual_mem_free (priv);
-
-    return 0;
 }
 
-int lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+void lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
     SlidePrivate *priv = visual_plugin_get_private (plugin);
     uint8_t *destbuf = visual_video_get_pixels (dest);
@@ -97,6 +95,4 @@ int lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio
 
             break;
     }
-
-    return 0;
 }

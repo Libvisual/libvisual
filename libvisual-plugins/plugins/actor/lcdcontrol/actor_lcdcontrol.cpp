@@ -36,46 +36,43 @@
 
 #include "actor_lcdcontrol.h"
 
-
-extern "C" const VisPluginInfo *get_plugin_info ();
-
-using namespace LCD;
+VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 namespace {
 
-int lcdcontrol_init (VisPluginData *plugin);
-int lcdcontrol_cleanup (VisPluginData *plugin);
-int lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height);
-int lcdcontrol_resize (VisPluginData *plugin, int width, int height);
-int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events);
-VisPalette *lcdcontrol_palette (VisPluginData *plugin);
-int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+  int         lcdcontrol_init        (VisPluginData *plugin);
+  void        lcdcontrol_cleanup     (VisPluginData *plugin);
+  void        lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height);
+  void        lcdcontrol_resize      (VisPluginData *plugin, int width, int height);
+  int         lcdcontrol_events      (VisPluginData *plugin, VisEventQueue *events);
+  void        lcdcontrol_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+  VisPalette *lcdcontrol_palette     (VisPluginData *plugin);
 
 } // End namespace
 
 
-VISUAL_PLUGIN_API_VERSION_VALIDATOR
+using namespace LCD;
 
-extern "C" const VisPluginInfo *get_plugin_info ()
+const VisPluginInfo *get_plugin_info ()
 {
     static VisActorPlugin actor;
     actor.requisition = lcdcontrol_requisition;
-    actor.palette = lcdcontrol_palette;
-    actor.render = lcdcontrol_render;
+    actor.palette     = lcdcontrol_palette;
+    actor.render      = lcdcontrol_render;
     actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT;
 
     static VisPluginInfo info;
-    info.type = VISUAL_PLUGIN_TYPE_ACTOR;
+    info.type     = VISUAL_PLUGIN_TYPE_ACTOR;
     info.plugname = "lcdcontrol";
-    info.name = "LCDControl";
-    info.author = "Scott Sibley <sisibley@gmail.com>";
-    info.version = "0.1";
-    info.about = "LibVisual LCD Simulation";
-    info.help = "This plugin simulates an LCD and is based on LCD4Linux.";
-    info.init = lcdcontrol_init;
-    info.cleanup = lcdcontrol_cleanup;
-    info.events = lcdcontrol_events;
-    info.plugin = VISUAL_OBJECT(&actor);
+    info.name     = "LCDControl";
+    info.author   = "Scott Sibley <sisibley@gmail.com>";
+    info.version  = "0.1";
+    info.about    = "LibVisual LCD Simulation";
+    info.help     = "This plugin simulates an LCD and is based on LCD4Linux.";
+    info.init     = lcdcontrol_init;
+    info.cleanup  = lcdcontrol_cleanup;
+    info.events   = lcdcontrol_events;
+    info.plugin   = &actor;
 
 	return &info;
 }
@@ -102,60 +99,22 @@ int lcdcontrol_init (VisPluginData *plugin)
 
     priv->pal = visual_palette_new(256);
 
-/*
-	visual_buffer_init_allocate (&priv->pcm, sizeof (float) * PCM_SIZE, visual_buffer_destroyer_free);
-*/
-
-    //priv->thread = visual_thread_create(my_thread_func, priv, TRUE);
-
     priv->control = new LCDControl((void *)priv, visual_plugin_get_event_queue (plugin));
-
     priv->control->Start();
-
-    /* initialize threading */
-/*
-    if(pthread_attr_init(&priv->attr) != 0)
-        return -1;
-*/
-
-    /* start reader thread */
-/*
-    if(pthread_create(&priv->id, &priv->attr, my_thread_func, priv->control) != 0)
-    {
-        visual_log(VISUAL_LOG_CRITICAL, "pthread_create() failed");
-        return -1;
-    }
-*/
 
 	return 0;
 }
 
 
-int lcdcontrol_cleanup (VisPluginData *plugin)
+void lcdcontrol_cleanup (VisPluginData *plugin)
 {
 	auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
 
-	//visual_plugin_unref (VISUAL_PLUGIN (&priv->pcm));
-
-    //priv->control->Stop();
-
-    /* deinitialize pthreads */
-
-    /* join thread */
-    //pthread_join(priv->id, 0);
-
-    //pthread_attr_destroy(&priv->attr);
-
-    //visual_thread_free(priv->thread);
-
     delete priv->control;
-
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-int lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height)
+void lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -176,23 +135,15 @@ int lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height)
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-int lcdcontrol_resize (VisPluginData *plugin, int width, int height)
+void lcdcontrol_resize (VisPluginData *plugin, int width, int height)
 {
-	//auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
-
     // FIXME: Implement this
-
-    return 0;
 }
 
 int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	//auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
-
     VisEvent ev;
 
     while (visual_event_queue_poll (events, &ev)) {
@@ -209,7 +160,7 @@ int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return 0;
+    return true;
 }
 
 
@@ -228,31 +179,19 @@ VisPalette *lcdcontrol_palette (VisPluginData *plugin)
 	return priv->pal;
 }
 
-int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+void lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
 
-/*
-	visual_audio_get_sample_mixed_simple (audio, &priv->pcm, 2,
-			VISUAL_AUDIO_CHANNEL_LEFT,
-			VISUAL_AUDIO_CHANNEL_RIGHT);
-*/
-/*
-	float *pcmbuf = (float *)visual_buffer_get_data (&priv->pcm);
-
-	uint8_t *buf = (uint8_t *) visual_video_get_pixels (video);
-*/
-
     priv->control->Lock();
     priv->control->Tick();
+
     VisVideo *vid = priv->control->GetVideo();
-    if(vid != NULL)
-    {
+    if(vid) {
         visual_video_scale(video, vid, VISUAL_VIDEO_SCALE_BILINEAR);
     }
-    priv->control->Unlock();
 
-	return 0;
+    priv->control->Unlock();
 }
 
 } // end anonymous namespace

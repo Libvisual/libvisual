@@ -52,13 +52,13 @@ typedef struct {
 	int transparant;
 } GLtestPrivate;
 
-static int lv_gltest_init (VisPluginData *plugin);
-static int lv_gltest_cleanup (VisPluginData *plugin);
-static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_gltest_resize (VisPluginData *plugin, int width, int height);
-static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_gltest_palette (VisPluginData *plugin);
-static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         lv_gltest_init        (VisPluginData *plugin);
+static void        lv_gltest_cleanup     (VisPluginData *plugin);
+static void        lv_gltest_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_gltest_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_gltest_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_gltest_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_gltest_palette     (VisPluginData *plugin);
 
 static void draw_bars (GLtestPrivate *priv);
 static void draw_rectangle (GLtestPrivate *priv, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2);
@@ -70,27 +70,26 @@ const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = lv_gltest_requisition,
-		.palette = lv_gltest_palette,
-		.render = lv_gltest_render,
+		.palette     = lv_gltest_palette,
+		.render      = lv_gltest_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_gltest",
-		.name = "libvisual GL analyser",
-		.author = N_("Original by: Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.1",
-		.about = N_("Libvisual GL analyzer plugin"),
-		.help =  N_("This plugin shows an openGL bar analyzer like the xmms one"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "libvisual GL analyzer",
+		.author   = N_("Original by: Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.1",
+		.about    = N_("Libvisual GL analyzer plugin"),
+		.help     = N_("This plugin shows an openGL bar analyzer like the xmms one"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_gltest_init,
+		.init    = lv_gltest_init,
 		.cleanup = lv_gltest_cleanup,
-		.events = lv_gltest_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.events  = lv_gltest_events,
+		.plugin  = &actor
 	};
 
 	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
@@ -156,19 +155,17 @@ static int lv_gltest_init (VisPluginData *plugin)
 	priv->y_angle = 45.0;
 	priv->z_angle = 0.0;
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_gltest_cleanup (VisPluginData *plugin)
+static void lv_gltest_cleanup (VisPluginData *plugin)
 {
 	GLtestPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_gltest_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -183,12 +180,10 @@ static int lv_gltest_requisition (VisPluginData *plugin, int *width, int *height
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
 
-static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
+static void lv_gltest_resize (VisPluginData *plugin, int width, int height)
 {
 	GLfloat ratio;
 
@@ -202,8 +197,6 @@ static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-
-	return 0;
 }
 
 static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
@@ -235,7 +228,7 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *lv_gltest_palette (VisPluginData *plugin)
@@ -243,7 +236,7 @@ static VisPalette *lv_gltest_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GLtestPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -298,8 +291,6 @@ static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	draw_bars (priv);
 
 	visual_buffer_unref (freq_buffer);
-
-	return 0;
 }
 
 /* Drawing stuff */

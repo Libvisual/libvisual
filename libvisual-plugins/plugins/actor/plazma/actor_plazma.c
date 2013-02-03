@@ -28,39 +28,38 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static int act_plazma_init (VisPluginData *plugin);
-static int act_plazma_cleanup (VisPluginData *plugin);
-static int act_plazma_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_plazma_resize (VisPluginData *plugin, int width, int height);
-static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_plazma_palette (VisPluginData *plugin);
-static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         act_plazma_init        (VisPluginData *plugin);
+static void        act_plazma_cleanup     (VisPluginData *plugin);
+static void        act_plazma_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_plazma_resize      (VisPluginData *plugin, int width, int height);
+static int         act_plazma_events      (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_plazma_palette     (VisPluginData *plugin);
+static void        act_plazma_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = act_plazma_requisition,
-		.palette = act_plazma_palette,
-		.render = act_plazma_render,
+		.palette     = act_plazma_palette,
+		.render      = act_plazma_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "plazma",
-		.name = "Plazma plugin",
-		.author = N_("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.0.1",
-		.about = N_("Libvisual Plazma visual plugin"),
-		.help = N_("This is the libvisual port of the xmms Plazma plugin"),
-		.license = VISUAL_PLUGIN_LICENSE_GPL,
+		.name     = "Plazma plugin",
+		.author   = N_("Original by: Pascal Brochart <p.brochart@libertysurf.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.0.1",
+		.about    = N_("Libvisual Plazma visual plugin"),
+		.help     = N_("This is the libvisual port of the xmms Plazma plugin"),
+		.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-		.init = act_plazma_init,
-		.cleanup = act_plazma_cleanup,
-		.events = act_plazma_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = act_plazma_init,
+		.cleanup  = act_plazma_cleanup,
+		.events   = act_plazma_events,
+		.plugin   = &actor
 	};
 
 	return &info;
@@ -114,10 +113,10 @@ static int act_plazma_init (VisPluginData *plugin)
 	priv->state =			1368;
 	priv->old_state =		1368;
 
-	return 0;
+	return TRUE;
 }
 
-static int act_plazma_cleanup (VisPluginData *plugin)
+static void act_plazma_cleanup (VisPluginData *plugin)
 {
 	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -126,11 +125,9 @@ static int act_plazma_cleanup (VisPluginData *plugin)
 	visual_palette_free (priv->colors);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_plazma_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -151,11 +148,9 @@ static int act_plazma_requisition (VisPluginData *plugin, int *width, int *heigh
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-static int act_plazma_resize (VisPluginData *plugin, int width, int height)
+static void act_plazma_resize (VisPluginData *plugin, int width, int height)
 {
 	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -167,8 +162,6 @@ static int act_plazma_resize (VisPluginData *plugin, int width, int height)
 
 	_plazma_cleanup (priv);
 	_plazma_init (priv);
-
-	return 0;
 }
 
 static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
@@ -216,7 +209,7 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *act_plazma_palette (VisPluginData *plugin)
@@ -226,7 +219,7 @@ static VisPalette *act_plazma_palette (VisPluginData *plugin)
 	return priv->colors;
 }
 
-static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 	VisBuffer *pcmback;
@@ -264,7 +257,5 @@ static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	priv->pixel = visual_video_get_pixels (video);
 
 	_plazma_run (priv);
-
-	return 0;
 }
 

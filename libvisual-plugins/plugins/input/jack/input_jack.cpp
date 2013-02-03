@@ -48,9 +48,9 @@ namespace {
   int  buffer_size_callback (jack_nframes_t nframes, void* arg);
   int  sample_rate_callback (jack_nframes_t nframes, void* arg);
 
-  int inp_jack_init    (VisPluginData* plugin);
-  int inp_jack_cleanup (VisPluginData* plugin);
-  int inp_jack_upload  (VisPluginData* plugin, VisAudio* audio);
+  int  inp_jack_init    (VisPluginData* plugin);
+  void inp_jack_cleanup (VisPluginData* plugin);
+  int  inp_jack_upload  (VisPluginData* plugin, VisAudio* audio);
 
 }
 
@@ -63,18 +63,18 @@ VisPluginInfo const* get_plugin_info ()
 
     static VisPluginInfo info;
 
-    info.type = VISUAL_PLUGIN_TYPE_INPUT;
+    info.type     = VISUAL_PLUGIN_TYPE_INPUT;
     info.plugname = "jack";
-    info.name = "JACK input";
-    info.author = "Dennis Smit <ds@nerds-incorporated.org>";
-    info.version = "0.1";
-    info.about = N_("Jackit capture plugin");
-    info.help =  N_("Use this plugin to capture PCM data from jackd");
-    info.license = VISUAL_PLUGIN_LICENSE_LGPL;
+    info.name     = "JACK input";
+    info.author   = "Dennis Smit <ds@nerds-incorporated.org>";
+    info.version  = "0.1";
+    info.about    = N_("Jackit capture plugin");
+    info.help     =  N_("Use this plugin to capture PCM data from jackd");
+    info.license  = VISUAL_PLUGIN_LICENSE_LGPL;
 
-    info.init = inp_jack_init;
+    info.init    = inp_jack_init;
     info.cleanup = inp_jack_cleanup;
-    info.plugin = VISUAL_OBJECT (&input);
+    info.plugin  = &input;
 
     return &info;
 }
@@ -87,8 +87,6 @@ namespace {
       bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-      visual_return_val_if_fail (plugin != NULL, -1);
-
       JackPrivate* priv = new JackPrivate;
       visual_plugin_set_private (plugin, priv);
 
@@ -100,7 +98,7 @@ namespace {
       priv->client = jack_client_open ("Libvisual", options, &status, JACK_SERVER_NAME);
       if (!priv->client) {
           visual_log (VISUAL_LOG_ERROR, "Cannot connect to JACK server: status = 0x%2.0x", status);
-          return -1;
+          return FALSE;
       }
 
       // Check if server was started
@@ -124,21 +122,21 @@ namespace {
       priv->input_port = jack_port_register (priv->client, "input", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
       if (!priv->input_port) {
           visual_log (VISUAL_LOG_ERROR, "No more JACK input port available");
-          return -1;
+          return FALSE;
       }
 
       // Activate this client. From here on JACK will start invoking
       // our callbacks
       if (jack_activate (priv->client) == 1) {
           visual_log (VISUAL_LOG_ERROR, "Cannot activate client");
-          return -1;
+          return FALSE;
       }
 
       // Look for physical capture ports we can try and connect to
       const char **ports = jack_get_ports (priv->client, NULL, NULL, JackPortIsPhysical | JackPortIsOutput);
       if (!ports) {
           visual_log (VISUAL_LOG_ERROR, "Cannot find any physical capture ports");
-          return -1;
+          return FALSE;
       }
 
       visual_log (VISUAL_LOG_INFO, "Available ports:");
@@ -150,40 +148,32 @@ namespace {
       if (jack_connect (priv->client, ports[0], jack_port_name (priv->input_port))) {
           visual_log (VISUAL_LOG_ERROR, "Cannot connect input port");
           free (ports);
-          return -1;
+          return FALSE;
       }
 
       free (ports);
 
-      return 0;
+      return TRUE;
   }
 
-  int inp_jack_cleanup (VisPluginData* plugin)
+  void inp_jack_cleanup (VisPluginData* plugin)
   {
-      visual_return_val_if_fail (plugin != NULL, -1);
-
       JackPrivate* priv = static_cast<JackPrivate*> (visual_plugin_get_private (plugin));
-      visual_return_val_if_fail (priv != NULL, -1);
 
-      if (priv->client)
+      if (priv->client) {
           jack_client_close (priv->client);
+      }
 
       delete priv;
-
-      return 0;
   }
 
   int inp_jack_upload (VisPluginData* plugin, VisAudio* audio)
   {
-      visual_return_val_if_fail (audio  != NULL, -1);
-      visual_return_val_if_fail (plugin != NULL, -1);
-
       JackPrivate* priv = static_cast<JackPrivate*> (visual_plugin_get_private (plugin));
-      visual_return_val_if_fail (priv != NULL, -1);
 
       if (priv->shutdown) {
           visual_log (VISUAL_LOG_ERROR, "JACK server seems to have shutdown");
-          return -1;
+          return FALSE;
       }
 
       LV::BufferPtr buffer = LV::Buffer::wrap (priv->buffer.data(), priv->buffer.size() * sizeof(int16_t), false);
@@ -192,7 +182,7 @@ namespace {
                     VISUAL_AUDIO_SAMPLE_FORMAT_S16,
                     VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
-      return 0;
+      return TRUE;
   }
 
   int buffer_size_callback (jack_nframes_t nframes, void* arg)

@@ -46,12 +46,12 @@ typedef struct {
 } PixbufPrivate;
 
 static int         act_gdkpixbuf_init        (VisPluginData *plugin);
-static int         act_gdkpixbuf_cleanup     (VisPluginData *plugin);
-static int         act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
-static int         act_gdkpixbuf_resize      (VisPluginData *plugin, int width, int height);
+static void        act_gdkpixbuf_cleanup     (VisPluginData *plugin);
+static void        act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_gdkpixbuf_resize      (VisPluginData *plugin, int width, int height);
 static int         act_gdkpixbuf_events      (VisPluginData *plugin, VisEventQueue *events);
 static VisPalette *act_gdkpixbuf_palette     (VisPluginData *plugin);
-static int         act_gdkpixbuf_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static void        act_gdkpixbuf_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static int  act_gdkpixbuf_load_file    (PixbufPrivate *priv, const char *filename);
 static void act_gdkpixbuf_update_image (PixbufPrivate *priv);
@@ -63,27 +63,26 @@ const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = act_gdkpixbuf_requisition,
-		.palette = act_gdkpixbuf_palette,
-		.render = act_gdkpixbuf_render,
+		.palette     = act_gdkpixbuf_palette,
+		.render      = act_gdkpixbuf_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "gdkpixbuf",
-		.name = "GdkPixbuf image loader",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.0.1",
-		.about = N_("GdkPixbuf image loader for libvisual"),
-		.help = N_("This plugin can be used to show images"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "GdkPixbuf image loader",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "0.0.1",
+		.about    = N_("GdkPixbuf image loader for libvisual"),
+		.help     = N_("This plugin can be used to show images"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = act_gdkpixbuf_init,
-		.cleanup = act_gdkpixbuf_cleanup,
-		.events = act_gdkpixbuf_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = act_gdkpixbuf_init,
+		.cleanup  = act_gdkpixbuf_cleanup,
+		.events   = act_gdkpixbuf_events,
+		.plugin   = &actor
 	};
 
 	return &info;
@@ -135,12 +134,12 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
                                                           NULL),
                                 NULL);
 
-    priv->target = visual_video_new ();
+    priv->target = NULL;
 
-    return 0;
+    return TRUE;
 }
 
-static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
+static void act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
 	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -155,11 +154,9 @@ static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 	}
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw = *width;
 	int reqh = *height;
@@ -172,11 +169,9 @@ static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *he
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
+void act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 {
 	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -186,8 +181,6 @@ int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 	if (priv->source) {
 		act_gdkpixbuf_update_image (priv);
 	}
-
-	return 0;
 }
 
 static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
@@ -256,7 +249,7 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
@@ -264,7 +257,7 @@ static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -281,8 +274,6 @@ static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 		visual_video_blit (video, priv->target, xoff, yoff, FALSE);
 	}
-
-	return 0;
 }
 
 static int act_gdkpixbuf_load_file (PixbufPrivate *priv, const char *filename)

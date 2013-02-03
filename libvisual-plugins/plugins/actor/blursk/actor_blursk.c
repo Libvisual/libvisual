@@ -26,39 +26,38 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static int act_blursk_init (VisPluginData *plugin);
-static int act_blursk_cleanup (VisPluginData *plugin);
-static int act_blursk_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_blursk_resize (VisPluginData *plugin, int width, int height);
-static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_blursk_palette (VisPluginData *plugin);
-static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         act_blursk_init        (VisPluginData *plugin);
+static void        act_blursk_cleanup     (VisPluginData *plugin);
+static void        act_blursk_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_blursk_resize      (VisPluginData *plugin, int width, int height);
+static int         act_blursk_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        act_blursk_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *act_blursk_palette     (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
 {
         static VisActorPlugin actor = {
                 .requisition = act_blursk_requisition,
-                .palette = act_blursk_palette,
-                .render = act_blursk_render,
+                .palette     = act_blursk_palette,
+                .render      = act_blursk_render,
                 .vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
         };
 
         static VisPluginInfo info = {
-                .type = VISUAL_PLUGIN_TYPE_ACTOR,
+                .type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
                 .plugname = "blursk",
-                .name = "Blursk plugin",
-                .author = "Read AUTHORS",
-                .version = "0.0.1",
-                .about = N_("blursk visual plugin"),
-                .help = N_("This is the libvisual port of blursk xmms visualization"),
-                .license = VISUAL_PLUGIN_LICENSE_GPL,
+                .name     = "Blursk plugin",
+                .author   = "Read AUTHORS",
+                .version  = "0.0.1",
+                .about    = N_("blursk visual plugin"),
+                .help     = N_("This is the libvisual port of blursk xmms visualization"),
+                .license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-                .init = act_blursk_init,
-                .cleanup = act_blursk_cleanup,
-                .events = act_blursk_events,
-
-                .plugin = VISUAL_OBJECT (&actor)
+                .init     = act_blursk_init,
+                .cleanup  = act_blursk_cleanup,
+                .events   = act_blursk_events,
+                .plugin   = &actor
         };
 
         return &info;
@@ -182,11 +181,11 @@ static int act_blursk_init (VisPluginData *plugin) {
 
     __blursk_init (priv);
 
-    return 0;
+    return TRUE;
 }
 
-static int act_blursk_cleanup (VisPluginData *plugin) {
-    return 0;
+static void act_blursk_cleanup (VisPluginData *plugin)
+{
     BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
     __blursk_cleanup (priv);
@@ -196,11 +195,10 @@ static int act_blursk_cleanup (VisPluginData *plugin) {
     visual_buffer_unref (priv->pcmbuf);
 
     visual_mem_free (priv);
-
-    return 0;
 }
 
-static int act_blursk_requisition (VisPluginData *plugin, int *width, int *height) {
+static void act_blursk_requisition (VisPluginData *plugin, int *width, int *height)
+{
         int reqw, reqh;
 
         reqw = *width;
@@ -220,11 +218,9 @@ static int act_blursk_requisition (VisPluginData *plugin, int *width, int *heigh
 
         *width = reqw;
         *height = reqh;
-
-        return 0;
 }
 
-static int act_blursk_resize (VisPluginData *plugin, int width, int height)
+static void act_blursk_resize (VisPluginData *plugin, int width, int height)
 {
         BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -233,8 +229,6 @@ static int act_blursk_resize (VisPluginData *plugin, int width, int height)
 
         config.height = height;
         config.width = width;
-
-        return 0;
 }
 
 static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events)
@@ -288,8 +282,7 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events)
     if(size_update)
         img_resize(priv, config.width, config.height);
 
-
-    return 0;
+    return TRUE;
 }
 
 static VisPalette *act_blursk_palette (VisPluginData *plugin)
@@ -299,7 +292,7 @@ static VisPalette *act_blursk_palette (VisPluginData *plugin)
     return priv->pal;
 }
 
-static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
     BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -321,9 +314,4 @@ static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *
         __blursk_render_pcm (priv, tpcm);
 
         visual_mem_copy (visual_video_get_pixels (video), priv->rgb_buf, visual_video_get_size (video));
-
-
-    return 0;
 }
-
-

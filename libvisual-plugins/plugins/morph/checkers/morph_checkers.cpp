@@ -27,18 +27,18 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 namespace {
 
-  unsigned int const n_tile_rows = 4;
-  unsigned int const n_tile_cols = 4;
-
   struct CheckerPrivate
   {
       LV::Timer timer;
       bool      flip;
   };
 
-  int lv_morph_checkers_init    (VisPluginData *plugin);
-  int lv_morph_checkers_cleanup (VisPluginData *plugin);
-  int lv_morph_checkers_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+  int  lv_morph_checkers_init    (VisPluginData *plugin);
+  void lv_morph_checkers_cleanup (VisPluginData *plugin);
+  void lv_morph_checkers_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+
+  unsigned int const n_tile_rows = 4;
+  unsigned int const n_tile_cols = 4;
 
 } // anonymous namespace
 
@@ -85,19 +85,17 @@ namespace {
 
       priv->flip = true;
 
-      return 0;
+      return TRUE;
   }
 
-  int lv_morph_checkers_cleanup (VisPluginData *plugin)
+  void lv_morph_checkers_cleanup (VisPluginData *plugin)
   {
       auto priv = static_cast<CheckerPrivate*> (visual_plugin_get_private (plugin));
 
       delete priv;
-
-      return 0;
   }
 
-  int lv_morph_checkers_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+  void lv_morph_checkers_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
   {
       auto priv = static_cast<CheckerPrivate*> (visual_plugin_get_private (plugin));
 
@@ -125,8 +123,6 @@ namespace {
               dest->blit (tile, x, y, false);
           }
       }
-
-      return 0;
   }
 
 } // anonymous namespace

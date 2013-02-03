@@ -45,14 +45,14 @@ typedef struct {
 	int loaded;
 } alsaPrivate;
 
-static int inp_alsa_init (VisPluginData *plugin);
-static int inp_alsa_cleanup (VisPluginData *plugin);
-static int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio);
+static int  inp_alsa_init    (VisPluginData *plugin);
+static void inp_alsa_cleanup (VisPluginData *plugin);
+static int  inp_alsa_upload  (VisPluginData *plugin, VisAudio *audio);
 
-static const int  inp_alsa_var_btmul      = sizeof (short);
-static const char *inp_alsa_var_cdevice   = "hw:0,0";
-static const int  inp_alsa_var_samplerate = 44100;
-static const int  inp_alsa_var_channels   = 2;
+static const int   inp_alsa_var_btmul      = sizeof (short);
+static const char *inp_alsa_var_cdevice    = "hw:0,0";
+static const int   inp_alsa_var_samplerate = 44100;
+static const int   inp_alsa_var_channels   = 2;
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -61,20 +61,19 @@ const VisPluginInfo *get_plugin_info (void)
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_INPUT,
+		.type     = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "alsa",
-		.name = "alsa",
-		.author = "Vitaly V. Bursov <vitalyvb@urk.net>",
-		.version = "0.1",
-		.about = N_("ALSA capture plugin"),
-		.help = N_("Use this plugin to capture PCM data from the ALSA record device"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "alsa",
+		.author   = "Vitaly V. Bursov <vitalyvb@urk.net>",
+		.version  = "0.1",
+		.about    = N_("ALSA capture plugin"),
+		.help     = N_("Use this plugin to capture PCM data from the ALSA record device"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = inp_alsa_init,
+		.init    = inp_alsa_init,
 		.cleanup = inp_alsa_cleanup,
-
-		.plugin = VISUAL_OBJECT (&input)
+		.plugin  = &input
 	};
 
 	return &info;
@@ -94,35 +93,31 @@ int inp_alsa_init (VisPluginData *plugin)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	visual_return_val_if_fail(plugin != NULL, -1);
-
 	priv = visual_mem_new0 (alsaPrivate, 1);
-	visual_return_val_if_fail(priv != NULL, -1);
-
 	visual_plugin_set_private (plugin, priv);
 
 	if ((err = snd_pcm_open(&priv->chandle, inp_alsa_var_cdevice,
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
 			    "Record open error: %s", snd_strerror(err));
-		return -1;
+		return FALSE;
 	}
 
 	snd_pcm_hw_params_malloc(&hwparams);
-	visual_return_val_if_fail(hwparams != NULL, -1);
+	visual_return_val_if_fail(hwparams != NULL, FALSE);
 
 	if (snd_pcm_hw_params_any(priv->chandle, hwparams) < 0) {
 		visual_log(VISUAL_LOG_ERROR,
 			   "Cannot configure this PCM device");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 	if (snd_pcm_hw_params_set_access(priv->chandle, hwparams,
 					 SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
 		visual_log(VISUAL_LOG_ERROR, "Error setting access");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 #if VISUAL_LITTLE_ENDIAN == 1
@@ -134,7 +129,7 @@ int inp_alsa_init (VisPluginData *plugin)
 #endif
 		visual_log(VISUAL_LOG_ERROR, "Error setting format");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 	exact_rate = rate;
@@ -143,7 +138,7 @@ int inp_alsa_init (VisPluginData *plugin)
 					    &exact_rate, &dir) < 0) {
 		visual_log(VISUAL_LOG_ERROR, "Error setting rate");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 	if (exact_rate != rate) {
 		visual_log(VISUAL_LOG_INFO,
@@ -154,9 +149,9 @@ int inp_alsa_init (VisPluginData *plugin)
 
 	if (snd_pcm_hw_params_set_channels(priv->chandle, hwparams,
 					   inp_alsa_var_channels) < 0) {
-	        visual_log(VISUAL_LOG_ERROR, "Error setting channels");
+		visual_log(VISUAL_LOG_ERROR, "Error setting channels");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 	/* Setup a large buffer */
@@ -165,62 +160,53 @@ int inp_alsa_init (VisPluginData *plugin)
 	if (snd_pcm_hw_params_set_period_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
 		visual_log(VISUAL_LOG_ERROR, "Error setting period time");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 	tmp = 1000000*4;
 	if (snd_pcm_hw_params_set_buffer_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
 		visual_log(VISUAL_LOG_ERROR, "Error setting buffer time");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 
 	if (snd_pcm_hw_params(priv->chandle, hwparams) < 0) {
 		visual_log(VISUAL_LOG_ERROR, "Error setting HW params");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 	if (snd_pcm_prepare(priv->chandle) < 0) {
 		visual_log(VISUAL_LOG_ERROR, "Failed to prepare interface");
 		snd_pcm_hw_params_free(hwparams);
-		return(-1);
+		return FALSE;
 	}
 
 	snd_pcm_hw_params_free(hwparams);
 
-	priv->loaded = 1;
+	priv->loaded = TRUE;
 
-	return 0;
+	return TRUE;
 }
 
-int inp_alsa_cleanup (VisPluginData *plugin)
+void inp_alsa_cleanup (VisPluginData *plugin)
 {
-	alsaPrivate *priv = NULL;
+	alsaPrivate *priv = visual_plugin_get_private (plugin);
 
-	visual_return_val_if_fail(plugin != NULL, -1);
-	priv = visual_plugin_get_private (plugin);
-	visual_return_val_if_fail(priv != NULL, -1);
-
-	if (priv->loaded == 1)
+	if (priv->loaded) {
 		snd_pcm_close(priv->chandle);
+    }
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
 int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 {
-	int16_t data[PCM_BUF_SIZE];
-	alsaPrivate *priv = NULL;
-	int rcnt;
+	alsaPrivate *priv = visual_plugin_get_private (plugin);
 
-	visual_return_val_if_fail(audio != NULL, -1);
-	visual_return_val_if_fail(plugin != NULL, -1);
-	priv = visual_plugin_get_private (plugin);
-	visual_return_val_if_fail(priv != NULL, -1);
+	int16_t data[PCM_BUF_SIZE];
+	int rcnt;
 
 	do {
 		rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE / 2);
@@ -243,12 +229,11 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 				if (snd_pcm_prepare(priv->chandle) < 0) {
 					visual_log(VISUAL_LOG_ERROR,
 							"Failed to prepare interface");
-					return(-1);
+					return FALSE;
 				}
 			}
 		}
 	} while (rcnt > 0);
 
-	return 0;
+	return TRUE;
 }
-

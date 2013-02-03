@@ -32,39 +32,38 @@ typedef struct {
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
 
-static int lv_goom_init (VisPluginData *plugin);
-static int lv_goom_cleanup (VisPluginData *plugin);
-static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_goom_resize (VisPluginData *plugin, int width, int height);
-static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_goom_palette (VisPluginData *plugin);
-static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         lv_goom_init        (VisPluginData *plugin);
+static void        lv_goom_cleanup     (VisPluginData *plugin);
+static void        lv_goom_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_goom_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_goom_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_goom_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_goom_palette     (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = lv_goom_requisition,
-		.palette = lv_goom_palette,
-		.render = lv_goom_render,
+		.palette     = lv_goom_palette,
+		.render      = lv_goom_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "goom2k4",
-		.name = "libvisual goom2k4 plugin",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>, goom2k4 by: Jean-Christophe Hoelt <jeko@ios-software.com>",
-		.version = "0.1",
-		.about = N_("Libvisual goom2k4 plugin"),
-		.help = N_("This plugin adds support for the supercool goom2k4 plugin that is simply awesome"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "libvisual goom2k4 plugin",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>, goom2k4 by: Jean-Christophe Hoelt <jeko@ios-software.com>",
+		.version  = "0.1",
+		.about    = N_("Libvisual goom2k4 plugin"),
+		.help     = N_("This plugin adds support for the supercool goom2k4 plugin that is simply awesome"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_goom_init,
+		.init    = lv_goom_init,
 		.cleanup = lv_goom_cleanup,
-		.events = lv_goom_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.events  = lv_goom_events,
+		.plugin  = &actor
 	};
 
 	return &info;
@@ -86,10 +85,10 @@ static int lv_goom_init (VisPluginData *plugin)
 	priv->pcmbuf1 = visual_buffer_new ();
 	priv->pcmbuf2 = visual_buffer_new ();
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_goom_cleanup (VisPluginData *plugin)
+static void lv_goom_cleanup (VisPluginData *plugin)
 {
 	GoomPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -100,24 +99,18 @@ static int lv_goom_cleanup (VisPluginData *plugin)
 	visual_buffer_unref (priv->pcmbuf2);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	/* We don't change the value, we can handle anything */
-
-	return 0;
 }
 
-static int lv_goom_resize (VisPluginData *plugin, int width, int height)
+static void lv_goom_resize (VisPluginData *plugin, int width, int height)
 {
 	GoomPrivate *priv = visual_plugin_get_private (plugin);
 
 	goom_set_resolution (priv->goominfo, width, height);
-
-	return 0;
 }
 
 static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
@@ -135,7 +128,7 @@ static int lv_goom_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *lv_goom_palette (VisPluginData *plugin)
@@ -143,7 +136,7 @@ static VisPalette *lv_goom_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GoomPrivate *priv = visual_plugin_get_private (plugin);
 	VisSongInfo *songinfo;
@@ -186,7 +179,5 @@ static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
 	                       visual_video_get_pitch (video),
 	                       visual_video_get_pitch (video),
 	                       visual_video_get_height (video));
-
-	return 0;
 }
 

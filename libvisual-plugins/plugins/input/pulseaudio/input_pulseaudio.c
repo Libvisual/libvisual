@@ -37,10 +37,10 @@ typedef struct {
     int16_t pcm_data[SAMPLES*2];
 } pulseaudio_priv_t;
 
-static int inp_pulseaudio_init( VisPluginData *plugin );
-static int inp_pulseaudio_cleanup( VisPluginData *plugin );
-static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio );
-static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events);
+static int  inp_pulseaudio_init    (VisPluginData *plugin);
+static void inp_pulseaudio_cleanup (VisPluginData *plugin);
+static int  inp_pulseaudio_upload  (VisPluginData *plugin, VisAudio *audio);
+static int  inp_pulseaudio_events  (VisPluginData *plugin, VisEventQueue *events);
 
 const VisPluginInfo *get_plugin_info( void ) {
     static VisInputPlugin input = {
@@ -48,20 +48,20 @@ const VisPluginInfo *get_plugin_info( void ) {
     };
 
     static VisPluginInfo info = {
-        .type = VISUAL_PLUGIN_TYPE_INPUT,
+        .type     = VISUAL_PLUGIN_TYPE_INPUT,
+
         .plugname = "pulseaudio",
-        .name = "Pulseaudio input plugin",
-        .author = "Scott Sibley <scott@starlon.net>",
-        .version = "1.0",
-        .about = "Use input data from pulseaudio",
-        .help = "",
-        .license = VISUAL_PLUGIN_LICENSE_GPL,
+        .name     = "Pulseaudio input plugin",
+        .author   = "Scott Sibley <scott@starlon.net>",
+        .version  = "1.0",
+        .about    = "Use input data from pulseaudio",
+        .help     = "",
+        .license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-        .init = inp_pulseaudio_init,
-        .cleanup = inp_pulseaudio_cleanup,
-        .events = inp_pulseaudio_events,
-
-        .plugin = VISUAL_OBJECT(&input)
+        .init     = inp_pulseaudio_init,
+        .cleanup  = inp_pulseaudio_cleanup,
+        .events   = inp_pulseaudio_events,
+        .plugin   = &input
     };
 
     return &info;
@@ -96,26 +96,19 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 
     if( priv->simple == NULL ) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
-        return -VISUAL_ERROR_GENERAL;
+        return FALSE;
     }
 
-    return VISUAL_OK;
+    return TRUE;
 }
 
-static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
-    pulseaudio_priv_t *priv = NULL;
-
-    visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
-
-    priv = visual_plugin_get_private(plugin);
-
-    visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
+static void inp_pulseaudio_cleanup( VisPluginData *plugin )
+{
+    pulseaudio_priv_t *priv = visual_plugin_get_private(plugin);
 
     pa_simple_free(priv->simple);
 
     visual_mem_free (priv);
-
-    return VISUAL_OK;
 }
 
 static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
@@ -159,21 +152,17 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return 0;
+    return TRUE;
 }
 int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
-    visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
-    visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
-
     pulseaudio_priv_t *priv = visual_plugin_get_private(plugin);
-    visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
     int error;
 
     if (pa_simple_read(priv->simple, priv->pcm_data, sizeof(priv->pcm_data), &error) < 0) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
-        return -1;
+        return FALSE;
     }
 
     VisBuffer *visbuffer = visual_buffer_new_wrap_data (priv->pcm_data, sizeof(priv->pcm_data), FALSE);
@@ -185,6 +174,6 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 
     visual_buffer_unref (visbuffer);
 
-    return 0;
+    return TRUE;
 }
 

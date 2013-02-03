@@ -36,20 +36,20 @@ typedef struct {
 	uint8_t replacetable[256];
 } FlashPrivate;
 
+static int  lv_morph_flash_init    (VisPluginData *plugin);
+static void lv_morph_flash_cleanup (VisPluginData *plugin);
+static void lv_morph_flash_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static void lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
+
 static void replacetable_generate_24 (FlashPrivate *priv, float progress);
 static void flash_8 (FlashPrivate *priv, float progress, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 static void flash_24 (FlashPrivate *priv, float progress, VisVideo *dest, VisVideo *src1, VisVideo *src2);
-
-static int lv_morph_flash_init (VisPluginData *plugin);
-static int lv_morph_flash_cleanup (VisPluginData *plugin);
-static int lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
-static int lv_morph_flash_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisMorphPlugin morph = {
 		.palette = lv_morph_flash_palette,
-		.apply = lv_morph_flash_apply,
+		.apply   = lv_morph_flash_apply,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT  |
 			VISUAL_VIDEO_DEPTH_16BIT |
@@ -61,17 +61,16 @@ const VisPluginInfo *get_plugin_info (void)
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "flash",
-		.name = "flash morph",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.1",
-		.about = N_("An flash in and out morph plugin"),
-		.help = N_("This morph plugin morphs between two video sources using a bright flash"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "flash morph",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "0.1",
+		.about    = N_("An flash in and out morph plugin"),
+		.help     = N_("This morph plugin morphs between two video sources using a bright flash"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_morph_flash_init,
-		.cleanup = lv_morph_flash_cleanup,
-
-		.plugin = VISUAL_OBJECT (&morph)
+		.init     = lv_morph_flash_init,
+		.cleanup  = lv_morph_flash_cleanup,
+		.plugin   = &morph
 	};
 
 	return &info;
@@ -99,21 +98,19 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 		whitepal_colors[i].b = 0xff;
 	}
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_morph_flash_cleanup (VisPluginData *plugin)
+static void lv_morph_flash_cleanup (VisPluginData *plugin)
 {
 	FlashPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_palette_free (priv->whitepal);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
+static void lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
 {
 	FlashPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -121,17 +118,15 @@ static int lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAud
 	VisPalette *src2_pal = visual_video_get_palette (src2);
 
 	if (!src1_pal || !src2_pal)
-		return 0;
+		return;
 
 	if (progress < 0.5)
 		visual_palette_blend (pal, src1_pal, priv->whitepal, progress * 2);
 	else
 		visual_palette_blend (pal, priv->whitepal, src2_pal, (progress - 0.5) * 2);
-
-	return 0;
 }
 
-static int lv_morph_flash_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void lv_morph_flash_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	FlashPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -157,8 +152,6 @@ static int lv_morph_flash_apply (VisPluginData *plugin, float progress, VisAudio
 		default:
 			break;
 	}
-
-	return 0;
 }
 
 static void replacetable_generate_24 (FlashPrivate *priv, float progress)

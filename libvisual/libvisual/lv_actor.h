@@ -186,40 +186,37 @@ struct _VisActor;
 #define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
 
 /**
- * An actor plugin needs this signature for the requisition function. The requisition function
- * is used to determine the size required by the plugin for a given width/height value.
+ * Function signature and type of the Actor requisition() method.
  *
- * @arg plugin Pointer to the VisPluginData instance structure.
- * @arg width Pointer to an int containing the width requested, will be altered to the nearest
- * 	supported width.
- * @arg height Pointer to an int containing the height requested, will be altered to the nearest
- * 	supported height.
+ * The requisition() method is called to query and configure the preferred rendering dimensions.
  *
- * @return 0 on succes -1 on error.
+ * @param         plugin plugin object
+ * @param[in,out] width  Suggested width
+ * @param[in,out] height Suggested height
  */
-typedef int (*VisPluginActorRequisitionFunc)(VisPluginData *plugin, int *width, int *height);
+typedef void (*VisPluginActorRequisitionFunc)(VisPluginData *plugin, int *width, int *height);
 
 /**
- * An actor plugin needs this signature for the palette function. The palette function
- * is used to retrieve the desired palette from the plugin.
+ * Function signature and type of the Actor palette() method.
  *
- * @arg plugin Pointer to the VisPluginData instance structure.
+ * The palette() method is called to obtain the colour palette used for 8-bit rendering modes.
  *
- * @return Pointer to the VisPalette used by the plugin, this should be a VisPalette with 256
- *	VisColor entries, NULL is also allowed to be returned.
+ * @param plugin Plugin object
+ *
+ * @return Color palette used by Actor, or NULL
  */
 typedef VisPalette *(*VisPluginActorPaletteFunc)(VisPluginData *plugin);
 
 /**
- * Function type and signature for the actor render() method.
+ * Function type and signature of the actor render() method.
  *
- * @param plugin Plugin
+ * The render() method is called to render the actor.
+ *
+ * @param plugin Plugin object
  * @param video  Video to render to
  * @param audio  Audio data to visualise
- *
- * @return 0 on succes -1 on error.
  */
-typedef int (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+typedef void (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 /**
  * Actor plugin class.

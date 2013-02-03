@@ -124,7 +124,7 @@ LV_API const char *visual_error_to_string (int err);
 
 LV_END_DECLS
 
-#if __cplusplus
+#ifdef __cplusplus
 
 #include <string>
 #include <stdexcept>

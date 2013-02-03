@@ -28,39 +28,38 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static int act_jakdaw_init (VisPluginData *plugin);
-static int act_jakdaw_cleanup (VisPluginData *plugin);
-static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_jakdaw_resize (VisPluginData *plugin, int width, int height);
-static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_jakdaw_palette (VisPluginData *plugin);
-static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         act_jakdaw_init        (VisPluginData *plugin);
+static void        act_jakdaw_cleanup     (VisPluginData *plugin);
+static void        act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_jakdaw_resize      (VisPluginData *plugin, int width, int height);
+static int         act_jakdaw_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        act_jakdaw_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *act_jakdaw_palette     (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = act_jakdaw_requisition,
-		.palette = act_jakdaw_palette,
-		.render = act_jakdaw_render,
+		.palette     = act_jakdaw_palette,
+		.render      = act_jakdaw_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_32BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "jakdaw",
-		.name = "Jakdaw plugin",
-		.author = N_("Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.0.1",
-		.about = N_("jakdaw visual plugin"),
-		.help = N_("This is the libvisual port of the xmms Jakdaw plugin"),
-		.license = VISUAL_PLUGIN_LICENSE_GPL,
+		.name     = "Jakdaw plugin",
+		.author   = N_("Original by: Christopher Wilson <Jakdaw@usa.net>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.0.1",
+		.about    = N_("jakdaw visual plugin"),
+		.help     = N_("This is the libvisual port of the xmms Jakdaw plugin"),
+		.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-		.init = act_jakdaw_init,
-		.cleanup = act_jakdaw_cleanup,
-		.events = act_jakdaw_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = act_jakdaw_init,
+		.cleanup  = act_jakdaw_cleanup,
+		.events   = act_jakdaw_events,
+		.plugin   = &actor
 	};
 
 	return &info;
@@ -132,10 +131,10 @@ static int act_jakdaw_init (VisPluginData *plugin)
     priv->pcmbuf = visual_buffer_new_allocate (512 * sizeof (float));
     priv->freqbuf = visual_buffer_new_allocate (256 * sizeof (float));
 
-    return 0;
+    return TRUE;
 }
 
-static int act_jakdaw_cleanup (VisPluginData *plugin)
+static void act_jakdaw_cleanup (VisPluginData *plugin)
 {
 	JakdawPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -145,11 +144,9 @@ static int act_jakdaw_cleanup (VisPluginData *plugin)
 	visual_buffer_unref (priv->freqbuf);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_jakdaw_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -164,11 +161,9 @@ static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *heigh
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-static int act_jakdaw_resize (VisPluginData *plugin, int width, int height)
+static void act_jakdaw_resize (VisPluginData *plugin, int width, int height)
 {
 	JakdawPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -176,8 +171,6 @@ static int act_jakdaw_resize (VisPluginData *plugin, int width, int height)
 	priv->yres = height;
 
 	_jakdaw_feedback_reset (priv, width, height);
-
-	return 0;
 }
 
 static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
@@ -228,7 +221,7 @@ static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return 0;
+    return TRUE;
 }
 
 static VisPalette *act_jakdaw_palette (VisPluginData *plugin)
@@ -236,7 +229,7 @@ static VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	JakdawPrivate *priv = visual_plugin_get_private (plugin);
 	uint32_t *vscr = visual_video_get_pixels (video);
@@ -251,7 +244,5 @@ static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	_jakdaw_plotter_draw (priv,
 			visual_buffer_get_data (priv->pcmbuf),
 			visual_buffer_get_data (priv->freqbuf), vscr);
-
-	return 0;
 }
 

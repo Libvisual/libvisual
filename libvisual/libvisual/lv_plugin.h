@@ -100,10 +100,8 @@ typedef int (*VisPluginInitFunc)(VisPluginData *plugin);
  * The cleanup() method is called to clean up the plugin state and free any allocated resources.
  *
  * @param plugin Plugin object
- *
- * @return TRUE on success, FALSE on failure
  */
-typedef int (*VisPluginCleanupFunc)(VisPluginData *plugin);
+typedef void (*VisPluginCleanupFunc)(VisPluginData *plugin);
 
 /**
  * Function signature and type for the Plugin events() method.

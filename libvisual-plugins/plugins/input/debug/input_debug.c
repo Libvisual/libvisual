@@ -43,10 +43,10 @@ typedef struct {
 	VisTime *last_upload_time;
 } DebugPriv;
 
-static int inp_debug_init (VisPluginData *plugin);
-static int inp_debug_cleanup (VisPluginData *plugin);
-static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events);
-static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio);
+static int  inp_debug_init    (VisPluginData *plugin);
+static void inp_debug_cleanup (VisPluginData *plugin);
+static int  inp_debug_events  (VisPluginData *plugin, VisEventQueue *events);
+static int  inp_debug_upload  (VisPluginData *plugin, VisAudio *audio);
 
 static void change_param (VisPluginData *plugin, VisParam *param);
 static void setup_wave (DebugPriv *priv);
@@ -71,7 +71,7 @@ const VisPluginInfo *get_plugin_info (void)
 		.init     = inp_debug_init,
 		.cleanup  = inp_debug_cleanup,
 		.events   = inp_debug_events,
-		.plugin   = VISUAL_OBJECT (&input)
+		.plugin   = &input
 	};
 
 	return &info;
@@ -105,17 +105,15 @@ static int inp_debug_init (VisPluginData *plugin)
 
 	setup_wave (priv);
 
-	return 0;
+	return TRUE;
 }
 
-static int inp_debug_cleanup (VisPluginData *plugin)
+static void inp_debug_cleanup (VisPluginData *plugin)
 {
 	DebugPriv *priv = visual_plugin_get_private (plugin);
 
 	visual_time_free (priv->last_upload_time);
 	visual_mem_free (priv);
-
-	return 0;
 }
 
 static void setup_wave (DebugPriv *priv)
@@ -143,7 +141,7 @@ static int inp_debug_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
@@ -198,5 +196,5 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 
 	visual_buffer_unref (buffer);
 
-	return 0;
+    return TRUE;
 }

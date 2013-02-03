@@ -139,13 +139,12 @@ struct _VisInput;
 #define VISUAL_INPUT_PLUGIN(obj) (VISUAL_CHECK_CAST ((obj), VisInputPlugin))
 
 /**
- * Type defination that should be used in plugins to set the plugin type for an input  plugin.
+ * Input plugin type.
  */
-
 typedef struct _VisInputPlugin VisInputPlugin;
 
 /**
- * Function type and signature for input custom PCM data callbacks.
+ * Function signature and type of input custom PCM data callbacks.
  *
  * @see visual_input_set_callback()
  *
@@ -156,7 +155,9 @@ typedef struct _VisInputPlugin VisInputPlugin;
 typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void *user_data);
 
 /**
- * Function type and siganture of VisInput upload() method.
+ * Function signature and type of the Input upload() method.
+ *
+ * The upload() method is called to produce audio samples for rendering by Actors.
  *
  * @param plugin Plugin object
  * @param audio  Audio object to upload data to

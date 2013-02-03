@@ -34,13 +34,13 @@ typedef struct {
     unsigned int samples_per_frame;
 } LVDumpPrivate;
 
-static int lv_dump_init (VisPluginData *plugin);
-static int lv_dump_cleanup (VisPluginData *plugin);
-static int lv_dump_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_dump_resize (VisPluginData *plugin, int width, int height);
-static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-static int lv_dump_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_dump_palette (VisPluginData *plugin);
+static int         lv_dump_init        (VisPluginData *plugin);
+static void        lv_dump_cleanup     (VisPluginData *plugin);
+static void        lv_dump_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_dump_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_dump_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_dump_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_dump_palette     (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -52,7 +52,7 @@ const VisPluginInfo *get_plugin_info (void)
     };
 
     static VisPluginInfo info = {
-        .type = VISUAL_PLUGIN_TYPE_ACTOR,
+        .type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
         .plugname = "lv_dump",
         .name     = "libvisual PCM data dump",
@@ -92,34 +92,29 @@ static int lv_dump_init (VisPluginData *plugin)
     /* Default values */
     priv->samples_per_frame = SAMPLES_PER_FRAME_DEFAULT;
 
-    return 0;
+    return TRUE;
 }
 
-static int lv_dump_cleanup (VisPluginData *plugin)
+static void lv_dump_cleanup (VisPluginData *plugin)
 {
     LVDumpPrivate *priv = visual_plugin_get_private (plugin);
 
     visual_mem_free (priv);
-
-    return 0;
 }
 
-static int lv_dump_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_dump_requisition (VisPluginData *plugin, int *width, int *height)
 {
     LVDumpPrivate *priv = visual_plugin_get_private (plugin);
 
     /* We will dump all data into a single row, 1 float sample per 32-bit pixel */
     *width  = priv->samples_per_frame;
     *height = 1;
-
-    return 0;
 }
 
-static int lv_dump_resize (VisPluginData *plugin, int width, int height)
+static void lv_dump_resize (VisPluginData *plugin, int width, int height)
 {
     /* Nothing to resize. We will pad, clip and wrap the dump
      * according to the given dimensions */
-    return 0;
 }
 
 static int lv_dump_events (VisPluginData *plugin, VisEventQueue *events)
@@ -147,7 +142,7 @@ static int lv_dump_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return 0;
+    return TRUE;
 }
 
 static VisPalette *lv_dump_palette (VisPluginData *plugin)
@@ -155,7 +150,7 @@ static VisPalette *lv_dump_palette (VisPluginData *plugin)
     return NULL;
 }
 
-static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
     LVDumpPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -165,8 +160,8 @@ static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
         VISUAL_AUDIO_CHANNEL_LEFT,
         VISUAL_AUDIO_CHANNEL_RIGHT);
 
-    int width  = visual_video_get_width(video);
-    int height = visual_video_get_height(video);
+    int width  = visual_video_get_width (video);
+    int height = visual_video_get_height (video);
 
     unsigned int samples_to_render = MIN(width * height, priv->samples_per_frame);
 
@@ -177,6 +172,4 @@ static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *aud
                      samples_to_render * sizeof(float));
 
     visual_buffer_unref (pcm_buffer);
-
-    return 0;
 }

@@ -37,43 +37,41 @@ typedef struct {
     GMutex     *mutex;
 } GStreamerPrivate;
 
+static int         act_gstreamer_init        (VisPluginData *plugin);
+static void        act_gstreamer_cleanup     (VisPluginData *plugin);
+static void        act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_gstreamer_resize      (VisPluginData *plugin, int width, int height);
+static int         act_gstreamer_events      (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_gstreamer_palette     (VisPluginData *plugin);
+static void        act_gstreamer_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static void handle_sink_data   (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate *data);
 static void handle_bus_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv);
-
-static int act_gstreamer_init (VisPluginData *plugin);
-static int act_gstreamer_cleanup (VisPluginData *plugin);
-static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_gstreamer_resize (VisPluginData *plugin, int width, int height);
-static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_gstreamer_palette (VisPluginData *plugin);
-static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 const VisPluginInfo *get_plugin_info (void)
 {
     static VisActorPlugin actor = {
         .requisition = act_gstreamer_requisition,
-        .palette = act_gstreamer_palette,
-        .render = act_gstreamer_render,
+        .palette     = act_gstreamer_palette,
+        .render      = act_gstreamer_render,
         .vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
     };
 
     static VisPluginInfo info = {
-        .type = VISUAL_PLUGIN_TYPE_ACTOR,
+        .type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
         .plugname = "gstreamer",
-        .name = "libvisual gstreamer",
-        .author = N_("Dennis Smit  <synap@yourbase.nl>"),
-        .version = "0.1",
-        .about = N_("Libvisual gstreamer plugin"),
-        .help = N_("Capable of using gstreamer to play video, or do effects using the gstreamer pipeline"),
-        .license = VISUAL_PLUGIN_LICENSE_LGPL,
+        .name     = "libvisual gstreamer",
+        .author   = N_("Dennis Smit  <synap@yourbase.nl>"),
+        .version  = "0.1",
+        .about    = N_("Libvisual gstreamer plugin"),
+        .help     = N_("Capable of using gstreamer to play video, or do effects using the gstreamer pipeline"),
+        .license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-        .init = act_gstreamer_init,
-        .cleanup = act_gstreamer_cleanup,
-        .events = act_gstreamer_events,
-
-        .plugin = VISUAL_OBJECT (&actor)
+        .init     = act_gstreamer_init,
+        .cleanup  = act_gstreamer_cleanup,
+        .events   = act_gstreamer_events,
+        .plugin   = &actor
     };
 
     return &info;
@@ -104,7 +102,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
     if (!priv->pipeline) {
         visual_log (VISUAL_LOG_ERROR, "Failed to create pipeline: %s", error->message);
         g_error_free (error);
-        return -1;
+        return FALSE;
     }
 
     priv->capsfilter = gst_bin_get_by_name (GST_BIN (priv->pipeline), "capsfilter");
@@ -132,7 +130,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
     GstStateChangeReturn status = gst_element_get_state (priv->pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
     if (status != GST_STATE_CHANGE_SUCCESS) {
         visual_log (VISUAL_LOG_ERROR, "Failed to ready pipeline");
-        return -1;
+        return FALSE;
     }
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
@@ -141,10 +139,10 @@ static int act_gstreamer_init (VisPluginData *plugin)
 
     priv->glib_main_loop = g_main_loop_new (NULL, FALSE);
 
-    return 0;
+    return TRUE;
 }
 
-static int act_gstreamer_cleanup (VisPluginData *plugin)
+static void act_gstreamer_cleanup (VisPluginData *plugin)
 {
     GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -174,11 +172,9 @@ static int act_gstreamer_cleanup (VisPluginData *plugin)
     }
 
     visual_mem_free (priv);
-
-    return 0;
 }
 
-static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
 {
     GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -191,12 +187,10 @@ static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *he
                        "height", height,
                        NULL);
     gst_caps_unref (caps);
-
-    return 0;
 }
 
 
-static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
+static void act_gstreamer_resize (VisPluginData *plugin, int width, int height)
 {
     GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -208,8 +202,6 @@ static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
                                          NULL);
     g_object_set (priv->capsfilter, "caps", caps, NULL);
     gst_caps_unref (caps);
-
-    return 0;
 }
 
 static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
@@ -227,7 +219,7 @@ static int act_gstreamer_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return 0;
+    return TRUE;
 }
 
 static VisPalette *act_gstreamer_palette (VisPluginData *plugin)
@@ -235,7 +227,7 @@ static VisPalette *act_gstreamer_palette (VisPluginData *plugin)
     return NULL;
 }
 
-static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
     GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -254,11 +246,11 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
             case GST_STATE_CHANGE_ASYNC:
                 visual_log (VISUAL_LOG_INFO, "Waiting for pipeline to get ready (Current state: %s)",
                             gst_element_state_get_name (state));
-                return 0;
+                return;
 
             case GST_STATE_CHANGE_FAILURE:
                 visual_log (VISUAL_LOG_INFO, "Failed to animate pipeline");
-                return -1;
+                return;
 
             default: /* nothing */;
         }
@@ -292,8 +284,6 @@ static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudi
         priv->buffer = NULL;
     }
     g_mutex_unlock (priv->mutex);
-
-    return 0;
 }
 
 static void handle_sink_data (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate* priv)

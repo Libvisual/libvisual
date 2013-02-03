@@ -62,13 +62,13 @@ typedef struct {
 	VisRandomContext	*rcontext;
 } MadspinPrivate;
 
-static int lv_madspin_init (VisPluginData *plugin);
-static int lv_madspin_cleanup (VisPluginData *plugin);
-static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_madspin_resize (VisPluginData *plugin, int width, int height);
-static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_madspin_palette (VisPluginData *plugin);
-static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         lv_madspin_init        (VisPluginData *plugin);
+static void        lv_madspin_cleanup     (VisPluginData *plugin);
+static void        lv_madspin_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_madspin_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_madspin_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_madspin_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_madspin_palette     (VisPluginData *plugin);
 
 static int  madspin_load_textures (MadspinPrivate *priv);
 static int  madspin_sound (MadspinPrivate *priv, VisAudio *audio);
@@ -79,27 +79,26 @@ const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = lv_madspin_requisition,
-		.palette = lv_madspin_palette,
-		.render = lv_madspin_render,
+		.palette     = lv_madspin_palette,
+		.render      = lv_madspin_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "madspin",
-		.name = "libvisual madspin port",
-		.author = N_("Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.1",
-		.about = N_("Libvisual madspin plugin"),
-		.help = N_("This plugin shows a nifty visual effect using openGL"),
-		.license = VISUAL_PLUGIN_LICENSE_GPL,
+		.name     = "libvisual madspin port",
+		.author   = N_("Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.1",
+		.about    = N_("Libvisual madspin plugin"),
+		.help     = N_("This plugin shows a nifty visual effect using openGL"),
+		.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-		.init = lv_madspin_init,
-		.cleanup = lv_madspin_cleanup,
-		.events = lv_madspin_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = lv_madspin_init,
+		.cleanup  = lv_madspin_cleanup,
+		.events   = lv_madspin_events,
+		.plugin   = &actor
 	};
 
 	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
@@ -149,10 +148,10 @@ static int lv_madspin_init (VisPluginData *plugin)
 
 	madspin_load_textures (priv);
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_madspin_cleanup (VisPluginData *plugin)
+static void lv_madspin_cleanup (VisPluginData *plugin)
 {
 	MadspinPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -166,11 +165,9 @@ static int lv_madspin_cleanup (VisPluginData *plugin)
 	}
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_madspin_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -185,8 +182,6 @@ static int lv_madspin_requisition (VisPluginData *plugin, int *width, int *heigh
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
 
@@ -235,13 +230,11 @@ static void lv_madspin_setup_gl (VisPluginData *plugin)
 	bind_texture (priv->textures[1], priv->texture_images[1]);
 }
 
-static int lv_madspin_resize (VisPluginData *plugin, int width, int height)
+static void lv_madspin_resize (VisPluginData *plugin, int width, int height)
 {
 	glViewport (0, 0, width, height);
 
 	lv_madspin_setup_gl (plugin);
-
-	return 0;
 }
 
 static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
@@ -269,7 +262,7 @@ static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *lv_madspin_palette (VisPluginData *plugin)
@@ -277,14 +270,12 @@ static VisPalette *lv_madspin_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	MadspinPrivate *priv = visual_plugin_get_private (plugin);
 
 	madspin_sound (priv, audio);
 	madspin_draw (priv, video);
-
-	return 0;
 }
 
 static int madspin_load_textures (MadspinPrivate *priv)
@@ -292,16 +283,16 @@ static int madspin_load_textures (MadspinPrivate *priv)
 	priv->texture_images[0] = visual_video_load_from_file (STAR_DIR "/star1.bmp");
 	if (!priv->texture_images[0]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load first texture");
-		return -1;
+		return FALSE;
 	}
 
 	priv->texture_images[1] = visual_video_load_from_file (STAR_DIR "/star2.bmp");
 	if (!priv->texture_images[1]) {
 		visual_log (VISUAL_LOG_ERROR, "Failed to load second texture");
-		return -1;
+		return FALSE;
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static int madspin_sound (MadspinPrivate *priv, VisAudio *audio)
@@ -480,4 +471,3 @@ static int madspin_draw (MadspinPrivate *priv, VisVideo *video)
 
 	return 0;
 }
-

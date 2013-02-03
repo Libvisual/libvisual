@@ -43,51 +43,47 @@ typedef struct {
 	int dx;
 	int catch;
 	int dy;
-	//short pcm_data[256];
 } NastyfftPrivate;
 
-static int lv_nastyfft_init (VisPluginData *plugin);
-static int lv_nastyfft_cleanup (VisPluginData *plugin);
-static int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_nastyfft_resize (VisPluginData *plugin, int width, int height);
-static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events);
-static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-static VisPalette *lv_nastyfft_palette (VisPluginData *plugin);
-
+static int         lv_nastyfft_init        (VisPluginData *plugin);
+static void        lv_nastyfft_cleanup     (VisPluginData *plugin);
+static void        lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_nastyfft_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_nastyfft_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_nastyfft_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_nastyfft_palette     (VisPluginData *plugin);
 
 static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio);
-static int nastyfft_draw (NastyfftPrivate *priv, VisVideo *video);
+static int nastyfft_draw  (NastyfftPrivate *priv, VisVideo *video);
 
-static void init_gl(NastyfftPrivate *priv);
-static void draw_scene(NastyfftPrivate *priv);
-static void make_all(NastyfftPrivate *priv);
+static void init_gl    (NastyfftPrivate *priv);
+static void draw_scene (NastyfftPrivate *priv);
+static void make_all   (NastyfftPrivate *priv);
 
-/* Main plugin stuff */
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = lv_nastyfft_requisition,
-		.palette = lv_nastyfft_palette,
-		.render = lv_nastyfft_render,
+		.palette     = lv_nastyfft_palette,
+		.render      = lv_nastyfft_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "nastyfft",
-		.name = N_("Libvisual NastyFFT plugin"),
-		.author = "yodor <yodor@developer.bg>",
-		.version = "0.5",
-		.about = N_("The Libvisual NastyFFT plugin"),
-		.help = N_("This plugin shows nasty fft visualization effect using OpenGL"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = N_("Libvisual NastyFFT plugin"),
+		.author   = "yodor <yodor@developer.bg>",
+		.version  = "0.5",
+		.about    = N_("The Libvisual NastyFFT plugin"),
+		.help     = N_("This plugin shows nasty fft visualization effect using OpenGL"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_nastyfft_init,
-		.cleanup = lv_nastyfft_cleanup,
-		.events = lv_nastyfft_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = lv_nastyfft_init,
+		.cleanup  = lv_nastyfft_cleanup,
+		.events   = lv_nastyfft_events,
+		.plugin   = &actor
 	};
 
 	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
@@ -102,11 +98,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_nastyfft_init (VisPluginData *plugin)
 {
-	NastyfftPrivate *priv;
-
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	priv = visual_mem_new0 (NastyfftPrivate, 1);
+	NastyfftPrivate *priv = visual_mem_new0 (NastyfftPrivate, 1);
 
 	visual_plugin_set_private (plugin, priv);
 
@@ -134,21 +126,17 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_nastyfft_cleanup (VisPluginData *plugin)
+static void lv_nastyfft_cleanup (VisPluginData *plugin)
 {
 	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
-	visual_return_val_if_fail (plugin != NULL, -1);
-
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -163,8 +151,6 @@ static int lv_nastyfft_requisition (VisPluginData *plugin, int *width, int *heig
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
 static VisPalette *lv_nastyfft_palette (VisPluginData *plugin)
@@ -172,7 +158,7 @@ static VisPalette *lv_nastyfft_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int lv_nastyfft_resize (VisPluginData *plugin, int width, int height)
+static void lv_nastyfft_resize (VisPluginData *plugin, int width, int height)
 {
 	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
@@ -180,8 +166,6 @@ static int lv_nastyfft_resize (VisPluginData *plugin, int width, int height)
 	priv->nh = height;
 
 	init_gl(priv);
-
-	return 0;
 }
 
 static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
@@ -189,8 +173,6 @@ static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 	VisEvent ev;
 
 	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
-
-	visual_return_val_if_fail (plugin != NULL, -1);
 
 	while (visual_event_queue_poll (events, &ev)) {
 		switch (ev.type) {
@@ -240,21 +222,15 @@ static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
-	visual_return_val_if_fail (plugin != NULL, -1);
-	visual_return_val_if_fail (video != NULL, -1);
-	visual_return_val_if_fail (audio != NULL, -1);
-
 	nastyfft_sound (priv, audio);
 	nastyfft_draw (priv, video);
-
-	return 0;
 }
 
 static int nastyfft_sound (NastyfftPrivate *priv, VisAudio *audio)
@@ -361,10 +337,7 @@ static void init_gl(NastyfftPrivate *priv)
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
-
 }
-
 
 static void make_all(NastyfftPrivate *priv)
 {
