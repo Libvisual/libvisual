@@ -59,23 +59,15 @@ namespace LV {
 
   Actor::Impl::~Impl ()
   {
-      if (plugin) {
-          {
-              // FIXME: Hack to free songinfo
-              VisActorPlugin *actplugin = reinterpret_cast<VisActorPlugin*> (plugin->info->plugin);
-              visual_songinfo_free (actplugin->songinfo);
-          }
+      delete get_actor_plugin ()->songinfo;
 
-          visual_plugin_unload (plugin);
-      }
+      visual_plugin_unload (plugin);
 
       delete ditherpal;
   }
 
   VisActorPlugin* Actor::Impl::get_actor_plugin () const
   {
-      visual_return_val_if_fail (plugin != nullptr, nullptr);
-
       return VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
   }
 
@@ -111,10 +103,7 @@ namespace LV {
       }
 
       // FIXME: Hack to initialize songinfo
-      {
-          auto actplugin = m_impl->get_actor_plugin ();
-          actplugin->songinfo = visual_songinfo_new (VISUAL_SONGINFO_TYPE_NULL);
-      }
+      m_impl->get_actor_plugin ()->songinfo = new SongInfo {SONG_INFO_TYPE_NULL};
   }
 
   Actor::~Actor ()
