@@ -59,6 +59,11 @@ LV_API void        visual_closure_free (VisClosure *self);
 LV_API VisParamList *visual_param_list_new (void);
 
 /**
+ * Frees a VisParamList object.
+ */
+LV_API void visual_param_list_free (VisParamList *self);
+
+/**
  * Sets the eventqueue.
  *
  * @param list       Parameter list

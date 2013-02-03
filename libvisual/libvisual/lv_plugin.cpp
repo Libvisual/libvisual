@@ -66,8 +66,7 @@ static void plugin_dtor (VisObject *object)
 
     delete plugin->random;
 
-    if (plugin->params)
-        visual_object_unref (VISUAL_OBJECT (plugin->params));
+    visual_param_list_free (plugin->params);
 
     delete plugin->eventqueue;
 }
