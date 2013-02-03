@@ -73,7 +73,7 @@ static int act_plazma_init (VisPluginData *plugin)
 #endif
 
 	PlazmaPrivate *priv = visual_mem_new0 (PlazmaPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
@@ -119,7 +119,7 @@ static int act_plazma_init (VisPluginData *plugin)
 
 static int act_plazma_cleanup (VisPluginData *plugin)
 {
-	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 
 	_plazma_cleanup (priv);
 
@@ -157,7 +157,7 @@ static int act_plazma_requisition (VisPluginData *plugin, int *width, int *heigh
 
 static int act_plazma_resize (VisPluginData *plugin, int width, int height)
 {
-	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 
 	priv->width = width;
 	priv->height = height;
@@ -173,7 +173,7 @@ static int act_plazma_resize (VisPluginData *plugin, int width, int height)
 
 static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 	VisEvent ev;
 	VisParam *param;
 
@@ -221,14 +221,14 @@ static int act_plazma_events (VisPluginData *plugin, VisEventQueue *events)
 
 static VisPalette *act_plazma_palette (VisPluginData *plugin)
 {
-	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 
 	return priv->colors;
 }
 
 static int act_plazma_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	PlazmaPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PlazmaPrivate *priv = visual_plugin_get_private (plugin);
 	VisBuffer *pcmback;
 	VisBuffer *fbuf;
 	int i;

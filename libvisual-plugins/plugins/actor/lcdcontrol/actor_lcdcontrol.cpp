@@ -93,14 +93,12 @@ void *my_thread_func(void *data)
 
 int lcdcontrol_init (VisPluginData *plugin)
 {
-	LCDPrivate *priv;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 #endif
 
-	priv = visual_mem_new0 (LCDPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	auto priv = visual_mem_new0 (LCDPrivate, 1);
+	visual_plugin_set_private (plugin, priv);
 
     priv->pal = visual_palette_new(256);
 
@@ -137,11 +135,9 @@ int lcdcontrol_init (VisPluginData *plugin)
 
 int lcdcontrol_cleanup (VisPluginData *plugin)
 {
-	LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
 
-	//visual_object_unref (VISUAL_OBJECT (&priv->pcm));
-
-	visual_mem_free (priv);
+	//visual_plugin_unref (VISUAL_PLUGIN (&priv->pcm));
 
     //priv->control->Stop();
 
@@ -155,6 +151,8 @@ int lcdcontrol_cleanup (VisPluginData *plugin)
     //visual_thread_free(priv->thread);
 
     delete priv->control;
+
+	visual_mem_free (priv);
 
 	return 0;
 }
@@ -186,7 +184,7 @@ int lcdcontrol_requisition (VisPluginData *plugin, int *width, int *height)
 
 int lcdcontrol_resize (VisPluginData *plugin, int width, int height)
 {
-    //LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+	//auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
 
     // FIXME: Implement this
 
@@ -195,7 +193,8 @@ int lcdcontrol_resize (VisPluginData *plugin, int width, int height)
 
 int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 {
-    //LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+	//auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
+
     VisEvent ev;
 
     while (visual_event_queue_poll (events, &ev)) {
@@ -218,7 +217,8 @@ int lcdcontrol_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *lcdcontrol_palette (VisPluginData *plugin)
 {
-	LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
+
 	int i;
 
 	for (i = 0; i < 256; i++) {
@@ -232,7 +232,7 @@ VisPalette *lcdcontrol_palette (VisPluginData *plugin)
 
 int lcdcontrol_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	LCDPrivate *priv = (LCDPrivate *)visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<LCDPrivate*> (visual_plugin_get_private (plugin));
 
 /*
 	visual_audio_get_sample_mixed_simple (audio, &priv->pcm, 2,

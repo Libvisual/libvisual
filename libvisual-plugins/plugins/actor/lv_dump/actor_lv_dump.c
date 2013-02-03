@@ -79,7 +79,7 @@ static int lv_dump_init (VisPluginData *plugin)
 #endif
 
     LVDumpPrivate *priv = visual_mem_new0 (LVDumpPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     /* Parameter specifications */
     VisParamList *params = visual_plugin_get_params (plugin);
@@ -97,7 +97,7 @@ static int lv_dump_init (VisPluginData *plugin)
 
 static int lv_dump_cleanup (VisPluginData *plugin)
 {
-    LVDumpPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    LVDumpPrivate *priv = visual_plugin_get_private (plugin);
 
     visual_mem_free (priv);
 
@@ -106,7 +106,7 @@ static int lv_dump_cleanup (VisPluginData *plugin)
 
 static int lv_dump_requisition (VisPluginData *plugin, int *width, int *height)
 {
-    LVDumpPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    LVDumpPrivate *priv = visual_plugin_get_private (plugin);
 
     /* We will dump all data into a single row, 1 float sample per 32-bit pixel */
     *width  = priv->samples_per_frame;
@@ -157,7 +157,7 @@ static VisPalette *lv_dump_palette (VisPluginData *plugin)
 
 static int lv_dump_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-    LVDumpPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    LVDumpPrivate *priv = visual_plugin_get_private (plugin);
 
     VisBuffer *pcm_buffer = visual_buffer_new_allocate (priv->samples_per_frame * sizeof (float));
 

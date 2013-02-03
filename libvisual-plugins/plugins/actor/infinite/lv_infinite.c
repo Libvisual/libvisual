@@ -70,16 +70,12 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_infinite_init (VisPluginData *plugin)
 {
-	InfinitePrivate *priv;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	priv = visual_mem_new0 (InfinitePrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	InfinitePrivate *priv = visual_mem_new0 (InfinitePrivate, 1);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
@@ -107,7 +103,7 @@ int act_infinite_cleanup (VisPluginData *plugin)
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 
 	_inf_close_renderer (priv);
 
@@ -146,7 +142,7 @@ static int act_infinite_requisition (VisPluginData *plugin, int *width, int *hei
 
 static int act_infinite_resize (VisPluginData *plugin, int width, int height)
 {
-	InfinitePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	InfinitePrivate *priv = visual_plugin_get_private (plugin);
 	priv->plugwidth = width;
 	priv->plugheight = height;
 
@@ -179,7 +175,7 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 	visual_return_val_if_fail (plugin != NULL, NULL);
 
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 
 	return priv->pal;
 }
@@ -193,7 +189,7 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 	visual_return_val_if_fail (video != NULL, -1);
 	visual_return_val_if_fail (audio != NULL, -1);
 
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 
 	buffer = visual_buffer_new ();
 

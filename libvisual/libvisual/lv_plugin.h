@@ -189,8 +189,6 @@ struct _VisPluginInfo {
  * is encapsulated in this.
  */
 struct _VisPluginData {
-	VisObject            object;      /**< The VisObject data. */
-
 	VisPluginInfo const *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
 
 	VisEventQueue       *eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
@@ -202,6 +200,7 @@ struct _VisPluginData {
 	                                     * semi reproduce visuals. */
 
 	int                  realized;    /**< Flag that indicates if the plugin is realized. */
+	void                *priv;        /**< Private instance data */
 };
 
 LV_BEGIN_DECLS
@@ -282,12 +281,9 @@ LV_API VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin
  */
 LV_API void *visual_plugin_get_specific (VisPluginData *plugin);
 
-/**
- * Creates a new VisPluginData structure.
- *
- * @return A newly allocated VisPluginData.
- */
-LV_API VisPluginData *visual_plugin_new (void);
+LV_API void visual_plugin_set_private (VisPluginData *plugin, void *priv);
+
+LV_API void *visual_plugin_get_private (VisPluginData *plugin);
 
 /**
  * Private function to unload a plugin. After calling this function the

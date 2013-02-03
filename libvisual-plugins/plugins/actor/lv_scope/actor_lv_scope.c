@@ -86,7 +86,7 @@ static int lv_scope_init (VisPluginData *plugin)
 #endif
 
     priv = visual_mem_new0 (ScopePrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     priv->pal = visual_palette_new (256);
 
@@ -101,7 +101,7 @@ static int lv_scope_init (VisPluginData *plugin)
 
 static int lv_scope_cleanup (VisPluginData *plugin)
 {
-    ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    ScopePrivate *priv = visual_plugin_get_private (plugin);
 
     visual_palette_free (priv->pal);
 
@@ -163,7 +163,7 @@ static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events)
 
 static VisPalette *lv_scope_palette (VisPluginData *plugin)
 {
-    ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    ScopePrivate *priv = visual_plugin_get_private (plugin);
     VisColor *pal_colors = visual_palette_get_colors (priv->pal);
     int i;
 
@@ -212,12 +212,12 @@ static void run_point(ScopePrivate *priv)
 
     priv->x=(priv->r2*2-1)*priv->z1;
     priv->y=(priv->r1*2-1)*priv->z1;
-    priv->color=(1-exp(-priv->z1*priv->z1)) * 255.0; 
+    priv->color=(1-exp(-priv->z1*priv->z1)) * 255.0;
 }
 
 static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-    ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    ScopePrivate *priv = visual_plugin_get_private (plugin);
     VisColor col;
     float *pcmbuf;
     int i, y, y_old, x;

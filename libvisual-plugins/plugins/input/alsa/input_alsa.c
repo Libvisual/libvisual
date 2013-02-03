@@ -99,7 +99,7 @@ int inp_alsa_init (VisPluginData *plugin)
 	priv = visual_mem_new0 (alsaPrivate, 1);
 	visual_return_val_if_fail(priv != NULL, -1);
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	if ((err = snd_pcm_open(&priv->chandle, inp_alsa_var_cdevice,
 			SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK)) < 0) {
@@ -200,7 +200,7 @@ int inp_alsa_cleanup (VisPluginData *plugin)
 	alsaPrivate *priv = NULL;
 
 	visual_return_val_if_fail(plugin != NULL, -1);
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 	visual_return_val_if_fail(priv != NULL, -1);
 
 	if (priv->loaded == 1)
@@ -219,7 +219,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 
 	visual_return_val_if_fail(audio != NULL, -1);
 	visual_return_val_if_fail(plugin != NULL, -1);
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 	visual_return_val_if_fail(priv != NULL, -1);
 
 	do {

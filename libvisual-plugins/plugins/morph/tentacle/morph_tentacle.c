@@ -89,14 +89,14 @@ static int lv_morph_tentacle_init (VisPluginData *plugin)
 #endif
 
 	priv = visual_mem_new0 (TentaclePrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	return 0;
 }
 
 static int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 {
-	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	TentaclePrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_mem_free (priv);
 
@@ -105,7 +105,7 @@ static int lv_morph_tentacle_cleanup (VisPluginData *plugin)
 
 static int lv_morph_tentacle_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	TentaclePrivate *priv = visual_plugin_get_private (plugin);
 
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *src1buf = visual_video_get_pixels (src1);

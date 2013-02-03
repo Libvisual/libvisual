@@ -62,7 +62,7 @@ VisPluginInfo const* get_plugin_info ()
     };
 
     static VisPluginInfo info;
-    
+
     info.type = VISUAL_PLUGIN_TYPE_INPUT;
     info.plugname = "jack";
     info.name = "JACK input";
@@ -90,8 +90,7 @@ namespace {
       visual_return_val_if_fail (plugin != NULL, -1);
 
       JackPrivate* priv = new JackPrivate;
-      visual_return_val_if_fail (priv != NULL, -1);
-      visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+      visual_plugin_set_private (plugin, priv);
 
       jack_options_t options = JackNullOption;
       jack_status_t  status;
@@ -163,7 +162,7 @@ namespace {
   {
       visual_return_val_if_fail (plugin != NULL, -1);
 
-      JackPrivate* priv = static_cast<JackPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
+      JackPrivate* priv = static_cast<JackPrivate*> (visual_plugin_get_private (plugin));
       visual_return_val_if_fail (priv != NULL, -1);
 
       if (priv->client)
@@ -179,7 +178,7 @@ namespace {
       visual_return_val_if_fail (audio  != NULL, -1);
       visual_return_val_if_fail (plugin != NULL, -1);
 
-      JackPrivate* priv = static_cast<JackPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
+      JackPrivate* priv = static_cast<JackPrivate*> (visual_plugin_get_private (plugin));
       visual_return_val_if_fail (priv != NULL, -1);
 
       if (priv->shutdown) {

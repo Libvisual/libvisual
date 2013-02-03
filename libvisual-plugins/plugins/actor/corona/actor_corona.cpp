@@ -113,16 +113,14 @@ namespace {
 
 int lv_corona_init (VisPluginData *plugin)
 {
-	CoronaPrivate *priv;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = new CoronaPrivate;
+	auto priv = new CoronaPrivate;
 	visual_mem_set (priv, 0, sizeof (CoronaPrivate));
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->corona       = new Corona();
 	priv->pcyl         = new PaletteCycler(PALETTEDATA, NB_PALETTES);
@@ -139,7 +137,7 @@ int lv_corona_init (VisPluginData *plugin)
 
 int lv_corona_cleanup (VisPluginData *plugin)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -172,7 +170,7 @@ int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
 
 int lv_corona_resize (VisPluginData *plugin, int width, int height)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -209,7 +207,7 @@ int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *lv_corona_palette (VisPluginData *plugin)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
 
 	priv->pcyl->updateVisPalette (&priv->pal);
 
@@ -218,7 +216,8 @@ VisPalette *lv_corona_palette (VisPluginData *plugin)
 
 int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
+
 	float freq[2][256];
 	float pcm[256];
 	short freqdata[2][512]; // FIXME Move to floats

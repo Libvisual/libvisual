@@ -12,7 +12,7 @@ VisMorphPlugin morph = {
 int lv_morph_slide_init (VisPluginData *plugin, SlideType type)
 {
     SlidePrivate *priv = visual_mem_new0 (SlidePrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     priv->slide_type = type;
 
@@ -25,7 +25,7 @@ int lv_morph_slide_init (VisPluginData *plugin, SlideType type)
 
 int lv_morph_slide_cleanup (VisPluginData *plugin)
 {
-    SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    SlidePrivate *priv = visual_plugin_get_private (plugin);
 
     visual_mem_free (priv);
 
@@ -34,7 +34,7 @@ int lv_morph_slide_cleanup (VisPluginData *plugin)
 
 int lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-    SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    SlidePrivate *priv = visual_plugin_get_private (plugin);
     uint8_t *destbuf = visual_video_get_pixels (dest);
     uint8_t *srcbuf1 = visual_video_get_pixels (src1);
     uint8_t *srcbuf2 = visual_video_get_pixels (src2);

@@ -84,7 +84,7 @@ static int inp_debug_init (VisPluginData *plugin)
 #endif
 
 	DebugPriv *priv = visual_mem_new0 (DebugPriv, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	VisParamList *params = visual_plugin_get_params (plugin);
 	visual_param_list_add_many (params,
@@ -110,7 +110,7 @@ static int inp_debug_init (VisPluginData *plugin)
 
 static int inp_debug_cleanup (VisPluginData *plugin)
 {
-	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	DebugPriv *priv = visual_plugin_get_private (plugin);
 
 	visual_time_free (priv->last_upload_time);
 	visual_mem_free (priv);
@@ -151,7 +151,7 @@ static int inp_debug_upload (VisPluginData *plugin, VisAudio *audio)
 	/* FIXME: Wave is incrementally calculated and will very gradually
 	   increase/decrease in frequency due to error accumulation */
 
-	DebugPriv *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	DebugPriv *priv = visual_plugin_get_private (plugin);
 
 	/* Sleep for the appropriate amount of time to simulate blocking
 	 * due to buffer underruns */

@@ -88,7 +88,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
 #endif
 
     priv = visual_mem_new0 (GStreamerPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     gst_init (NULL, NULL);
 
@@ -146,7 +146,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
 
 static int act_gstreamer_cleanup (VisPluginData *plugin)
 {
-    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
     if (priv->pipeline) {
         g_signal_handlers_disconnect_by_func (priv->sink, "handoff", handle_sink_data);
@@ -180,7 +180,7 @@ static int act_gstreamer_cleanup (VisPluginData *plugin)
 
 static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *height)
 {
-    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
     GstCaps *caps = NULL;
     g_object_get (priv->capsfilter, "caps", &caps, NULL);
@@ -198,7 +198,7 @@ static int act_gstreamer_requisition (VisPluginData *plugin, int *width, int *he
 
 static int act_gstreamer_resize (VisPluginData *plugin, int width, int height)
 {
-    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
     GstCaps *caps = gst_caps_new_simple ("video/x-raw-rgb",
                                          "width" , G_TYPE_INT, width,
@@ -237,7 +237,7 @@ static VisPalette *act_gstreamer_palette (VisPluginData *plugin)
 
 static int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-    GStreamerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
     GstState state, pending_state;
     GstStateChangeReturn status;

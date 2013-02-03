@@ -88,13 +88,10 @@ const VisPluginInfo *get_plugin_info (void)
 
 int lv_gforce_init (VisPluginData *plugin)
 {
-	GForcePrivate *priv;
-	Rect r;
-
-	priv = new GForcePrivate;
+	auto priv = new GForcePrivate;
 	visual_mem_set (priv, 0, sizeof (GForcePrivate));
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->pal = new LV::Palette (256);
 
@@ -104,9 +101,9 @@ int lv_gforce_init (VisPluginData *plugin)
 	/* Randomize the seed */
 	srand (EgOSUtils::CurTimeMS ());
 
-
 	priv->gGF = new GForce;
 
+	Rect r;
 	SetRect (&r, 0, 0, 64, 64);
 
 	priv->gGF->SetWinPort (0, &r);
@@ -117,7 +114,7 @@ int lv_gforce_init (VisPluginData *plugin)
 
 int lv_gforce_cleanup (VisPluginData *plugin)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
 
 	if (priv->gGF)
 		delete priv->gGF;
@@ -158,9 +155,9 @@ int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 
 int lv_gforce_resize (VisPluginData *plugin, int width, int height)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	Rect r;
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
 
+	Rect r;
 	SetRect (&r, 0, 0, width, height);
 	priv->gGF->SetWinPort (0, &r);
 
@@ -169,7 +166,8 @@ int lv_gforce_resize (VisPluginData *plugin, int width, int height)
 
 int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
+
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
@@ -199,7 +197,8 @@ int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 
 VisPalette *lv_gforce_palette (VisPluginData *plugin)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
+
 	PixPalEntry *GFpal;
 	int i;
 
@@ -216,7 +215,8 @@ VisPalette *lv_gforce_palette (VisPluginData *plugin)
 
 int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
+
 	int i;
 	long time;
 	float gSoundBuf[SND_BUF_SIZE];

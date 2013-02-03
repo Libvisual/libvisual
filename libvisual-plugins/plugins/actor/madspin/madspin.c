@@ -119,7 +119,7 @@ static int lv_madspin_init (VisPluginData *plugin)
 #endif
 
 	MadspinPrivate *priv = visual_mem_new0 (MadspinPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
@@ -154,7 +154,7 @@ static int lv_madspin_init (VisPluginData *plugin)
 
 static int lv_madspin_cleanup (VisPluginData *plugin)
 {
-	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	MadspinPrivate *priv = visual_plugin_get_private (plugin);
 
 	if (priv->initialized == TRUE) {
 		visual_timer_free (priv->timer);
@@ -201,7 +201,7 @@ static void bind_texture (GLuint texture, VisVideo *image)
 
 static void lv_madspin_setup_gl (VisPluginData *plugin)
 {
-	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	MadspinPrivate *priv = visual_plugin_get_private (plugin);
 
 	/* GL and the such */
 	glMatrixMode (GL_PROJECTION);
@@ -246,7 +246,7 @@ static int lv_madspin_resize (VisPluginData *plugin, int width, int height)
 
 static int lv_madspin_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	MadspinPrivate *priv = visual_plugin_get_private (plugin);
 	VisEvent ev;
 	VisParam *param;
 
@@ -279,7 +279,7 @@ static VisPalette *lv_madspin_palette (VisPluginData *plugin)
 
 static int lv_madspin_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	MadspinPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	MadspinPrivate *priv = visual_plugin_get_private (plugin);
 
 	madspin_sound (priv, audio);
 	madspin_draw (priv, video);

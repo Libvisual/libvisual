@@ -115,7 +115,7 @@ static int lv_nebulus_init (VisPluginData *plugin)
 	visual_return_val_if_fail (plugin != NULL, -1);
 
 	priv = visual_mem_new0 (NebulusPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
 	if (maxtexsize < 256) {
@@ -142,7 +142,7 @@ static int lv_nebulus_init (VisPluginData *plugin)
 
 static int lv_nebulus_cleanup (VisPluginData *plugin)
 {
-	NebulusPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	NebulusPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 
@@ -229,7 +229,7 @@ static int lv_nebulus_events (VisPluginData *plugin, VisEventQueue *events)
 
 static int lv_nebulus_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	NebulusPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	NebulusPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 	visual_return_val_if_fail (video != NULL, -1);

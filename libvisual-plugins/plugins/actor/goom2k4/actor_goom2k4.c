@@ -79,7 +79,7 @@ static int lv_goom_init (VisPluginData *plugin)
 #endif
 
 	priv = visual_mem_new0 (GoomPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->goominfo = goom_init (128, 128);
 
@@ -91,7 +91,7 @@ static int lv_goom_init (VisPluginData *plugin)
 
 static int lv_goom_cleanup (VisPluginData *plugin)
 {
-	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	GoomPrivate *priv = visual_plugin_get_private (plugin);
 
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
@@ -113,7 +113,7 @@ static int lv_goom_requisition (VisPluginData *plugin, int *width, int *height)
 
 static int lv_goom_resize (VisPluginData *plugin, int width, int height)
 {
-	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	GoomPrivate *priv = visual_plugin_get_private (plugin);
 
 	goom_set_resolution (priv->goominfo, width, height);
 
@@ -145,7 +145,7 @@ static VisPalette *lv_goom_palette (VisPluginData *plugin)
 
 static int lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GoomPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	GoomPrivate *priv = visual_plugin_get_private (plugin);
 	VisSongInfo *songinfo;
 	short pcmdata[2][512];
 	float fpcmdata[2][512];

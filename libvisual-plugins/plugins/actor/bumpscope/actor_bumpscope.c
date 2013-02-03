@@ -96,7 +96,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
                                 NULL);
 
 	BumpscopePrivate *priv = visual_mem_new0 (BumpscopePrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->phongres = 256;
 	priv->rcontext = visual_plugin_get_random_context (plugin);
@@ -108,7 +108,7 @@ static int act_bumpscope_init (VisPluginData *plugin)
 
 static int act_bumpscope_cleanup (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 
 	__bumpscope_cleanup (priv);
 
@@ -148,7 +148,7 @@ static int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *he
 
 static int act_bumpscope_resize (VisPluginData *plugin, int width, int height)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 
 	priv->width  = width;
 	priv->height = height;
@@ -161,7 +161,7 @@ static int act_bumpscope_resize (VisPluginData *plugin, int width, int height)
 
 static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 	VisEvent ev;
 	VisParam *param;
 	VisColor *tmp;
@@ -219,14 +219,14 @@ static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 
 static VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 
 	return priv->pal;
 }
 
 static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 	priv->video = video;
 
 	visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,

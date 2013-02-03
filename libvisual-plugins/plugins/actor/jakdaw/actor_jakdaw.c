@@ -73,7 +73,7 @@ static int act_jakdaw_init (VisPluginData *plugin)
 #endif
 
     JakdawPrivate *priv = visual_mem_new0 (JakdawPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
@@ -137,7 +137,7 @@ static int act_jakdaw_init (VisPluginData *plugin)
 
 static int act_jakdaw_cleanup (VisPluginData *plugin)
 {
-	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	JakdawPrivate *priv = visual_plugin_get_private (plugin);
 
 	_jakdaw_feedback_close (priv);
 
@@ -170,7 +170,7 @@ static int act_jakdaw_requisition (VisPluginData *plugin, int *width, int *heigh
 
 static int act_jakdaw_resize (VisPluginData *plugin, int width, int height)
 {
-	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	JakdawPrivate *priv = visual_plugin_get_private (plugin);
 
 	priv->xres = width;
 	priv->yres = height;
@@ -182,7 +182,7 @@ static int act_jakdaw_resize (VisPluginData *plugin, int width, int height)
 
 static int act_jakdaw_events (VisPluginData *plugin, VisEventQueue *events)
 {
-    JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    JakdawPrivate *priv = visual_plugin_get_private (plugin);
     VisEvent ev;
     VisParam *param;
 
@@ -238,7 +238,7 @@ static VisPalette *act_jakdaw_palette (VisPluginData *plugin)
 
 static int act_jakdaw_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	JakdawPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	JakdawPrivate *priv = visual_plugin_get_private (plugin);
 	uint32_t *vscr = visual_video_get_pixels (video);
 
 	visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,

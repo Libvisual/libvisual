@@ -108,7 +108,7 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 
 	priv = visual_mem_new0 (NastyfftPrivate, 1);
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
@@ -139,7 +139,7 @@ static int lv_nastyfft_init (VisPluginData *plugin)
 
 static int lv_nastyfft_cleanup (VisPluginData *plugin)
 {
-	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 
@@ -174,7 +174,7 @@ static VisPalette *lv_nastyfft_palette (VisPluginData *plugin)
 
 static int lv_nastyfft_resize (VisPluginData *plugin, int width, int height)
 {
-	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
 	priv->nw = width;
 	priv->nh = height;
@@ -188,7 +188,7 @@ static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 {
 	VisEvent ev;
 
-	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 
@@ -245,7 +245,7 @@ static int lv_nastyfft_events (VisPluginData *plugin, VisEventQueue *events)
 
 static int lv_nastyfft_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	NastyfftPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	NastyfftPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_return_val_if_fail (plugin != NULL, -1);
 	visual_return_val_if_fail (video != NULL, -1);

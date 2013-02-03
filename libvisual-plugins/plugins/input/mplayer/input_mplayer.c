@@ -123,7 +123,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 	strcat( priv->sharedfile, "/" );
 	strcat( priv->sharedfile, SHARED_FILE );
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	visual_return_val_if_fail( plugin != NULL, -1 );
 
@@ -200,7 +200,7 @@ static int inp_mplayer_cleanup( VisPluginData *plugin )
 	mplayer_priv_t *priv = NULL;
 
 	visual_return_val_if_fail( plugin != NULL, -1 );
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 	visual_return_val_if_fail( priv != NULL, -1 );
 
 	if ( priv->loaded == 1 )
@@ -258,7 +258,7 @@ static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 
 	visual_return_val_if_fail( audio != NULL, -1 );
 	visual_return_val_if_fail( plugin != NULL, -1 );
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 	visual_return_val_if_fail( priv != NULL, -1 );
 	visual_return_val_if_fail( priv->mmap_area != NULL, -1 );
 

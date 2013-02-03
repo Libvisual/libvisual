@@ -82,7 +82,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int _bars(VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = plugin->priv;
 	return priv->bars;
 }
 
@@ -93,7 +93,7 @@ static int lv_analyzer_init (VisPluginData *plugin)
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	/* get plugins param-container */
 	VisParamList *params = visual_plugin_get_params (plugin);
@@ -114,7 +114,7 @@ static int lv_analyzer_init (VisPluginData *plugin)
 
 static int lv_analyzer_cleanup (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_palette_free (priv->pal);
 
@@ -142,7 +142,7 @@ static int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *heig
 
 static int _validate_bars(VisPluginData *plugin, int *bars)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	if(*bars > 0 && *bars < priv->width)
 		return 1;
@@ -154,7 +154,7 @@ static void _change_bars(VisPluginData *plugin,
                          VisParam *p,
                          int (*validator)(VisPluginData *plugin, void *value))
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	int integer = visual_param_get_value_integer(p);
 
@@ -213,7 +213,7 @@ static void _change_param(VisPluginData *plugin, VisParam *p)
 
 static int lv_analyzer_resize (VisPluginData *plugin, int width, int height)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	int total_space;
 
@@ -261,7 +261,7 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
 	int i;
 

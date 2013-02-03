@@ -116,25 +116,6 @@ LV_API void visual_object_ref (VisObject *object);
 LV_API void visual_object_unref (VisObject *object);
 
 /**
- * Sets the private data pointer to a VisObject.
- *
- * @param object Pointer to a VisObject to which the private data is set.
- * @param priv Pointer to the private data that is set to the VisObject.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_OBJECT_NULL on failure.
- */
-LV_API void visual_object_set_private (VisObject *object, void *priv);
-
-/**
- * Retrieves the private data from a VisObject.
- *
- * @param object Pointer to a VisObject from which the private data is requested.
- *
- * @return Pointer to the private data or NULL.
- */
-LV_API void *visual_object_get_private (VisObject *object);
-
-/**
  * @ingroup VisObject
  *
  * Macro that will set the data after the VisObject data to 0.

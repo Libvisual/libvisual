@@ -99,7 +99,7 @@ static int lv_flower_init (VisPluginData *plugin)
 #endif
 
 	priv = visual_mem_new0 (FlowerPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->rcxt = visual_plugin_get_random_context (plugin);
 
@@ -129,7 +129,7 @@ static int lv_flower_init (VisPluginData *plugin)
 
 static int lv_flower_cleanup (VisPluginData *plugin)
 {
-	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FlowerPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_timer_free (priv->flower.timer);
 	visual_timer_free (priv->t);
@@ -159,7 +159,7 @@ static int lv_flower_requisition (VisPluginData *plugin, int *width, int *height
 
 static int lv_flower_resize (VisPluginData *plugin, int width, int height)
 {
-	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FlowerPrivate *priv = visual_plugin_get_private (plugin);
 	GLfloat ratio;
 
 	ratio = (GLfloat) width / (GLfloat) height;
@@ -204,7 +204,7 @@ static VisPalette *lv_flower_palette (VisPluginData *plugin)
 
 static int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	FlowerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FlowerPrivate *priv = visual_plugin_get_private (plugin);
 	VisBuffer *pcmbuf;
 	VisBuffer *freqbuf;
 	float pcm[512];

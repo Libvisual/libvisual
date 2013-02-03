@@ -79,7 +79,7 @@ namespace {
   #endif
 
       auto priv = new CheckerPrivate;
-      visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+      visual_plugin_set_private (plugin, priv);
 
       priv->timer.start ();
 
@@ -90,7 +90,7 @@ namespace {
 
   int lv_morph_checkers_cleanup (VisPluginData *plugin)
   {
-      auto priv = static_cast<CheckerPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
+      auto priv = static_cast<CheckerPrivate*> (visual_plugin_get_private (plugin));
 
       delete priv;
 
@@ -99,7 +99,7 @@ namespace {
 
   int lv_morph_checkers_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
   {
-      auto priv = static_cast<CheckerPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
+      auto priv = static_cast<CheckerPrivate*> (visual_plugin_get_private (plugin));
 
       if (priv->timer.elapsed ().to_msecs () > 300) {
           priv->flip = !priv->flip;

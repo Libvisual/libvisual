@@ -113,7 +113,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 	/* FIXME: add UI to access the acid palette parameter */
 
 	OinksiePrivContainer *priv = visual_mem_new0 (OinksiePrivContainer, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->priv1.pal_cur = visual_palette_new (256);
 	priv->priv1.pal_old = visual_palette_new (256);
@@ -136,7 +136,7 @@ static int act_oinksie_init (VisPluginData *plugin)
 
 static int act_oinksie_cleanup (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	OinksiePrivContainer *priv = visual_plugin_get_private (plugin);
 
 	oinksie_quit (&priv->priv1);
 	oinksie_quit (&priv->priv2);
@@ -179,7 +179,7 @@ static int act_oinksie_requisition (VisPluginData *plugin, int *width, int *heig
 
 static int act_oinksie_resize (VisPluginData *plugin, int width, int height)
 {
-	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	OinksiePrivContainer *priv = visual_plugin_get_private (plugin);
 
 	oinksie_size_set (&priv->priv1, width, height);
 	oinksie_size_set (&priv->priv2, width, height);
@@ -189,7 +189,7 @@ static int act_oinksie_resize (VisPluginData *plugin, int width, int height)
 
 static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	OinksiePrivContainer *priv = visual_plugin_get_private (plugin);
 	VisEvent ev;
 	VisParam *param;
 
@@ -220,7 +220,7 @@ static int act_oinksie_events (VisPluginData *plugin, VisEventQueue *events)
 
 static VisPalette *act_oinksie_palette (VisPluginData *plugin)
 {
-	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	OinksiePrivContainer *priv = visual_plugin_get_private (plugin);
 	VisPalette *pal;
 
 	pal = oinksie_palette_get (&priv->priv1);
@@ -230,7 +230,7 @@ static VisPalette *act_oinksie_palette (VisPluginData *plugin)
 
 static int act_oinksie_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	OinksiePrivContainer *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	OinksiePrivContainer *priv = visual_plugin_get_private (plugin);
 
 	/* Left audio */
 	VisBuffer *pcmbuf1 = visual_buffer_new_wrap_data (priv->priv1.audio.pcm[0], sizeof (priv->priv1.audio.pcm[0]), FALSE);

@@ -171,7 +171,7 @@ static int act_blursk_init (VisPluginData *plugin) {
 
     /* init plugin */
     BlurskPrivate *priv = visual_mem_new0 (BlurskPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     priv->plugin   = plugin;
     priv->rcontext = visual_plugin_get_random_context (plugin);
@@ -187,7 +187,7 @@ static int act_blursk_init (VisPluginData *plugin) {
 
 static int act_blursk_cleanup (VisPluginData *plugin) {
     return 0;
-    BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
     __blursk_cleanup (priv);
 
@@ -226,7 +226,7 @@ static int act_blursk_requisition (VisPluginData *plugin, int *width, int *heigh
 
 static int act_blursk_resize (VisPluginData *plugin, int width, int height)
 {
-        BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+        BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
         priv->width = width;
         priv->height = height;
@@ -237,8 +237,9 @@ static int act_blursk_resize (VisPluginData *plugin, int width, int height)
         return 0;
 }
 
-static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
-    BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT(plugin));
+static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events)
+{
+    BlurskPrivate *priv = visual_plugin_get_private (plugin);
     VisEvent ev;
     VisParam *param;
     VisSongInfo *newsong;
@@ -291,17 +292,19 @@ static int act_blursk_events (VisPluginData *plugin, VisEventQueue *events) {
     return 0;
 }
 
-static VisPalette *act_blursk_palette (VisPluginData *plugin) {
-    BlurskPrivate *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+static VisPalette *act_blursk_palette (VisPluginData *plugin)
+{
+    BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
     return priv->pal;
 }
 
-static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio) {
-        int16_t tpcm[512];
-        float *pcm;
+static int act_blursk_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+{
+    BlurskPrivate *priv = visual_plugin_get_private (plugin);
 
-        BlurskPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    int16_t tpcm[512];
+    float *pcm;
 
         priv->video = video;
 

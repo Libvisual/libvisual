@@ -74,7 +74,7 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 #endif
 
     pulseaudio_priv_t *priv = visual_mem_new0(pulseaudio_priv_t, 1);
-    visual_object_set_private(VISUAL_OBJECT(plugin), priv);
+    visual_plugin_set_private(plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
@@ -107,7 +107,7 @@ static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
 
     visual_return_val_if_fail( plugin != NULL, VISUAL_ERROR_GENERAL);
 
-    priv = visual_object_get_private(VISUAL_OBJECT( plugin));
+    priv = visual_plugin_get_private(plugin);
 
     visual_return_val_if_fail( priv != NULL, VISUAL_ERROR_GENERAL);
 
@@ -120,7 +120,7 @@ static int inp_pulseaudio_cleanup( VisPluginData *plugin ) {
 
 static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 {
-    pulseaudio_priv_t *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    pulseaudio_priv_t *priv = visual_plugin_get_private (plugin);
     VisEvent ev;
     VisParam *param;
     const char *tmp;
@@ -166,7 +166,7 @@ int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     visual_return_val_if_fail( audio != NULL, -VISUAL_ERROR_GENERAL);
     visual_return_val_if_fail( plugin != NULL, -VISUAL_ERROR_GENERAL);
 
-    pulseaudio_priv_t *priv = visual_object_get_private(VISUAL_OBJECT(plugin));
+    pulseaudio_priv_t *priv = visual_plugin_get_private(plugin);
     visual_return_val_if_fail( priv != NULL, -VISUAL_ERROR_GENERAL);
 
     int error;

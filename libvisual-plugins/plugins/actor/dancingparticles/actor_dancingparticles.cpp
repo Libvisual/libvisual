@@ -96,8 +96,8 @@ int lv_dancingparticles_init (VisPluginData *plugin)
     bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-    DancingParticlesPrivate *priv = visual_mem_new0 (DancingParticlesPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    auto priv = visual_mem_new0 (DancingParticlesPrivate, 1);
+    visual_plugin_set_private (plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);
     visual_param_list_add_many (params,
@@ -116,7 +116,7 @@ int lv_dancingparticles_init (VisPluginData *plugin)
 
 int lv_dancingparticles_cleanup (VisPluginData *plugin)
 {
-	DancingParticlesPrivate *priv = static_cast<DancingParticlesPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
+	auto priv = static_cast<DancingParticlesPrivate*> (visual_plugin_get_private (plugin));
 
 	visual_mem_free (priv);
 
@@ -153,7 +153,8 @@ int lv_dancingparticles_resize (VisPluginData *plugin, int width, int height)
 
 int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	DancingParticlesPrivate *priv = (DancingParticlesPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<DancingParticlesPrivate*> (visual_plugin_get_private (plugin));
+
 	VisEvent ev;
 	VisParam *param;
 

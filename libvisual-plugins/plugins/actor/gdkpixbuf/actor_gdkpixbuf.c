@@ -99,7 +99,7 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
 #endif
 
     PixbufPrivate *priv = visual_mem_new0 (PixbufPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);;
     visual_param_list_add_many (params,
@@ -142,7 +142,7 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
 
 static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_mem_free (priv->filename);
 
@@ -178,7 +178,7 @@ static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *he
 
 int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
 	priv->width  = width;
 	priv->height = height;
@@ -192,7 +192,7 @@ int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 
 static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 	VisParam *param;
 	VisEvent ev;
 
@@ -266,7 +266,7 @@ static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 
 static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
 	if (priv->target) {
 		int xoff, yoff;

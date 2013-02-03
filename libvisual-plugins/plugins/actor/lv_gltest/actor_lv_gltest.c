@@ -110,7 +110,7 @@ static int lv_gltest_init (VisPluginData *plugin)
 #endif
 
 	GLtestPrivate *priv = visual_mem_new0 (GLtestPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	VisParamList *params = visual_plugin_get_params (plugin);
 	visual_param_list_add_many (params,
@@ -161,7 +161,7 @@ static int lv_gltest_init (VisPluginData *plugin)
 
 static int lv_gltest_cleanup (VisPluginData *plugin)
 {
-	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	GLtestPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_mem_free (priv);
 
@@ -208,7 +208,7 @@ static int lv_gltest_resize (VisPluginData *plugin, int width, int height)
 
 static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	GLtestPrivate *priv = visual_plugin_get_private (plugin);
 	VisEvent ev;
 	VisParam *param;
 
@@ -245,7 +245,7 @@ static VisPalette *lv_gltest_palette (VisPluginData *plugin)
 
 static int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GLtestPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	GLtestPrivate *priv = visual_plugin_get_private (plugin);
 
 	int i,c;
 	int y;

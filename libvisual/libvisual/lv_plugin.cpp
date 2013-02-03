@@ -60,17 +60,6 @@ namespace LV {
 
 } // LV namespace
 
-static void plugin_dtor (VisObject *object)
-{
-    auto plugin = VISUAL_PLUGINDATA (object);
-
-    delete plugin->random;
-
-    visual_param_list_free (plugin->params);
-
-    delete plugin->eventqueue;
-}
-
 int visual_plugin_events_pump (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
@@ -122,17 +111,25 @@ void *visual_plugin_get_specific (VisPluginData *plugin)
     return pluginfo->plugin;
 }
 
-VisPluginData *visual_plugin_new ()
+static VisPluginData *visual_plugin_new ()
 {
     auto plugin = visual_mem_new0 (VisPluginData, 1);
-
-    /* Do the VisObject initialization */
-    visual_object_init (VISUAL_OBJECT (plugin), plugin_dtor);
 
     plugin->params = visual_param_list_new ();
     plugin->eventqueue = new LV::EventQueue;
 
     return plugin;
+}
+
+static void visual_plugin_free (VisPluginData *plugin)
+{
+    delete plugin->random;
+
+    visual_param_list_free (plugin->params);
+
+    delete plugin->eventqueue;
+
+    visual_mem_free (plugin);
 }
 
 int visual_plugin_unload (VisPluginData *plugin)
@@ -147,7 +144,7 @@ int visual_plugin_unload (VisPluginData *plugin)
 
     visual_param_list_set_eventqueue (plugin->params, nullptr);
 
-    visual_object_unref (VISUAL_OBJECT (plugin));
+    visual_plugin_free (plugin);
 
     return VISUAL_OK;
 }
@@ -185,6 +182,20 @@ int visual_plugin_realize (VisPluginData *plugin)
     plugin->realized = TRUE;
 
     return VISUAL_OK;
+}
+
+void visual_plugin_set_private (VisPluginData *plugin, void *priv)
+{
+    visual_return_if_fail (plugin != nullptr);
+
+    plugin->priv = priv;
+}
+
+void *visual_plugin_get_private (VisPluginData *plugin)
+{
+    visual_return_val_if_fail (plugin != nullptr, nullptr);
+
+    return plugin->priv;
 }
 
 int visual_plugin_get_api_version ()
