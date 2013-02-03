@@ -117,7 +117,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
     gst_caps_unref (caps);
 
     priv->buffer = NULL;
-#if GLIB_VERSION_CUR_STABLE >= GLIB_2_32
+#if GLIB_VERSION_CUR_STABLE >= GLIB_VERSION_2_32
     priv->mutex = g_slice_new0 (GMutex);
     g_mutex_init (priv->mutex);
 #else
