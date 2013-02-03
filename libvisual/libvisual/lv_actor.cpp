@@ -60,9 +60,10 @@ namespace LV {
 
   Actor::Impl::~Impl ()
   {
-      delete get_actor_plugin ()->songinfo;
-
-      visual_plugin_unload (plugin);
+      if (plugin) {
+          delete get_actor_plugin ()->songinfo;
+          visual_plugin_unload (plugin);
+      }
 
       delete ditherpal;
   }

@@ -58,7 +58,9 @@ namespace LV {
 
   Morph::Impl::~Impl ()
   {
-      visual_plugin_unload (plugin);
+      if (plugin) {
+          visual_plugin_unload (plugin);
+      }
 
       delete morphpal;
   }

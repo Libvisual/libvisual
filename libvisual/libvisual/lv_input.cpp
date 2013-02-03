@@ -50,7 +50,9 @@ namespace LV {
 
   Input::Impl::~Impl ()
   {
-      visual_plugin_unload (plugin);
+      if (plugin) {
+          visual_plugin_unload (plugin);
+      }
   }
 
   VisInputPlugin* Input::Impl::get_input_plugin () const
