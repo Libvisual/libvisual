@@ -163,7 +163,7 @@ namespace LV
       PluginRegistry::destroy ();
       TimeSystem::shutdown ();
 
-      visual_object_unref (VISUAL_OBJECT (m_impl->params));
+      visual_param_list_free (m_impl->params);
   }
 
 } // LV namespace
