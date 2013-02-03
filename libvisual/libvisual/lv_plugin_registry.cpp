@@ -17,6 +17,8 @@ namespace LV {
 
   namespace {
     typedef std::unordered_map<PluginType, PluginList, std::hash<int>> PluginListMap;
+
+    typedef const VisPluginInfo *(*PluginGetInfoFunc)();
   }
 
   class PluginRegistry::Impl
@@ -46,7 +48,7 @@ namespace LV {
           }
 
           auto get_plugin_info =
-              reinterpret_cast<VisPluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
+              reinterpret_cast<PluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
 
           if (!get_plugin_info) {
               visual_log (VISUAL_LOG_ERROR, "Cannot get function that returns plugin info");

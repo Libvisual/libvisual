@@ -74,17 +74,13 @@ namespace LV {
 
 } // LV namespace
 
-int visual_plugin_events_pump (VisPluginData *plugin)
+void visual_plugin_events_pump (VisPluginData *plugin)
 {
-    visual_return_val_if_fail (plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_if_fail (plugin != nullptr);
 
     if (plugin->info->events) {
         plugin->info->events (plugin, plugin->eventqueue);
-
-        return VISUAL_OK;
     }
-
-    return -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER;
 }
 
 VisEventQueue *visual_plugin_get_event_queue (VisPluginData *plugin)
@@ -178,10 +174,10 @@ VisPluginData *visual_plugin_load (VisPluginType type, const char *name)
 
 int visual_plugin_realize (VisPluginData *plugin)
 {
-    visual_return_val_if_fail (plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_val_if_fail (plugin != nullptr, FALSE);
 
     if (plugin->realized) {
-        return -VISUAL_ERROR_PLUGIN_ALREADY_REALIZED;
+        return TRUE;
     }
 
     auto params = visual_plugin_get_params (plugin);
@@ -191,7 +187,7 @@ int visual_plugin_realize (VisPluginData *plugin)
     plugin->info->init (plugin);
     plugin->realized = TRUE;
 
-    return VISUAL_OK;
+    return TRUE;
 }
 
 int visual_plugin_is_realized (VisPluginData *plugin)
