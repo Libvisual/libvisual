@@ -616,9 +616,6 @@ namespace LV {
        * else we can get into trouble especially with GL, also when
        * switching away from a GL plugin this is needed */
       if (m_impl->morphing) {
-          visual_return_if_fail (m_impl->actmorph);
-          visual_return_if_fail (m_impl->actmorph->get_plugin () != nullptr);
-
           if (!m_impl->actmorph->get_plugin ()->realized) {
               m_impl->actmorph->realize ();
 
@@ -627,7 +624,6 @@ namespace LV {
 
           /* When we've got multiple switch events without a sync we need
            * to realize the main actor as well */
-          visual_return_if_fail (m_impl->actor->get_plugin () != nullptr);
           if (!m_impl->actor->get_plugin ()->realized) {
               m_impl->actor->realize ();
 
@@ -636,7 +632,6 @@ namespace LV {
 
           /* When the style is DIRECT or the context is GL we shouldn't try
            * to morph and instead finalize at once */
-          visual_return_if_fail (m_impl->actor->get_video ());
           if (!m_impl->use_morph || m_impl->actor->get_video ()->get_depth () == VISUAL_VIDEO_DEPTH_GL) {
 
               switch_finalize ();
@@ -654,10 +649,6 @@ namespace LV {
       m_impl->actor->run (audio);
 
       if (m_impl->morphing) {
-          visual_return_if_fail (m_impl->actmorph);
-          visual_return_if_fail (m_impl->actmorph->get_video ());
-          visual_return_if_fail (m_impl->actor->get_video ());
-
           if (m_impl->use_morph &&
               m_impl->actmorph->get_video ()->get_depth () != VISUAL_VIDEO_DEPTH_GL &&
               m_impl->actor->get_video ()->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
