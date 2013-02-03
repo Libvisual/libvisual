@@ -56,7 +56,6 @@
 #include <libvisual/lv_rectangle.h>
 #include <libvisual/lv_gl.h>
 #include <libvisual/lv_math.h>
-#include <libvisual/lv_os.h>
 #include <libvisual/lv_alpha_blend.h>
 #include <libvisual/lv_plugin_registry.h>
 #include <libvisual/lv_util.h>

@@ -59,7 +59,6 @@ SET(libvisual_HEADERS
   lv_rectangle.h
   lv_buffer.h
   lv_collection.h
-  lv_os.h
   lv_math.h
   lv_gl.h
   lv_defines.h
@@ -86,7 +85,6 @@ SET(libvisual_SOURCES
   lv_error.c
   lv_object.c
   lv_collection.c
-  lv_os.c
   lv_math.c
   lv_gl.c
   lv_alpha_blend.c
