@@ -39,7 +39,7 @@ namespace LV {
       VideoPtr  actmorphvideo;
       VisActor* actmorph;
 
-      VisInput* input;
+      InputPtr  input;
 
       bool         use_morph;
       VisMorph*    morph;
@@ -63,7 +63,7 @@ namespace LV {
       VisVideoDepth get_suitable_depth (VisVideoDepth depth);
 
 	  void set_actor (VisActor* actor);
-	  void set_input (VisInput* input);
+	  void set_input (InputPtr const& input);
   };
 
   VisVideoDepth Bin::Impl::get_suitable_depth (VisVideoDepth depthflag)
@@ -114,9 +114,6 @@ namespace LV {
       if (actor)
           visual_actor_unref (actor);
 
-      if (input)
-          visual_object_unref (VISUAL_OBJECT (input));
-
       if (morph)
           visual_object_unref (VISUAL_OBJECT (morph));
 
@@ -137,17 +134,9 @@ namespace LV {
       }
   }
 
-  void Bin::Impl::set_input (VisInput* new_input)
+  void Bin::Impl::set_input (InputPtr const& new_input)
   {
-      if (input) {
-          visual_object_unref (VISUAL_OBJECT (input));
-      }
-
       input = new_input;
-
-      if (input) {
-          visual_object_ref (VISUAL_OBJECT (input));
-      }
   }
 
   Bin::Bin ()
@@ -167,7 +156,7 @@ namespace LV {
           visual_actor_realize (m_impl->actor);
 
       if (m_impl->input)
-          visual_input_realize (m_impl->input);
+          m_impl->input->realize ();
 
       if (m_impl->morph)
           visual_morph_realize (m_impl->morph);
@@ -178,7 +167,7 @@ namespace LV {
       return m_impl->actor;
   }
 
-  VisInput *Bin::get_input () const
+  InputPtr const& Bin::get_input () const
   {
       return m_impl->input;
   }
@@ -208,10 +197,10 @@ namespace LV {
       return m_impl->morph;
   }
 
-  bool Bin::connect (VisActor *actor, VisInput *input)
+  bool Bin::connect (VisActor *actor, InputPtr const& input)
   {
       visual_return_val_if_fail (actor != nullptr, false);
-      visual_return_val_if_fail (input != nullptr, false);
+      visual_return_val_if_fail (input, false);
 
       m_impl->set_actor (actor);
       m_impl->set_input (input);
@@ -236,8 +225,8 @@ namespace LV {
       visual_return_val_if_fail (actor != nullptr, false);
 
       /* Create the input */
-      auto input = visual_input_new (inname.c_str ());
-      visual_return_val_if_fail (input != nullptr, false);
+      auto input = Input::load (inname);
+      visual_return_val_if_fail (input, false);
 
       /* Connect */
       if (!connect (actor, input)) {
@@ -652,9 +641,9 @@ namespace LV {
   void Bin::run ()
   {
       visual_return_if_fail (m_impl->actor != nullptr);
-      visual_return_if_fail (m_impl->input != nullptr);
+      visual_return_if_fail (m_impl->input);
 
-      visual_input_run (m_impl->input);
+      m_impl->input->run ();
 
       /* If we have a direct switch, do this BEFORE we run the actor,
        * else we can get into trouble especially with GL, also when
@@ -693,7 +682,9 @@ namespace LV {
 
       visual_actor_realize (m_impl->actor);
 
-      visual_actor_run (m_impl->actor, visual_input_get_audio (m_impl->input));
+      auto audio = const_cast<Audio*> (&m_impl->input->get_audio ());
+
+      visual_actor_run (m_impl->actor, audio);
 
       if (m_impl->morphing) {
           visual_return_if_fail (m_impl->actmorph != nullptr);
@@ -704,7 +695,7 @@ namespace LV {
               visual_actor_get_video (m_impl->actmorph)->get_depth () != VISUAL_VIDEO_DEPTH_GL &&
               visual_actor_get_video (m_impl->actor)->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
 
-              visual_actor_run (m_impl->actmorph, visual_input_get_audio (m_impl->input));
+              visual_actor_run (m_impl->actmorph, audio);
 
               if (!m_impl->morph || !visual_morph_get_plugin (m_impl->morph)) {
                   switch_finalize ();
@@ -714,7 +705,7 @@ namespace LV {
               /* Same goes for the morph, we realize it here for depth changes
                * (especially the openGL case */
               visual_morph_realize (m_impl->morph);
-              visual_morph_run (m_impl->morph, visual_input_get_audio (m_impl->input), visual_actor_get_video (m_impl->actor), visual_actor_get_video (m_impl->actmorph));
+              visual_morph_run (m_impl->morph, audio, visual_actor_get_video (m_impl->actor), visual_actor_get_video (m_impl->actmorph));
 
               if (visual_morph_is_done (m_impl->morph))
                   switch_finalize ();

@@ -160,7 +160,6 @@ WidgetVisualization::WidgetVisualization(LCDCore *v, std::string n, Json::Value 
     bin_->connect(actor_plugin_, input_plugin_);
 
     actor_ = bin_->get_actor();
-    input_ = bin_->get_input();
 
     // Set depth
     int depthflag = visual_actor_get_supported_depths(actor_);

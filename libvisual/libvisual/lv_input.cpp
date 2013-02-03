@@ -1,9 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -25,152 +26,107 @@
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
 
-namespace {
+namespace LV {
 
-  LV::PluginList const&
-  get_input_plugin_list ()
+  class Input::Impl
   {
-      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
+  public:
+      VisPluginData*              plugin;
+      Audio                       audio;
+      std::function<bool(Audio&)> callback;
+
+      Impl ();
+      ~Impl ();
+
+      VisInputPlugin* get_input_plugin () const;
+  };
+
+  Input::Impl::Impl ()
+      : plugin {nullptr}
+  {
+      // nothing
   }
 
-} // anonymous namespace
+  Input::Impl::~Impl ()
+  {
+      visual_plugin_unload (plugin);
+  }
 
-struct _VisInput {
-    VisObject                   object;
-    VisPluginData              *plugin;
-    VisAudio                   *audio;
-    VisInputUploadCallbackFunc  callback;
-};
+  VisInputPlugin* Input::Impl::get_input_plugin () const
+  {
+      return reinterpret_cast<VisInputPlugin*> (plugin->info->plugin);
+  }
 
-static int visual_input_init (VisInput *input, const char *inputname);
+  InputPtr Input::load (std::string const& name)
+  {
+      try {
+          return new Input{name};
+      }
+      catch (std::runtime_error& error) {
+          visual_log (VISUAL_LOG_ERROR, "%s", error.what ());
+          return nullptr;
+      }
+  }
 
-static void input_dtor (VisObject *object);
+  Input::Input (std::string const& name)
+      : m_impl      {new Impl}
+      , m_ref_count {1}
+  {
+      if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_INPUT, name)) {
+          throw std::runtime_error {"Input plugin not found"};
+      }
 
-static VisInputPlugin *get_input_plugin (VisInput *input);
+      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_INPUT, name.c_str ());
+      if (!m_impl->plugin) {
+          throw std::runtime_error {"Failed to load input plugin"};
+      }
+  }
 
-static void input_dtor (VisObject *object)
-{
-    auto input = VISUAL_INPUT (object);
+  Input::~Input ()
+  {
+      // nothing
+  }
 
-    if (input->plugin)
-        visual_plugin_unload (input->plugin);
+  bool Input::realize ()
+  {
+      if (m_impl->callback) {
+          return true;
+      }
 
-    visual_audio_free (input->audio);
-}
+      return visual_plugin_realize (m_impl->plugin);
+  }
 
-static VisInputPlugin *get_input_plugin (VisInput *input)
-{
-    visual_return_val_if_fail (input != nullptr, nullptr);
-    visual_return_val_if_fail (input->plugin != nullptr, nullptr);
+  VisPluginData* Input::get_plugin ()
+  {
+      return m_impl->plugin;
+  }
 
-    auto inplugin = VISUAL_INPUT_PLUGIN (input->plugin->info->plugin);
+  void Input::set_callback (std::function<bool(Audio&)> const& callback)
+  {
+      m_impl->callback = callback;
+  }
 
-    return inplugin;
-}
+  Audio const& Input::get_audio ()
+  {
+      return m_impl->audio;
+  }
 
-VisPluginData *visual_input_get_plugin (VisInput *input)
-{
-    return input->plugin;
-}
+  bool Input::run ()
+  {
+      if (m_impl->callback) {
+          m_impl->callback (m_impl->audio);
+          return true;
+      }
 
-const char *visual_input_get_next_by_name (const char *name)
-{
-    return LV::plugin_get_next_by_name (get_input_plugin_list (), name);
-}
+      auto input_plugin = m_impl->get_input_plugin ();
 
-const char *visual_input_get_prev_by_name (const char *name)
-{
-    return LV::plugin_get_prev_by_name (get_input_plugin_list (), name);
-}
+      if (!input_plugin) {
+          visual_log (VISUAL_LOG_ERROR, "The input plugin is not loaded correctly.");
+          return false;
+      }
 
-VisInput *visual_input_new (const char *inputname)
-{
-    auto input = visual_mem_new0 (VisInput, 1);
+      input_plugin->upload (m_impl->plugin, &m_impl->audio);
 
-    auto result = visual_input_init (input, inputname);
-    if (result != VISUAL_OK) {
-        visual_mem_free (input);
-        return nullptr;
-    }
-
-    return input;
-}
-
-int visual_input_init (VisInput *input, const char *inputname)
-{
-    visual_return_val_if_fail (input != nullptr, -VISUAL_ERROR_INPUT_NULL);
-
-    if (inputname && get_input_plugin_list ().empty ()) {
-        visual_log (VISUAL_LOG_ERROR, "the plugin list is empty");
-
-        return -VISUAL_ERROR_PLUGIN_NO_LIST;
-    }
-
-    /* Do the VisObject initialization */
-    visual_object_init (VISUAL_OBJECT (input), input_dtor);
-
-    /* Reset the VisInput data */
-    input->audio = visual_audio_new ();
-    input->plugin = nullptr;
-    input->callback = nullptr;
-
-    if (!inputname)
-        return VISUAL_OK;
-
-    if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_INPUT, inputname)) {
-        return -VISUAL_ERROR_PLUGIN_NOT_FOUND;
-    }
-
-    input->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_INPUT, inputname);
-
-    return VISUAL_OK;
-}
-
-int visual_input_realize (VisInput *input)
-{
-    visual_return_val_if_fail (input != nullptr, -VISUAL_ERROR_INPUT_NULL);
-
-    if (input->plugin && !input->callback)
-        return visual_plugin_realize (input->plugin);
-
-    return VISUAL_OK;
-}
-
-int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *priv)
-{
-    visual_return_val_if_fail (input != nullptr, -VISUAL_ERROR_INPUT_NULL);
-
-    input->callback = callback;
-    visual_object_set_private (VISUAL_OBJECT (input), priv);
-
-    return VISUAL_OK;
-}
-
-VisAudio *visual_input_get_audio (VisInput *input)
-{
-    visual_return_val_if_fail (input != nullptr, nullptr);
-
-    return input->audio;
-}
-
-int visual_input_run (VisInput *input)
-{
-    visual_return_val_if_fail (input != nullptr, -VISUAL_ERROR_INPUT_NULL);
-
-    if (!input->callback) {
-        auto inplugin = get_input_plugin (input);
-
-        if (!inplugin) {
-            visual_log (VISUAL_LOG_ERROR, "The input plugin is not loaded correctly.");
-
-            return -VISUAL_ERROR_INPUT_PLUGIN_NULL;
-        }
-
-        inplugin->upload (input->plugin, input->audio);
-    } else
-        input->callback (input, input->audio, visual_object_get_private (VISUAL_OBJECT (input)));
-
-    //visual_audio_analyze (input->audio);
-
-    return VISUAL_OK;
+      return true;
+  }
 }

@@ -30,7 +30,7 @@ VisInput *visual_bin_get_input (VisBin *bin)
 {
     visual_return_val_if_fail (bin != nullptr, nullptr);
 
-    return bin->get_input ();
+    return bin->get_input ().get ();
 }
 
 void visual_bin_set_morph (VisBin *bin, const char *morphname)

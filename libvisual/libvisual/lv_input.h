@@ -33,14 +33,115 @@
  * @{
  */
 
-#define VISUAL_INPUT(obj)               (VISUAL_CHECK_CAST ((obj), VisInput))
-#define VISUAL_INPUT_PLUGIN(obj)            (VISUAL_CHECK_CAST ((obj), VisInputPlugin))
+#ifdef __cplusplus
+
+#include <libvisual/lv_intrusive_ptr.hpp>
+#include <memory>
+
+namespace LV {
+
+  class Input;
+
+  typedef LV::IntrusivePtr<Input> InputPtr;
+
+  class LV_API Input
+  {
+  public:
+
+      /**
+       * Creates a new Input with a plugin of a given name.
+       *
+       * @param name Name of plugin to load
+       *
+       * @return A new Input, or nullptr on failure.
+       */
+      static InputPtr load (std::string const& name);
+
+      ~Input ();
+
+      /**
+       * Returns the plugin object.
+       *
+       * @return Plugin object, or nullptr if none
+       */
+      VisPluginData* get_plugin ();
+
+      /**
+       * Realizes this Input.
+       *
+       * @return true on success, false otherwise
+       */
+      bool realize ();
+
+      /**
+       * Sets a PCM data callback.
+       *
+       * Used for adding a custom upload function.
+       *
+       * @note Setting a callback will bypass the plugin upload() method.
+       *
+       * @param callback  Callback
+       */
+      void set_callback (std::function<bool (Audio&)> const& callback);
+
+      Audio const& get_audio ();
+
+      /**
+       * Runs this Input.
+       *
+       * This function will call the plugin upload() method to
+       * retrieve audio samples. If a custom callback is set via
+       * set_callback(), the callback will be used instead.
+       *
+       * @param input Input object
+       *
+       * @return true on success, false otherwise
+       */
+      bool run ();
+
+  private:
+
+      friend void intrusive_ptr_add_ref (Input const* input);
+      friend void intrusive_ptr_release (Input const* input);
+
+      class Impl;
+      const std::unique_ptr<Impl> m_impl;
+
+      mutable unsigned int m_ref_count;
+
+      explicit Input (std::string const& name);
+  };
+
+  inline void intrusive_ptr_add_ref (Input const* input)
+  {
+      input->m_ref_count++;
+  }
+
+  inline void intrusive_ptr_release (Input const* input)
+  {
+      if (--input->m_ref_count == 0) {
+          delete input;
+      }
+  }
+
+} // LV namespace
+
+typedef LV::Input VisInput;
+
+#else
+
+typedef struct _VisInput VisInput;
+struct _VisInput;
+
+#endif /* __cplusplus */
+
+#define VISUAL_INPUT(obj)        (VISUAL_CHECK_CAST ((obj), VisInput))
+#define VISUAL_INPUT_PLUGIN(obj) (VISUAL_CHECK_CAST ((obj), VisInputPlugin))
 
 /**
  * Type defination that should be used in plugins to set the plugin type for an input  plugin.
  */
 
-typedef struct _VisInput VisInput;
 typedef struct _VisInputPlugin VisInputPlugin;
 
 /**
@@ -65,11 +166,6 @@ typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void
 typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
 
 /**
- * Input class.
- */
-struct _VisInput;
-
-/**
  * Input plugin class.
  */
 struct _VisInputPlugin {
@@ -79,14 +175,15 @@ struct _VisInputPlugin {
 
 LV_BEGIN_DECLS
 
-/**
- * Returns the plugin object that backs an Input.
- *
- * @param input Input object
- *
- * @return Plugin object, or NULL if none
- */
-LV_API VisPluginData *visual_input_get_plugin (VisInput *input);
+LV_API VisInput *visual_input_new     (const char *name);
+LV_API void      visual_input_ref     (VisInput *input);
+LV_API void      visual_input_unref   (VisInput *input);
+LV_API int       visual_input_realize (VisInput *input);
+LV_API int       visual_input_run     (VisInput *input);
+
+LV_API VisPluginData *visual_input_get_plugin  (VisInput *input);
+LV_API VisAudio      *visual_input_get_audio    (VisInput *audio);
+LV_API void           visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *user_data);
 
 /**
  * Returns the name of the next available input plugin.
@@ -109,55 +206,6 @@ LV_API const char *visual_input_get_next_by_name (const char *name);
  * @return Name of previous available plugin
  */
 LV_API const char *visual_input_get_prev_by_name (const char *name);
-
-/**
- * Creates a new Input with a plugin of a given name.
- *
- * @see visual_input_realize()
- *
- * @param name Name of plugin to load, or NULL to allocate an empty object
- *
- * @return A new Input, or NULL on failure.
- */
-LV_API VisInput *visual_input_new (const char *name);
-
-/**
- * Realizes an Input.
- *
- * @param input Input object
- *
- * @return VISUAL_OK on success
- */
-LV_API int visual_input_realize (VisInput *input);
-
-/**
- * Sets a PCM data callback for this Input.
- *
- * Used for adding a custom upload function.
- *
- * @note Setting a callback will bypass the plugin upload() method.
- *
- * @param input     Input object
- * @param callback  Callback
- * @param user_data Pointer passed to callback during invocations
- *
- * @return VISUAL_OK on success
- */
-LV_API int visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *user_data);
-
-LV_API VisAudio *visual_input_get_audio (VisInput *audio);
-
-/**
- * Runs the Input.
- *
- * This function will call the plugin upload() method to retrieve audio samples. If a custom callback is set
- * via visual_input_set_callback(), the callback will be used instead.
- *
- * @param input Input object
- *
- * @return VISUAL_OK on success
- */
-LV_API int visual_input_run (VisInput *input);
 
 LV_END_DECLS
 
