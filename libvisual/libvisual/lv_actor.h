@@ -58,6 +58,8 @@ namespace LV
        * @see realize()
        *
        * @param name Name of plugin to load
+       *
+       * @return New actor, or nullptr if plugin failed to load
        */
       static ActorPtr load (std::string const& name);
 
@@ -70,7 +72,7 @@ namespace LV
       /**
        * Returns the plugin object.
        *
-       * @return Plugin object, or nullptr if none
+       * @return Plugin object
        */
       VisPluginData* get_plugin ();
 
@@ -89,11 +91,11 @@ namespace LV
       SongInfo const* get_songinfo ();
 
       /**
-       * Returns the color palette used.
+       * Returns the colour palette used.
        *
-       * @note Called only when rendering in 8-bit colour mode.
+       * @note Only 8-bit renders will have colour palettes.
        *
-       * @return Colour palette
+       * @return Colour palette, or null if there is none
        */
       Palette const* get_palette ();
 

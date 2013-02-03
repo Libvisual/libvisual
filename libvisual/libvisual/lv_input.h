@@ -62,7 +62,7 @@ namespace LV {
       /**
        * Returns the plugin object.
        *
-       * @return Plugin object, or nullptr if none
+       * @return Plugin object
        */
       VisPluginData* get_plugin ();
 

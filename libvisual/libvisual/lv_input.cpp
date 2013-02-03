@@ -25,6 +25,7 @@
 #include "lv_input.h"
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
+#include <stdexcept>
 
 namespace LV {
 
@@ -62,7 +63,7 @@ namespace LV {
       try {
           return new Input{name};
       }
-      catch (std::runtime_error& error) {
+      catch (std::exception& error) {
           visual_log (VISUAL_LOG_ERROR, "%s", error.what ());
           return nullptr;
       }
