@@ -89,7 +89,7 @@ const VisPluginInfo *get_plugin_info (void)
 		.init     = lv_nebulus_init,
 		.cleanup  = lv_nebulus_cleanup,
 		.events   = lv_nebulus_events,
-		.plugin   = VISUAL_OBJECT (&actor)
+		.plugin   = &actor
 	};
 
 	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);

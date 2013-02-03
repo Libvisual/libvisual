@@ -66,7 +66,7 @@ const VisPluginInfo *get_plugin_info (void)
         .cleanup = lv_dump_cleanup,
         .events  = lv_dump_events,
 
-        .plugin = VISUAL_OBJECT (&actor)
+        .plugin  = &actor
     };
 
     return &info;

@@ -58,8 +58,7 @@ DrvVideo::DrvVideo(std::string name, LCDControl *v,
 
 // Destructor
 DrvVideo::~DrvVideo() {
-    visual_video_free_buffer(video_);
-    visual_object_unref(VISUAL_OBJECT(video_));
+    visual_video_unref(video_);
 }
 
 // Initialize device and libusb

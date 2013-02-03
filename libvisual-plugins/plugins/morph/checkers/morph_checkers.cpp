@@ -65,7 +65,7 @@ const VisPluginInfo *get_plugin_info ()
 
     info.init     = lv_morph_checkers_init;
     info.cleanup  = lv_morph_checkers_cleanup;
-    info.plugin   = VISUAL_OBJECT (&morph);
+    info.plugin   = &morph;
 
     return &info;
 }
