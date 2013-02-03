@@ -1,9 +1,5 @@
 #include "config.h"
 #include "lv_plugin_registry.h"
-#include "lv_error.h"
-
-#include <cstdio>
-#include <cstdlib>
 
 void visual_plugin_registry_add_path (const char *path)
 {
