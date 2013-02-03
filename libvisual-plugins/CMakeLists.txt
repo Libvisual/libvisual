@@ -106,6 +106,9 @@ ELSE()
     MESSAGE(WARNING "No OpenGL ES 1.x implementation found, OpenGL support is now disabled")
   ENDIF()
 ENDIF()
+IF(NOT HAVE_OPENGL)
+  MESSAGE(WARNING "OpenGL is required to build OpenGL actors")
+ENDIF()
 
 # Plugin build options
 OPTION(ENABLE_ALPHABLEND  "Build the Alphablend morph plugin" yes)

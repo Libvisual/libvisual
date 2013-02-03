@@ -199,6 +199,14 @@ IF(ENABLE_TOOLS)
   FIND_PACKAGE(OpenGL)
   SET(HAVE_GL ${OPENGL_FOUND})
 
+  # Give users heads up about needing SDL and OpenGL for visual display
+  IF(NOT HAVE_SDL)
+    MESSAGE(WARNING "SDL is required for lv-tool to support visual display")
+  ENDIF()
+  IF(NOT HAVE_GL)
+    MESSAGE(WARNING "OpenGL is required for lv-tool to support OpenGL visualisations")
+  ENDIF()
+
   ADD_SUBDIRECTORY(tools/lv-tool)
   ADD_SUBDIRECTORY(tools/benchmarks)
 ENDIF()
