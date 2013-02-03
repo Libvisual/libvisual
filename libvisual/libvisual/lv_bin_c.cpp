@@ -44,7 +44,7 @@ VisMorph *visual_bin_get_morph (VisBin *bin)
 {
     visual_return_val_if_fail (bin != nullptr, nullptr);
 
-    return bin->get_morph ();
+    return bin->get_morph ().get ();
 }
 
 void visual_bin_connect (VisBin *bin, const char *actname, const char *inname)

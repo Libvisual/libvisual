@@ -65,12 +65,11 @@ namespace LV {
 
 	  ActorPtr const& get_actor () const;
 	  InputPtr const& get_input () const;
+	  MorphPtr const& get_morph () const;
 
-	  void set_morph (std::string const& morphname);
+	  void set_morph (std::string const& morph_name);
 
-	  VisMorph* get_morph () const;
-
-	  bool connect (std::string const& actname, std::string const& inname);
+	  bool connect (std::string const& actor_name, std::string const& input_name);
 
 	  void sync (bool noevent);
 
