@@ -47,10 +47,7 @@ enum {
     VISUAL_ERROR_FAILED_CHECK,          /**< Failed an assertion check */
 
 	/* Error entries for the VisActor system */
-	VISUAL_ERROR_ACTOR_NULL,            /**< The VisActor is NULL. */
 	VISUAL_ERROR_ACTOR_VIDEO_NULL,      /**< The VisVideo target member in the VisActor is NULL. */
-	VISUAL_ERROR_ACTOR_PLUGIN_NULL,     /**< The VisActor plugin in this context is NULL. */
-	VISUAL_ERROR_ACTOR_GL_NEGOTIATE,    /**< Tried depth forcing a GL VisACtor. */
 
 	/* Error entries for the VisCollection system */
 	VISUAL_ERROR_COLLECTION_NULL,			/**< The VisCollection is NULL. */
@@ -59,32 +56,14 @@ enum {
 	/* Error entries for the VisError system */
 	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */
 
-	/* Error entries for the VisInput system */
-	VISUAL_ERROR_INPUT_NULL,			/**< The VisInput is NULL. */
-	VISUAL_ERROR_INPUT_PLUGIN_NULL,			/**< The VisInputPlugin is NULL. */
-
 	/* Error entries for the VisList system */
 	VISUAL_ERROR_LIST_NULL,				/**< The VisList is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_NULL,			/**< The VisListEntry is NULL. */
 	VISUAL_ERROR_LIST_ENTRY_INVALID,		/**< The VisListEntry is invalid. */
 
-	/* Error entries for the VisMorph system */
-	VISUAL_ERROR_MORPH_NULL,			/**< The VisMorph is NULL. */
-	VISUAL_ERROR_MORPH_PLUGIN_NULL,			/**< The VisMorphPlugin is NULL. */
-
 	/* Error entries for the VisOS system */
 	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't succesful. */
 	VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED,		/**< Scheduler operations are not supported on the platform. */
-
-	/* Error entries for the VisPlugin system */
-	VISUAL_ERROR_PLUGIN_NULL,			/**< The VisPluginData is NULL. */
-	VISUAL_ERROR_PLUGIN_INFO_NULL,			/**< The VisPluginInfo is NULL. */
-	VISUAL_ERROR_PLUGIN_REF_NULL,			/**< The VisPluginRef is NULL. */
-	VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER,		/**< The plugin has no event handler registrated. */
-	VISUAL_ERROR_PLUGIN_HANDLE_NULL,		/**< The dlopen handle of the plugin is NULL. */
-	VISUAL_ERROR_PLUGIN_ALREADY_REALIZED,		/**< The plugin is already realized. */
-	VISUAL_ERROR_PLUGIN_NO_LIST,			/**< The plugin list can't be found. */
-	VISUAL_ERROR_PLUGIN_NOT_FOUND,          /**< The plugin can't be found */
 
 	/* Error entries for the VisVideo system */
 	VISUAL_ERROR_VIDEO_INVALID_DEPTH,       /**< Depth is invalid */

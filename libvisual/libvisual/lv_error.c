@@ -38,37 +38,17 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_IMPOSSIBLE] =			N_("An impossible event occurred"),
 	[VISUAL_ERROR_FAILED_CHECK] =       N_("Assertion check failed"),
 
-	[VISUAL_ERROR_ACTOR_NULL] =			N_ ("VisActor is NULL"),
-	[VISUAL_ERROR_ACTOR_VIDEO_NULL] =		N_("VisActor it's video is NULL"),
-	[VISUAL_ERROR_ACTOR_PLUGIN_NULL] =		N_("VisActor it's plugin is NULL"),
-	[VISUAL_ERROR_ACTOR_GL_NEGOTIATE] =		N_("VisActor failed while trying to forcefully negotiate a GL surface"),
-
 	[VISUAL_ERROR_COLLECTION_NULL] =		N_("VisCollection is NULL"),
 	[VISUAL_ERROR_COLLECTION_ITER_NULL] =		N_("VisCollectionIter is NULL"),
 
 	[VISUAL_ERROR_ERROR_HANDLER_NULL] =		N_("Global error handler is NULL"),
 
-	[VISUAL_ERROR_INPUT_NULL] =			N_("VisInput is NULL"),
-	[VISUAL_ERROR_INPUT_PLUGIN_NULL] =		N_("VisInput it's plugin is NULL"),
-
 	[VISUAL_ERROR_LIST_NULL] =			N_("VisList is NULL"),
 	[VISUAL_ERROR_LIST_ENTRY_NULL] =		N_("VisListEntry is NULL"),
 	[VISUAL_ERROR_LIST_ENTRY_INVALID] =		N_("VisListEntry is invalid"),
 
-	[VISUAL_ERROR_MORPH_NULL] =			N_("VisMorph is NULL"),
-	[VISUAL_ERROR_MORPH_PLUGIN_NULL] =		N_("VisMorph it's plugin is NULL"),
-
 	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't succesful."),
 	[VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED] =		N_("Scheduler operations are not supported on the platform."),
-
-	[VISUAL_ERROR_PLUGIN_NULL] =			N_("VisPluginData is NULL"),
-	[VISUAL_ERROR_PLUGIN_INFO_NULL] =		N_("VisPluginInfo is NULL"),
-	[VISUAL_ERROR_PLUGIN_REF_NULL] =		N_("VisPluginRef is NULL"),
-	[VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER] =	N_("Plugin does not have an event handler"),
-	[VISUAL_ERROR_PLUGIN_HANDLE_NULL] =		N_("Plugin handle is NULL"),
-	[VISUAL_ERROR_PLUGIN_ALREADY_REALIZED] =	N_("Plugin is already realized"),
-	[VISUAL_ERROR_PLUGIN_NO_LIST] =			N_("Plugin list can not be found in memory"),
-	[VISUAL_ERROR_PLUGIN_NOT_FOUND] =       N_("Plugin cannot be found"),
 
 	[VISUAL_ERROR_OBJECT_DTOR_FAILED] =		N_("VisObject destruction failed"),
 	[VISUAL_ERROR_OBJECT_NULL] =			N_("VisObject is NULL"),
