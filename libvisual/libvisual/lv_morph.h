@@ -241,7 +241,6 @@ typedef void (*VisPluginMorphApplyFunc) (VisPluginData *plugin,
  * Morph plugin class.
  */
 struct _VisMorphPlugin {
-    VisObject                 object;         /**< Parent  */
     VisPluginMorphPaletteFunc palette;        /**< Returns the color palette (only for 8-bit morphs) */
     VisPluginMorphApplyFunc   apply;          /**< Renders the morph */
     int                       requests_audio; /**< Flag indicating if morph plugin uses audio data */

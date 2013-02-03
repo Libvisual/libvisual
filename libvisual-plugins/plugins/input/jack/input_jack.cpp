@@ -57,7 +57,6 @@ namespace {
 VisPluginInfo const* get_plugin_info ()
 {
     static VisInputPlugin input = {
-        { 0 },
         inp_jack_upload
     };
 

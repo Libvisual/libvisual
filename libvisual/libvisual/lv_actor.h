@@ -223,7 +223,6 @@ typedef void (*VisPluginActorRenderFunc)(VisPluginData *plugin, VisVideo *video,
  */
 typedef struct _VisActorPlugin VisActorPlugin;
 struct _VisActorPlugin {
-	VisObject                     object;         /**< The VisObject data. */
 	VisPluginActorRequisitionFunc requisition;    /**< Returns the preferred rendering dimensions */
 	VisPluginActorPaletteFunc     palette;        /**< Returns the colour palette of the actor */
 	VisPluginActorRenderFunc      render;         /**< Renders the actor */

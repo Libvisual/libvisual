@@ -170,7 +170,6 @@ typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
  * Input plugin class.
  */
 struct _VisInputPlugin {
-    VisObject                object;    /**< Parent class. */
     VisPluginInputUploadFunc upload;    /**< Sample upload function */
 };
 
