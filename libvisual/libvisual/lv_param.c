@@ -94,14 +94,14 @@ void visual_param_list_free (VisParamList *self)
     visual_mem_free (self);
 }
 
-void visual_param_list_set_eventqueue (VisParamList *self, VisEventQueue *eventqueue)
+void visual_param_list_set_event_queue (VisParamList *self, VisEventQueue *eventqueue)
 {
     visual_return_if_fail (self != NULL);
 
     self->eventqueue = eventqueue;
 }
 
-VisEventQueue *visual_param_list_get_eventqueue (VisParamList *self)
+VisEventQueue *visual_param_list_get_event_queue (VisParamList *self)
 {
     visual_return_val_if_fail (self != NULL, NULL);
 

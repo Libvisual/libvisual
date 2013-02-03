@@ -497,7 +497,7 @@ int main (int argc, char **argv)
             // Handle all events
             display.drain_events(localqueue);
 
-            auto pluginqueue = visual_plugin_get_eventqueue (bin.get_actor()->get_plugin ());
+            auto pluginqueue = visual_plugin_get_event_queue (bin.get_actor()->get_plugin ());
 
             while (localqueue.poll(ev))
             {

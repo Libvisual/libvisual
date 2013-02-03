@@ -30,6 +30,20 @@
 
 namespace LV {
 
+  class PluginData
+  {
+  public:
+
+      VisPluginInfo const *info;
+
+      EventQueue          *eventqueue;
+      VisParamList        *params;
+      int                  plugflags;
+      RandomContext       *random;
+      bool                 realized;
+      void                *priv;
+  };
+
   const char *plugin_get_next_by_name (PluginList const& list, const char *name)
   {
       for (unsigned int i = 0; i < list.size (); i++)
@@ -73,7 +87,7 @@ int visual_plugin_events_pump (VisPluginData *plugin)
     return -VISUAL_ERROR_PLUGIN_NO_EVENT_HANDLER;
 }
 
-VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin)
+VisEventQueue *visual_plugin_get_event_queue (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != nullptr, nullptr);
 
@@ -132,21 +146,17 @@ static void visual_plugin_free (VisPluginData *plugin)
     visual_mem_free (plugin);
 }
 
-int visual_plugin_unload (VisPluginData *plugin)
+void visual_plugin_unload (VisPluginData *plugin)
 {
-    visual_return_val_if_fail (plugin != nullptr, -VISUAL_ERROR_PLUGIN_NULL);
+    visual_return_if_fail (plugin != nullptr);
 
-    if (plugin->realized)
+    if (plugin->realized) {
         plugin->info->cleanup (plugin);
+    }
 
-    if (plugin->info->plugin)
-        visual_object_unref (VISUAL_OBJECT (plugin->info->plugin));
-
-    visual_param_list_set_eventqueue (plugin->params, nullptr);
+    visual_param_list_set_event_queue (plugin->params, nullptr);
 
     visual_plugin_free (plugin);
-
-    return VISUAL_OK;
 }
 
 VisPluginData *visual_plugin_load (VisPluginType type, const char *name)
@@ -175,13 +185,20 @@ int visual_plugin_realize (VisPluginData *plugin)
     }
 
     auto params = visual_plugin_get_params (plugin);
-    visual_param_list_set_eventqueue (params, plugin->eventqueue);
+    visual_param_list_set_event_queue (params, plugin->eventqueue);
 
     visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
     plugin->info->init (plugin);
     plugin->realized = TRUE;
 
     return VISUAL_OK;
+}
+
+int visual_plugin_is_realized (VisPluginData *plugin)
+{
+    visual_return_val_if_fail (plugin != nullptr, FALSE);
+
+    return plugin->realized;
 }
 
 void visual_plugin_set_private (VisPluginData *plugin, void *priv)

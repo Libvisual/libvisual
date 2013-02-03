@@ -44,7 +44,7 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
             return nullptr;
 
         auto plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, prev);
-        auto actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
+        auto actplugin = VISUAL_ACTOR_PLUGIN (visual_plugin_get_info (plugin)->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
 
@@ -66,7 +66,7 @@ const char *visual_actor_get_next_by_name_gl (const char *name)
             return nullptr;
 
         VisPluginData*  plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, next);
-        VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
+        VisActorPlugin* actplugin = VISUAL_ACTOR_PLUGIN (visual_plugin_get_info (plugin)->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
 
@@ -88,7 +88,7 @@ const char *visual_actor_get_prev_by_name_nogl (const char *name)
             return nullptr;
 
         auto plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, prev);
-        auto actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
+        auto actplugin = VISUAL_ACTOR_PLUGIN (visual_plugin_get_info (plugin)->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
 
@@ -110,7 +110,7 @@ const char *visual_actor_get_next_by_name_nogl (const char *name)
             return nullptr;
 
         auto plugin    = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, next);
-        auto actplugin = VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
+        auto actplugin = VISUAL_ACTOR_PLUGIN (visual_plugin_get_info (plugin)->plugin);
 
         have_gl = (actplugin->vidoptions.depth & VISUAL_VIDEO_DEPTH_GL) > 0;
 

@@ -70,7 +70,7 @@ namespace LV {
 
   VisActorPlugin* Actor::Impl::get_actor_plugin () const
   {
-      return VISUAL_ACTOR_PLUGIN (plugin->info->plugin);
+      return VISUAL_ACTOR_PLUGIN (visual_plugin_get_info (plugin)->plugin);
   }
 
   VisVideoDepth Actor::Impl::get_supported_depths ()
@@ -151,7 +151,7 @@ namespace LV {
   {
       visual_return_val_if_fail (m_impl->video, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
 
-      visual_log (VISUAL_LOG_INFO, "Negotiating plugin %s", m_impl->plugin->info->name);
+      visual_log (VISUAL_LOG_INFO, "Negotiating plugin %s", visual_plugin_get_info (m_impl->plugin)->name);
 
       m_impl->transform.reset ();
       m_impl->fitting.reset ();
@@ -201,7 +201,7 @@ namespace LV {
       }
 
       if (!noevent) {
-          visual_event_queue_add (plugin->eventqueue,
+          visual_event_queue_add (visual_plugin_get_event_queue (plugin),
                                   visual_event_new_resize (req_width, req_height));
       }
 
@@ -230,7 +230,7 @@ namespace LV {
       // here because plugins depend on this to receive information
       // about initial dimensions
       if (!noevent) {
-          visual_event_queue_add (plugin->eventqueue,
+          visual_event_queue_add (visual_plugin_get_event_queue (plugin),
                                   visual_event_new_resize (req_width, req_height));
       }
 
@@ -270,7 +270,7 @@ namespace LV {
 
           actplugin->songinfo->mark ();
 
-          visual_event_queue_add (visual_plugin_get_eventqueue (plugin),
+          visual_event_queue_add (visual_plugin_get_event_queue (plugin),
                                   visual_event_new_newsong (actplugin->songinfo));
 
           visual_songinfo_copy (&m_impl->songcompare, actplugin->songinfo);

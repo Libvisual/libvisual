@@ -108,7 +108,7 @@ int lcdcontrol_init (VisPluginData *plugin)
 
     //priv->thread = visual_thread_create(my_thread_func, priv, TRUE);
 
-    priv->control = new LCDControl((void *)priv, plugin->eventqueue);
+    priv->control = new LCDControl((void *)priv, visual_plugin_get_event_queue (plugin));
 
     priv->control->Start();
 
@@ -126,8 +126,6 @@ int lcdcontrol_init (VisPluginData *plugin)
         return -1;
     }
 */
-    plugin->eventqueue = visual_event_queue_new();
-
 
 	return 0;
 }

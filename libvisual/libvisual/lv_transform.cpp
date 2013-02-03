@@ -58,7 +58,7 @@ static VisTransformPlugin *get_transform_plugin (VisTransform *transform)
     visual_return_val_if_fail (transform != nullptr, nullptr);
     visual_return_val_if_fail (transform->plugin != nullptr, nullptr);
 
-    return VISUAL_TRANSFORM_PLUGIN (transform->plugin->info->plugin);
+    return VISUAL_TRANSFORM_PLUGIN (visual_plugin_get_info (transform->plugin)->plugin);
 }
 
 VisPluginData *visual_transform_get_plugin (VisTransform *transform)
@@ -136,7 +136,7 @@ int visual_transform_video_negotiate (VisTransform *transform)
     if (!visual_video_depth_is_supported (depthflag, visual_video_get_depth (transform->video)))
         return -VISUAL_ERROR_TRANSFORM_NEGOTIATE;
 
-    visual_event_queue_add (transform->plugin->eventqueue,
+    visual_event_queue_add (visual_plugin_get_event_queue (transform->plugin),
                             visual_event_new_resize (visual_video_get_width (transform->video),
                                                      visual_video_get_height (transform->video)));
 

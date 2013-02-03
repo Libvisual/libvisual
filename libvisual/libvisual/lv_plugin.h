@@ -36,7 +36,6 @@
 
 #define VISUAL_PLUGINREF(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginRef))
 #define VISUAL_PLUGININFO(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginInfo))
-#define VISUAL_PLUGINDATA(obj)				(VISUAL_CHECK_CAST ((obj), VisPluginData))
 
 /**
  * Indicates at which version the plugin API is.
@@ -103,9 +102,25 @@ typedef enum {
     VISUAL_PLUGIN_TYPE_TRANSFORM
 } VisPluginType;
 
+#ifdef __cplusplus
+
+namespace LV {
+
+  class LV_API PluginData;
+
+} // LV namespace
+
+typedef LV::PluginData VisPluginData;
+
+#else
+
+typedef struct _VisPluginData VisPluginData;
+struct _VisPluginData;
+
+#endif
+
 typedef struct _VisPluginRef VisPluginRef;
 typedef struct _VisPluginInfo VisPluginInfo;
-typedef struct _VisPluginData VisPluginData;
 
 
 /* Plugin standard get_plugin_info method */
@@ -181,26 +196,7 @@ struct _VisPluginInfo {
 
 	int flags;            /**< Plugin flags from the VisPluginFlags enumerate. */
 
-	VisObject           *plugin;   /**< Pointer to the plugin specific data structures. */
-};
-
-/**
- * The VisPluginData structure is the main plugin structure, every plugin
- * is encapsulated in this.
- */
-struct _VisPluginData {
-	VisPluginInfo const *info;        /**< Pointer to the VisPluginInfo that is obtained from the plugin. */
-
-	VisEventQueue       *eventqueue;  /**< The plugin it's VisEventQueue for queueing events. */
-	VisParamList        *params;      /**< The plugin it's VisParamList in which VisParams can be placed. */
-	int                  plugflags;   /**< Plugin flags, currently unused but will be used in the future. */
-
-	VisRandomContext    *random;      /**< Pointer to the plugin it's private random context. It's highly adviced to use
-	                                     * the plugin it's randomize functions. The reason is so more advanced apps can
-	                                     * semi reproduce visuals. */
-
-	int                  realized;    /**< Flag that indicates if the plugin is realized. */
-	void                *priv;        /**< Private instance data */
+	void *plugin;         /**< Pointer to the plugin specific data structures. */
 };
 
 LV_BEGIN_DECLS
@@ -233,6 +229,8 @@ LV_API int visual_plugin_info_copy (VisPluginInfo *dest, VisPluginInfo const* sr
  */
 LV_API int visual_plugin_events_pump (VisPluginData *plugin);
 
+LV_API int visual_plugin_is_realized (VisPluginData *plugin);
+
 /**
  * Gives the event queue from a VisPluginData. This queue needs to be used
  * when you want to send events to the plugin.
@@ -243,7 +241,7 @@ LV_API int visual_plugin_events_pump (VisPluginData *plugin);
  *
  * @return A pointer to the requested VisEventQueue or NULL on failure.
  */
-LV_API VisEventQueue *visual_plugin_get_eventqueue (VisPluginData *plugin);
+LV_API VisEventQueue *visual_plugin_get_event_queue (VisPluginData *plugin);
 
 /**
  * Gives the VisPluginInfo related to a VisPluginData.
@@ -290,11 +288,8 @@ LV_API void *visual_plugin_get_private (VisPluginData *plugin);
  * given argument is no longer usable.
  *
  * @param plugin Pointer to the VisPluginData that needs to be unloaded.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_PLUGIN_NULL, -VISUAL_ERROR_PLUGIN_HANDLE_NULL or
- *	-VISUAL_ERROR_PLUGIN_REF_NULL on failure.
  */
-LV_API int visual_plugin_unload (VisPluginData *plugin);
+LV_API void visual_plugin_unload (VisPluginData *plugin);
 
 /**
  * Private function to load a plugin.

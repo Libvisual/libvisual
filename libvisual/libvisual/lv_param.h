@@ -69,7 +69,7 @@ LV_API void visual_param_list_free (VisParamList *self);
  * @param list       Parameter list
  * @param eventqueue Event queue to hook send parameter update events to
  */
-LV_API void visual_param_list_set_eventqueue (VisParamList *list, VisEventQueue *eventqueue);
+LV_API void visual_param_list_set_event_queue (VisParamList *list, VisEventQueue *eventqueue);
 
 /**
  * Returns the eventqueue object.
@@ -78,7 +78,7 @@ LV_API void visual_param_list_set_eventqueue (VisParamList *list, VisEventQueue 
  *
  * @return VisEventQueue object, or NULL on failure.
  */
-LV_API VisEventQueue *visual_param_list_get_eventqueue (VisParamList *list);
+LV_API VisEventQueue *visual_param_list_get_event_queue (VisParamList *list);
 
 /**
  * Returns the list of the entries

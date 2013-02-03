@@ -367,7 +367,7 @@ namespace LV {
   void Bin::switch_actor (std::string const& actor_name)
   {
       visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s",
-				  actor_name.c_str (), m_impl->actor->get_plugin ()->info->plugname);
+				  actor_name.c_str (), visual_plugin_get_info (m_impl->actor->get_plugin ())->plugname);
 
       if (m_impl->actmorph) {
           m_impl->actmorph.reset ();
@@ -616,7 +616,7 @@ namespace LV {
        * else we can get into trouble especially with GL, also when
        * switching away from a GL plugin this is needed */
       if (m_impl->morphing) {
-          if (!m_impl->actmorph->get_plugin ()->realized) {
+          if (!visual_plugin_is_realized (m_impl->actmorph->get_plugin ())) {
               m_impl->actmorph->realize ();
 
               m_impl->actmorph->video_negotiate (m_impl->depthforced, false, true);
@@ -624,7 +624,7 @@ namespace LV {
 
           /* When we've got multiple switch events without a sync we need
            * to realize the main actor as well */
-          if (!m_impl->actor->get_plugin ()->realized) {
+          if (!visual_plugin_is_realized (m_impl->actor->get_plugin ())) {
               m_impl->actor->realize ();
 
               m_impl->actor->video_negotiate (m_impl->depthforced, false, true);

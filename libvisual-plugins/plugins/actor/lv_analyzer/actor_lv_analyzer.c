@@ -82,7 +82,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int _bars(VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = plugin->priv;
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 	return priv->bars;
 }
 
