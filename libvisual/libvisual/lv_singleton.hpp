@@ -18,6 +18,9 @@ namespace LV {
 
       Singleton const& operator= (Singleton const&) = delete;
 
+      //! Destructor
+      virtual ~Singleton () {}
+
       //! Returns the singleton instance
       //!
       //! @return singleton instance

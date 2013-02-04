@@ -56,7 +56,7 @@ namespace LV {
 
       System (System const&) = delete;
 
-      ~System ();
+      virtual ~System ();
 
       /**
        * Returns the Libvisual version.
