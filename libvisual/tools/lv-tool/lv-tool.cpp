@@ -367,8 +367,10 @@ namespace {
 int main (int argc, char **argv)
 {
     // print warm welcome
-    std::cerr << argv[0] << " - " << PACKAGE_STRING << 
-    " (" << LV_REVISION << ") commandline tool - " << PACKAGE_URL << "\n";
+    std::cerr << visual_truncate_path (argv[0], 1) << " - "
+              << PACKAGE_STRING
+              << " (" << LV_REVISION << ") commandline tool - "
+              << PACKAGE_URL << "\n";
 
     // default loglevel
     visual_log_set_verbosity (VISUAL_LOG_ERROR);
