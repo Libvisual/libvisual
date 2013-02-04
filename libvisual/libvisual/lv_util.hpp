@@ -39,7 +39,7 @@ namespace LV {
   /**
    * Returns a null-terminated C string from a std::string, or nullptr if string is empty
    *
-   * @param input string
+   * @param string input string
    *
    * return C string, or nullptr
    */
