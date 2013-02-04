@@ -118,14 +118,14 @@ struct _VisDFT;
 
 LV_BEGIN_DECLS
 
-VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
-void    visual_dft_free (VisDFT *dft);
+LV_API VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
+LV_API void    visual_dft_free (VisDFT *dft);
 
-void visual_dft_perform (VisDFT *dft, float *output, float const *input);
+LV_API void visual_dft_perform (VisDFT *dft, float *output, float const *input);
 
-void visual_dft_log_scale (float *output, float const *input, unsigned int size);
-void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
-void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
+LV_API void visual_dft_log_scale (float *output, float const *input, unsigned int size);
+LV_API void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
+LV_API void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
 
 LV_END_DECLS
 
