@@ -36,12 +36,14 @@ namespace LV {
 
       VisPluginInfo const *info;
 
-      EventQueue          *eventqueue;
-      VisParamList        *params;
+      EventQueue           eventqueue;
+      ParamList            params;
       int                  plugflags;
-      RandomContext       *random;
+      RandomContext        random;
       bool                 realized;
       void                *priv;
+
+      PluginData ();
   };
 
   const char *plugin_get_next_by_name (PluginList const& list, const char *name)
@@ -72,6 +74,16 @@ namespace LV {
       return nullptr;
   }
 
+  PluginData::PluginData ()
+      : info      {nullptr}
+      , plugflags {0}
+      , random    {LV::rand ()}
+      , realized  {false}
+      , priv      {nullptr}
+  {
+      // nothing
+  }
+
 } // LV namespace
 
 void visual_plugin_events_pump (VisPluginData *plugin)
@@ -79,7 +91,7 @@ void visual_plugin_events_pump (VisPluginData *plugin)
     visual_return_if_fail (plugin != nullptr);
 
     if (plugin->info->events) {
-        plugin->info->events (plugin, plugin->eventqueue);
+        plugin->info->events (plugin, &plugin->eventqueue);
     }
 }
 
@@ -87,7 +99,7 @@ VisEventQueue *visual_plugin_get_event_queue (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != nullptr, nullptr);
 
-    return plugin->eventqueue;
+    return &plugin->eventqueue;
 }
 
 VisPluginInfo const* visual_plugin_get_info (VisPluginData *plugin)
@@ -101,14 +113,14 @@ VisParamList *visual_plugin_get_params (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != nullptr, nullptr);
 
-    return plugin->params;
+    return &plugin->params;
 }
 
 VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
 {
     visual_return_val_if_fail (plugin != nullptr, nullptr);
 
-    return plugin->random;
+    return &plugin->random;
 }
 
 void *visual_plugin_get_specific (VisPluginData *plugin)
@@ -123,23 +135,12 @@ void *visual_plugin_get_specific (VisPluginData *plugin)
 
 static VisPluginData *visual_plugin_new ()
 {
-    auto plugin = visual_mem_new0 (VisPluginData, 1);
-
-    plugin->params = new LV::ParamList;
-    plugin->eventqueue = new LV::EventQueue;
-
-    return plugin;
+    return new VisPluginData;
 }
 
 static void visual_plugin_free (VisPluginData *plugin)
 {
-    delete plugin->random;
-
-    delete plugin->params;
-
-    delete plugin->eventqueue;
-
-    visual_mem_free (plugin);
+    delete plugin;
 }
 
 void visual_plugin_unload (VisPluginData *plugin)
@@ -158,14 +159,12 @@ VisPluginData *visual_plugin_load (VisPluginType type, const char *name)
     // FIXME: Check if plugin has already been loaded
 
 	auto info = LV::PluginRegistry::instance()->get_plugin_info (type, name);
-	if (!info)
-		return 0;
+	if (!info) {
+		return nullptr;
+    }
 
     auto plugin = visual_plugin_new ();
-
-    plugin->info     = info;
-    plugin->realized = FALSE;
-    plugin->random   = new LV::RandomContext (LV::System::instance()->get_rng().get_int ());
+    plugin->info = info;
 
     return plugin;
 }
@@ -178,10 +177,10 @@ int visual_plugin_realize (VisPluginData *plugin)
         return TRUE;
     }
 
-    auto params = visual_plugin_get_params (plugin);
-    params->set_event_queue (*plugin->eventqueue);
-
     visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
+
+    auto params = visual_plugin_get_params (plugin);
+    params->set_event_queue (plugin->eventqueue);
 
     if (!plugin->info->init (plugin)) {
         visual_log (VISUAL_LOG_ERROR, "Failed to initialise plugin");
