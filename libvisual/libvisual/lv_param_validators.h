@@ -5,7 +5,21 @@
 #include <libvisual/lv_defines.h>
 #include <libvisual/lv_param_value.h>
 
+#ifdef __cplusplus
+
+namespace LV {
+
+    class Closure;
+
+} // LV namespace
+
+typedef LV::Closure VisClosure;
+
+#else
+
 typedef struct _VisClosure VisClosure;
+
+#endif
 
 LV_BEGIN_DECLS
 

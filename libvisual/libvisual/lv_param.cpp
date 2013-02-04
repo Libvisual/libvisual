@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012 Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
@@ -22,189 +22,372 @@
 #include "config.h"
 #include "lv_param.h"
 #include "lv_common.h"
-#include "lv_util.h"
+#include "lv_util.hpp"
 #include <map>
 #include <list>
-#include <cstdarg>
-#include <cstring>
 
-typedef std::map<std::string, VisParam*> ParamEntries;
-typedef std::list<VisClosure*>           HandlerList;
-
-struct _VisClosure
+namespace LV
 {
-    void           (*func) (void);
-    void *         data;
-    VisDestroyFunc destroy_func;
-};
+  class Closure
+  {
+  public:
 
-struct _VisParam
+      void           (*func) ();
+      void*          data;
+      VisDestroyFunc destroy_func;
+
+      Closure (void* func, void* data, VisDestroyFunc destroy_func);
+
+      ~Closure ();
+
+      // Non-copyable
+      Closure (Closure const&) = delete;
+      Closure& operator= (Closure const&) = delete;
+  };
+
+  class Param
+  {
+  public:
+
+      typedef std::list<std::unique_ptr<Closure> > HandlerList;
+
+      ParamList*     parent;
+      std::string    name;
+      std::string    description;
+      VisParamValue* value;
+      VisParamValue* default_value;
+      HandlerList    changed_handlers;
+
+      std::unique_ptr<Closure> validator;
+
+      Param (std::string const& name,
+             std::string const& description,
+             VisParamType       type,
+             void*              default_value,
+             Closure*           validator);
+
+      ~Param ();
+
+      // Non-copyable
+      Param (Param const&) = delete;
+      Param& operator= (Param const&) = delete;
+
+      Closure* add_callback (VisParamChangedFunc func,
+                             void*               priv,
+                             VisDestroyFunc      destroy_func);
+
+      bool remove_callback (Closure* to_remove);
+
+      void changed ();
+
+      void notify_callbacks ();
+  };
+
+  class ParamList::Impl
+  {
+  public:
+
+      typedef std::map<std::string, std::unique_ptr<Param>> Entries;
+
+      Entries     entries;
+      EventQueue* event_queue;
+
+      Impl ();
+
+      ~Impl ();
+  };
+
+  namespace {
+
+    int validate_param_value (VisParamValue *value, Closure *validator)
+    {
+        return (* (VisParamValidateFunc) validator->func) (value, validator->data);
+    }
+
+  } // anonymous namespace
+
+  // LV::Closure implementation
+
+  Closure::Closure (void *func_, void *data_, VisDestroyFunc destroy_func_)
+      : func         {reinterpret_cast<void(*)()> (func_)}
+      , data         {data_}
+      , destroy_func {destroy_func_}
+  {
+      // nothing
+  }
+
+  Closure::~Closure ()
+  {
+      if (data && destroy_func) {
+          destroy_func (data);
+      }
+  }
+
+  // LV::ParamList implementation
+
+  ParamList::Impl::Impl ()
+      : event_queue {nullptr}
+  {
+      // nothing
+  }
+
+  ParamList::Impl::~Impl ()
+  {
+      // nothing
+  }
+
+  ParamList::ParamList ()
+      : m_impl {new Impl}
+  {
+      // nothing
+  }
+
+  ParamList::~ParamList ()
+  {
+      // nothing
+  }
+
+  ParamList::ParamList (std::initializer_list<Param*> params)
+      : m_impl {new Impl}
+  {
+      for (auto param : params) {
+          add (param);
+      }
+  }
+
+  void ParamList::set_event_queue (EventQueue& event_queue)
+  {
+      m_impl->event_queue = &event_queue;
+  }
+
+  EventQueue* ParamList::get_event_queue () const
+  {
+      return m_impl->event_queue;
+  }
+
+  void ParamList::add (Param&& param)
+  {
+      add (&param);
+  }
+
+  void ParamList::add (Param* param)
+  {
+      visual_return_if_fail (param != nullptr);
+
+      param->parent = this;
+
+      // libstdc++ 4.6/4.7 still does not have std::map<T>::emplace()
+      m_impl->entries[param->name] = std::move (std::unique_ptr<Param> {param});
+  }
+
+  bool ParamList::remove (std::string const& name)
+  {
+      auto entry = m_impl->entries.find (name);
+      if (entry != m_impl->entries.end ()) {
+          m_impl->entries.erase (entry);
+          return true;
+      }
+
+      return false;
+  }
+
+  Param* ParamList::get (std::string const& name) const
+  {
+      auto entry = m_impl->entries.find (name);
+      if (entry != m_impl->entries.end ()) {
+          return entry->second.get ();
+      }
+
+      return nullptr;
+  }
+
+  // LV::Param Implementation
+
+  Param::Param (std::string const& name_,
+                std::string const& description_,
+                VisParamType       type_,
+                void*              default_value_,
+                Closure*           validator_)
+      : parent      (nullptr)
+      , name        (name_)
+      , description (description_)
+      , validator   (validator_)
+  {
+      if (validator) {
+          VisParamValue test_value;
+          visual_param_value_init (&test_value, type_, default_value_);
+
+          if (!validate_param_value (&test_value, validator.get ())) {
+              throw std::runtime_error {"Default value failed to validate"};
+          }
+      }
+
+      value = visual_param_value_new (type_, default_value_);
+      default_value = visual_param_value_new (type_, default_value_);
+  }
+
+  Param::~Param ()
+  {
+      visual_param_value_free (value);
+      visual_param_value_free (default_value);
+  }
+
+  Closure* Param::add_callback (VisParamChangedFunc func,
+                                void*               priv,
+                                VisDestroyFunc      destroy_func)
+  {
+      visual_return_val_if_fail (func != nullptr, nullptr);
+
+      auto closure = new Closure {reinterpret_cast<void*> (func), priv, destroy_func};
+      changed_handlers.emplace_back (closure);
+
+      return closure;
+  }
+
+  bool Param::remove_callback (Closure* to_remove)
+  {
+      visual_return_val_if_fail (to_remove != nullptr, false);
+
+      auto entry = std::find_if (changed_handlers.begin (),
+                                 changed_handlers.end (),
+                                 [&] (std::unique_ptr<Closure> const& handler) {
+                                     return handler.get () == to_remove;
+                                 });
+
+      if (entry != changed_handlers.end ()) {
+          changed_handlers.erase (entry);
+          return true;
+      }
+
+      return false;
+  }
+
+  void Param::changed ()
+  {
+      if (!parent)
+          return;
+
+      auto event_queue = parent->get_event_queue ();
+      if (event_queue) {
+          visual_event_queue_add (event_queue, visual_event_new_param (this));
+      }
+
+      notify_callbacks ();
+  }
+
+  void Param::notify_callbacks ()
+  {
+      for (auto const& handler : changed_handlers) {
+          (*(VisParamChangedFunc) (handler->func)) (this, handler->data);
+      }
+  }
+
+} // LV namespace
+
+
+// C API
+
+// VisClosure implementation
+
+VisClosure *visual_closure_new  (void *func, void *data, VisDestroyFunc destroy_func)
 {
-    char *         name;
-    char *         description;
-    VisParamValue  value;
-    VisParamValue  default_value;
-    VisClosure *   validator;
-    HandlerList    changed_handlers;
-    VisParamList * parent;
-};
-
-struct _VisParamList {
-    ParamEntries    entries;
-    VisEventQueue * eventqueue;
-};
-
-static inline int validate_param_value (VisParamValue *value, VisClosure *validator)
-{
-    return (* (VisParamValidateFunc) validator->func) (value, validator->data);
-}
-
-VisClosure *visual_closure_new (void *func, void *data, VisDestroyFunc destroy_func)
-{
-    VisClosure *self = visual_mem_new0 (VisClosure, 1);
-
-    self->func = reinterpret_cast<void(*)(void)> (func);
-    self->data = data;
-    self->destroy_func = destroy_func;
-
-    return self;
+    return new LV::Closure {func, data, destroy_func};
 }
 
 void visual_closure_free (VisClosure *self)
 {
-    if (!self)
-        return;
-
-    if (self->data && self->destroy_func)
-        self->destroy_func (self->data);
-
-    visual_mem_free (self);
+    delete self;
 }
 
-VisParamList *visual_param_list_new (void)
+// VisParamList implementation
+
+VisParamList *visual_param_list_new  (void)
 {
-    auto self = new VisParamList;
-
-    self->eventqueue = nullptr;
-
-    return self;
+    return new LV::ParamList;
 }
 
 void visual_param_list_free (VisParamList *self)
 {
-    if (!self) {
-        return;
-    }
-
-    for (auto& entry : self->entries) {
-        visual_param_free (entry.second);
-    }
-
     delete self;
 }
 
-void visual_param_list_set_event_queue (VisParamList *self, VisEventQueue *eventqueue)
+void visual_param_list_set_event_queue (VisParamList *self, VisEventQueue* event_queue)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
+    visual_return_if_fail (event_queue != nullptr);
 
-    self->eventqueue = eventqueue;
+    self->set_event_queue (*event_queue);
 }
 
-VisEventQueue *visual_param_list_get_event_queue (VisParamList *self)
+VisEventQueue* visual_param_list_get_event_queue (VisParamList *self)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return self->eventqueue;
+    return self->get_event_queue ();
 }
 
-VisParam** visual_param_list_get_entries (VisParamList *self)
+void visual_param_list_add (VisParamList *self, VisParam *param)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_if_fail (self  != nullptr);
+    visual_return_if_fail (param != nullptr);
 
-    //return self->entries;
-    return NULL;
+    self->add (param);
+    delete param;
 }
 
-int visual_param_list_add (VisParamList *self, VisParam *param)
+void visual_param_list_add_array (VisParamList *self, VisParam **params, unsigned int nparams)
 {
-    visual_return_val_if_fail (self != NULL, FALSE);
-    visual_return_val_if_fail (param != NULL, FALSE);
+    visual_return_if_fail (self != nullptr);
 
-    auto old_param = self->entries[param->name];
-    if (old_param) {
-        visual_param_free (old_param);
+    for (unsigned int i = 0; i < nparams; i++) {
+        self->add (params[i]);
     }
-
-    self->entries[param->name] = param;
-
-    return FALSE;
 }
 
-unsigned int visual_param_list_add_array (VisParamList *self, VisParam **params, unsigned int nparams)
+void visual_param_list_add_many (VisParamList *self, ...)
 {
-    visual_return_val_if_fail (self   != NULL, 0);
-    visual_return_val_if_fail (params != NULL, 0);
+    visual_return_if_fail (self != nullptr);
 
-    unsigned int i;
-    unsigned int added = 0;
-
-    for (i = 0; i < nparams; i++) {
-        if (visual_param_list_add (self, params[i])) {
-            added++;
-        }
-    }
-
-    return added;
-}
-
-unsigned int visual_param_list_add_many (VisParamList *self, ...)
-{
     va_list args;
 
     va_start (args, self);
 
-    VisParam *param;
-    unsigned int added = 0;
+    auto param = va_arg (args, VisParam *);
 
-    do {
+    while (param) {
+        self->add (param);
         param = va_arg (args, VisParam *);
-        if (param && visual_param_list_add (self, param)) {
-            added++;
-        }
-    } while (param);
+    }
 
     va_end (args);
+}
 
-    return added;
+VisParam **visual_param_list_get_entries (VisParamList *self)
+{
+    visual_return_val_if_fail (self != nullptr, nullptr);
+
+    // FIXME: Implement
+
+    return nullptr;
 }
 
 int visual_param_list_remove (VisParamList *self, const char *name)
 {
-    visual_return_val_if_fail (self != NULL, FALSE);
-    visual_return_val_if_fail (name != NULL, FALSE);
+    visual_return_val_if_fail (self != nullptr, FALSE);
+    visual_return_val_if_fail (name != nullptr, FALSE);
 
-    auto entry = self->entries.find (name);
-    if (entry != self->entries.end ()) {
-        visual_param_free (entry->second);
-        self->entries.erase (entry);
-        return TRUE;
-    }
-
-    return FALSE;
+    return self->remove (name);
 }
 
 VisParam *visual_param_list_get (VisParamList *self, const char *name)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
-    visual_return_val_if_fail (name != NULL, NULL);
+    visual_return_val_if_fail (self != nullptr, nullptr);
+    visual_return_val_if_fail (name != nullptr, nullptr);
 
-    auto entry = self->entries.find (name);
-    if (entry != self->entries.end ()) {
-        return entry->second;
-    }
-
-    return NULL;
+    return self->get (name);
 }
+
+// VisParam implementation
 
 VisParam *visual_param_new (const char * name,
                             const char * description,
@@ -212,225 +395,141 @@ VisParam *visual_param_new (const char * name,
                             void *       default_value,
                             VisClosure * validator)
 {
-    visual_return_val_if_fail (name != NULL, NULL);
-    visual_return_val_if_fail (description != NULL, NULL);
-    visual_return_val_if_fail (type != VISUAL_PARAM_TYPE_NONE, NULL);
-
-    if (validator) {
-        VisParamValue value;
-        visual_param_value_init (&value, type, default_value);
-        visual_return_val_if_fail (validate_param_value (&value, validator), NULL);
+    try {
+        return new LV::Param (name, description, type, default_value, validator);
     }
-
-    auto self = new VisParam;
-
-    self->name        = visual_strdup (name);
-    self->description = visual_strdup (description);
-    self->validator   = validator;
-
-    visual_param_value_set (&self->value, type, default_value);
-    visual_param_value_set (&self->default_value, type, default_value);
-
-    return self;
+    catch (std::exception& error) {
+        return nullptr;
+    }
 }
 
 void visual_param_free (VisParam *self)
 {
-    if (!self)
-        return;
-
-    visual_mem_free (self->name);
-    visual_mem_free (self->description);
-
-    visual_param_value_free_value (&self->value);
-    visual_param_value_free_value (&self->default_value);
-
-    visual_closure_free (self->validator);
-
-    for (auto closure : self->changed_handlers) {
-        visual_closure_free (closure);
-    }
-
     delete self;
-}
-
-VisClosure *visual_param_add_callback (VisParam *          self,
-                                       VisParamChangedFunc func,
-                                       void *              priv,
-                                       VisDestroyFunc      destroy_func)
-{
-    visual_return_val_if_fail (self != NULL, NULL);
-    visual_return_val_if_fail (func != NULL, NULL);
-
-    VisClosure *closure = visual_closure_new (reinterpret_cast<void*> (func), priv, destroy_func);
-    self->changed_handlers.push_back (closure);
-
-    return closure;
-}
-
-int visual_param_remove_callback (VisParam *self, VisClosure *to_remove)
-{
-    visual_return_val_if_fail (self != NULL, FALSE);
-
-    auto entry = std::find (self->changed_handlers.begin (),
-                            self->changed_handlers.end (),
-                            to_remove);
-
-    if (entry != self->changed_handlers.end ()) {
-        visual_closure_free (*entry);
-        self->changed_handlers.erase (entry);
-        return TRUE;
-    }
-
-    return FALSE;
 }
 
 int visual_param_has_name (VisParam *self, const char *name)
 {
-    visual_return_val_if_fail (self != NULL, FALSE);
+    visual_return_val_if_fail (self != nullptr, FALSE);
 
-    return strcmp (self->name, name);
-}
-
-void visual_param_changed (VisParam *self)
-{
-    visual_return_if_fail (self != NULL);
-
-    if (!self->parent)
-        return;
-
-    VisEventQueue *eventqueue = self->parent->eventqueue;
-    if (eventqueue) {
-        visual_event_queue_add (eventqueue, visual_event_new_param (self));
-    }
-
-    visual_param_notify_callbacks (self);
-}
-
-void visual_param_notify_callbacks (VisParam *self)
-{
-    visual_return_if_fail (self != NULL);
-
-    for (auto closure : self->changed_handlers) {
-        (*(VisParamChangedFunc) (closure->func)) (self, closure->data);
-    }
+    return self->name == name;
 }
 
 VisParamType visual_param_get_type (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, VISUAL_PARAM_TYPE_NONE);
+    visual_return_val_if_fail (self != nullptr, VISUAL_PARAM_TYPE_NONE);
 
-    return self->value.type;
+    return self->value->type;
 }
 
 const char *visual_param_get_name (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return self->name;
+    return !self->name.empty () ? self->name.c_str () : nullptr;
 }
 
 const char *visual_param_get_description (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return self->description;
+    return !self->description.empty () ? self->description.c_str () : nullptr;
 }
 
 void visual_param_set_value_bool (VisParam *self, int value)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_bool (&self->value, value);
+    visual_param_value_set_bool (self->value, value);
 }
 
 void visual_param_set_value_integer (VisParam *self, int value)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_integer (&self->value, value);
+    visual_param_value_set_integer (self->value, value);
 }
 
 void visual_param_set_value_float (VisParam *self, float value)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_float (&self->value, value);
+    visual_param_value_set_float (self->value, value);
 }
 
 void visual_param_set_value_double (VisParam *self, double value)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_double (&self->value, value);
+    visual_param_value_set_double (self->value, value);
 }
 
 void visual_param_set_value_string (VisParam *self, const char *string)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_string (&self->value, string);
+    visual_param_value_set_string (self->value, string);
 }
 
 void visual_param_set_value_color (VisParam *self, VisColor *color)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_color (&self->value, color);
+    visual_param_value_set_color (self->value, color);
 }
 
 void visual_param_set_value_palette (VisParam *self, VisPalette *palette)
 {
-    visual_return_if_fail (self != NULL);
+    visual_return_if_fail (self != nullptr);
 
-    visual_param_value_set_palette (&self->value, palette);
+    visual_param_value_set_palette (self->value, palette);
 }
 
 int visual_param_get_value_bool (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, 0);
+    visual_return_val_if_fail (self != nullptr, 0);
 
-    return visual_param_value_get_bool (&self->value);
+    return visual_param_value_get_bool (self->value);
 }
 
 int visual_param_get_value_integer (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, 0);
+    visual_return_val_if_fail (self != nullptr, 0);
 
-    return visual_param_value_get_integer (&self->value);
+    return visual_param_value_get_integer (self->value);
 }
 
 float visual_param_get_value_float (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, 0.0f);
+    visual_return_val_if_fail (self != nullptr, 0.0f);
 
-    return visual_param_value_get_float (&self->value);
+    return visual_param_value_get_float (self->value);
 }
 
 double visual_param_get_value_double (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, 0.0);
+    visual_return_val_if_fail (self != nullptr, 0.0);
 
-    return visual_param_value_get_double (&self->value);
+    return visual_param_value_get_double (self->value);
 }
 
 const char *visual_param_get_value_string (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, 0);
+    visual_return_val_if_fail (self != nullptr, 0);
 
-    return visual_param_value_get_string (&self->value);
+    return visual_param_value_get_string (self->value);
 }
 
 VisColor *visual_param_get_value_color (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return visual_param_value_get_color (&self->value);
+    return visual_param_value_get_color (self->value);
 }
 
 VisPalette *visual_param_get_value_palette (VisParam *self)
 {
-    visual_return_val_if_fail (self != NULL, NULL);
+    visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return visual_param_value_get_palette (&self->value);
+    return visual_param_value_get_palette (self->value);
 }

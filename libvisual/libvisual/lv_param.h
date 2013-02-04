@@ -35,11 +35,111 @@
  * @{
  */
 
+#ifdef __cplusplus
+
+#include <initializer_list>
+#include <memory>
+
+namespace LV {
+
+  class Param;
+
+  class LV_API ParamList
+  {
+  public:
+
+      /**
+       * Creates a new ParamList object.
+       *
+       * @return A newly allocated ParamList
+       */
+      ParamList ();
+
+      /**
+       * Creates a new ParmaList object from an initializer list
+       */
+      ParamList (std::initializer_list<Param*> params);
+
+      /** Destructor */
+      ~ParamList ();
+
+      /**
+       * Adds a new parameter entry.
+       *
+       * @param param Parameter to add
+       */
+      void add (Param&& param);
+
+      void add (Param* param);
+
+      /**
+       * Adds a list of parameters.
+       *
+       * @param params List of parameters
+       *
+       * @return Number of entries added
+       */
+      template <class Container>
+      void add (Container const& params)
+      {
+          for (auto const& param : params) {
+              add (param);
+          }
+      }
+
+      /**
+       * Removes a parameter by name.
+       *
+       * @param name Name of parameter to remove
+       *
+       * @return true on success, false otherwise
+       */
+      bool remove (std::string const& name);
+
+      /**
+       * Returns a parameter by name
+       *
+       * @param name Name of parameter to return
+       *
+       * @return Parameter of the given name, or nullptr if no such
+       *         parameter exists
+       */
+      Param* get (std::string const& name) const;
+
+      /**
+       * Sets the event queue.
+       *
+       * @param event_queue Event queue to hook send parameter update events to
+       */
+      void set_event_queue (EventQueue& event_queue);
+
+      /**
+       * Returns the eventqueue object.
+       *
+       * @return Event queue
+       */
+      EventQueue* get_event_queue () const;
+
+  private:
+
+      class Impl;
+      const std::unique_ptr<Impl> m_impl;
+  };
+
+} // LV namespace
+
+typedef LV::Param     VisParam;
+typedef LV::ParamList VisParamList;
+
+#else
+
+typedef struct _VisParam     VisParam;
+typedef struct _VisParamList VisParamList;
+
+#endif
+
 #define VISUAL_PARAM(obj)       ((VisParam *) (obj))
 #define VISUAL_PARAM_LIST(obj)  ((VisParamList *) (obj))
-
-typedef struct _VisParam      VisParam;
-typedef struct _VisParamList  VisParamList;
 
 typedef int  (*VisParamValidateFunc) (VisParamValue *value, void *priv);
 typedef void (*VisParamChangedFunc)  (VisParam *param, void *priv);
@@ -47,99 +147,27 @@ typedef void (*VisDestroyFunc)       (void *data);
 
 LV_BEGIN_DECLS
 
+/* VisClosure API */
+
 LV_API VisClosure *visual_closure_new  (void *func, void *data, VisDestroyFunc destroy_func);
 LV_API void        visual_closure_free (VisClosure *self);
 
-/**
- * Creates a new VisParamList object.
- *
- * @return A newly allocated VisParamList
- */
-LV_API VisParamList *visual_param_list_new (void);
+/* VisParamList API */
 
-/**
- * Frees a VisParamList object.
- */
-LV_API void visual_param_list_free (VisParamList *self);
+LV_API VisParamList *visual_param_list_new  (void);
+LV_API void          visual_param_list_free (VisParamList *self);
 
-/**
- * Sets the eventqueue.
- *
- * @param list       Parameter list
- * @param eventqueue Event queue to hook send parameter update events to
- */
-LV_API void visual_param_list_set_event_queue (VisParamList *list, VisEventQueue *eventqueue);
+LV_API void         visual_param_list_add         (VisParamList *list, VisParam *param);
+LV_API void         visual_param_list_add_array   (VisParamList *list, VisParam **params, unsigned int nparams);
+LV_API void         visual_param_list_add_many    (VisParamList *list, ...);
+LV_API VisParam **  visual_param_list_get_entries (VisParamList *list);
+LV_API int          visual_param_list_remove      (VisParamList *list, const char *name);
+LV_API VisParam *   visual_param_list_get         (VisParamList *list, const char *name);
 
-/**
- * Returns the eventqueue object.
- *
- * @param list Parameter list
- *
- * @return VisEventQueue object, or NULL on failure.
- */
+LV_API void           visual_param_list_set_event_queue (VisParamList *list, VisEventQueue *eventqueue);
 LV_API VisEventQueue *visual_param_list_get_event_queue (VisParamList *list);
 
-/**
- * Returns the list of the entries
- *
- * @param list Parameter list
- *
- * @return List of entries, or NULL on failure
- */
-LV_API VisParam** visual_param_list_get_entries (VisParamList *list);
-
-/**
- * Adds a new parameter entry.
- *
- * @param list  Parameter list
- * @param param Parameter to add
- *
- * @note List will take ownership of the newly parameter
- *
- * @return TRUE on success, FALSE otherwise
- */
-LV_API int visual_param_list_add (VisParamList *list, VisParam *param);
-
-/**
- * Adds an array of parameters.
- *
- * @param list    Parameter list
- * @param params  Parameters to add
- * @param nparams Number of parameters to add
- *
- * @return Number of entries added
- */
-LV_API unsigned int visual_param_list_add_array (VisParamList *list, VisParam **params, unsigned int nparams);
-
-/**
- * Adds a list of parameters.
- *
- * @param list Parameter list
- * @param ...  List of newly constructed VisParams, ending with a NULL
- *
- * @return Number of entries added
- */
-LV_API unsigned int visual_param_list_add_many (VisParamList *list, ...);
-
-/**
- * Removes a parameter by name.
- *
- * @param list Parameter list
- * @param name Name of parameter to remove
- *
- * @return TRUE on success, FALSE otherwise
- */
-LV_API int visual_param_list_remove (VisParamList *list, const char *name);
-
-/**
- * Retrieves a parameter by name.
- *
- * @param list Parameter list
- * @param name Name of parameter to retrieve
- *
- * @return Entry object, or NULL if not found
- */
-LV_API VisParam *visual_param_list_get (VisParamList *list, const char *name);
+/* VisParam API */
 
 /**
  * Creates a new parameter entry.
@@ -184,7 +212,7 @@ LV_API VisClosure *visual_param_add_callback (VisParam *          param,
  * @param param   VisParam object to remove callback from
  * @param closure The closure pointer that was given by the visual_param_add_callback().
  *
- * @return TRUE on successful removeal, FALSE otherwise
+ * @return TRUE on successful removal, FALSE otherwise
  */
 LV_API int visual_param_remove_callback (VisParam *param, VisClosure *closure);
 
@@ -232,7 +260,6 @@ LV_API double      visual_param_get_value_double  (VisParam *param);
 LV_API const char *visual_param_get_value_string  (VisParam *param);
 LV_API VisColor *  visual_param_get_value_color   (VisParam *param);
 LV_API VisPalette *visual_param_get_value_palette (VisParam *param);
-
 
 /* Type-safe variants of visual_param_new() */
 

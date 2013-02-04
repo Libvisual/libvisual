@@ -28,7 +28,7 @@
 VisParamValue *visual_param_value_new  (VisParamType type, void *value)
 {
     VisParamValue *self = visual_mem_new0 (VisParamValue, 1);
-    visual_param_value_set (self, type, value);
+    visual_param_value_init (self, type, value);
     return self;
 }
 
