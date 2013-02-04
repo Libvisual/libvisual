@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -29,31 +29,17 @@
 #include <stdlib.h>
 #include <signal.h>
 
-
-static const char *__lv_error_human_readable[] = {
-	[VISUAL_OK] =					N_("There was no error"),
-
-	[VISUAL_ERROR_GENERAL] =			N_("General error occurred"),
-	[VISUAL_ERROR_NULL] =				N_("General NULL pointer error"),
-	[VISUAL_ERROR_IMPOSSIBLE] =			N_("An impossible event occurred"),
-	[VISUAL_ERROR_FAILED_CHECK] =       N_("Assertion check failed"),
-
-	[VISUAL_ERROR_ERROR_HANDLER_NULL] =		N_("Global error handler is NULL"),
-
-	[VISUAL_ERROR_VIDEO_INVALID_DEPTH] =		N_("VisVideo is of invalid depth"),
-};
-
-static int log_and_exit (int error);
+static void log_and_exit (const char *error);
 
 static VisErrorHandlerFunc error_handler = NULL;
 static void *error_handler_priv = NULL;
 
-int visual_error_raise (int error)
+void visual_error_raise (const char *error)
 {
-	if (error_handler != NULL) {
-		return error_handler (error, error_handler_priv);
+	if (error_handler) {
+		error_handler (error, error_handler_priv);
 	} else {
-		return log_and_exit (error);
+		log_and_exit (error);
 	}
 }
 
@@ -63,21 +49,9 @@ void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
 	error_handler_priv = priv;
 }
 
-const char *visual_error_to_string (int error)
+static void log_and_exit (const char *error)
 {
-	error = abs (error);
-
-	if (error < VISUAL_ERROR_LIST_END) {
-		return _(__lv_error_human_readable[error]);
-	} else {
-		return _("Unknown error");
-	}
-}
-
-static int log_and_exit (int error)
-{
-	visual_log (VISUAL_LOG_CRITICAL, "Aborting due to error: %s",
-		visual_error_to_string (error));
+	visual_log (VISUAL_LOG_CRITICAL, "Aborting due to error: %s", error);
 
 #ifdef VISUAL_OS_POSIX
 	raise (SIGTRAP);

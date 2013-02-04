@@ -27,6 +27,7 @@
 #include "display/display_driver_factory.hpp"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <stdexcept>
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -243,7 +244,7 @@ namespace {
               // --depth
               case 'c': {
                   if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
-                      visual_video_depth_enum_from_value(color_depth) == -VISUAL_ERROR_VIDEO_INVALID_DEPTH)
+                      visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
                   {
                       std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;

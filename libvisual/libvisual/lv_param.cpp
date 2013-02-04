@@ -25,6 +25,7 @@
 #include "lv_util.hpp"
 #include <map>
 #include <list>
+#include <stdexcept>
 #include <cstdarg>
 
 namespace LV

@@ -1022,10 +1022,8 @@ int visual_video_depth_value_from_enum (VisVideoDepth depth)
             return 32;
 
         default:
-            return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+            return 0;
     }
-
-    return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 }
 
 VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
@@ -1039,8 +1037,6 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
         default:
             return VISUAL_VIDEO_DEPTH_NONE;
     }
-
-    return VISUAL_VIDEO_DEPTH_NONE;
 }
 
 int visual_video_bpp_from_depth (VisVideoDepth depth)

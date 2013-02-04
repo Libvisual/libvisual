@@ -36,43 +36,41 @@ namespace LV {
   {
       // NOTE: This does not check if a plugin has already been loaded
 
-      try {
-          auto module = Module::load (plugin_path);
-
-          auto plugin_version = static_cast<int*> (module->get_symbol (VISUAL_PLUGIN_VERSION_TAG));
-
-          if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
-              visual_log (VISUAL_LOG_ERROR, "Plugin %s is not compatible with version %s of libvisual",
-                          plugin_path.c_str (), visual_get_version ());
-              return nullptr;
-          }
-
-          auto get_plugin_info =
-              reinterpret_cast<PluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
-
-          if (!get_plugin_info) {
-              visual_log (VISUAL_LOG_ERROR, "Cannot get function that returns plugin info");
-              return nullptr;
-          }
-
-          auto plugin_info = get_plugin_info ();
-
-          if (!plugin_info) {
-              visual_log (VISUAL_LOG_ERROR, "Cannot get plugin info");
-              return nullptr;
-          }
-
-          auto ref = new PluginRef;
-          ref->info   = plugin_info;
-          ref->file   = plugin_path;
-          ref->module = module;
-
-          return ref;
-      }
-      catch (LV::Error& error) {
-          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin (%s): %s", plugin_path.c_str (), error.what());
+      auto module = Module::load (plugin_path);
+      if (!module) {
+          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin (%s)", plugin_path.c_str ());
           return nullptr;
       }
+
+      auto plugin_version = static_cast<int*> (module->get_symbol (VISUAL_PLUGIN_VERSION_TAG));
+
+      if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
+          visual_log (VISUAL_LOG_ERROR, "Plugin %s is not compatible with version %s of libvisual",
+                      plugin_path.c_str (), visual_get_version ());
+          return nullptr;
+      }
+
+      auto get_plugin_info =
+          reinterpret_cast<PluginGetInfoFunc> (module->get_symbol ("get_plugin_info"));
+
+      if (!get_plugin_info) {
+          visual_log (VISUAL_LOG_ERROR, "Cannot get function that returns plugin info");
+          return nullptr;
+      }
+
+      auto plugin_info = get_plugin_info ();
+
+      if (!plugin_info) {
+          visual_log (VISUAL_LOG_ERROR, "Cannot get plugin info");
+          return nullptr;
+      }
+
+      auto ref = new PluginRef;
+      ref->info   = plugin_info;
+      ref->file   = plugin_path;
+      ref->module = module;
+
+      return ref;
   }
 
   template <>

@@ -1,6 +1,7 @@
 #include <libvisual/libvisual.h>
 #include <SDL.h>
 #include <iostream>
+#include <stdexcept>
 #include <cstdlib>
 
 #define DISPLAY_WIDTH  640

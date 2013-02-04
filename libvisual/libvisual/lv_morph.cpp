@@ -25,6 +25,7 @@
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
 #include <algorithm>
+#include <stdexcept>
 
 namespace LV {
 

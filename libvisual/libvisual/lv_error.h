@@ -31,38 +31,6 @@
  * @{
  */
 
-/* WARNING when you add an new error to this list, make sure that you update lv_error.c it's
- * human readable string list as well!!! */
-/**
- * Enumerate of all possible numeric error values.
- */
-enum {
-	/* Ok! */
-	VISUAL_OK,                          /**< No error. */
-
-	/* Standard error entries */
-	VISUAL_ERROR_GENERAL,               /**< General error. */
-	VISUAL_ERROR_NULL,                  /**< Something is NULL that shouldn't be. */
-	VISUAL_ERROR_IMPOSSIBLE,            /**< The impossible happened, this should never happen. */
-    VISUAL_ERROR_FAILED_CHECK,          /**< Failed an assertion check */
-
-	/* Error entries for the VisActor system */
-	VISUAL_ERROR_ACTOR_VIDEO_NULL,      /**< The VisVideo target member in the VisActor is NULL. */
-
-	/* Error entries for the VisError system */
-	VISUAL_ERROR_ERROR_HANDLER_NULL,		/**< Error handler is NULL. */
-
-	/* Error entries for the VisList system */
-	VISUAL_ERROR_LIST_NULL,				/**< The VisList is NULL. */
-	VISUAL_ERROR_LIST_ENTRY_NULL,			/**< The VisListEntry is NULL. */
-	VISUAL_ERROR_LIST_ENTRY_INVALID,		/**< The VisListEntry is invalid. */
-
-	/* Error entries for the VisVideo system */
-	VISUAL_ERROR_VIDEO_INVALID_DEPTH,       /**< Depth is invalid */
-
-	VISUAL_ERROR_LIST_END				/**< Last entry, to check against for the number of errors. */
-};
-
 /**
  * Functions that want to handle libvisual errors must match this signature. The standard
  * libvisual error handler aborts the program after an error by raise(SIGTRAP). If it's
@@ -72,7 +40,7 @@ enum {
  *
  * @arg priv Private field to be used by the client. The library will never touch this.
  */
-typedef int (*VisErrorHandlerFunc) (int error, void *priv);
+typedef void (*VisErrorHandlerFunc) (const char *error_msg, void *priv);
 
 LV_BEGIN_DECLS
 
@@ -82,10 +50,8 @@ LV_BEGIN_DECLS
  * visual_error_set_handler.
  *
  * @see visual_error_set_handler
- *
- * @return Returns the return value from the handler that is set.
  */
-LV_API int visual_error_raise (int error);
+LV_API void visual_error_raise (const char *error_msg);
 
 /**
  * Sets the error handler callback. By using this function you
@@ -95,51 +61,10 @@ LV_API int visual_error_raise (int error);
  *      to handle libvisual errors.
  * @param priv Optional private data which could be needed in the
  *      error handler that has been set.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_ERROR_HANDLER_NULL on failure.
  */
 LV_API void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
-/**
- * Translates an error into a human readable string, the returned string should not be freed.
- *
- * @param err Numeric error value.
- *
- * @return Human readable string, or NULL on failure.
- */
-LV_API const char *visual_error_to_string (int err);
-
 LV_END_DECLS
-
-#ifdef __cplusplus
-
-#include <string>
-#include <stdexcept>
-
-namespace LV {
-
-  class LV_API Error
-    : public std::runtime_error
-  {
-  public:
-
-    explicit Error (int code)
-        : std::runtime_error (visual_error_to_string (code))
-    {}
-
-    Error (int code, std::string const& reason)
-        : std::runtime_error (std::string (visual_error_to_string (code)) + ": " + reason)
-    {}
-
-    explicit Error (std::string const& msg)
-        : std::runtime_error (msg)
-    {}
-  };
-
-} // LV namespace
-
-#endif // __cplusplus
-
 
 /**
  * @}

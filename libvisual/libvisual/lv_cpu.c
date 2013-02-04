@@ -328,7 +328,7 @@ static int cpuid (unsigned int ax, unsigned int *p)
 		 "=c" (p[2]), "=d" (p[3])
 		 : "0" (ax));
 
-	return VISUAL_OK;
+	return 0;
 }
 #endif
 

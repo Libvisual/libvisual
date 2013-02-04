@@ -24,6 +24,7 @@
 #include <libvisual/libvisual.h>
 #include <SDL.h>
 #include <iostream>
+#include <stdexcept>
 #include <cstdlib>
 
 int main (int argc, char** argv)

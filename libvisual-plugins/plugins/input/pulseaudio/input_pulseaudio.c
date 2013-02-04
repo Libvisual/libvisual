@@ -140,7 +140,7 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 
                     if( priv->simple == NULL ) {
                         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
-                        return -VISUAL_ERROR_GENERAL;
+                        return FALSE;
                     }
 
                 }

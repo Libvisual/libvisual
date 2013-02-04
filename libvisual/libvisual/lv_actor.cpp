@@ -149,7 +149,7 @@ namespace LV {
 
   bool Actor::video_negotiate (VisVideoDepth rundepth, bool noevent, bool forced)
   {
-      visual_return_val_if_fail (m_impl->video, -VISUAL_ERROR_ACTOR_VIDEO_NULL);
+      visual_return_val_if_fail (m_impl->video, false);
 
       visual_log (VISUAL_LOG_INFO, "Negotiating plugin %s", visual_plugin_get_info (m_impl->plugin)->name);
 
@@ -234,7 +234,7 @@ namespace LV {
                                   visual_event_new_resize (req_width, req_height));
       }
 
-      return VISUAL_OK;
+      return true;
   }
 
   VisVideoDepth Actor::get_supported_depths ()
