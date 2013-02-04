@@ -80,8 +80,6 @@ LV_API unsigned int visual_math_round_power_of_2 (unsigned int n);
  * @param src   pointer to the source float array
  * @param k     constant multiplicand
  * @param count number of elements
- *
- * @return VISUAL_OK on succes or -VISUAL_ERROR_NULL on failure.
  */
 LV_API void visual_math_simd_mul_floats_float (float *LV_RESTRICT dest, const float *LV_RESTRICT src, float k, visual_size_t count);
 
