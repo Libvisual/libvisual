@@ -187,7 +187,7 @@ struct _VisActor;
  *
  * The requisition() method is called to query and configure the preferred rendering dimensions.
  *
- * @param         plugin plugin object
+ * @param         plugin Plugin object
  * @param[in,out] width  Suggested width
  * @param[in,out] height Suggested height
  */
@@ -205,7 +205,7 @@ typedef void (*VisPluginActorRequisitionFunc)(VisPluginData *plugin, int *width,
 typedef VisPalette *(*VisPluginActorPaletteFunc)(VisPluginData *plugin);
 
 /**
- * Function type and signature of the actor render() method.
+ * Function signature and type of the Actor render() method.
  *
  * The render() method is called to render the actor.
  *
