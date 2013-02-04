@@ -34,16 +34,13 @@ namespace LV {
 
       VisPluginData* plugin;
       VideoPtr       video;
-      VideoPtr       transform;
-      VideoPtr       fitting;
+      VideoPtr       to_scale;
+      VideoPtr       to_convert;
       Palette*       ditherpal;
       SongInfo       songcompare;
 
       Impl ();
       ~Impl ();
-
-      bool negotiate_video_with_unsupported_depth (VisVideoDepth rundepth, bool noevent, bool forced);
-      bool negotiate_video (bool noevent);
 
       VisActorPlugin* get_actor_plugin () const;
 
@@ -137,7 +134,7 @@ namespace LV {
   {
       auto actplugin = m_impl->get_actor_plugin ();
 
-      if (m_impl->transform &&
+      if (m_impl->to_convert &&
           m_impl->video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
           return m_impl->ditherpal;
       } else {
@@ -147,90 +144,61 @@ namespace LV {
       return {};
   }
 
-  bool Actor::video_negotiate (VisVideoDepth rundepth, bool noevent, bool forced)
+  bool Actor::video_negotiate (VisVideoDepth run_depth, bool noevent, bool forced)
   {
-      visual_return_val_if_fail (m_impl->video, false);
+      auto output_width  = m_impl->video->get_width ();
+      auto output_height = m_impl->video->get_height ();
+      auto output_depth  = m_impl->video->get_depth ();
 
-      visual_log (VISUAL_LOG_INFO, "Negotiating plugin %s", visual_plugin_get_info (m_impl->plugin)->name);
+      // Ask actor for preferred rendering dimensions
 
-      m_impl->transform.reset ();
-      m_impl->fitting.reset ();
-      delete m_impl->ditherpal;
+      int req_width  = output_width;
+      int req_height = output_height;
 
-      // Set up any required intermediary pixel buffers
+      m_impl->get_actor_plugin ()->requisition (m_impl->plugin, &req_width, &req_height);
+
+      // Check to make sure requested run depth is supported. If not, pick the highest.
 
       auto supported_depths = get_supported_depths ();
+      auto req_depth = forced ? run_depth : visual_video_depth_get_highest_nogl (supported_depths);
 
-      if (!visual_video_depth_is_supported (supported_depths, m_impl->video->get_depth ()) ||
-          (forced && m_impl->video->get_depth () != rundepth)) {
-          return m_impl->negotiate_video_with_unsupported_depth (rundepth, noevent, forced);
-      }
-      else {
-          return m_impl->negotiate_video (noevent);
+      if (!visual_video_depth_is_supported (supported_depths, req_depth)) {
+          req_depth = visual_video_depth_get_highest_nogl (supported_depths);
       }
 
-      return false;
-  }
+      // Configure proxy videos to convert rendering
 
-  bool Actor::Impl::negotiate_video_with_unsupported_depth (VisVideoDepth rundepth, bool noevent, bool forced)
-  {
-      auto actplugin = get_actor_plugin ();
+      m_impl->to_scale.reset ();
+      m_impl->to_convert.reset ();
 
-      if (forced && rundepth == VISUAL_VIDEO_DEPTH_GL) {
-          return false;
-      }
+      visual_log (VISUAL_LOG_DEBUG, "Setting up any necessary video conversions..");
 
-      auto supported_depths = get_supported_depths ();
+      if (output_depth != VISUAL_VIDEO_DEPTH_GL) {
+          // Configure any necessary depth conversion
+          if (req_depth != output_depth) {
+              visual_log (VISUAL_LOG_DEBUG, "Setting up depth conversion: %s -> %s",
+                          visual_video_depth_name (req_depth),
+                          visual_video_depth_name (output_depth));
 
-      if (supported_depths == VISUAL_VIDEO_DEPTH_NONE) {
-          visual_log (VISUAL_LOG_ERROR, "Cannot find supported colour depth for rendering actor!");
-          return false;
-      }
-
-      auto req_depth = forced ? rundepth : visual_video_depth_get_highest_nogl (supported_depths);
-
-      int req_width  = video->get_width ();
-      int req_height = video->get_height ();
-
-      actplugin->requisition (plugin, &req_width, &req_height);
-
-      transform = Video::create (req_width, req_height, req_depth);
-
-      if (video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
-          ditherpal = new Palette {256};
-      }
-
-      if (!noevent) {
-          visual_event_queue_add (visual_plugin_get_event_queue (plugin),
-                                  visual_event_new_resize (req_width, req_height));
-      }
-
-      return true;
-  }
-
-  bool Actor::Impl::negotiate_video (bool noevent)
-  {
-      auto actplugin = get_actor_plugin ();
-
-      int req_width  = video->get_width ();
-      int req_height = video->get_height ();
-
-      actplugin->requisition (plugin, &req_width, &req_height);
-
-      // Size fitting enviroment
-      if (req_width != video->get_width () || req_height != video->get_height ()) {
-          if (video->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
-              fitting = Video::create (req_width, req_height, video->get_depth ());
+              m_impl->to_convert = Video::create (output_width, output_height, req_depth);
           }
 
-          video->set_dimension (req_width, req_height);
+          // Configure any necessary scaling
+          if (req_width != output_width || req_height != output_height) {
+              visual_log (VISUAL_LOG_DEBUG, "Setting up scaling: (%dx%d) -> (%dx%d)",
+                          req_width, req_height, output_width, output_height);
+
+              m_impl->to_scale = Video::create (req_width, req_height, output_depth);
+          }
+      } else {
+          visual_log (VISUAL_LOG_DEBUG, "Conversions skipped in OpenGL rendering mode");
       }
 
       // FIXME: This should be moved into the if block above. It's out
       // here because plugins depend on this to receive information
       // about initial dimensions
       if (!noevent) {
-          visual_event_queue_add (visual_plugin_get_event_queue (plugin),
+          visual_event_queue_add (visual_plugin_get_event_queue (m_impl->plugin),
                                   visual_event_new_resize (req_width, req_height));
       }
 
@@ -256,8 +224,8 @@ namespace LV {
   {
       visual_return_if_fail (m_impl->video);
 
-      auto actplugin = m_impl->get_actor_plugin ();
-      if (!actplugin) {
+      auto actor_plugin = m_impl->get_actor_plugin ();
+      if (!actor_plugin) {
           visual_log (VISUAL_LOG_ERROR, "The given actor does not reference any actor plugin");
           return;
       }
@@ -265,48 +233,65 @@ namespace LV {
       auto plugin = get_plugin ();
 
       /* Songinfo handling */
-      if (!visual_songinfo_compare (&m_impl->songcompare, actplugin->songinfo) ||
-          m_impl->songcompare.get_elapsed () != actplugin->songinfo->get_elapsed ()) {
+      if (!visual_songinfo_compare (&m_impl->songcompare, actor_plugin->songinfo) ||
+          m_impl->songcompare.get_elapsed () != actor_plugin->songinfo->get_elapsed ()) {
 
-          actplugin->songinfo->mark ();
+          actor_plugin->songinfo->mark ();
 
           visual_event_queue_add (visual_plugin_get_event_queue (plugin),
-                                  visual_event_new_newsong (actplugin->songinfo));
+                                  visual_event_new_newsong (actor_plugin->songinfo));
 
-          visual_songinfo_copy (&m_impl->songcompare, actplugin->songinfo);
+          visual_songinfo_copy (&m_impl->songcompare, actor_plugin->songinfo);
       }
 
       // Get plugin to process all events
       visual_plugin_events_pump (m_impl->plugin);
 
-      auto video = m_impl->video;
+      auto const& video      = m_impl->video;
+      auto const& to_convert = m_impl->to_convert;
+      auto const& to_scale   = m_impl->to_scale;
 
-      // Set the palette to the target video
-      auto palette = get_palette ();
-      if (palette) {
-          video->set_palette (*palette);
-      }
+      if (video->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
+          if (to_convert) {
+              // Have depth conversion
 
-      auto transform = m_impl->transform;
-      auto fitting   = m_impl->fitting;
+              // Setup any palette
+              if (to_convert->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
+                  to_convert->set_palette (*get_palette ());
+              }
 
-      if (transform && (transform->get_depth () != video->get_depth ())) {
-          actplugin->render (plugin, transform.get (), const_cast<Audio*> (&audio));
+              // Render first
+              actor_plugin->render (m_impl->plugin, to_convert.get (), const_cast<Audio*> (&audio));
 
-          if (transform->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
-              transform->set_palette (*get_palette ());
+              if (to_scale) {
+                  // Convert depth, then scale
+                  to_scale->convert_depth (to_convert);
+                  video->scale (to_scale, VISUAL_VIDEO_SCALE_NEAREST);
+              }
+              else {
+                  // Convert depth only
+                  video->convert_depth (to_convert);
+              }
           } else {
-              transform->set_palette (*m_impl->ditherpal);
-          }
+              // No depth conversion
 
-          video->convert_depth (transform);
+              // Setup any palette
+              if (video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
+                  video->set_palette (*get_palette ());
+              }
+
+              if (to_scale) {
+                  // Render, then scale
+                  actor_plugin->render (m_impl->plugin, to_scale.get (), const_cast<Audio*> (&audio));
+                  video->scale (to_scale, VISUAL_VIDEO_SCALE_NEAREST);
+              } else {
+                  // Render directly to video target
+                  actor_plugin->render (m_impl->plugin, video.get (), const_cast<Audio*> (&audio));
+              }
+          }
       } else {
-          if (fitting && (fitting->get_width () != video->get_width () || fitting->get_height () != video->get_height ())) {
-              actplugin->render (plugin, fitting.get (), const_cast<Audio*> (&audio));
-              video->blit (fitting, 0, 0, false);
-          } else {
-              actplugin->render (plugin, video.get (), const_cast<Audio*> (&audio));
-          }
+          // Render directly to video target (OpenGL)
+          actor_plugin->render (m_impl->plugin, video.get (), const_cast<Audio*> (&audio));
       }
   }
 
