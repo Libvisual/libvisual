@@ -23,6 +23,7 @@
 // along with lv-tool.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config.h"
+#include "version.h"
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
 #include "gettext.h"
@@ -143,8 +144,7 @@ namespace {
   /** print commandline help */
   void print_help(std::string const& name)
   {
-      std::printf("libvisual commandline tool - http://libvisual.org\n"
-                  "Usage: %s [options]\n\n"
+      std::printf("Usage: %s [options]\n\n"
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
@@ -367,7 +367,8 @@ namespace {
 int main (int argc, char **argv)
 {
     // print warm welcome
-    std::cerr << argv[0] << " v0.1\n";
+    std::cerr << argv[0] << " - " << PACKAGE_STRING << 
+    " (" << LV_REVISION << ") commandline tool - " << PACKAGE_URL << "\n";
 
     // default loglevel
     visual_log_set_verbosity (VISUAL_LOG_ERROR);
