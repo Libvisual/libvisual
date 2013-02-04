@@ -36,6 +36,18 @@ namespace LV {
                                     std::function<bool (std::string const&)> filter,
                                     std::function<bool (std::string const&)> func);
 
+  /**
+   * Returns a null-terminated C string from a std::string, or nullptr if string is empty
+   *
+   * @param input string
+   *
+   * return C string, or nullptr
+   */
+  inline char const* string_to_c (std::string const& string)
+  {
+      return !string.empty () ? string.c_str () : nullptr;
+  }
+
 } // LV namespace
 
 #endif // _LV_UTIL_HPP

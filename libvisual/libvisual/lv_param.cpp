@@ -426,14 +426,14 @@ const char *visual_param_get_name (VisParam *self)
 {
     visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return !self->name.empty () ? self->name.c_str () : nullptr;
+    return LV::string_to_c (self->name);
 }
 
 const char *visual_param_get_description (VisParam *self)
 {
     visual_return_val_if_fail (self != nullptr, nullptr);
 
-    return !self->description.empty () ? self->description.c_str () : nullptr;
+    return LV::string_to_c (self->description);
 }
 
 void visual_param_set_value_bool (VisParam *self, int value)
