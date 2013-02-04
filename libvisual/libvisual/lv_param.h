@@ -49,14 +49,12 @@ namespace LV {
   public:
 
       /**
-       * Creates a new ParamList object.
-       *
-       * @return A newly allocated ParamList
+       * Creates a new empty ParamList.
        */
       ParamList ();
 
       /**
-       * Creates a new ParmaList object from an initializer list
+       * Creates a new ParamList with entries drawn from an initializer list.
        */
       ParamList (std::initializer_list<Param*> params);
 
@@ -70,14 +68,19 @@ namespace LV {
        */
       void add (Param&& param);
 
+      /**
+       * Adds a new parameter entry.
+       *
+       * @note Entry will be managed and automatically freed.
+       *
+       * @param param Parameter to add
+       */
       void add (Param* param);
 
       /**
        * Adds a list of parameters.
        *
        * @param params List of parameters
-       *
-       * @return Number of entries added
        */
       template <class Container>
       void add (Container const& params)
@@ -114,9 +117,11 @@ namespace LV {
       void set_event_queue (EventQueue& event_queue);
 
       /**
-       * Returns the eventqueue object.
+       * Returns the event queue.
        *
-       * @return Event queue
+       * @see set_event_queue()
+       *
+       * @return Event queue if set, nullptr otherwise
        */
       EventQueue* get_event_queue () const;
 

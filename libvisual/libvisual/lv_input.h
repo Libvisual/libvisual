@@ -92,8 +92,6 @@ namespace LV {
        * retrieve audio samples. If a custom callback is set via
        * set_callback(), the callback will be used instead.
        *
-       * @param input Input object
-       *
        * @return true on success, false otherwise
        */
       bool run ();
