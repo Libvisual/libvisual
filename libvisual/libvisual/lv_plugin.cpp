@@ -125,7 +125,7 @@ static VisPluginData *visual_plugin_new ()
 {
     auto plugin = visual_mem_new0 (VisPluginData, 1);
 
-    plugin->params = visual_param_list_new ();
+    plugin->params = new LV::ParamList;
     plugin->eventqueue = new LV::EventQueue;
 
     return plugin;
@@ -135,7 +135,7 @@ static void visual_plugin_free (VisPluginData *plugin)
 {
     delete plugin->random;
 
-    visual_param_list_free (plugin->params);
+    delete plugin->params;
 
     delete plugin->eventqueue;
 
@@ -149,8 +149,6 @@ void visual_plugin_unload (VisPluginData *plugin)
     if (plugin->realized) {
         plugin->info->cleanup (plugin);
     }
-
-    visual_param_list_set_event_queue (plugin->params, nullptr);
 
     visual_plugin_free (plugin);
 }
@@ -181,7 +179,7 @@ int visual_plugin_realize (VisPluginData *plugin)
     }
 
     auto params = visual_plugin_get_params (plugin);
-    visual_param_list_set_event_queue (params, plugin->eventqueue);
+    params->set_event_queue (*plugin->eventqueue);
 
     visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
 
