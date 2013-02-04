@@ -1,9 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -158,9 +159,9 @@ VisPluginData *visual_plugin_load (VisPluginType type, const char *name)
 {
     // FIXME: Check if plugin has already been loaded
 
-	auto info = LV::PluginRegistry::instance()->get_plugin_info (type, name);
-	if (!info) {
-		return nullptr;
+    auto info = LV::PluginRegistry::instance()->get_plugin_info (type, name);
+    if (!info) {
+        return nullptr;
     }
 
     auto plugin = visual_plugin_new ();
