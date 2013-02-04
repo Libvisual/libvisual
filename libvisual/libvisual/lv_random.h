@@ -5,7 +5,7 @@
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *          Dennis Smit <ds@nerds-incorporated.org>
- * 	        Vitaly V. Bursov <vitalyvb@ukr.net>
+ *          Vitaly V. Bursov <vitalyvb@ukr.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -49,76 +49,76 @@ namespace LV {
   {
   public:
 
-	typedef RandomSeed Seed;
+      typedef RandomSeed Seed;
 
-	/**
-	 * Creates a new RandomContext with a given seed.
-	 *
-	 * @param seed Initial seed for generating random number sequences
-	 */
-	explicit RandomContext (Seed seed);
+      /**
+       * Creates a new RandomContext with a given seed.
+       *
+       * @param seed Initial seed for generating random number sequences
+       */
+      explicit RandomContext (Seed seed);
 
-    RandomContext (RandomContext const&) = delete;
+      RandomContext (RandomContext const&) = delete;
 
-	/**
-	 * Move constructor
-	 */
-	RandomContext (RandomContext&& rhs);
+      /**
+       * Move constructor
+       */
+      RandomContext (RandomContext&& rhs);
 
-    /**
-     * Destructor
-     */
-	~RandomContext ();
+      /**
+       * Destructor
+       */
+      ~RandomContext ();
 
-    RandomContext& operator= (RandomContext const&) = delete;
+      RandomContext& operator= (RandomContext const&) = delete;
 
-	/*
-	 * Move assignment operator
-	 */
-	RandomContext& operator= (RandomContext&& rhs);
+      /*
+       * Move assignment operator
+       */
+      RandomContext& operator= (RandomContext&& rhs);
 
-	/**
-	 * Sets the seed.
-	 *
-	 * @param seed New seed
-	 */
-	void set_seed (uint32_t seed);
+      /**
+       * Sets the seed.
+       *
+       * @param seed New seed
+       */
+      void set_seed (uint32_t seed);
 
-	/**
-	 * Returns a random integer.
-	 *
-	 * @return A random integer
-	 */
-	uint32_t get_int ();
+      /**
+       * Returns a random integer.
+       *
+       * @return A random integer
+       */
+      uint32_t get_int ();
 
-	/**
-	 * Returns a random integer in a given range.
-	 *
-	 * @param min Lower bound
-	 * @param max Upper bound
-	 *
-	 * @return A random integer between min and max inclusive
-	 */
-	uint32_t get_int (unsigned int min, unsigned int max);
+      /**
+       * Returns a random integer in a given range.
+       *
+       * @param min Lower bound
+       * @param max Upper bound
+       *
+       * @return A random integer between min and max inclusive
+       */
+      uint32_t get_int (unsigned int min, unsigned int max);
 
-	/**
-	 * Returns a random double-precision floating point value between 0.0 and 1.0.
-	 *
-	 * @return A random value between 0.0 and 1.0
-	 */
-	double get_double ();
+      /**
+       * Returns a random double-precision floating point value between 0.0 and 1.0.
+       *
+       * @return A random value between 0.0 and 1.0
+       */
+      double get_double ();
 
-	/**
-	 * Returns a random single-precision floating point value between 0.0 and 1.0.
-	 *
-	 * @return A random value between 0.0 and 1.0
-	 */
-	float get_float ();
+      /**
+       * Returns a random single-precision floating point value between 0.0 and 1.0.
+       *
+       * @return A random value between 0.0 and 1.0
+       */
+      float get_float ();
 
   private:
 
-	class Impl;
-	std::unique_ptr<Impl> m_impl;
+      class Impl;
+      std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace
@@ -143,7 +143,7 @@ typedef ::LV::RandomSeed    VisRandomSeed;
  * to use the visual_random_context_* functions.
  */
 
-#define VISUAL_RANDOM_CONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
+#define VISUAL_RANDOM_CONTEXT(obj)          (VISUAL_CHECK_CAST ((obj), VisRandomContext))
 
 LV_BEGIN_DECLS
 
