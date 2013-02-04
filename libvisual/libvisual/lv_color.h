@@ -147,8 +147,6 @@ struct _VisColor
 };
 #endif
 
-#define VISUAL_COLOR(obj) (VISUAL_CHECK_CAST ((obj), VisColor))
-
 LV_API VisColor *visual_color_new   (void);
 LV_API VisColor *visual_color_clone (VisColor *color);
 LV_API void      visual_color_free  (VisColor *color);

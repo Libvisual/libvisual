@@ -132,9 +132,6 @@ struct _VisInput;
 
 #endif /* __cplusplus */
 
-#define VISUAL_INPUT(obj)        (VISUAL_CHECK_CAST ((obj), VisInput))
-#define VISUAL_INPUT_PLUGIN(obj) (VISUAL_CHECK_CAST ((obj), VisInputPlugin))
-
 /**
  * Input plugin type.
  */

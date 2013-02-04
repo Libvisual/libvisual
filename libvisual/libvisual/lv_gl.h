@@ -31,8 +31,6 @@
  * @{
  */
 
-#define VISUAL_GL_ATTRIBUTE_ENTRY(obj)			(VISUAL_CHECK_CAST ((obj), VisGLAttrEntry))
-
 /**
  * Enumerate with GL attributes.
  */

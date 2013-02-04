@@ -137,14 +137,6 @@ typedef ::LV::RandomSeed    VisRandomSeed;
   typedef uint32_t VisRandomSeed;
 #endif
 
-/**
- * The VisRandomContext data structure is used to keep track of
- * the randomizer it's state. When state tracking is used you need
- * to use the visual_random_context_* functions.
- */
-
-#define VISUAL_RANDOM_CONTEXT(obj)          (VISUAL_CHECK_CAST ((obj), VisRandomContext))
-
 LV_BEGIN_DECLS
 
 LV_API VisRandomContext *visual_random_context_new  (VisRandomSeed seed);

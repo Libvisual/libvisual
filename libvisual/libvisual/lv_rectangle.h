@@ -241,8 +241,6 @@ namespace LV {
 
 #endif /* __cplusplus */
 
-#define VISUAL_RECTANGLE(obj)               (VISUAL_CHECK_CAST ((obj, VisRectangle))
-
 #ifdef __cplusplus
 typedef ::LV::Rect VisRectangle;
 #else

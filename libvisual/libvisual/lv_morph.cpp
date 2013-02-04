@@ -68,7 +68,7 @@ namespace LV {
 
   VisMorphPlugin* Morph::Impl::get_morph_plugin () const
   {
-      return reinterpret_cast<VisMorphPlugin*> (visual_plugin_get_info (plugin)->plugin);
+      return static_cast<VisMorphPlugin*> (visual_plugin_get_info (plugin)->plugin);
   }
 
   VisPluginData* Morph::get_plugin ()

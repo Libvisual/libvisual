@@ -31,8 +31,6 @@
  * @{
  */
 
-#define VISUAL_AUDIO(obj) (VISUAL_CHECK_CAST ((obj), VisAudio))
-
 #define VISUAL_AUDIO_CHANNEL_LEFT  "left"
 #define VISUAL_AUDIO_CHANNEL_RIGHT "right"
 

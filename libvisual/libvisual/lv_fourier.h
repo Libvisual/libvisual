@@ -124,8 +124,6 @@ namespace LV {
 
 /* C API bindings */
 
-#define VISUAL_DFT(obj)                 (VISUAL_CHECK_CAST ((obj), VisDFT))
-
 #ifdef __cplusplus
 typedef ::LV::DFT VisDFT;
 #else

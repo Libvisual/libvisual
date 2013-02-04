@@ -182,9 +182,6 @@ struct _VisActor;
 
 #endif /* __cplusplus */
 
-#define VISUAL_ACTOR(obj)				(VISUAL_CHECK_CAST ((obj), VisActor))
-#define VISUAL_ACTOR_PLUGIN(obj)		(VISUAL_CHECK_CAST ((obj), VisActorPlugin))
-
 /**
  * Function signature and type of the Actor requisition() method.
  *

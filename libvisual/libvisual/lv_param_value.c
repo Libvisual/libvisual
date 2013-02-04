@@ -63,7 +63,7 @@ void visual_param_value_copy (VisParamValue *self, VisParamValue *src)
             self->value.string = visual_strdup (src->value.string);
             break;
         case VISUAL_PARAM_TYPE_PALETTE:
-            self->value.palette = visual_palette_clone (VISUAL_PALETTE (src->value.palette));
+            self->value.palette = visual_palette_clone (src->value.palette);
             break;
         default:
             break;
@@ -98,10 +98,10 @@ void visual_param_value_set (VisParamValue *self, VisParamType type, void *value
             self->value.string = visual_strdup ((const char *) value);
             break;
         case VISUAL_PARAM_TYPE_COLOR:
-            self->value.color = visual_color_clone (VISUAL_COLOR (value));
+            self->value.color = visual_color_clone (value);
             break;
         case VISUAL_PARAM_TYPE_PALETTE:
-            self->value.palette = visual_palette_clone (VISUAL_PALETTE (value));
+            self->value.palette = visual_palette_clone (value);
             break;
         default:
             break;

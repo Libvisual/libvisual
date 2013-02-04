@@ -118,8 +118,6 @@ namespace LV {
 
 #endif // __cplusplus
 
-#define VISUAL_PALETTE(obj)             (VISUAL_CHECK_CAST ((obj), VisPalette))
-
 #ifdef __cplusplus
 typedef struct LV::Palette VisPalette;
 #else

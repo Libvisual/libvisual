@@ -34,9 +34,6 @@
  * @{
  */
 
-#define VISUAL_MORPH(obj)               (VISUAL_CHECK_CAST ((obj), VisMorph))
-#define VISUAL_MORPH_PLUGIN(obj)        (VISUAL_CHECK_CAST ((obj), VisMorphPlugin))
-
 /**
  * Morph morphing methods.
  */

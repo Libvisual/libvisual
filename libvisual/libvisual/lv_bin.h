@@ -35,8 +35,6 @@
  * @{
  */
 
-#define VISUAL_BIN(obj) (VISUAL_CHECK_CAST ((obj), VisBin))
-
 typedef enum {
 	VISUAL_BIN_DEPTH_LOWEST,
 	VISUAL_BIN_DEPTH_HIGHEST

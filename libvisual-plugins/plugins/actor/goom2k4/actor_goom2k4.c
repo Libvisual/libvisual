@@ -159,7 +159,7 @@ static void lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 	}
 
 	/* Retrieve the songinfo */
-	songinfo = VISUAL_ACTOR_PLUGIN (visual_plugin_get_specific (plugin))->songinfo;
+	songinfo = ((VisActorPlugin *) visual_plugin_get_specific (plugin))->songinfo;
 
 	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
 	if (songinfo != NULL && visual_songinfo_get_age (songinfo) <= 1 && showinfo == TRUE) {

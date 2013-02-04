@@ -225,9 +225,6 @@ struct _VisTimer;
 
 #endif /* __cplusplus */
 
-#define VISUAL_TIME(obj)   (VISUAL_CHECK_CAST ((obj), VisTime))
-#define VISUAL_TIMER(obj)  (VISUAL_CHECK_CAST ((obj), VisTimer))
-
 LV_BEGIN_DECLS
 
 LV_API VisTime *visual_time_new             (void);

@@ -209,8 +209,6 @@ namespace LV {
 
 #endif /* __cplusplus */
 
-#define VISUAL_SONGINFO(obj)   (VISUAL_CHECK_CAST ((obj), VisSongInfo))
-
 #ifdef __cplusplus
 typedef ::LV::SongInfo VisSongInfo;
 #else

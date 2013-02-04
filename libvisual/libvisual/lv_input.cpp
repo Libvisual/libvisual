@@ -57,7 +57,7 @@ namespace LV {
 
   VisInputPlugin* Input::Impl::get_input_plugin () const
   {
-      return reinterpret_cast<VisInputPlugin*> (visual_plugin_get_info (plugin)->plugin);
+      return static_cast<VisInputPlugin*> (visual_plugin_get_info (plugin)->plugin);
   }
 
   InputPtr Input::load (std::string const& name)

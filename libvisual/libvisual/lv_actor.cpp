@@ -70,7 +70,7 @@ namespace LV {
 
   VisActorPlugin* Actor::Impl::get_actor_plugin () const
   {
-      return VISUAL_ACTOR_PLUGIN (visual_plugin_get_info (plugin)->plugin);
+      return static_cast<VisActorPlugin*> (visual_plugin_get_info (plugin)->plugin);
   }
 
   VisVideoDepth Actor::Impl::get_supported_depths ()
