@@ -32,35 +32,33 @@
  */
 
 /**
- * Functions that want to handle libvisual errors must match this signature. The standard
- * libvisual error handler aborts the program after an error by raise(SIGTRAP). If it's
- * desired to override this use visual_set_error_handler to set your own error handler.
+ * Function signature and type for error handlers.
  *
- * @see visual_set_error_handler
+ * @see visual_error_set_handler()
  *
- * @arg priv Private field to be used by the client. The library will never touch this.
+ * @param error_msg Error message
+ * @param priv      Optional private data passed to handler on invocation
  */
 typedef void (*VisErrorHandlerFunc) (const char *error_msg, void *priv);
 
 LV_BEGIN_DECLS
 
 /**
- * Raise a libvisual error. With the standard error handler this will
- * do a raise(SIGTRAP). You can set your own error handler function using the
- * visual_error_set_handler.
+ * Raises an error in LV.
  *
- * @see visual_error_set_handler
+ * @note By default, LV will raise the SIGTRAP signal on POSIX systems.
+ *
+ * @see visual_error_set_handler()
  */
 LV_API void visual_error_raise (const char *error_msg);
 
 /**
- * Sets the error handler callback. By using this function you
- * can override libvisual it's default error handler.
+ * Sets the error handler callback.
  *
- * @param handler The error handler which you want to use
- *      to handle libvisual errors.
- * @param priv Optional private data which could be needed in the
- *      error handler that has been set.
+ * Use this to override LV's default error handler.
+ *
+ * @param handler Custom error handler
+ * @param priv    Optional private data to pass to handler on invocation
  */
 LV_API void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
 
