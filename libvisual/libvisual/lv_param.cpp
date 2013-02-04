@@ -25,6 +25,7 @@
 #include "lv_util.hpp"
 #include <map>
 #include <list>
+#include <cstdarg>
 
 namespace LV
 {
@@ -153,6 +154,12 @@ namespace LV
       for (auto param : params) {
           add (param);
       }
+  }
+
+  ParamList::ParamList (ParamList&& list)
+      : m_impl {std::move (list.m_impl)}
+  {
+      // nothing
   }
 
   void ParamList::set_event_queue (EventQueue& event_queue)

@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012 Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
@@ -57,6 +57,11 @@ namespace LV {
        * Creates a new ParamList with entries drawn from an initializer list.
        */
       ParamList (std::initializer_list<Param*> params);
+
+      /**
+       * Move constructor
+       */
+      ParamList (ParamList&& list);
 
       /** Destructor */
       ~ParamList ();
@@ -128,7 +133,7 @@ namespace LV {
   private:
 
       class Impl;
-      const std::unique_ptr<Impl> m_impl;
+      std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace
