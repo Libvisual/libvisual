@@ -595,7 +595,7 @@ void __blursk_init (BlurskPrivate *priv) {
 
 void __blursk_cleanup (BlurskPrivate *priv) {
     img_cleanup();
-    visual_mem_free(songinfo);
+    visual_songinfo_free(songinfo);
 
     /* cleanup config strings */
     visual_mem_free(config.color_style);
