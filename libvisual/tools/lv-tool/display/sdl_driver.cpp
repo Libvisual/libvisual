@@ -267,14 +267,14 @@ namespace {
               case SDL_KEYUP:
                   visual_event_queue_add (&eventqueue,
                                           visual_event_new_keyboard (VisKey(event.key.keysym.sym),
-                                                                     event.key.keysym.mod,
+                                                                     VisKeyMod(event.key.keysym.mod),
                                                                      VISUAL_KEY_UP));
                   break;
 
               case SDL_KEYDOWN:
                   visual_event_queue_add (&eventqueue,
                                           visual_event_new_keyboard (VisKey(event.key.keysym.sym),
-                                                                     event.key.keysym.mod,
+                                                                     VisKeyMod(event.key.keysym.mod),
                                                                      VISUAL_KEY_DOWN));
                   break;
 

@@ -218,8 +218,8 @@ typedef struct _VisKeySym VisKeySym;
  * Cantains data about the current keyboard state.
  */
 struct _VisKeySym {
-	VisKey sym; /**< Keyboard key to which everything relates. */
-	int    mod; /**< Modifier vlags, Using key modifiers from the VisKeyMod enumerate. */
+	VisKey    sym; /**< Key code */
+	VisKeyMod mod; /**< Key modifiers */
 };
 
 #endif /* _LV_KEYSYM_H */
