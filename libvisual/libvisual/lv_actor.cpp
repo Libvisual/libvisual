@@ -36,8 +36,8 @@ namespace LV {
       VideoPtr       video;
       VideoPtr       to_scale;
       VideoPtr       to_convert;
-      Palette*       ditherpal;
       SongInfo       songcompare;
+      VisVideoDepth  run_depth;
 
       Impl ();
       ~Impl ();
@@ -49,7 +49,6 @@ namespace LV {
 
   Actor::Impl::Impl ()
       : plugin      (nullptr)
-      , ditherpal   {nullptr}
       , songcompare {SONG_INFO_TYPE_NULL}
   {
       // nothing
@@ -61,8 +60,6 @@ namespace LV {
           delete get_actor_plugin ()->songinfo;
           visual_plugin_unload (plugin);
       }
-
-      delete ditherpal;
   }
 
   VisActorPlugin* Actor::Impl::get_actor_plugin () const
@@ -72,9 +69,9 @@ namespace LV {
 
   VisVideoDepth Actor::Impl::get_supported_depths ()
   {
-      auto actplugin = get_actor_plugin ();
+      auto actor_plugin = get_actor_plugin ();
 
-      return actplugin ? actplugin->vidoptions.depth : VISUAL_VIDEO_DEPTH_NONE;
+      return actor_plugin ? actor_plugin->vidoptions.depth : VISUAL_VIDEO_DEPTH_NONE;
   }
 
   ActorPtr Actor::load (std::string const& name)
@@ -132,16 +129,13 @@ namespace LV {
 
   Palette const* Actor::get_palette ()
   {
-      auto actplugin = m_impl->get_actor_plugin ();
+      auto actor_plugin = m_impl->get_actor_plugin ();
 
-      if (m_impl->to_convert &&
-          m_impl->video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
-          return m_impl->ditherpal;
+      if (m_impl->run_depth == VISUAL_VIDEO_DEPTH_8BIT) {
+          return actor_plugin->palette (m_impl->plugin);
       } else {
-          return actplugin->palette (get_plugin ());
+          return nullptr;
       }
-
-      return {};
   }
 
   bool Actor::video_negotiate (VisVideoDepth run_depth, bool noevent, bool forced)
@@ -152,18 +146,18 @@ namespace LV {
 
       // Ask actor for preferred rendering dimensions
 
-      int req_width  = output_width;
-      int req_height = output_height;
+      int run_width  = output_width;
+      int run_height = output_height;
 
-      m_impl->get_actor_plugin ()->requisition (m_impl->plugin, &req_width, &req_height);
+      m_impl->get_actor_plugin ()->requisition (m_impl->plugin, &run_width, &run_height);
 
       // Check to make sure requested run depth is supported. If not, pick the highest.
 
       auto supported_depths = get_supported_depths ();
-      auto req_depth = forced ? run_depth : visual_video_depth_get_highest_nogl (supported_depths);
+      m_impl->run_depth = forced ? run_depth : visual_video_depth_get_highest_nogl (supported_depths);
 
-      if (!visual_video_depth_is_supported (supported_depths, req_depth)) {
-          req_depth = visual_video_depth_get_highest_nogl (supported_depths);
+      if (!visual_video_depth_is_supported (supported_depths, m_impl->run_depth)) {
+          m_impl->run_depth = visual_video_depth_get_highest_nogl (supported_depths);
       }
 
       // Configure proxy videos to convert rendering
@@ -175,20 +169,20 @@ namespace LV {
 
       if (output_depth != VISUAL_VIDEO_DEPTH_GL) {
           // Configure any necessary depth conversion
-          if (req_depth != output_depth) {
+          if (m_impl->run_depth != output_depth) {
               visual_log (VISUAL_LOG_DEBUG, "Setting up depth conversion: %s -> %s",
-                          visual_video_depth_name (req_depth),
+                          visual_video_depth_name (m_impl->run_depth),
                           visual_video_depth_name (output_depth));
 
-              m_impl->to_convert = Video::create (output_width, output_height, req_depth);
+              m_impl->to_convert = Video::create (output_width, output_height, m_impl->run_depth);
           }
 
           // Configure any necessary scaling
-          if (req_width != output_width || req_height != output_height) {
+          if (run_width != output_width || run_height != output_height) {
               visual_log (VISUAL_LOG_DEBUG, "Setting up scaling: (%dx%d) -> (%dx%d)",
-                          req_width, req_height, output_width, output_height);
+                          run_width, run_height, output_width, output_height);
 
-              m_impl->to_scale = Video::create (req_width, req_height, output_depth);
+              m_impl->to_scale = Video::create (run_width, run_height, output_depth);
           }
       } else {
           visual_log (VISUAL_LOG_DEBUG, "Conversions skipped in OpenGL rendering mode");
@@ -199,7 +193,7 @@ namespace LV {
       // about initial dimensions
       if (!noevent) {
           visual_event_queue_add (visual_plugin_get_event_queue (m_impl->plugin),
-                                  visual_event_new_resize (req_width, req_height));
+                                  visual_event_new_resize (run_width, run_height));
       }
 
       return true;
@@ -252,12 +246,14 @@ namespace LV {
       auto const& to_scale   = m_impl->to_scale;
 
       if (video->get_depth () != VISUAL_VIDEO_DEPTH_GL) {
+          auto palette = get_palette ();
+
           if (to_convert) {
               // Have depth conversion
 
               // Setup any palette
-              if (to_convert->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
-                  to_convert->set_palette (*get_palette ());
+              if (palette) {
+                  to_convert->set_palette (*palette);
               }
 
               // Render first
@@ -275,16 +271,21 @@ namespace LV {
           } else {
               // No depth conversion
 
-              // Setup any palette
-              if (video->get_depth () == VISUAL_VIDEO_DEPTH_8BIT) {
-                  video->set_palette (*get_palette ());
-              }
-
               if (to_scale) {
+                  // Setup any palette
+                  if (palette) {
+                      to_scale->set_palette (*palette);
+                  }
+
                   // Render, then scale
                   actor_plugin->render (m_impl->plugin, to_scale.get (), const_cast<Audio*> (&audio));
                   video->scale (to_scale, VISUAL_VIDEO_SCALE_NEAREST);
               } else {
+                  // Setup any palette
+                  if (palette) {
+                      video->set_palette (*palette);
+                  }
+
                   // Render directly to video target
                   actor_plugin->render (m_impl->plugin, video.get (), const_cast<Audio*> (&audio));
               }
