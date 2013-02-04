@@ -73,11 +73,11 @@ namespace LV {
       int get_api_version () const;
 
       /**
-       * Returns a pointer to Libvisual system parameters.
+       * Returns the system-wide parameter list
        *
-       * @return A pointer to Libvisual system parameters.
+       * @return Parameter list
        */
-      VisParamList* get_params () const;
+      ParamList& get_params () const;
 
       /**
        * Returns the system-wide random number generator.

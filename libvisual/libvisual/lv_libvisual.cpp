@@ -47,33 +47,6 @@ namespace LV
 
   namespace {
 
-    void init_params (VisParamList *params)
-    {
-        // Song information parameters
-        visual_param_list_add_many (params,
-            visual_param_new_integer ("songinfo-show",
-                                      "Show song info",
-                                      1,
-                                      NULL),
-            visual_param_new_integer ("songinfo-timeout",
-                                      "Songinfo timeout in seconds",
-                                      5,
-                                      NULL),
-            visual_param_new_bool    ("songinfo-in-plugins",
-                                      "Show songinfo in plugins",
-                                      TRUE,
-                                      NULL),
-            visual_param_new_integer ("songinfo-cover-width",
-                                      "Song cover art width",
-                                      128,
-                                      visual_param_in_range_integer (32, 1000)),
-            visual_param_new_integer ("songinfo-cover-height",
-                                      "Song cover art height",
-                                      128,
-                                      visual_param_in_range_integer (32, 1000)),
-            nullptr);
-    }
-
     RandomSeed random_seed ()
     {
         return RandomSeed (Time::now ().to_usecs ());
@@ -85,14 +58,44 @@ namespace LV
   {
   public:
 
-      VisParamList* params;
+      ParamList     params;
       RandomContext rng;
 
-      Impl ()
-          : params { nullptr }
-          , rng    { random_seed () }
-      {}
+      Impl ();
+
+      static ParamList initial_params ();
   };
+
+  System::Impl::Impl ()
+      : params (std::move (initial_params ()))
+      , rng    { random_seed () }
+  {}
+
+  ParamList System::Impl::initial_params ()
+  {
+      return {
+           visual_param_new_integer ("songinfo-show",
+                                     "Show song info",
+                                     1,
+                                     nullptr),
+           visual_param_new_integer ("songinfo-timeout",
+                                     "Songinfo timeout in seconds",
+                                     5,
+                                     nullptr),
+           visual_param_new_bool    ("songinfo-in-plugins",
+                                     "Show songinfo in plugins",
+                                     true,
+                                     nullptr),
+           visual_param_new_integer ("songinfo-cover-width",
+                                     "Song cover art width",
+                                     128,
+                                     visual_param_in_range_integer (32, 1000)),
+           visual_param_new_integer ("songinfo-cover-height",
+                                     "Song cover art height",
+                                     128,
+                                     visual_param_in_range_integer (32, 1000))
+      };
+  }
 
   template <>
   LV_API System* Singleton<System>::m_instance = nullptr;
@@ -117,7 +120,7 @@ namespace LV
       return VISUAL_API_VERSION;
   }
 
-  VisParamList *System::get_params () const
+  ParamList& System::get_params () const
   {
       return m_impl->params;
   }
@@ -153,17 +156,12 @@ namespace LV
 
       // Initialize the plugin registry
       PluginRegistry::init ();
-
-      m_impl->params = visual_param_list_new ();
-      init_params (m_impl->params);
   }
 
   System::~System ()
   {
       PluginRegistry::destroy ();
       TimeSystem::shutdown ();
-
-      visual_param_list_free (m_impl->params);
   }
 
 } // LV namespace

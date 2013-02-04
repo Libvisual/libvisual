@@ -16,7 +16,7 @@ extern "C" {
 
   VisParamList *visual_get_params ()
   {
-      return LV::System::instance()->get_params ();
+      return &LV::System::instance()->get_params ();
   }
 
   void visual_init (int *argc, char ***argv)
