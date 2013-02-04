@@ -44,9 +44,21 @@ namespace LV {
       set_seed (seed);
   }
 
+  RandomContext::RandomContext (RandomContext&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // empty
+  }
+
   RandomContext::~RandomContext ()
   {
       // empty
+  }
+
+  RandomContext& RandomContext::operator= (RandomContext&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
+      return *this;
   }
 
   void RandomContext::set_seed (Seed seed)

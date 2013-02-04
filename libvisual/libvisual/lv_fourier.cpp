@@ -206,9 +206,21 @@ namespace LV {
       // empty
   }
 
+  DFT::DFT (DFT&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // nothing
+  }
+
   DFT::~DFT ()
   {
       // empty
+  }
+
+  DFT& DFT::operator= (DFT&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
+      return *this;
   }
 
   void DFT::perform (float *output, float const* input)

@@ -60,7 +60,24 @@ namespace LV {
        */
       DFT (unsigned int samples_out, unsigned int samples_in);
 
+      DFT (DFT const&) = delete;
+
+      /**
+       * Move constructor
+       */
+      DFT (DFT&& rhs);
+
+      /**
+       * Destructor
+       */
       ~DFT ();
+
+      DFT& operator= (DFT const&) = delete;
+
+      /**
+       * Move assignment operator
+       */
+      DFT& operator= (DFT&& rhs);
 
       /**
        * Returns the output size of the DFT.
@@ -97,7 +114,7 @@ namespace LV {
 
       class Impl;
 
-      const std::unique_ptr<Impl> m_impl;
+      std::unique_ptr<Impl> m_impl;
   };
 
 }  // LV namespace

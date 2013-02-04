@@ -58,15 +58,27 @@ namespace LV {
       // empty
   }
 
-  Timer::Timer (Timer const& timer)
-      : m_impl (new Impl (*timer.m_impl))
+  Timer::Timer (Timer const& rhs)
+      : m_impl {new Impl (*rhs.m_impl)}
   {
-      // empty
+      // nothing
+  }
+
+  Timer::Timer (Timer&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // nothing
   }
 
   Timer& Timer::operator= (Timer const& rhs)
   {
       *m_impl = *rhs.m_impl;
+      return *this;
+  }
+
+  Timer& Timer::operator= (Timer&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
       return *this;
   }
 

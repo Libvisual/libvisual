@@ -58,7 +58,24 @@ namespace LV {
 	 */
 	explicit RandomContext (Seed seed);
 
+    RandomContext (RandomContext const&) = delete;
+
+	/**
+	 * Move constructor
+	 */
+	RandomContext (RandomContext&& rhs);
+
+    /**
+     * Destructor
+     */
 	~RandomContext ();
+
+    RandomContext& operator= (RandomContext const&) = delete;
+
+	/*
+	 * Move assignment operator
+	 */
+	RandomContext& operator= (RandomContext&& rhs);
 
 	/**
 	 * Sets the seed.
@@ -101,7 +118,7 @@ namespace LV {
   private:
 
 	class Impl;
-	const std::unique_ptr<Impl> m_impl;
+	std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace

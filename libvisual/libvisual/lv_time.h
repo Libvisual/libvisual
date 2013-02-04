@@ -164,11 +164,20 @@ namespace LV {
       //! Creates a new Timer
       Timer ();
 
+      //! Copy constructor
+      Timer (Timer const& timer);
+
+      //! Move constructor
+      Timer (Timer&& rhs);
+
+      //! Destructor
       ~Timer ();
 
-      // FIXME: Timer should be made non-copyable
-      Timer (Timer const& timer);
+      //! Copy assignment operator
       Timer& operator= (Timer const& rhs);
+
+      //! Move assignment operator
+      Timer& operator= (Timer&& rhs);
 
       //! Checks if the timer is active.
       bool is_active () const;
@@ -194,7 +203,7 @@ namespace LV {
   private:
 
       class Impl;
-      const std::unique_ptr<Impl> m_impl;
+      std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace

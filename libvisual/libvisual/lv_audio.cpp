@@ -123,9 +123,21 @@ namespace LV {
       // empty
   }
 
+  Audio::Audio (Audio&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // empty
+  }
+
   Audio::~Audio ()
   {
       // empty
+  }
+
+  Audio& Audio::operator= (Audio&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
+      return *this;
   }
 
   bool Audio::get_sample (BufferPtr const& buffer, std::string const& channel_name)
