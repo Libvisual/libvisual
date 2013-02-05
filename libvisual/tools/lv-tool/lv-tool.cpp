@@ -518,15 +518,13 @@ int main (int argc, char **argv)
             }
 
             if (draw_frame) {
-                display.lock ();
+                DisplayLock lock {display};
 
                 // Draw audio data and render
                 bin.run();
 
                 // Display rendering
                 display.update_all ();
-
-                display.unlock ();
 
                 // Record frame time
                 last_frame_time = LV::Time::now ();
@@ -559,7 +557,8 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_RESIZE:
                     {
-                        display.lock();
+                        DisplayLock lock {display};
+
                         width = ev.event.resize.width;
                         height = ev.event.resize.height;
 
@@ -568,8 +567,6 @@ int main (int argc, char **argv)
 
                         bin.set_video (video);
                         bin.sync(false);
-
-                        display.unlock();
 
                         break;
                     }
@@ -643,7 +640,8 @@ int main (int argc, char **argv)
 
             if (bin.depth_changed())
             {
-                display.lock();
+                DisplayLock lock {display};
+
                 int depthflag = bin.get_depth();
                 VisVideoDepth depth = visual_video_depth_get_highest(depthflag);
 
@@ -653,8 +651,6 @@ int main (int argc, char **argv)
                 bin.set_video(video);
 
                 bin.sync(true);
-
-                display.unlock();
             }
         }
 

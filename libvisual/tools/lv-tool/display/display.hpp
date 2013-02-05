@@ -72,4 +72,28 @@ private:
     const std::unique_ptr<Impl> m_impl;
 };
 
+class DisplayLock
+{
+public:
+
+    DisplayLock (Display& display)
+        : m_display (display)
+    {
+        m_display.lock ();
+    }
+
+    ~DisplayLock ()
+    {
+        m_display.unlock ();
+    }
+
+    DisplayLock (DisplayLock&) = delete;
+
+    DisplayLock& operator= (DisplayLock&) = delete;
+
+private:
+
+    Display& m_display;
+};
+
 #endif // _LV_TOOL_DISPLAY_HPP
