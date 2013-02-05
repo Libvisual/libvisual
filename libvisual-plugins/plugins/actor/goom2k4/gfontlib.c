@@ -125,7 +125,18 @@ void gfont_load (void) {
 	font_chars [32] = 0;
 	small_font_chars [32] = 0;
 
+	free (font_pos);
 	free (gfont);
+}
+
+void gfont_unload ()
+{
+	free (font_height);
+	free (small_font_height);
+	free (font_width);
+	free (small_font_width);
+	free (font_chars);
+	free (small_font_chars);
 }
 
 void goom_draw_text (Pixel * buf, int resolx, int resoly,

@@ -768,6 +768,8 @@ void goom_close (PluginInfo *goomInfo)
     goomInfo->tentacles_fx.free(&goomInfo->tentacles_fx);
     goomInfo->zoomFilter_fx.free(&goomInfo->zoomFilter_fx);
 
+    gfont_unload ();
+
     free(goomInfo);
 }
 
