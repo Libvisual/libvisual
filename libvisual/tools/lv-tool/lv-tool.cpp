@@ -33,7 +33,7 @@
 #include <string>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
+#include <csignal>
 #include <getopt.h>
 
 // Defaults
@@ -68,6 +68,8 @@ namespace {
 
   bool have_seed = 0;
   uint32_t seed = 0;
+
+  volatile std::sig_atomic_t terminate_process = false;
 
   enum class CycleDir
   {
@@ -327,6 +329,20 @@ namespace {
       return 0;
   }
 
+  void handle_termination_signal (int signal)
+  {
+      terminate_process = true;
+  }
+
+  /**
+   * Handle process termination signals.
+   */
+  void setup_signal_handlers ()
+  {
+      std::signal (SIGINT, handle_termination_signal);
+      std::signal (SIGTERM, handle_termination_signal);
+  }
+
   std::string cycle_actor_name (std::string const& name, CycleDir dir)
   {
       auto cycler = (dir == CycleDir::NEXT) ? visual_actor_get_next_by_name
@@ -372,11 +388,13 @@ int main (int argc, char **argv)
               << " (" << LV_REVISION << ") commandline tool - "
               << PACKAGE_URL << "\n";
 
+    // setup signal handlers
+    setup_signal_handlers ();
+
     // default loglevel
     visual_log_set_verbosity (VISUAL_LOG_ERROR);
 
-    // initialize libvisual once (this is meant to be called only once,
-    // visual_init() after visual_quit() results in undefined state)
+    // initialize LV
     LV::System::init (argc, argv);
 
     try {
@@ -468,6 +486,12 @@ int main (int argc, char **argv)
 
         while (running)
         {
+            // Check if process termination was signaled
+            if (terminate_process) {
+                std::cerr << "Received signal to terminate process, exiting..\n";
+                break;
+            }
+
             // Control frame rate
             if (frame_rate > 0) {
                 if (frames_drawn > 0) {
