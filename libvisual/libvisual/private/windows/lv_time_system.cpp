@@ -35,7 +35,7 @@ namespace LV {
         QueryPerformanceCounter (&perf_counter);
 
         return Time { perf_counter.QuadPart / counter_freq,
-                      ((perf_counter.QuadPart % counter_freq) * VISUAL_NSECS_PER_SEC) / counter_freq) };
+                      ((perf_counter.QuadPart % counter_freq) * VISUAL_NSECS_PER_SEC) / counter_freq };
     }
 
   } // TimeSystem
