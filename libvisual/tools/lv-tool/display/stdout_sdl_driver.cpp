@@ -161,7 +161,8 @@ namespace {
                                             false,
                                             m_screen->w,
                                             m_screen->h,
-                                            depth);
+                                            depth,
+                                            m_screen->pitch);
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
