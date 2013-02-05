@@ -427,9 +427,6 @@ static void print_cpu_info (void)
 
 void visual_cpu_initialize ()
 {
-	unsigned int regs[4];
-	unsigned int regs2[4];
-
 	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
 
 	__lv_cpu_caps.type  = get_cpu_type ();
@@ -461,6 +458,9 @@ void visual_cpu_initialize ()
 		return;
 
 	__lv_cpu_caps.cacheline = 32;
+
+	unsigned int regs[4];
+	unsigned int regs2[4];
 
 	/* Get max cpuid level */
 	cpuid (0x00000000, regs);
