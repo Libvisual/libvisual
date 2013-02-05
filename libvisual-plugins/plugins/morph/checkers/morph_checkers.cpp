@@ -107,14 +107,14 @@ namespace {
 
       dest->fill_color (LV::Color::black ());
 
-      unsigned int dest_width  = visual_video_get_width (dest);
-      unsigned int dest_height = visual_video_get_height (dest);
+      int dest_width  = visual_video_get_width (dest);
+      int dest_height = visual_video_get_height (dest);
 
-      unsigned int tile_width  = dest_width  / n_tile_cols;
-      unsigned int tile_height = dest_height / n_tile_rows;
+      int tile_width  = dest_width  / n_tile_cols;
+      int tile_height = dest_height / n_tile_rows;
 
-      for (unsigned int row = 0, y = 0; y < dest_height; row++, y += tile_height) {
-          for (unsigned int col = 0, x = 0; x < dest_width; col++, x += tile_width) {
+      for (int row = 0, y = 0; y < dest_height; row++, y += tile_height) {
+          for (int col = 0, x = 0; x < dest_width; col++, x += tile_width) {
               LV::Rect region {x, y, tile_width, tile_height};
 
               auto src  = (row + col + priv->flip) & 1 ? src1 : src2;
