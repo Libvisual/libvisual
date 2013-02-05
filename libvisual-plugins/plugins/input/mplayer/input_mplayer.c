@@ -167,8 +167,6 @@ static void inp_mplayer_cleanup( VisPluginData *plugin )
 {
 	mplayer_priv_t *priv = visual_plugin_get_private (plugin);
 
-	int unclean = 0;
-
 	if ( priv->loaded == 1 )
 	{
 		void *mmap_area  = (void*)priv->mmap_area;
@@ -181,7 +179,6 @@ static void inp_mplayer_cleanup( VisPluginData *plugin )
 				visual_log( VISUAL_LOG_CRITICAL,
 						"Could not close file descriptor %d: %s",
 						priv->fd, strerror( errno ) );
-				unclean |= 1;
 			}
 			priv->fd = -1;
 		}
@@ -189,7 +186,6 @@ static void inp_mplayer_cleanup( VisPluginData *plugin )
 		{
 			visual_log( VISUAL_LOG_CRITICAL, "Wrong file descriptor %d",
 					priv->fd );
-			unclean |= 2;
 		}
 
 		if ( munmap( mmap_area, mmap_count ) != 0 )
@@ -198,7 +194,6 @@ static void inp_mplayer_cleanup( VisPluginData *plugin )
 					"Could not munmap() area %p+%d. %s",
 					mmap_area, mmap_count,
 					strerror( errno ) );
-			unclean |= 4;
 		}
 	}
 

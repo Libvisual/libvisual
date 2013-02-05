@@ -255,8 +255,6 @@ namespace {
   {
       auto priv = static_cast<WaveInPrivate*> (visual_plugin_get_private (plugin));
 
-      int retval = 0;
-
       if (priv->loaded) {
           visual_log (VISUAL_LOG_DEBUG, "Stopping audio capturing and clearing all pending buffers");
 
