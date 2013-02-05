@@ -66,7 +66,7 @@ Corona::Corona()
 	m_reflArray     = 0;
 	m_waveloop      = 0.0;
 
-	m_particles = (Particle*)calloc (nbParticules, sizeof(Particle));
+	m_particles = visual_mem_new0 (Particle, nbParticules);
 	// Create particles in random positions
 	for (int i = nbParticules - 1; i >= 0; --i)
 	{
@@ -87,6 +87,7 @@ Corona::~Corona()
 {
 	if (m_real_image) free(m_real_image);
 	if (m_deltafield) free(m_deltafield);
+	visual_mem_free (m_particles);
 }
 
 double Corona::random(double min, double max) const {
