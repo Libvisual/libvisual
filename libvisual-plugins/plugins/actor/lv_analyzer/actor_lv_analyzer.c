@@ -123,14 +123,15 @@ static void lv_analyzer_cleanup (VisPluginData *plugin)
 
 static void lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 {
-	int reqw;
+    AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
-	reqw = *width;
+	int total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
 
-	while (reqw % 2 || reqw % 4)
-		reqw--;
+    int min_width = priv->bars + total_space;
 
-	*width = reqw;
+    if (*width < min_width) {
+        *width = min_width;
+    }
 }
 
 static int _validate_bars(VisPluginData *plugin, int *bars)
@@ -208,14 +209,8 @@ static void lv_analyzer_resize (VisPluginData *plugin, int width, int height)
 {
 	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
-	int total_space;
-
-	priv->width = width;
+	priv->width  = width;
 	priv->height = height;
-
-	total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
-	if(priv->width < priv->bars + total_space)
-		priv->bars = priv->width - total_space;
 }
 
 static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
