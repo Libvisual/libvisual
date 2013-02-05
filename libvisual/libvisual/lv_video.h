@@ -186,14 +186,6 @@ namespace LV {
       ~Video ();
 
       /**
-       * Sets the video dimensions.
-       *
-       * @param width  width in pixels
-       * @param height height in pixels
-       */
-      void set_dimension (int width, int height);
-
-      /**
        * Returns the video width.
        *
        * @return width in pixels
@@ -479,6 +471,8 @@ namespace LV {
       mutable unsigned int m_ref_count;
 
       Video ();
+
+      void set_dimension (int width, int height);
   };
 
   inline void intrusive_ptr_add_ref (Video const* video)
@@ -518,8 +512,6 @@ LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *sr
 
 LV_API void        visual_video_set_palette (VisVideo *video, VisPalette *pal);
 LV_API VisPalette* visual_video_get_palette (VisVideo *video);
-
-LV_API void visual_video_set_dimension (VisVideo *video, int width, int height);
 
 LV_API void visual_video_set_attrs (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
 

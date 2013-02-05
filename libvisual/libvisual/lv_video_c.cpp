@@ -136,13 +136,6 @@ VisPalette *visual_video_get_palette (VisVideo *self)
     }
 }
 
-void visual_video_set_dimension (VisVideo *self, int width, int height)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_dimension (width, height);
-}
-
 int visual_video_get_width (VisVideo *self)
 {
     visual_return_val_if_fail (self != nullptr, 0);
