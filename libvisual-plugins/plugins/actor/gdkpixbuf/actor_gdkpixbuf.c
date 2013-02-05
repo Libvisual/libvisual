@@ -389,7 +389,8 @@ static VisVideo *visvideo_from_gdkpixbuf (GdkPixbuf *src)
 	                                              FALSE,
 	                                              width,
 	                                              height,
-	                                              depth);
+	                                              depth,
+	                                              gdk_pixbuf_get_rowstride (src));
 
 	/* Flip RGB byte order */
 	VisVideo *target = visual_video_new_with_buffer (width, height, depth);

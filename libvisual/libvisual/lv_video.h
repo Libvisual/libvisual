@@ -158,7 +158,7 @@ namespace LV {
        */
       static VideoPtr create (int width, int height, VisVideoDepth depth);
 
-      static VideoPtr wrap (void* buffer, bool owner, int width, int height, VisVideoDepth depth);
+      static VideoPtr wrap (void* buffer, bool owner, int width, int height, VisVideoDepth depth, int pitch = 0);
 
       static VideoPtr create_sub (VideoConstPtr const& src, Rect const& srect);
 
@@ -241,7 +241,7 @@ namespace LV {
        *
        * @return true if successful, false otherwise
        *
-       * @see set_dimension(), set_depth(), set_pitch().
+       * @see set_depth(), set_pitch().
        */
       bool allocate_buffer ();
 
@@ -472,7 +472,7 @@ namespace LV {
 
       Video ();
 
-      void set_dimension (int width, int height);
+      void set_dimension (int width, int height, int pitch = 0);
   };
 
   inline void intrusive_ptr_add_ref (Video const* video)
@@ -495,7 +495,7 @@ LV_BEGIN_DECLS
 
 LV_API VisVideo *visual_video_new (void);
 LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
-LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth);
+LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth, int pitch);
 LV_API VisVideo *visual_video_load_from_file  (const char *path);
 
 LV_API void visual_video_ref   (VisVideo *video);

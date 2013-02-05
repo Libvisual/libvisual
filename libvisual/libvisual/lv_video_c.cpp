@@ -48,9 +48,9 @@ VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth dep
     return self.get ();
 }
 
-VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth)
+VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth, int pitch)
 {
-    auto self = LV::Video::wrap (buffer, owner, width, height, depth);
+    auto self = LV::Video::wrap (buffer, owner, width, height, depth, pitch);
     if (self) {
         LV::intrusive_ptr_add_ref (self.get ());
     }

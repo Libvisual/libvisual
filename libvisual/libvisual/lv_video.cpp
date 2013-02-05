@@ -172,7 +172,7 @@ namespace LV {
       VideoPtr self (new Video, false);
 
       self->set_depth (depth);
-      self->set_dimension (width, height);
+      self->set_dimension (width, height, pitch);
       self->m_impl->set_buffer (data);
 
       return self;
@@ -312,11 +312,11 @@ namespace LV {
       return m_impl->palette;
   }
 
-  void Video::set_dimension (int width, int height)
+  void Video::set_dimension (int width, int height, int pitch)
   {
       m_impl->width  = width;
       m_impl->height = height;
-      m_impl->pitch  = m_impl->width * m_impl->bpp;
+      m_impl->pitch  = std::max (pitch, width * m_impl->bpp);
 
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
 
@@ -335,11 +335,9 @@ namespace LV {
 
   void Video::set_pitch (int pitch)
   {
-      if(pitch <= 0)
+      if(pitch <= 0 || m_impl->bpp <= 0) {
           return;
-
-      if (m_impl->bpp <= 0)
-          return;
+      }
 
       m_impl->pitch = pitch;
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
