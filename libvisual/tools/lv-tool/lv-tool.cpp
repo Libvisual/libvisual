@@ -77,6 +77,22 @@ namespace {
       NEXT
   };
 
+  /** Class to manage LV's lifecycle */
+  class Libvisual
+  {
+  public:
+
+      Libvisual (int& argc, char**& argv)
+      {
+          LV::System::init (argc, argv);
+      }
+
+      ~Libvisual ()
+      {
+          LV::System::destroy ();
+      }
+  };
+
   /** print info about libvisual plugin */
   void print_plugin_info(VisPluginInfo const& info)
   {
@@ -325,7 +341,6 @@ namespace {
           }
       }
 
-
       return 0;
   }
 
@@ -382,28 +397,30 @@ namespace {
 
 int main (int argc, char **argv)
 {
-    // print warm welcome
-    std::cerr << visual_truncate_path (argv[0], 1) << " - "
-              << PACKAGE_STRING
-              << " (" << LV_REVISION << ") commandline tool - "
-              << PACKAGE_URL << "\n";
-
-    // setup signal handlers
-    setup_signal_handlers ();
-
-    // default loglevel
-    visual_log_set_verbosity (VISUAL_LOG_ERROR);
-
-    // initialize LV
-    LV::System::init (argc, argv);
-
     try {
+        // print warm welcome
+        std::cerr << visual_truncate_path (argv[0], 1) << " - "
+                  << PACKAGE_STRING
+                  << " (" << LV_REVISION << ") commandline tool - "
+                  << PACKAGE_URL << "\n";
+
+        // setup signal handlers
+        setup_signal_handlers ();
+
+        // default loglevel
+        visual_log_set_verbosity (VISUAL_LOG_ERROR);
+
+        // initialize LV
+        Libvisual main {argc, argv};
+
         // parse commandline arguments
-        int parseRes = parse_args(argc, argv);
-        if (parseRes < 0)
+        int parse_result = parse_args (argc, argv);
+        if (parse_result < 0) {
             throw std::runtime_error ("Failed to parse arguments");
-        else if (parseRes > 0)
-            throw std::runtime_error ("");
+        }
+        if (parse_result > 0) {
+            return EXIT_SUCCESS;
+        }
 
         // Set system-wide random seed
         if (have_seed) {
@@ -455,8 +472,9 @@ int main (int argc, char **argv)
 
         // create display
         auto video = display.create(depth, vidoptions, width, height, true);
-        if(!video)
+        if(!video) {
             throw std::runtime_error("Failed to setup display for rendering");
+        }
 
         // Set the display title
         display.set_title(_("lv-tool"));
@@ -489,7 +507,7 @@ int main (int argc, char **argv)
             // Check if process termination was signaled
             if (terminate_process) {
                 std::cerr << "Received signal to terminate process, exiting..\n";
-                break;
+                return EXIT_SUCCESS;
             }
 
             // Control frame rate
@@ -639,12 +657,12 @@ int main (int argc, char **argv)
                 display.unlock();
             }
         }
+
+        return EXIT_SUCCESS;
     }
     catch (std::exception& error) {
         std::cerr << error.what () << std::endl;
+
+        return EXIT_FAILURE;
     }
-
-    LV::System::destroy ();
-
-    return EXIT_SUCCESS;
 }
