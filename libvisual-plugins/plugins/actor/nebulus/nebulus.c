@@ -317,7 +317,7 @@ static int nebulus_sound (NebulusPrivate *priv, VisAudio *audio)
 
 	fbuf = visual_buffer_get_data (priv->pcmbuf);
 
-	for (i = 0; i < 1024; i++) {
+	for (i = 0; i < 512; i++) {
 		pcm_data[i] = fbuf[i] * 32767; // FIXME pull the 32767 as a constant from somewhere, also in goom2.c
 	}
 
