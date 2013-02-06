@@ -621,7 +621,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_QUIT:
                     {
-                        running = FALSE;
+                        running = false;
                         break;
                     }
 
