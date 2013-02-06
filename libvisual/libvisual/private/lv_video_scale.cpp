@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
@@ -32,13 +32,17 @@
 // NOTE: Although the following struct members are named 'r', 'g' and 'b', the scale functions are very much pixel
 // format agnostic. They only assume the number of components.
 
-typedef struct {
+struct color16_t {
+#if VISUAL_LITTLE_ENDIAN == 1
     uint16_t r:5, g:6, b:5;
-} color16_t;
+#else
+    uint16_t b:5, g:6, r:5;
+#endif
+};
 
-typedef struct {
-    uint8_t r, g, b;
-} color24_t;
+struct color24_t {
+    uint8_t b, g, r;
+};
 
 #pragma pack()
 
