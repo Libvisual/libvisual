@@ -164,8 +164,6 @@ namespace LV {
 
   VideoPtr Video::wrap (void *data, bool owner, int width, int height, VisVideoDepth depth, int pitch)
   {
-      visual_log (VISUAL_LOG_WARNING, "owner:%d width:%d height:%d depth:%d pitch:%d", owner, width, height, visual_video_depth_enum_from_value (depth), pitch);
-
       // FIXME: Support this
       if (owner) {
           visual_log (VISUAL_LOG_WARNING, "Memory leak: Ownership of wrapped pixel buffer is not supported at the moment");
