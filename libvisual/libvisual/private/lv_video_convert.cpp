@@ -495,10 +495,10 @@ namespace LV {
           auto src_pixel     = src_pixel_row;
 
           while (dst_pixel != dst_pixel_end) {
-              dst_pixel[0] = dst_pixel[3];
-              dst_pixel[1] = dst_pixel[2];
-              dst_pixel[2] = dst_pixel[1];
-              dst_pixel[3] = dst_pixel[0];
+              dst_pixel[0] = src_pixel[3];
+              dst_pixel[1] = src_pixel[2];
+              dst_pixel[2] = src_pixel[1];
+              dst_pixel[3] = src_pixel[0];
 
               dst_pixel += 4;
               src_pixel += 4;
