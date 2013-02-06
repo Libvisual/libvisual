@@ -59,7 +59,7 @@ namespace LV {
 
   void VideoFill::fill_color_rgb16 (Video& video, Color const& color)
   {
-      auto buf = static_cast<uint16_t*> (video.get_pixels ());
+      auto buf = static_cast<uint8_t*> (video.get_pixels ());
 
       pixel16_t pixel;
       pixel.rgb.r = color.r >> 3;
@@ -69,7 +69,7 @@ namespace LV {
       for (int y = 0; y < video.m_impl->height; y++) {
           visual_mem_set16 (buf, pixel.value, video.m_impl->width);
 
-          buf += (video.m_impl->pitch / video.m_impl->bpp);
+          buf += video.m_impl->pitch;
       }
   }
 
@@ -113,14 +113,14 @@ namespace LV {
 
   void VideoFill::fill_color_argb32 (Video& video, Color const& color)
   {
-      auto buf = static_cast<uint32_t*> (video.get_pixels ());
+      auto buf = static_cast<uint8_t*> (video.get_pixels ());
 
       uint32_t col = (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
 
       for (int y = 0; y < video.m_impl->height; y++) {
           visual_mem_set32 (buf, col, video.m_impl->width);
 
-          buf += (video.m_impl->pitch / video.m_impl->bpp);
+          buf += video.m_impl->pitch;
       }
   }
 
