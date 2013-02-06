@@ -50,8 +50,8 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color8 (Video& dst, Video const& src)
   {
-      uint32_t du = (src.m_impl->width  << 16) / dst.m_impl->width;
-      uint32_t dv = (src.m_impl->height << 16) / dst.m_impl->height;
+      uint32_t du = dst.m_impl->width  > 1 ? ((src.m_impl->width  - 1) << 16) / (dst.m_impl->width  - 1) : 0;
+      uint32_t dv = dst.m_impl->height > 1 ? ((src.m_impl->height - 1) << 16) / (dst.m_impl->height - 1) : 0;
 
       auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
       auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
@@ -78,8 +78,8 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color16 (Video& dst, Video const& src)
   {
-      uint32_t du = (src.m_impl->width  << 16) / dst.m_impl->width;
-      uint32_t dv = (src.m_impl->height << 16) / dst.m_impl->height;
+      uint32_t du = dst.m_impl->width  > 1 ? ((src.m_impl->width  - 1) << 16) / (dst.m_impl->width  - 1) : 0;
+      uint32_t dv = dst.m_impl->height > 1 ? ((src.m_impl->height - 1) << 16) / (dst.m_impl->height - 1) : 0;
 
       auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
       auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
@@ -106,8 +106,8 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color24 (Video& dst, Video const& src)
   {
-      uint32_t du = (src.m_impl->width << 16)  / dst.m_impl->width;
-      uint32_t dv = (src.m_impl->height << 16) / dst.m_impl->height;
+      uint32_t du = dst.m_impl->width  > 1 ? ((src.m_impl->width  - 1) << 16) / (dst.m_impl->width  - 1) : 0;
+      uint32_t dv = dst.m_impl->height > 1 ? ((src.m_impl->height - 1) << 16) / (dst.m_impl->height - 1) : 0;
 
       auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
       auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
@@ -134,8 +134,8 @@ namespace LV {
 
   void VideoTransform::scale_nearest_color32 (Video& dst, Video const& src)
   {
-      uint32_t du = (src.m_impl->width  << 16) / dst.m_impl->width;
-      uint32_t dv = (src.m_impl->height << 16) / dst.m_impl->height;
+      uint32_t du = dst.m_impl->width  > 1 ? ((src.m_impl->width  - 1) << 16) / (dst.m_impl->width  - 1) : 0;
+      uint32_t dv = dst.m_impl->height > 1 ? ((src.m_impl->height - 1) << 16) / (dst.m_impl->height - 1) : 0;
 
       auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
       auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
