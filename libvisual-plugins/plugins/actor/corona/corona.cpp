@@ -125,7 +125,7 @@ bool Corona::setUpSurface(int width, int height) {
 	if (newsize < 2000) newsize = 2000;
 	int oldsize = (int) nbParticules;
 	nbParticules = newsize;
-	m_particles = (Particle*)realloc (m_particles, sizeof(Particle) * newsize);
+	m_particles = (Particle*) visual_mem_realloc(m_particles, sizeof(Particle) * newsize);
 	for (int i = oldsize; i < newsize; ++i) {
 		m_particles[i].x = random(0, 1);
 		m_particles[i].y = random(0, 1);
