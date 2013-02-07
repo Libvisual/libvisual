@@ -131,15 +131,13 @@ namespace {
                   videoflags |= SDL_HWACCEL;
 
               for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-                  if (vidoptions->gl_attrs[i].mutated) {
-                      SDL_GLattr sdl_attribute =
-                          sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
+                  SDL_GLattr sdl_attribute =
+                      sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
-                      if (sdl_attribute < 0)
-                          continue;
+                  if (sdl_attribute < 0)
+                      continue;
 
-                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
-                  }
+                  SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
               }
 
               bpp = videoinfo->vfmt->BitsPerPixel;

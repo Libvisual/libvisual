@@ -38,12 +38,6 @@
  * @{
  */
 
-#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val)  \
-    options.gl_attrs[attr].attribute = attr;  \
-    options.gl_attrs[attr].value = val;       \
-    options.gl_attrs[attr].mutated = TRUE;
-
-
 /* NOTE: The depth find helper code in lv_actor depends on an arrangment from low to high */
 /**
  * Enumerate that defines video depths for use within plugins, libvisual functions, etc.

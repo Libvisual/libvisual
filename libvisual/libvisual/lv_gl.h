@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -31,11 +31,17 @@
  * @{
  */
 
+#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val) \
+    options.gl_attrs[attr].attribute = attr; \
+    options.gl_attrs[attr].value     = val;
+
 /**
- * Enumerate with GL attributes.
+ * OpenGL framebuffer attributes.
+ *
+ * @see VisGLAttrEntry
  */
 typedef enum {
-	VISUAL_GL_ATTRIBUTE_NONE = 0,          /**< No attribute. */
+	VISUAL_GL_ATTRIBUTE_NONE = 0,          /**< Special flag to indicate no attributes. */
 	VISUAL_GL_ATTRIBUTE_BUFFER_SIZE,       /**< Depth of the color buffer. */
 	VISUAL_GL_ATTRIBUTE_LEVEL,             /**< Level in plane stacking. */
 	VISUAL_GL_ATTRIBUTE_RGBA,              /**< True if RGBA mode. */
@@ -57,10 +63,14 @@ typedef enum {
 
 typedef struct _VisGLAttrEntry VisGLAttrEntry;
 
+/**
+ * OpenGL framebuffer attribute entry.
+ *
+ * Used to specify OpenGL framebuffer requirements.
+ */
 struct _VisGLAttrEntry {
-	VisGLAttr attribute;
-	int       value;
-	int       mutated;
+	VisGLAttr attribute;         /**< Attribute tag */
+	int       value;             /**< Attribute value */
 };
 
 /**
