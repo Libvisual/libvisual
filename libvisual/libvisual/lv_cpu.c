@@ -573,7 +573,7 @@ int visual_cpu_has_3dnow ()
 	return cpu_caps.has3DNow;
 }
 
-int visual_cpu_has_3dnow2 ()
+int visual_cpu_has_3dnow_ext ()
 {
 	visual_return_val_if_fail (cpu_initialized, FALSE);
 
