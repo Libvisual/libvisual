@@ -44,44 +44,19 @@ typedef enum {
 	VISUAL_CPU_TYPE_OTHER		/**< Running on an architecture that is not specified. */
 } VisCPUType;
 
-typedef struct _VisCPU VisCPU;
-
-/**
- * This VisCPU structure contains information regarding the processor.
- *
- * @see visual_cpu_get_info
- */
-struct _VisCPU {
-	VisCPUType	type;			/**< Contains the CPU/arch type. */
-	int		nrcpu;			/**< Contains the number of CPUs in the system. */
-
-	/* Feature flags */
-	int		x86cpuType;		/**< The x86 cpu family type. */
-	int		cacheline;		/**< The size of the cacheline. */
-
-	int		hasMMX;			/**< The CPU has the mmx feature. */
-	int		hasMMX2;		/**< The CPU has the mmx2 feature. */
-	int		hasSSE;			/**< The CPU has the sse feature. */
-	int		hasSSE2;		/**< The CPU has the sse2 feature. */
-	int		has3DNow;		/**< The CPU has the 3dnow feature. */
-	int		has3DNowExt;		/**< The CPU has the 3dnowext feature. */
-	int		hasAltiVec;     /**< The CPU has the altivec feature. */
-	int		hasARMv7;       /**<The CPU has the ARM v7 feature. */
-	int		hasVFPv3;       /**<The CPU has the ARM VFPv3 feature. */
-	int		hasNeon;        /**<The CPU has the ARM Neon feature. */
-	int		hasLDREX_STREX; /**<The CPU has ARM LDREX_STREX feature. */
-};
-
 LV_BEGIN_DECLS
 
 /**
- * Function to get the VisCPU caps initialized by
- * visual_cpu_initialize(), this contains information regarding the
- * CPU features and flags.
+ * Returns the processor architecture.
  *
- * @return The VisCPU caps structure.
+ * @return processor architecture
  */
-LV_API const VisCPU *visual_cpu_get_caps (void);
+LV_API VisCPUType visual_cpu_get_type (void);
+
+/**
+ * Returns the number of processor cores
+ */
+LV_API unsigned int visual_cpu_get_num_cores (void);
 
 /**
  * Function to retrieve if the tsc CPU feature is enabled.

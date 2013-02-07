@@ -1,10 +1,10 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *	        Chong Kai Xiong <kaixiong@codeleft.sga>
+ *	        Chong Kai Xiong <kaixiong@codeleft.sg>
  *	        Eric Anholt <anholt@freebsd.org>
  *
  * Extra Credits: MPlayer cpudetect hackers.
@@ -72,22 +72,32 @@
 
 #define TEST_BIT(x, n)  (((x) >> (n)) & 1)
 
-static VisCPU __lv_cpu_caps;
-static int __lv_cpu_initialized = FALSE;
+typedef struct {
+	VisCPUType	type;
+	int		num_cores;
+	int		x86cpuType;
+	int		cacheline;
 
-#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-static int has_cpuid (void);
-static int cpuid (unsigned int ax, unsigned int *p);
-#endif
+	int		hasMMX;
+	int		hasMMX2;
+	int		hasSSE;
+	int		hasSSE2;
+	int		has3DNow;
+	int		has3DNowExt;
+	int		hasAltiVec;
+	int		hasARMv7;
+	int		hasVFPv3;
+	int		hasNeon;
+	int		hasLDREX_STREX;
+} VisCPU;
 
-#if defined(VISUAL_OS_WIN32)
-LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep);
-#endif
+static VisCPU cpu_caps;
+static int cpu_initialized = FALSE;
 
 /* The sigill handlers */
 #if defined(VISUAL_ARCH_X86) //x86 (linux katmai handler check thing)
 #if defined(VISUAL_OS_LINUX)
-static void sigill_handler_sse( int signal, struct sigcontext sc )
+static void sigill_handler_sse (int signal, struct sigcontext sc)
 {
 	/* Both the "xorps %%xmm0,%%xmm0" and "divps %xmm0,%%xmm1"
 	 * instructions are 3 bytes long.  We must increment the instruction
@@ -101,32 +111,30 @@ static void sigill_handler_sse( int signal, struct sigcontext sc )
 	 */
 	sc.eip += 3;
 
-	__lv_cpu_caps.hasSSE=0;
+	cpu_caps.hasSSE = FALSE;
 }
 
-static void sigfpe_handler_sse( int signal, struct sigcontext sc )
+static void sigfpe_handler_sse (int signal, struct sigcontext sc)
 {
-	if ( sc.fpstate->magic != 0xffff ) {
+	if (sc.fpstate->magic != 0xffff) {
 		/* Our signal context has the extended FPU state, so reset the
 		 * divide-by-zero exception mask and clear the divide-by-zero
-		 * exception bit.
-		 */
+		 * exception bit. */
 		sc.fpstate->mxcsr |= 0x00000200;
 		sc.fpstate->mxcsr &= 0xfffffffb;
 	} else {
-		/* If we ever get here, we're completely hosed.
-		*/
+		/* If we ever get here, we're completely hosed. */
 	}
 }
 #endif
 #endif /* VISUAL_OS_LINUX */
 
 #if defined(VISUAL_OS_WIN32)
-LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep)
+LONG CALLBACK win32_sig_handler_sse (EXCEPTION_POINTERS* ep)
 {
-	if(ep->ExceptionRecord->ExceptionCode==EXCEPTION_ILLEGAL_INSTRUCTION){
+	if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ILLEGAL_INSTRUCTION) {
 		ep->ContextRecord->Eip +=3;
-		__lv_cpu_caps.hasSSE=0;
+		cpu_caps.hasSSE = FALSE;
 		return EXCEPTION_CONTINUE_EXECUTION;
 	}
 	return EXCEPTION_CONTINUE_SEARCH;
@@ -135,23 +143,21 @@ LONG CALLBACK win32_sig_handler_sse(EXCEPTION_POINTERS* ep)
 
 
 #if defined(VISUAL_ARCH_POWERPC) && !defined(VISUAL_OS_DARWIN)
-static sigjmp_buf __lv_powerpc_jmpbuf;
-static volatile sig_atomic_t __lv_powerpc_canjump = 0;
-
-static void sigill_handler (int sig);
+static sigjmp_buf powerpc_jmpbuf;
+static volatile sig_atomic_t powerpc_canjump = 0;
 
 static void sigill_handler (int sig)
 {
-	if (!__lv_powerpc_canjump) {
+	if (!powerpc_canjump) {
 		signal (sig, SIG_DFL);
 		raise (sig);
 	}
 
-	__lv_powerpc_canjump = 0;
-	siglongjmp (__lv_powerpc_jmpbuf, 1);
+	powerpc_canjump = 0;
+	siglongjmp (powerpc_jmpbuf, 1);
 }
 
-static void check_os_altivec_support( void )
+static void check_os_altivec_support (void)
 {
 #if defined(VISUAL_OS_DARWIN)
 	int sels[2] = {CTL_HW, HW_VECTORUNIT};
@@ -163,15 +169,15 @@ static void check_os_altivec_support( void )
 
 	if (err == 0)
 		if (has_vu != 0)
-			__lv_cpu_caps.hasAltiVec = 1;
+			cpu_caps.hasAltiVec = 1;
 #else /* !VISUAL_OS_DARWIN */
 	/* no Darwin, do it the brute-force way */
 	/* this is borrowed from the libmpeg2 library */
 	signal (SIGILL, sigill_handler);
-	if (sigsetjmp (__lv_powerpc_jmpbuf, 1)) {
+	if (sigsetjmp (powerpc_jmpbuf, 1)) {
 		signal (SIGILL, SIG_DFL);
 	} else {
-		__lv_powerpc_canjump = 1;
+		powerpc_canjump = 1;
 
 		asm volatile
 			("mtspr 256, %0\n\t"
@@ -180,7 +186,7 @@ static void check_os_altivec_support( void )
 			 : "r" (-1));
 
 		signal (SIGILL, SIG_DFL);
-		__lv_cpu_caps.hasAltiVec = 1;
+		cpu_caps.hasAltiVec = 1;
 	}
 #endif
 }
@@ -193,15 +199,15 @@ static void check_os_altivec_support( void )
  * support for user space apps that do SSE.
  */
 #if defined(VISUAL_ARCH_X86)
-static void check_os_katmai_support( void )
+static void check_os_katmai_support (void)
 {
 #if defined(VISUAL_OS_FREEBSD)
-	int has_sse=0, ret;
-	visual_size_t len=sizeof(has_sse);
+	int has_sse = 0, ret;
+	visual_size_t len = sizeof(has_sse);
 
-	ret = sysctlbyname("hw.instruction_sse", &has_sse, &len, NULL, 0);
+	ret = sysctlbyname ("hw.instruction_sse", &has_sse, &len, NULL, 0);
 	if (ret || !has_sse)
-		__lv_cpu_caps.hasSSE=0;
+		cpu_caps.hasSSE = FALSE;
 
 #elif defined(VISUAL_OS_NETBSD) || defined(VISUAL_OS_OPENBSD)
 	int has_sse, has_sse2, ret, mib[2];
@@ -211,29 +217,29 @@ static void check_os_katmai_support( void )
 	mib[1] = CPU_SSE;
 	varlen = sizeof(has_sse);
 
-	ret = sysctl(mib, 2, &has_sse, &varlen, NULL, 0);
+	ret = sysctl (mib, 2, &has_sse, &varlen, NULL, 0);
 	if (ret < 0 || !has_sse) {
-		__lv_cpu_caps.hasSSE=0;
+		cpu_caps.hasSSE = FALSE;
 	} else {
-		__lv_cpu_caps.hasSSE=1;
+		cpu_caps.hasSSE = TRUE;
 	}
 
 	mib[1] = CPU_SSE2;
-	varlen = sizeof(has_sse2);
-	ret = sysctl(mib, 2, &has_sse2, &varlen, NULL, 0);
+	varlen = sizeof (has_sse2);
+	ret = sysctl (mib, 2, &has_sse2, &varlen, NULL, 0);
 	if (ret < 0 || !has_sse2) {
-		__lv_cpu_caps.hasSSE2=0;
+		cpu_caps.hasSSE2 = FALSE;
 	} else {
-		__lv_cpu_caps.hasSSE2=1;
+		cpu_caps.hasSSE2 = TRUE;
 	}
-	__lv_cpu_caps.hasSSE = 0; /* FIXME ?!?!? */
+	cpu_caps.hasSSE = FALSE; /* FIXME ?!?!? */
 
 #elif defined(VISUAL_OS_WIN32)
 	LPTOP_LEVEL_EXCEPTION_FILTER exc_fil;
-	if ( __lv_cpu_caps.hasSSE ) {
-		exc_fil = SetUnhandledExceptionFilter(win32_sig_handler_sse);
+	if (cpu_caps.hasSSE) {
+		exc_fil = SetUnhandledExceptionFilter (win32_sig_handler_sse);
 		__asm __volatile ("xorps %xmm0, %xmm0");
-		SetUnhandledExceptionFilter(exc_fil);
+		SetUnhandledExceptionFilter (exc_fil);
 	}
 #elif defined(VISUAL_OS_LINUX)
 	struct sigaction saved_sigill;
@@ -241,11 +247,11 @@ static void check_os_katmai_support( void )
 
 	/* Save the original signal handlers.
 	*/
-	sigaction( SIGILL, NULL, &saved_sigill );
-	sigaction( SIGFPE, NULL, &saved_sigfpe );
+	sigaction (SIGILL, NULL, &saved_sigill);
+	sigaction (SIGFPE, NULL, &saved_sigfped);
 
-	signal( SIGILL, (void (*)(int))sigill_handler_sse );
-	signal( SIGFPE, (void (*)(int))sigfpe_handler_sse );
+	signal (SIGILL, (void (*)(int)) sigill_handler_sse);
+	signal (SIGFPE, (void (*)(int)) sigfpe_handler_sse);
 
 	/* Emulate test for OSFXSR in CR4.  The OS will set this bit if it
 	 * supports the extended FPU save and restore required for SSE.  If
@@ -253,7 +259,7 @@ static void check_os_katmai_support( void )
 	 * doesn't support Streaming SIMD Exceptions, even if the processor
 	 * does.
 	 */
-	if ( __lv_cpu_caps.hasSSE ) {
+	if (cpu_caps.hasSSE) {
 		__asm __volatile ("xorps %xmm1, %xmm0");
 	}
 
@@ -270,20 +276,19 @@ static void check_os_katmai_support( void )
 	 * support is good in kernels that do support unmasked exceptions,
 	 * and therefore to be safe I'm going to leave this test in here.
 	 */
-	if ( __lv_cpu_caps.hasSSE ) {
-		//      test_os_katmai_exception_support();
-	}
+	//if (cpu_caps.hasSSE) {
+	//    test_os_katmai_exception_support();
+	//}
 
-	/* Restore the original signal handlers.
-	*/
-	sigaction( SIGILL, &saved_sigill, NULL );
-	sigaction( SIGFPE, &saved_sigfpe, NULL );
+	/* Restore the original signal handlers. */
+	sigaction (SIGILL, &saved_sigill, NULL);
+	sigaction (SIGFPE, &saved_sigfpe, NULL);
 
 #else
 	/* We can't use POSIX signal handling to test the availability of
 	 * SSE, so we disable it by default.
 	 */
-	__lv_cpu_caps.hasSSE=0;
+	cpu_caps.hasSSE = FALSE;
 #endif /* __linux__ */
 }
 #endif /* VISUAL_ARCH_X86 */
@@ -318,7 +323,7 @@ static int has_cpuid (void)
 #endif /* defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-static int cpuid (unsigned int ax, unsigned int *p)
+static void cpuid (unsigned int ax, unsigned int *p)
 {
 	__asm __volatile
 		("movl %%ebx, %%esi\n\t"
@@ -327,12 +332,10 @@ static int cpuid (unsigned int ax, unsigned int *p)
 		 : "=a" (p[0]), "=S" (p[1]),
 		 "=c" (p[2]), "=d" (p[3])
 		 : "0" (ax));
-
-	return 0;
 }
 #endif
 
-static int get_number_of_cores (void)
+static unsigned int get_number_of_cores (void)
 {
 	/* See: http://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine */
 
@@ -365,7 +368,7 @@ static int get_number_of_cores (void)
 
 #elif defined(VISUAL_OS_ANDROID)
 
-	return android_getCpuCount();
+	return android_getCpuCount ();
 
 #elif defined(VISUAL_OS_WIN32)
 
@@ -403,34 +406,34 @@ static VisCPUType get_cpu_type (void)
 
 static void print_cpu_info (void)
 {
-	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", __lv_cpu_caps.nrcpu);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", __lv_cpu_caps.type);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: Number of CPUs: %d", cpu_caps.num_cores);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: type %d", cpu_caps.type);
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", __lv_cpu_caps.x86cpuType);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", __lv_cpu_caps.cacheline);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", __lv_cpu_caps.hasMMX);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", __lv_cpu_caps.hasMMX2);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", __lv_cpu_caps.hasSSE);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", __lv_cpu_caps.hasSSE2);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", __lv_cpu_caps.has3DNow);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", __lv_cpu_caps.has3DNowExt);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: X86 type %d", cpu_caps.x86cpuType);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: cacheline %d", cpu_caps.cacheline);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX %d", cpu_caps.hasMMX);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: MMX2 %d", cpu_caps.hasMMX2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE %d", cpu_caps.hasSSE);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: SSE2 %d", cpu_caps.hasSSE2);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNow %d", cpu_caps.has3DNow);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: 3DNowExt %d", cpu_caps.has3DNowExt);
 #elif defined(VISUAL_ARCH_POWERPC)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", __lv_cpu_caps.hasAltiVec);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: AltiVec %d", cpu_caps.hasAltiVec);
 #elif defined(VISUAL_ARCH_ARM)
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", __lv_cpu_caps.hasARMv7);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", __lv_cpu_caps.hasVFPv3);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", __lv_cpu_caps.hasNeon);
-	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", __lv_cpu_caps.hasLDREX_STREX);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM v7 %d", cpu_caps.hasARMv7);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM VFPv3 %d", cpu_caps.hasVFPv3);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM NEON %d", cpu_caps.hasNeon);
+	visual_log (VISUAL_LOG_DEBUG, "CPU: ARM LDREX_STREX %d", cpu_caps.hasLDREX_STREX);
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 }
 
 void visual_cpu_initialize ()
 {
-	visual_mem_set (&__lv_cpu_caps, 0, sizeof (VisCPU));
+	visual_mem_set (&cpu_caps, 0, sizeof (VisCPU));
 
-	__lv_cpu_caps.type  = get_cpu_type ();
-	__lv_cpu_caps.nrcpu = get_number_of_cores ();
+	cpu_caps.type      = get_cpu_type ();
+	cpu_caps.num_cores = get_number_of_cores ();
 
 #if defined(VISUAL_ARCH_ARM)
 # if defined(VISUAL_OS_ANDROID)
@@ -438,26 +441,27 @@ void visual_cpu_initialize ()
 		uint64_t type = android_getCpuFeatures ();
 
 		if (type & ANDROID_CPU_ARM_FEATURE_ARMv7)
-			__lv_cpu_caps.hasARMv7 = 1;
+			cpu_caps.hasARMv7 = TRUE;
 
 		if (type & ANDROID_CPU_ARM_FEATURE_VFPv3)
-			__lv_cpu_caps.hasVFPv3 = 1;
+			cpu_caps.hasVFPv3 = TRUE;
 
 		if (type & ANDROID_CPU_ARM_FEATURE_NEON)
-			__lv_cpu_caps.hasNeon = 1;
+			cpu_caps.hasNeon = TRUE;
 
 		if(type & ANDROID_CPU_ARM_FEATURE_LDREX_STREX)
-			__lv_cpu_caps.hasLDREX_STREX = 1;
+			cpu_caps.hasLDREX_STREX = TRUE;
 	}
 # endif /* VISUAL_OS_ANDROID */
 #endif /* VISUAL_ARCH_ARM */
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 	/* No cpuid, old 486 or lower */
-	if (has_cpuid () == 0)
+	if (!has_cpuid ()) {
 		return;
+	}
 
-	__lv_cpu_caps.cacheline = 32;
+	cpu_caps.cacheline = 32;
 
 	unsigned int regs[4];
 	unsigned int regs2[4];
@@ -470,19 +474,19 @@ void visual_cpu_initialize ()
 
 		cpuid (0x00000001, regs2);
 
-		__lv_cpu_caps.x86cpuType = (regs2[0] >> 8) & 0xf;
-		if (__lv_cpu_caps.x86cpuType == 0xf)
-		    __lv_cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
+		cpu_caps.x86cpuType = (regs2[0] >> 8) & 0xf;
+		if (cpu_caps.x86cpuType == 0xf)
+		    cpu_caps.x86cpuType = 8 + ((regs2[0] >> 20) & 255); /* use extended family (P4, IA64) */
 
 		/* general feature flags */
-		__lv_cpu_caps.hasMMX  = TEST_BIT (regs2[3], 23); /* 0x0800000 */
-		__lv_cpu_caps.hasSSE  = TEST_BIT (regs2[3], 25); /* 0x2000000 */
-		__lv_cpu_caps.hasSSE2 = TEST_BIT (regs2[3], 26); /* 0x4000000 */
-		__lv_cpu_caps.hasMMX2 = __lv_cpu_caps.hasSSE; /* SSE cpus supports mmxext too */
+		cpu_caps.hasMMX  = TEST_BIT (regs2[3], 23); /* 0x0800000 */
+		cpu_caps.hasSSE  = TEST_BIT (regs2[3], 25); /* 0x2000000 */
+		cpu_caps.hasSSE2 = TEST_BIT (regs2[3], 26); /* 0x4000000 */
+		cpu_caps.hasMMX2 = cpu_caps.hasSSE; /* SSE cpus supports mmxext too */
 
 		cacheline = ((regs2[1] >> 8) & 0xFF) * 8;
 		if (cacheline > 0)
-			__lv_cpu_caps.cacheline = cacheline;
+			cpu_caps.cacheline = cacheline;
 	}
 
 	cpuid (0x80000000, regs);
@@ -491,23 +495,23 @@ void visual_cpu_initialize ()
 
 		cpuid (0x80000001, regs2);
 
-		__lv_cpu_caps.hasMMX  |= TEST_BIT (regs2[3], 23); /* 0x0800000 */
-		__lv_cpu_caps.hasMMX2 |= TEST_BIT (regs2[3], 22); /* 0x400000 */
-		__lv_cpu_caps.has3DNow    = TEST_BIT (regs2[3], 31); /* 0x80000000 */
-		__lv_cpu_caps.has3DNowExt = TEST_BIT (regs2[3], 30);
+		cpu_caps.hasMMX  |= TEST_BIT (regs2[3], 23); /* 0x0800000 */
+		cpu_caps.hasMMX2 |= TEST_BIT (regs2[3], 22); /* 0x400000 */
+		cpu_caps.has3DNow    = TEST_BIT (regs2[3], 31); /* 0x80000000 */
+		cpu_caps.has3DNowExt = TEST_BIT (regs2[3], 30);
 	}
 
 	if (regs[0] >= 0x80000006) {
 		cpuid (0x80000006, regs2);
-		__lv_cpu_caps.cacheline = regs2[2] & 0xFF;
+		cpu_caps.cacheline = regs2[2] & 0xFF;
 	}
 
 #if defined(VISUAL_ARCH_X86)
-	if (__lv_cpu_caps.hasSSE)
+	if (cpu_caps.hasSSE)
 		check_os_katmai_support ();
 
-	if (!__lv_cpu_caps.hasSSE)
-		__lv_cpu_caps.hasSSE2 = 0;
+	if (!cpu_caps.hasSSE)
+		cpu_caps.hasSSE2 = FALSE;
 #endif
 
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
@@ -518,100 +522,95 @@ void visual_cpu_initialize ()
 
 	print_cpu_info ();
 
-	__lv_cpu_initialized = TRUE;
+	cpu_initialized = TRUE;
 }
 
-const VisCPU *visual_cpu_get_caps ()
+VisCPUType visual_cpu_get_type ()
 {
-	if (!__lv_cpu_initialized)
-		return NULL;
+	visual_return_val_if_fail (cpu_initialized, VISUAL_CPU_TYPE_OTHER);
 
-	return &__lv_cpu_caps;
+	return cpu_caps.type;
+}
+
+unsigned int visual_cpu_get_num_cores ()
+{
+	visual_return_val_if_fail (cpu_initialized, 1);
+
+	return cpu_caps.num_cores;
 }
 
 int visual_cpu_has_mmx ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasMMX;
+	return cpu_caps.hasMMX;
 }
 
 int visual_cpu_has_mmx2 ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasMMX2;
+	return cpu_caps.hasMMX2;
 }
 
 int visual_cpu_has_sse ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasSSE;
+	return cpu_caps.hasSSE;
 }
 int visual_cpu_has_sse2 ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasSSE2;
+	return cpu_caps.hasSSE2;
 }
 
 int visual_cpu_has_3dnow ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.has3DNow;
+	return cpu_caps.has3DNow;
 }
 
 int visual_cpu_has_3dnow2 ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.has3DNowExt;
+	return cpu_caps.has3DNowExt;
 }
 
 int visual_cpu_has_altivec ()
 {
-	if (!__lv_cpu_initialized)
-		visual_log (VISUAL_LOG_ERROR, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasAltiVec;
+	return cpu_caps.hasAltiVec;
 }
 
 int visual_cpu_has_armv7 (void)
 {
-    if (!__lv_cpu_initialized)
-	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasARMv7;
+	return cpu_caps.hasARMv7;
 }
 
 int visual_cpu_has_vfpv3 (void)
 {
-    if (!__lv_cpu_initialized)
-	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasVFPv3;
+	return cpu_caps.hasVFPv3;
 }
 
 int visual_cpu_has_neon (void)
 {
-    if (!__lv_cpu_initialized)
-        visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasNeon;
+	return cpu_caps.hasNeon;
 }
 
 int visual_cpu_has_ldrex_strex (void)
 {
-    if (!__lv_cpu_initialized)
-	    visual_log (VISUAL_LOG_CRITICAL, "The VisCPU system is not initialized.");
+	visual_return_val_if_fail (cpu_initialized, FALSE);
 
-	return __lv_cpu_caps.hasLDREX_STREX;
+	return cpu_caps.hasLDREX_STREX;
 }
