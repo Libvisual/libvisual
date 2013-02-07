@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -55,90 +55,107 @@ LV_API VisCPUType visual_cpu_get_type (void);
 
 /**
  * Returns the number of processor cores
+ *
+ * @return number of processor cores
  */
 LV_API unsigned int visual_cpu_get_num_cores (void);
 
 /**
- * Function to retrieve if the tsc CPU feature is enabled.
+ * Returns whether processor supports MMX instructions.
  *
- * @return Whether tsc is enabled or not.
- */
-LV_API int visual_cpu_has_tsc (void);
-
-/**
- * Function to retrieve if the MMX CPU feature is enabled.
+ * @note Only valid for x86 processors.
  *
- * @return Whether MMX is enabled or not.
+ * @return TRUE if MMX is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_mmx (void);
 
 /**
- * Function to retrieve if the MMX2 CPU feature is enabled.
+ * Returns whether processor supports MMX2 instructions.
  *
- * @return Whether MMX2 is enabled or not.
+ * @note Only valid for x86 processors.
+ *
+ * @return TRUE if MMX2 is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_mmx2 (void);
 
 /**
- * Function to retrieve if the SSE CPU feature is enabled.
+ * Returns whether processor supports SSE instructions.
  *
- * @return Whether SSE is enabled or not.
+ * @note Only valid for x86 processors.
+ *
+ * @return TRUE if SSE is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_sse (void);
 
 /**
- * Function to retrieve if the SSE2 CPU feature is enabled.
+ * Returns whether processor supports SSE2 instructions.
  *
- * @return Whether SSE2 is enabled or not.
+ * @note Only valid for x86 processors.
+ *
+ * @return TRUE if SSE2 is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_sse2 (void);
 
 /**
- * Function to retrieve if the 3dnow CPU feature is enabled.
+ * Returns whether processor supports 3DNow!.
  *
- * @return Whether 3dnow is enabled or not.
+ * @note Only valid for x86 processors.
+ *
+ * @return TRUE if 3DNow! is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_3dnow (void);
 
 /**
- * Function to retrieve if the 3dnowext CPU feature is enabled.
+ * Returns whether processor supports 3DNow! extensions.
  *
- * @return Whether 3dnowext is enabled or not.
+ * @note Only valid for x86 processors
+ *
+ * @return TRUE if 3DNow! extensions are supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_3dnow2 (void);
+LV_API int visual_cpu_has_3dnow_ext (void);
 
 /**
- * Function to retrieve if the altivec CPU feature is enabled.
+ * Returns whether processor supports AltiVec instructions.
  *
- * @return Whether altivec is enabled or not.
+ * @note Only valid for PowerPC processors.
+ *
+ * @return TRUE if AltiVec is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_altivec (void);
 
 /**
- * Function to retrieve if the ARM v7 feature is enabled.
+ * Returns whether processor supports ARMv7.
  *
- * @return Whether altivec is enabled or not.
+ * @note Only valid for ARM processors.
+ *
+ * @return TRUE if ARMv7 is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_armv7 (void);
 
 /**
- * Function to retrieve if the ARM VFPv3 feature is enabled.
+ * Returns whether processor supports the ARM VFPv3 extension.
  *
- * @return Whether altivec is enabled or not.
+ * @note Only valid for ARM processors.
+ *
+ * @return TRUE if VFPv3 is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_vfpv3 (void);
 
 /**
- * Function to retrieve if the ARM Neon feature is enabled.
+ * Returns whether processor supports the ARM NEON extension.
  *
- * @return Whether altivec is enabled or not.
+ * @note Only valid for ARM processors.
+ *
+ * @return TRUE if NEON is supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_neon (void);
 
 /**
- * Function to retrieve if the ARM LDREX_STREX feature is enabled.
+ * Function to retrieve if ARM LDREX and STREX instructions are supported
  *
- * @return Whether altivec is enabled or not.
+ * @note Only valid for ARM processors.
+ *
+ * @return TRUE if LDREX and STREX are supported, FALSE otherwise
  */
 LV_API int visual_cpu_has_ldrex_strex (void);
 
