@@ -1,8 +1,0 @@
-#!/bin/bash
-
-gcc -o visscript_test avs_functions.c avs_il_tree.c avs_lexer.c \
-avs_x86_opcode.c avs_il_assembler.c avs_il_tree_node.c avs_parser.c \
-avs_blob.c avs_il_core.c avs_runnable.c avs_blob_pool.c avs_debug.c \
-avs_il_instruction.c avs_ix_compiler.c avs_stack.c avs_compiler.c \
-avs_il_register.c avs_ix_machine.c avs_x86_compiler.c main.c \
--Wall `pkg-config --cflags --libs libvisual-0.5`  -z execstack -lm -g
