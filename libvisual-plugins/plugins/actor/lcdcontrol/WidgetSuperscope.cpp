@@ -134,8 +134,7 @@ WidgetSuperscope::~WidgetSuperscope() {
     Stop();
     delete visible_;
     delete bitmap_;
-    visual_video_free_buffer(video_);
-    visual_object_unref(VISUAL_OBJECT(video_));
+    visual_video_unref(video_);
 }
 
 void WidgetSuperscope::Resize(int rows, int cols, int old_rows, int old_cols) {
@@ -203,7 +202,7 @@ void WidgetSuperscope::Stop() {
 
 int lv_superscope_render (SuperScopePrivate *priv, VisVideo *video, VisAudio *audio)
 {
-    SuperScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    SuperScopePrivate *priv = visual_plugin_get_private (plugin);
     LVAVSPipeline *pipeline = priv->pipeline;
     int *buf = pipeline->framebuffer;
     int isBeat;

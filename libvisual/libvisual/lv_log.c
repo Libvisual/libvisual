@@ -24,6 +24,7 @@
 #include <config.h>
 #include "lv_log.h"
 #include "lv_common.h"
+#include "lv_util.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -37,7 +38,7 @@ typedef struct {
 
 static VisLogSeverity verbosity = VISUAL_LOG_WARNING;
 
-static const char *log_prefixes[VISUAL_LOG_CRITICAL+1] = {
+static const char *log_prefixes[VISUAL_LOG_NUM_LEVELS] = {
 	"DEBUG    ",
 	"INFO     ",
 	"WARNING  ",
@@ -45,38 +46,14 @@ static const char *log_prefixes[VISUAL_LOG_CRITICAL+1] = {
 	"CRITICAL "
 };
 
-static LogHandler log_handlers[VISUAL_LOG_CRITICAL+1];
+static LogHandler log_handlers[VISUAL_LOG_NUM_LEVELS];
 
 static void output_to_stderr (VisLogSeverity severity, const char *msg,
     VisLogSource const *source);
 
 static int is_valid_severity (VisLogSeverity severity)
 {
-    return (severity >= VISUAL_LOG_DEBUG && severity <= VISUAL_LOG_CRITICAL);
-}
-
-static const char *shorten_filename (const char* filename, unsigned int parts)
-{
-	/* Start looking for '/' from the end of the filename */
-	const char *s = filename + strlen (filename);
-
-	unsigned int i;
-
-	for (i = 0; i < parts; i++) {
-		/* Scan backwards until we hit '/' or the beginning of the string */
-		while (s != filename && *s != '/')
-			s--;
-
-		/* If we hit the beginning, we just return the filename, unmodified */
-		if (s == filename)
-			return filename;
-
-		/* Skip this instance of / */
-		s--;
-	}
-
-	/* We found the final /. Return the substring that begins right after it */
-	return s + 2;
+    return (severity >= VISUAL_LOG_DEBUG && severity < VISUAL_LOG_NUM_LEVELS);
 }
 
 void visual_log_set_verbosity (VisLogSeverity level)
@@ -123,7 +100,7 @@ void _lv_log (VisLogSeverity severity,
 	vsnprintf (message, LV_LOG_MAX_MESSAGE_SIZE-1, fmt, va);
 	va_end (va);
 
-	source.file = shorten_filename (file, 3);
+	source.file = visual_truncate_path (file, 3);
 	source.func = funcname;
 	source.line = line;
 

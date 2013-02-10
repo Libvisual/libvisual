@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(NEBULUS_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_nebulus)
 
 SET(SOURCES

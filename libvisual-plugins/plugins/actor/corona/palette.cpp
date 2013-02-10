@@ -70,7 +70,7 @@ void PaletteCycler::startPaletteTransition()
 
     // Create a new palette as the "destination palette"
     m_srcnum  = m_destnum;
-    m_destnum = rand() % (int) m_palettes.size();
+    m_destnum = LV::rand() % (int) m_palettes.size();
     m_palettes.expandPalette(m_destnum, m_destpal);
 
     // Begin the transition
@@ -83,10 +83,10 @@ void PaletteCycler::update(TimedLevel *pLevels)
 {
   // Randomly change the destination palette
   if (pLevels->timeStamp - pLevels->lastbeat > 10000000) {
-    if (rand() % 100 == 0) startPaletteTransition();
+    if (LV::rand() % 100 == 0) startPaletteTransition();
   }
   else {
-    if (rand() % 400 == 0) startPaletteTransition();
+    if (LV::rand() % 400 == 0) startPaletteTransition();
   }
 
   // Continue any current palette transtion

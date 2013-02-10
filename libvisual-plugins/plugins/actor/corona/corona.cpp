@@ -29,12 +29,14 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include <libvisual/libvisual.h>
-
 #include "corona.h"
-#include <stdio.h>
+
+#include <libvisual/libvisual.h>
+#include <limits>
+#include <cstdio>
 #include <cstdlib>
 #include <cmath>
+
 using namespace std;
 
 
@@ -64,7 +66,7 @@ Corona::Corona()
 	m_reflArray     = 0;
 	m_waveloop      = 0.0;
 
-	m_particles = (Particle*)calloc (nbParticules, sizeof(Particle));
+	m_particles = visual_mem_new0 (Particle, nbParticules);
 	// Create particles in random positions
 	for (int i = nbParticules - 1; i >= 0; --i)
 	{
@@ -85,10 +87,11 @@ Corona::~Corona()
 {
 	if (m_real_image) free(m_real_image);
 	if (m_deltafield) free(m_deltafield);
+	visual_mem_free (m_particles);
 }
 
 double Corona::random(double min, double max) const {
-	return rand() * (max - min) / RAND_MAX + min;
+	return LV::rand() * (max - min) / std::numeric_limits<uint32_t>::max() + min;
 }
 
 bool Corona::setUpSurface(int width, int height) {
@@ -122,7 +125,7 @@ bool Corona::setUpSurface(int width, int height) {
 	if (newsize < 2000) newsize = 2000;
 	int oldsize = (int) nbParticules;
 	nbParticules = newsize;
-	m_particles = (Particle*)realloc (m_particles, sizeof(Particle) * newsize);
+	m_particles = (Particle*) visual_mem_realloc(m_particles, sizeof(Particle) * newsize);
 	for (int i = oldsize; i < newsize; ++i) {
 		m_particles[i].x = random(0, 1);
 		m_particles[i].y = random(0, 1);
@@ -188,8 +191,8 @@ void Corona::setPointDelta(int x, int y)
 	double d   = tx * tx + ty * ty;
 	double ds  = ::sqrt(d);
 	double ang = atan2(ty, tx) + m_swirl.tightness / (d + 0.01);
-	int dx = (int) ((ds * m_swirl.pull * cos(ang) - tx) * m_width) + rand()  % 5 - 2;
-	int dy = (int) ((ds * m_swirl.pull * sin(ang) - ty) * m_height) + rand() % 5 - 2;
+	int dx = (int) ((ds * m_swirl.pull * cos(ang) - tx) * m_width) + LV::rand()  % 5 - 2;
+	int dy = (int) ((ds * m_swirl.pull * sin(ang) - ty) * m_height) + LV::rand() % 5 - 2;
 	if (x + dx < 0) dx = -dx - x;
 	if (x + dx >= m_width) dx = 2 * m_width - 2 * x - dx - 1;
 	if (y + dy < 0) dy = -dy - y;
@@ -280,7 +283,7 @@ void Corona::getAvgParticlePos(double& x, double& y) const
 {
 	x = y = 0;
 	for (int i = 0; i < 10; ++i) {
-		int r = rand() % nbParticules;
+		int r = LV::rand() % nbParticules;
 		x += m_particles[r].x;
 		y += m_particles[r].y;
 	}
@@ -401,7 +404,7 @@ void Corona::update(TimedLevel *pLevels)
 		double tx, ty;
 		getAvgParticlePos(tx, ty);
 		// If most of the particles are low down, use a launch
-		if (ty < 0.2 && rand() % 4 != 0) {
+		if (ty < 0.2 && LV::rand() % 4 != 0) {
 			int p;
 			double bv = m_oldval * 5.0;
 			for (p = 0; p < nbParticules; ++p)
@@ -419,7 +422,7 @@ void Corona::update(TimedLevel *pLevels)
 			ty += random(-0.1, 0.1);
 			double bv = 0.009 * m_oldval;
 			double bv2 = 0.0036 * m_oldval;
-			if (rand() % 2 == 0) bv = -bv;
+			if (LV::rand() % 2 == 0) bv = -bv;
 			m_movement.x = tx;
 			m_movement.y = ty;
 			m_movement.tightness = random(0.8 * bv, bv);
@@ -460,7 +463,7 @@ void Corona::update(TimedLevel *pLevels)
 		if (it->yvel > 0.1 ) it->yvel = 0.1;
 
 		// Randomly move the particle once in a while
-		if (rand() % (nbParticules / 5) == 0)
+		if (LV::rand() % (nbParticules / 5) == 0)
 		{
 			it->x = random(0, 1);
 			it->y = random(0, 1);
@@ -479,7 +482,7 @@ void Corona::update(TimedLevel *pLevels)
 	if (m_swirltime > 0) --m_swirltime;
 
 	// Randomly change the delta field
-	if (rand() % 200 == 0) chooseRandomSwirl();
+	if (LV::rand() % 200 == 0) chooseRandomSwirl();
 
 	// Animate the waves
 	m_waveloop += 0.6;
@@ -491,11 +494,11 @@ void Corona::update(TimedLevel *pLevels)
 		drawParticules();
 
 		// Apply the deltafield and update a few of its points
-		applyDeltaField(m_nPreset == PRESET_BLAZE && m_width * m_height < 150000); 
+		applyDeltaField(m_nPreset == PRESET_BLAZE && m_width * m_height < 150000);
 
 		int n = (m_width * m_height) / 100;
 		for (int i = 0; i < n; ++i)
-			setPointDelta(rand() % m_width, rand() % m_height);
+			setPointDelta(LV::rand() % m_width, LV::rand() % m_height);
 
 		// If on the blaze preset, draw the particles again
 		if (m_nPreset == PRESET_BLAZE)

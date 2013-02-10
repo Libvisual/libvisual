@@ -1,34 +1,33 @@
-/* Libvisual - The audio visualisation framework cli tool
- *
- * Copyright (C) 2012      LIbvisual team
- *               2004-2006 Dennis Smit
- *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
- *          Chong Kai Xiong <kaixiong@codeleft.sg>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+// lv-tool - Libvisual commandline tool
+//
+// Copyright (C) 2012-2013 Libvisual team
+//               2004-2006 Dennis Smit
+//
+// Authors: Daniel Hiepler <daniel@niftylight.de>
+//          Chong Kai Xiong <kaixiong@codeleft.sg>
+//          Dennis Smit <ds@nerds-incorporated.org>
+//
+// This file is part of lv-tool.
+//
+// lv-tool is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// lv-tool is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with lv-tool.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sdl_driver.hpp"
 #include "display.hpp"
 #include "display_driver.hpp"
-#include "gettext.h"
 #include <libvisual/libvisual.h>
 
 #include <SDL/SDL.h>
-#include <iostream>
 #include <array>
 
 namespace {
@@ -92,7 +91,7 @@ namespace {
 
           if (!SDL_WasInit (SDL_INIT_VIDEO)) {
               if (SDL_Init (SDL_INIT_VIDEO) == -1) {
-                  std::cerr << "Unable to init SDL VIDEO: " << SDL_GetError () << std::endl;
+                  visual_log (VISUAL_LOG_ERROR, "Unable to initialize SDL: %s", SDL_GetError ());
                   return nullptr;
               }
           }
@@ -109,7 +108,7 @@ namespace {
                   return nullptr;
               }
 
-              videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
+              videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
 
               if (videoinfo->hw_available)
                   videoflags |= SDL_HWSURFACE;
@@ -120,15 +119,12 @@ namespace {
                   videoflags |= SDL_HWACCEL;
 
               for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-                  if (vidoptions->gl_attrs[i].mutated) {
-                      SDL_GLattr sdl_attribute =
-                          sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
+                  SDL_GLattr sdl_attribute = sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
-                      if (sdl_attribute < 0)
-                          continue;
+                  if (sdl_attribute < 0)
+                      continue;
 
-                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
-                  }
+                  SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
               }
 
               int bpp = videoinfo->vfmt->BitsPerPixel;
@@ -145,10 +141,8 @@ namespace {
                                             false,
                                             m_screen->w,
                                             m_screen->h,
-                                            depth);
-          m_screen_video->ref();
-
-          set_title (_("lv-tool"));
+                                            depth,
+                                            m_screen->pitch);
 
           SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
@@ -271,14 +265,14 @@ namespace {
               case SDL_KEYUP:
                   visual_event_queue_add (&eventqueue,
                                           visual_event_new_keyboard (VisKey(event.key.keysym.sym),
-                                                                     event.key.keysym.mod,
+                                                                     VisKeyMod(event.key.keysym.mod),
                                                                      VISUAL_KEY_UP));
                   break;
 
               case SDL_KEYDOWN:
                   visual_event_queue_add (&eventqueue,
                                           visual_event_new_keyboard (VisKey(event.key.keysym.sym),
-                                                                     event.key.keysym.mod,
+                                                                     VisKeyMod(event.key.keysym.mod),
                                                                      VISUAL_KEY_DOWN));
                   break;
 

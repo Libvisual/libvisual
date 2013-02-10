@@ -24,7 +24,7 @@
 #include "config.h"
 #include "lv_audio.h"
 #include "private/lv_audio_convert.hpp"
-#include "private/lv_buffer_ring.hpp"
+#include "private/lv_audio_stream.hpp"
 #include "lv_common.h"
 #include "lv_fourier.h"
 #include "lv_math.h"
@@ -37,7 +37,6 @@
 namespace LV {
 
   class AudioChannel;
-  class AudioSample;
 
   typedef std::unique_ptr<AudioChannel> AudioChannelPtr;
 
@@ -49,11 +48,7 @@ namespace LV {
 
       ChannelList channels;
 
-      Impl ();
-
-      ~Impl ();
-
-      void add_channel (std::string const& name, AudioSample& samples);
+      void upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp);
 
       AudioChannel* get_channel (std::string const& name) const;
   };
@@ -62,9 +57,8 @@ namespace LV {
   {
   public:
 
-      std::string   name;
-      BufferRingPtr samples;
-      Time          samples_timeout;
+      std::string name;
+      AudioStream stream;
 
       explicit AudioChannel (std::string const& name);
 
@@ -74,66 +68,10 @@ namespace LV {
       AudioChannel (AudioChannel const&) = delete;
       AudioChannel& operator= (AudioChannel const&) = delete;
 
-      void add_samples (AudioSample& sample);
-  };
-
-  class AudioSample
-  {
-  public:
-
-      Time                     timestamp;
-      VisAudioSampleRateType   rate;
-      VisAudioSampleFormatType format;
-      BufferPtr                buffer;
-      BufferPtr                processed;
-
-      AudioSample (AudioSample const&) = delete;
-
-      AudioSample (BufferPtr const&         buffer_,
-                   Time const&              timestamp_,
-                   VisAudioSampleFormatType format_,
-                   VisAudioSampleRateType   rate_);
-
-      ~AudioSample ();
-
-      AudioSample& operator= (AudioSample const&) = delete;
+      void add_samples (BufferConstPtr const& samples, Time const& timestamp);
   };
 
   namespace {
-
-    void sample_destroy_func (BufferRingEntry& entry)
-    {
-        auto sample = static_cast<AudioSample*> (entry.func_data);
-        delete sample;
-    }
-
-    int sample_size_func (BufferRingEntry& entry)
-    {
-        auto sample = static_cast<AudioSample*> (entry.func_data);
-
-        return (sample->buffer->get_size () /
-                visual_audio_sample_format_get_size (sample->format)) * sizeof (float);
-    }
-
-    BufferPtr sample_data_func (BufferRingEntry& entry)
-    {
-        auto sample = static_cast<AudioSample*> (entry.func_data);
-
-        /* We have internal format ready */
-        if (sample->processed) {
-            return sample->processed;
-        }
-
-        sample->processed = Buffer::create ((sample->buffer->get_size () /
-                                             visual_audio_sample_format_get_size (sample->format)) * sizeof (float));
-
-        AudioConvert::convert_samples (sample->processed,
-                                       VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
-                                       sample->buffer,
-                                       sample->format);
-
-        return sample->processed;
-    }
 
     void sample_buffer_mix (BufferPtr const& dest, BufferPtr const& src, float multiplier)
     {
@@ -150,39 +88,13 @@ namespace LV {
 
   } // anonymous
 
-
-  AudioSample::AudioSample (BufferPtr const&         buffer_,
-                            Time const&              timestamp_,
-                            VisAudioSampleFormatType format_,
-                            VisAudioSampleRateType   rate_)
-      : timestamp (timestamp_)
-      , rate      (rate_)
-      , format    (format_)
-      , buffer    (buffer_)
+  void Audio::Impl::upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp)
   {
-  }
+      if (!get_channel (name)) {
+          channels[name] = std::move (make_unique<AudioChannel> (name));
+      }
 
-  AudioSample::~AudioSample ()
-  {
-      // empty
-  }
-
-  Audio::Impl::Impl ()
-  {
-      // empty
-  }
-
-  Audio::Impl::~Impl ()
-  {
-      // empty
-  }
-
-  void Audio::Impl::add_channel (std::string const& name, AudioSample& samples)
-  {
-      auto channel = make_unique<AudioChannel> (name);
-      channel->add_samples (samples);
-
-      channels[name] = std::move (channel);
+      channels[name]->add_samples (samples, timestamp);
   }
 
   AudioChannel* Audio::Impl::get_channel (std::string const& name) const
@@ -192,9 +104,7 @@ namespace LV {
   }
 
   AudioChannel::AudioChannel (std::string const& name_)
-      : name            (name_)
-      , samples         (new BufferRing)
-      , samples_timeout (Time (1, 0))
+      : name (name_)
   {}
 
   AudioChannel::~AudioChannel ()
@@ -202,12 +112,9 @@ namespace LV {
       // empty
   }
 
-  void AudioChannel::add_samples (AudioSample& sample)
+  void AudioChannel::add_samples (BufferConstPtr const& samples, Time const& timestamp)
   {
-      samples->add_function (sample_data_func,
-                             sample_destroy_func,
-                             sample_size_func,
-                             &sample);
+      stream.write (samples, timestamp);
   }
 
   Audio::Audio ()
@@ -216,9 +123,21 @@ namespace LV {
       // empty
   }
 
+  Audio::Audio (Audio&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // empty
+  }
+
   Audio::~Audio ()
   {
       // empty
+  }
+
+  Audio& Audio::operator= (Audio&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
+      return *this;
   }
 
   bool Audio::get_sample (BufferPtr const& buffer, std::string const& channel_name)
@@ -230,7 +149,7 @@ namespace LV {
           return false;
       }
 
-      channel->samples->get_data_from_end (buffer.get (), buffer->get_size ());
+      channel->stream.read (buffer, buffer->get_size ());
 
       return true;
   }
@@ -356,19 +275,33 @@ namespace LV {
                      VisAudioSampleFormatType  format,
                      VisAudioSampleChannelType channeltype)
   {
-      if (channeltype == VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO) {
-          auto chan1 = Buffer::create (buffer->get_size () / 2);
-          auto chan2 = Buffer::create (buffer->get_size () / 2);
+      auto timestamp = Time::now ();
 
-          AudioConvert::deinterleave_stereo_samples (chan1, chan2, buffer, format);
+      auto sample_count = buffer->get_size () / visual_audio_sample_format_get_size (format);
 
-          auto timestamp = Time::now ();
+      auto converted_buffer = Buffer::create (sample_count * sizeof (float));
 
-          auto sample1 = new AudioSample (chan1, timestamp, format, rate);
-          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_LEFT, *sample1);
+      AudioConvert::convert_samples (converted_buffer,
+                                     VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
+                                     buffer,
+                                     format);
 
-          auto sample2 = new AudioSample (chan2, timestamp, format, rate);
-          m_impl->add_channel (VISUAL_AUDIO_CHANNEL_RIGHT, *sample2);
+      switch (channeltype) {
+          case VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO: {
+              auto samples1 = Buffer::create (sample_count/2 * sizeof (float));
+              auto samples2 = Buffer::create (sample_count/2 * sizeof (float));
+
+              AudioConvert::deinterleave_stereo_samples (samples1, samples2, converted_buffer, VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT);
+
+              m_impl->upload_to_channel (VISUAL_AUDIO_CHANNEL_LEFT, samples1, timestamp);
+              m_impl->upload_to_channel (VISUAL_AUDIO_CHANNEL_RIGHT, samples2, timestamp);
+
+              return;
+          }
+          default: {
+              visual_log (VISUAL_LOG_CRITICAL, "Only stereo input is currently supported");
+              return;
+          }
       }
   }
 
@@ -377,19 +310,26 @@ namespace LV {
                      VisAudioSampleFormatType format,
                      std::string const&       channel_name)
   {
-      auto pcmbuf = Buffer::create ();
-      pcmbuf->copy (buffer);
-
       auto timestamp = Time::now ();
 
-      auto sample = new AudioSample (pcmbuf, timestamp, format, rate);
-      m_impl->add_channel (channel_name, *sample);
+      auto sample_count = buffer->get_size () / visual_audio_sample_format_get_size (format);
+
+      auto converted_buffer = Buffer::create (sample_count * sizeof (float));
+
+      AudioConvert::convert_samples (converted_buffer,
+                                     VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT,
+                                     buffer,
+                                     format);
+
+      m_impl->upload_to_channel (channel_name, converted_buffer, timestamp);
   }
 
 } // LV namespace
 
 visual_size_t visual_audio_sample_rate_get_length (VisAudioSampleRateType rate)
 {
+    visual_return_val_if_fail (rate < VISUAL_AUDIO_SAMPLE_RATE_LAST, 0);
+
     static visual_size_t ratelengthtable[] = {
         0,      // VISUAL_AUDIO_SAMPLE_RATE_NONE
         8000,   // VISUAL_AUDIO_SAMPLE_RATE_8000
@@ -401,14 +341,13 @@ visual_size_t visual_audio_sample_rate_get_length (VisAudioSampleRateType rate)
         96000   // VISUAL_AUDIO_SAMPLE_RATE_96000
     };
 
-    if (rate >= VISUAL_AUDIO_SAMPLE_RATE_LAST)
-        return -1; /* FIXME decent error, also for format_get_size */
-
     return ratelengthtable[rate];
 }
 
 visual_size_t visual_audio_sample_format_get_size (VisAudioSampleFormatType format)
 {
+    visual_return_val_if_fail (format < VISUAL_AUDIO_SAMPLE_FORMAT_LAST, 0);
+
     static int formatsizetable[] = {
         0, // VISUAL_AUDIO_SAMPLE_FORMAT_NONE
         1, // VISUAL_AUDIO_SAMPLE_FORMAT_U8
@@ -420,14 +359,13 @@ visual_size_t visual_audio_sample_format_get_size (VisAudioSampleFormatType form
         4  // VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT
     };
 
-    if (format >= VISUAL_AUDIO_SAMPLE_FORMAT_LAST)
-        return -1;
-
     return formatsizetable[format];
 }
 
 int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format)
 {
+    visual_return_val_if_fail (format < VISUAL_AUDIO_SAMPLE_FORMAT_LAST, -1);
+
     static bool formatsignedtable[] = {
         false, // VISUAL_AUDIO_SAMPLE_FORMAT_NONE
         false, // VISUAL_AUDIO_SAMPLE_FORMAT_U8
@@ -438,9 +376,6 @@ int visual_audio_sample_format_is_signed (VisAudioSampleFormatType format)
         true,  // VISUAL_AUDIO_SAMPLE_FORMAT_S32
         true   // VISUAL_AUDIO_SAMPLE_FORMAT_FLOAT
     };
-
-    if (format >= VISUAL_AUDIO_SAMPLE_FORMAT_LAST)
-        return -1;
 
     return formatsignedtable[format];
 }

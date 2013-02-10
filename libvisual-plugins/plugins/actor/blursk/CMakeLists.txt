@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(SOURCES
   actor_blursk.c
   actor_blursk.h

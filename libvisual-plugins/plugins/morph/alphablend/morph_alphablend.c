@@ -27,11 +27,11 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
+static int  lv_morph_alpha_init    (VisPluginData *plugin);
+static void lv_morph_alpha_cleanup (VisPluginData *plugin);
+static void lv_morph_alpha_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-static int lv_morph_alpha_init (VisPluginData *plugin);
-static int lv_morph_alpha_cleanup (VisPluginData *plugin);
-static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -45,20 +45,20 @@ const VisPluginInfo *get_plugin_info (void)
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_MORPH,
+		.type     = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "alphablend",
-		.name = "alphablend morph",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.1",
-		.about = N_("An alphablend morph plugin"),
-		.help = N_("This morph plugin morphs between two video sources using the alphablend method"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "alphablend morph",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "0.1",
+		.about    = N_("An alphablend morph plugin"),
+		.help     = N_("This morph plugin morphs between two video sources using the alphablend method"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_morph_alpha_init,
-		.cleanup = lv_morph_alpha_cleanup,
+		.init     = lv_morph_alpha_init,
+		.cleanup  = lv_morph_alpha_cleanup,
 
-		.plugin = VISUAL_OBJECT (&morph)
+		.plugin   = &morph
 	};
 
 	return &info;
@@ -70,28 +70,22 @@ static int lv_morph_alpha_init (VisPluginData *plugin)
     bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_morph_alpha_cleanup (VisPluginData *plugin)
+static void lv_morph_alpha_cleanup (VisPluginData *plugin)
 {
-	return 0;
+    /* nothing to do */
 }
 
-static int lv_morph_alpha_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void lv_morph_alpha_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	visual_return_val_if_fail (dest != NULL, -1);
-	visual_return_val_if_fail (src1 != NULL, -1);
-	visual_return_val_if_fail (src2 != NULL, -1);
-
 	alpha_blend_buffer (visual_video_get_pixels (dest),
 	                    visual_video_get_pixels (src1),
 	                    visual_video_get_pixels (src2),
 	                    visual_video_get_size (dest),
 	                    visual_video_get_depth (dest),
-	                    rate);
-
-	return 0;
+	                    progress);
 }
 
 static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)

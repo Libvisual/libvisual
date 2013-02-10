@@ -165,11 +165,16 @@ namespace LV {
       visual_mem_copy (m_impl->data, src->m_impl->data, src->m_impl->size);
   }
 
-  void Buffer::copy_data_to (void* dest)
+  void Buffer::copy_to (void* dest, std::size_t size)
   {
       visual_return_if_fail (dest != nullptr);
 
-      visual_mem_copy (dest, m_impl->data, m_impl->size);
+      visual_mem_copy (dest, m_impl->data, std::min (size, m_impl->size));
+  }
+
+  void Buffer::copy_to (BufferPtr const& dest)
+  {
+      copy_to (dest->get_data (), dest->get_size ());
   }
 
   void Buffer::put (BufferConstPtr const& src, std::size_t offset)
@@ -182,11 +187,9 @@ namespace LV {
       visual_return_if_fail (data != nullptr);
       visual_return_if_fail (offset < m_impl->size);
 
-      std::size_t amount = m_impl->size;
-      if (offset + size > m_impl->size)
-          amount = m_impl->size - offset;
+      size = std::min (m_impl->size - offset, size);
 
-      visual_mem_copy (static_cast<uint8_t*> (m_impl->data) + offset, data, amount);
+      visual_mem_copy (static_cast<uint8_t*> (m_impl->data) + offset, data, size);
   }
 
   void Buffer::fill (uint8_t value)
@@ -200,19 +203,6 @@ namespace LV {
 
       for (std::size_t offset = 0; offset < m_impl->size; offset += size)
           put (data, size, offset);
-  }
-
-  void Buffer::ref () const
-  {
-      m_ref_count++;
-  }
-
-  void Buffer::unref () const
-  {
-      m_ref_count--;
-      if (m_ref_count == 0) {
-          delete this;
-      }
   }
 
 } // LV namespace

@@ -34,7 +34,6 @@ SET(libvisual_HEADERS
   lv_fourier.h
   lv_input.h
   lv_keysym.h
-  lv_list.h
   lv_log.h
   lv_palette.h
   lv_plugin.h
@@ -55,12 +54,8 @@ SET(libvisual_HEADERS
   lv_error.h
   lv_checks.h
   lv_types.h
-  lv_object.h
-  lv_transform.h
   lv_rectangle.h
   lv_buffer.h
-  lv_collection.h
-  lv_os.h
   lv_math.h
   lv_gl.h
   lv_defines.h
@@ -78,16 +73,11 @@ SET(libvisual_HEADERS
 
 SET(libvisual_SOURCES
   lv_mem.c
-  lv_list.c
   lv_log.c
-  lv_param.c
   lv_param_value.c
   lv_param_validators.c
   lv_cpu.c
   lv_error.c
-  lv_object.c
-  lv_collection.c
-  lv_os.c
   lv_math.c
   lv_gl.c
   lv_alpha_blend.c
@@ -103,6 +93,7 @@ SET(libvisual_SOURCES
   lv_input.cpp
   lv_libvisual.cpp
   lv_morph.cpp
+  lv_param.cpp
   lv_plugin.cpp
   lv_random.cpp
   lv_palette.cpp
@@ -110,16 +101,18 @@ SET(libvisual_SOURCES
   lv_rectangle.cpp
   lv_songinfo.cpp
   lv_time.cpp
-  lv_transform.cpp
   lv_video.cpp
 
+  lv_actor_c.cpp
   lv_audio_c.cpp
   lv_bin_c.cpp
   lv_buffer_c.cpp
   lv_color_c.cpp
   lv_event_c.cpp
   lv_fourier_c.cpp
+  lv_input_c.cpp
   lv_libvisual_c.cpp
+  lv_morph_c.cpp
   lv_random_c.cpp
   lv_palette_c.cpp
   lv_plugin_registry_c.cpp
@@ -130,6 +123,7 @@ SET(libvisual_SOURCES
 
   private/lv_audio_convert.cpp
   private/lv_video_convert.cpp
+  private/lv_audio_stream.cpp
   private/lv_video_fill.cpp
   private/lv_video_scale.cpp
   private/lv_video_blit.cpp
@@ -138,11 +132,11 @@ SET(libvisual_SOURCES
   private/lv_video_scale_simd.cpp
   private/lv_video_bmp.cpp
   private/lv_video_png.cpp
-  private/lv_buffer_ring.cpp
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_util.cpp
+  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_time_system.cpp
 
   ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h
   ${CMAKE_CURRENT_BINARY_DIR}/lv_math_orc.h

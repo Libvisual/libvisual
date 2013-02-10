@@ -6,6 +6,7 @@
 #include "goom_config.h"
 #include "goom_plugin_info.h"
 #include "tentacle3d.h"
+#include <libvisual/libvisual.h>
 
 #define D 256.0f
 
@@ -117,10 +118,10 @@ static void tentacle_new (TentacleFXData *data) {
 
 	for (tmp=0;tmp<nbgrid;tmp++) {
 		int x,z;
-		z = 45 + rand() % 30;
-		x = 85 + rand() % 5;
+		z = 45 + visual_rand() % 30;
+		x = 85 + visual_rand() % 5;
 		center.z = z;
-		data->grille[tmp] = grid3d_new (x, definitionx, z, definitionz + rand() % 10, center);
+		data->grille[tmp] = grid3d_new (x, definitionx, z, definitionz + visual_rand() % 10, center);
 		center.y += 8;
 	}
 }

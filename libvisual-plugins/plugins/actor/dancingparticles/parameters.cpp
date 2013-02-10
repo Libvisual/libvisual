@@ -259,9 +259,9 @@ void allocParts()
 
       for(int i=0;i<ptsNumMax;i++)
 		{
-		  pts[i][0]=rand()%300;
-		  pts[i][1]=rand()%400;
-		  pts[i][2]=rand()%400;
+		  pts[i][0]=LV::rand()%300;
+		  pts[i][1]=LV::rand()%400;
+		  pts[i][2]=LV::rand()%400;
 		  speed[i][0] = 0;
 		  speed[i][1] = 0;
 		  speed[i][2] = 0;
@@ -286,7 +286,7 @@ void changep()
 
   for(i=0;i<nump;i++)
     tot = tot + ps[i].chance;
-  r=rand()%tot;
+  r=LV::rand()%tot;
   for(i=-1;r>=0;r-=ps[i].chance)i++;
 
   if(titleHasChanged)

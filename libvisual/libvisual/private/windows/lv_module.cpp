@@ -22,7 +22,7 @@
 #include "config.h"
 #include "lv_module.hpp"
 #include "lv_common.h"
-
+#include <stdexcept>
 #include <sstream>
 #include <windows.h>
 
@@ -36,6 +36,17 @@ namespace LV {
       std::string path;
   };
 
+  ModulePtr Module::load (std::string const& path)
+  {
+      try {
+          return {new Module {path}, false};
+      }
+      catch (std::exception& error) {
+          visual_log (VISUAL_LOG_ERROR, "%s", error.what ());
+          return nullptr;
+      }
+  }
+
   Module::Module (std::string const& path)
       : m_impl (new Impl)
       , m_ref_count (1)
@@ -48,7 +59,7 @@ namespace LV {
       if (!m_impl->handle) {
           std::ostringstream msg;
           msg << "Failed to load shared object (" << path << "): Win32 error code #" << GetLastError ();
-          throw Error (msg.str ());
+          throw std::runtime_error {msg.str ()};
       }
   }
 

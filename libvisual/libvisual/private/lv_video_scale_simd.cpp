@@ -28,30 +28,33 @@
 
 namespace LV {
 
-  void VideoTransform::scale_bilinear_color32_mmx (Video& dest, Video const& src)
+  void VideoTransform::scale_bilinear_color32_mmx (Video& dst, Video const& src)
   {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-      uint32_t* dest_pixel = static_cast<uint32_t*> (dest.get_pixels ());
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ());
 
-      uint32_t du = ((src.m_impl->width  - 1) << 16) / dest.m_impl->width;
-      uint32_t dv = ((src.m_impl->height - 1) << 16) / dest.m_impl->height;
+      uint32_t du = ((src.m_impl->width  - 1) << 16) / dst.m_impl->width;
+      uint32_t dv = ((src.m_impl->height - 1) << 16) / dst.m_impl->height;
 
       uint32_t v = 0;
 
-      for (int y = dest.m_impl->height; y--; v += dv) {
+      while (dst_pixel_row != dst_pixel_row_end) {
           if (v >> 16 >= (unsigned int) (src.m_impl->height - 1))
               v -= 0x10000;
 
-          uint32_t const* src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
-          uint32_t const* src_pixel_rowl = static_cast<uint32_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
+          auto dst_pixel     = reinterpret_cast<uint32_t*> (dst_pixel_row);
+          auto dst_pixel_end = reinterpret_cast<uint32_t*> (dst_pixel_row) + dst.m_impl->width;
+
+          auto src_pixel_rowu = static_cast<uint32_t const*> (src.m_impl->pixel_rows[v >> 16]);
+          auto src_pixel_rowl = static_cast<uint32_t const*> (src.m_impl->pixel_rows[(v >> 16) + 1]);
 
           /* fracV = frac(v) = v & 0xffff */
           /* fixed point format convertion: fracV >>= 8) */
           uint32_t fracV = ((v & 0xffff) >> 12) | 0x100000;
           uint32_t u = 0;
 
-          for (int x = dest.m_impl->width - 1; x--; u += du) {
-
+          while (dst_pixel != dst_pixel_end) {
               /* fracU = frac(u) = u & 0xffff */
               /* fixed point format convertion: fracU >>= 8) */
               uint32_t fracU  = ((u & 0xffff) >> 12) | 0x100000;
@@ -59,8 +62,8 @@ namespace LV {
               __asm__ __volatile__
                   ("\n\t pxor %%mm7, %%mm7"
                    /* Prefetching does not show improvement on my Duron (maybe due to its small cache?) */
-                   /*"\n\t prefetch  64%[pixel_l]" / * only work on 3now!/SSE cpu */
-                   /*"\n\t prefetchw 64%[output]"  / * only work on 3now!/SSE cpu */
+                   /*"\n\t prefetch  64%[pixel_l]" / * only work on 3dnow!/SSE cpu */
+                   /*"\n\t prefetchw 64%[output]"  / * only work on 3dnow!/SSE cpu */
 
                    /* Computing coefs values (Thread #1 and #2) => ends on #C
                     *
@@ -89,7 +92,7 @@ namespace LV {
                    "#2\n\t movq      %%mm6, %%mm3"
 
                    "#1\n\t pxor      %%mm5, %%mm5"
-                   "#2\n\t punpckldq %%mm6, %%mm6" /* mm6 = [ 0x10 | fracv | 0x10 | fracV ] */ 
+                   "#2\n\t punpckldq %%mm6, %%mm6" /* mm6 = [ 0x10 | fracv | 0x10 | fracV ] */
                    "#3\n\t movq %[pixel_u], %%mm0" /* mm0 = [ col[0] | col[2] ] */
 
                    "#1\n\t punpckldq %%mm4, %%mm5" /* mm5 = [ fracU | fracU | 0 | 0 ] */
@@ -141,16 +144,18 @@ namespace LV {
                    "\n\t packuswb  %%mm7, %%mm0"
                    "\n\t movd    %%mm0, %[output]"
 
-                   : [output]  "=m"(*dest_pixel)
+                   : [output]  "=m"(*dst_pixel)
                    : [pixel_u] "m"(src_pixel_rowu[u>>16])
                      , [pixel_l] "m"(src_pixel_rowl[u>>16])
                      , [fracu]   "m"(fracU)
                      , [fracv]   "m"(fracV));
 
-              ++dest_pixel;
+              dst_pixel++;
+              u += du;
           }
 
-          dest_pixel += (dest.m_impl->pitch / 4) - ((dest.m_impl->width - 1));
+          dst_pixel_row += dst.m_impl->pitch;
+          v += dv;
       }
 
       __asm__ __volatile__ ("\n\t emms");

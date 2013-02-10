@@ -30,6 +30,5 @@
 #include <libvisual/lv_log.h>
 #include <libvisual/lv_checks.h>
 #include <libvisual/lv_error.h>
-#include <libvisual/lv_object.h>
 
 #endif /* _LV_COMMON_H */

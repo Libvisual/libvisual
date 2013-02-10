@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Richard Ashburn <richard.asbury@btinternet.com>
  *
  * Authors: Richard Ashburn <richard.asbury@btinternet.com>
@@ -31,35 +31,7 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-extern "C" const VisPluginInfo *get_plugin_info ();
-
 namespace {
-
-const int PALETTEDATA[][NB_PALETTES] = {
-	{ 4, 85, 0xff0000, 170, 0xffff00, 224, 0xffffff, 240, 0xf8f8e0 },     // 0. fire
-	{ 3, 85, 0xff, 170, 0xffff, 256, 0xffffff },                          // 1. ice
-	{ 1, 256, 0xffffff },                                                 // 2. white
-	{ 2, 128, 0xffffff, 256, 0xff },                                      // 3. white to blue
-	{ 2, 128, 0x808080, 256, 0xff },                                      // 4. gray to blue
-	{ 2, 128, 0xffff80, 256, 0xff },                                      // 5. yellow to blue
-	{ 2, 128, 0xffffff, 256, 0xff0000 },                                  // 6. white to red
-	{ 2, 128, 0xff, 256, 0xff0000 },                                      // 7. blue to red
-	{ 2, 128, 0xff0000, 256, 0xff },                                      // 8. red to blue
-	{ 2, 128, 0xff, 256, 0xffffff },                                      // 9. blue to white
-	{ 2, 128, 0xffffff, 256, 0 },                                         // 10. white to black
-	{ 2, 128, 0xff, 256, 0 },                                             // 11. blue to black
-	{ 2, 128, 0xff0000, 256, 0 },                                         // 12. red to black
-	{ 8, 32, 0xff, 64, 0, 96, 0xff, 128, 0, 192, 0xff, 256, 0 },          // 13. blue lines on black
-	{ 8, 32, 0xffffff, 64, 0, 96, 0xffffff, 128, 0, 192, 0xffffff, 256, 0 }, // 14. white lines on black
-	{ 3, 0, 0x000020, 128, 0x40, 256, 0xffffff },                         // 15. night sky
-	{ 2, 128, 0xff8080, 256, 0xff },                                      // 16. pink to blue
-	{ 2, 0, 0xffffff, 256, 0 },                                           // 17. black on white
-	{ 3, 0, 0xffffff, 128, 0, 256, 0xffffff },                            // 18. black to white on white
-	{ 3, 0, 0xffffff, 128, 0, 256, 0xc0c0ff },                            // 19. heavenly blue
-	{ 4, 120, 0x78, 128, 0xff0000, 136, 0x88, 256, 0xff },                // 20. blue, red line
-	{ 2, 0, 0xffe0a0, 256, 0 },                                           // 21. twilight yellow
-	{ 3, 0, 0xc0c0ff, 128, 0xa0a0a0, 256, 0xffffff }                      // 22. clouds
-};
 
   struct CoronaPrivate {
 	  LV::Time       oldtime;
@@ -69,14 +41,39 @@ const int PALETTEDATA[][NB_PALETTES] = {
   	  TimedLevel     tl;
   };
 
-  int lv_corona_init (VisPluginData *plugin);
-  int lv_corona_cleanup (VisPluginData *plugin);
-  int lv_corona_requisition (VisPluginData *plugin, int *width, int *height);
-  int lv_corona_resize (VisPluginData *plugin, int width, int height);
-  int lv_corona_events (VisPluginData *plugin, VisEventQueue *events);
-  VisPalette *lv_corona_palette (VisPluginData *plugin);
-  int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+  int         lv_corona_init        (VisPluginData *plugin);
+  void        lv_corona_cleanup     (VisPluginData *plugin);
+  void        lv_corona_requisition (VisPluginData *plugin, int *width, int *height);
+  void        lv_corona_resize      (VisPluginData *plugin, int width, int height);
+  int         lv_corona_events      (VisPluginData *plugin, VisEventQueue *events);
+  void        lv_corona_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+  VisPalette *lv_corona_palette     (VisPluginData *plugin);
 
+  const int PALETTEDATA[][NB_PALETTES] = {
+      { 4, 85, 0xff0000, 170, 0xffff00, 224, 0xffffff, 240, 0xf8f8e0 },     // 0. fire
+      { 3, 85, 0xff, 170, 0xffff, 256, 0xffffff },                          // 1. ice
+      { 1, 256, 0xffffff },                                                 // 2. white
+      { 2, 128, 0xffffff, 256, 0xff },                                      // 3. white to blue
+      { 2, 128, 0x808080, 256, 0xff },                                      // 4. gray to blue
+      { 2, 128, 0xffff80, 256, 0xff },                                      // 5. yellow to blue
+      { 2, 128, 0xffffff, 256, 0xff0000 },                                  // 6. white to red
+      { 2, 128, 0xff, 256, 0xff0000 },                                      // 7. blue to red
+      { 2, 128, 0xff0000, 256, 0xff },                                      // 8. red to blue
+      { 2, 128, 0xff, 256, 0xffffff },                                      // 9. blue to white
+      { 2, 128, 0xffffff, 256, 0 },                                         // 10. white to black
+      { 2, 128, 0xff, 256, 0 },                                             // 11. blue to black
+      { 2, 128, 0xff0000, 256, 0 },                                         // 12. red to black
+      { 8, 32, 0xff, 64, 0, 96, 0xff, 128, 0, 192, 0xff, 256, 0 },          // 13. blue lines on black
+      { 8, 32, 0xffffff, 64, 0, 96, 0xffffff, 128, 0, 192, 0xffffff, 256, 0 }, // 14. white lines on black
+      { 3, 0, 0x000020, 128, 0x40, 256, 0xffffff },                         // 15. night sky
+      { 2, 128, 0xff8080, 256, 0xff },                                      // 16. pink to blue
+      { 2, 0, 0xffffff, 256, 0 },                                           // 17. black on white
+      { 3, 0, 0xffffff, 128, 0, 256, 0xffffff },                            // 18. black to white on white
+      { 3, 0, 0xffffff, 128, 0, 256, 0xc0c0ff },                            // 19. heavenly blue
+      { 4, 120, 0x78, 128, 0xff0000, 136, 0x88, 256, 0xff },                // 20. blue, red line
+      { 2, 0, 0xffe0a0, 256, 0 },                                           // 21. twilight yellow
+      { 3, 0, 0xc0c0ff, 128, 0xa0a0a0, 256, 0xffffff }                      // 22. clouds
+  };
 }
 
 const VisPluginInfo *get_plugin_info ()
@@ -85,11 +82,11 @@ const VisPluginInfo *get_plugin_info ()
 	static VisPluginInfo info;
 
 	actor.requisition = lv_corona_requisition;
-	actor.palette = lv_corona_palette;
-	actor.render = lv_corona_render;
+	actor.palette     = lv_corona_palette;
+	actor.render      = lv_corona_render;
 	actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT;
 
-	info.type = VISUAL_PLUGIN_TYPE_ACTOR;
+	info.type    = VISUAL_PLUGIN_TYPE_ACTOR;
 
 	info.plugname = "corona";
 	info.name     = "libvisual corona plugin";
@@ -102,8 +99,7 @@ const VisPluginInfo *get_plugin_info ()
 	info.init     = lv_corona_init;
 	info.cleanup  = lv_corona_cleanup;
 	info.events   = lv_corona_events;
-
-	info.plugin = VISUAL_OBJECT (&actor);
+	info.plugin   = &actor;
 
 	return &info;
 }
@@ -113,16 +109,14 @@ namespace {
 
 int lv_corona_init (VisPluginData *plugin)
 {
-	CoronaPrivate *priv;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = new CoronaPrivate;
+	auto priv = new CoronaPrivate;
 	visual_mem_set (priv, 0, sizeof (CoronaPrivate));
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->corona       = new Corona();
 	priv->pcyl         = new PaletteCycler(PALETTEDATA, NB_PALETTES);
@@ -134,21 +128,19 @@ int lv_corona_init (VisPluginData *plugin)
 
 	priv->pal.colors.resize (256);
 
-	return 0;
+	return true;
 }
 
-int lv_corona_cleanup (VisPluginData *plugin)
+void lv_corona_cleanup (VisPluginData *plugin)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
 
 	delete priv->corona;
 	delete priv->pcyl;
 	delete priv;
-
-	return 0;
 }
 
-int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
+void lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -166,13 +158,11 @@ int lv_corona_requisition (VisPluginData *plugin, int *width, int *height)
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-int lv_corona_resize (VisPluginData *plugin, int width, int height)
+void lv_corona_resize (VisPluginData *plugin, int width, int height)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
 
 	delete priv->corona;
 	delete priv->pcyl;
@@ -184,8 +174,6 @@ int lv_corona_resize (VisPluginData *plugin, int width, int height)
 	priv->tl.state     = normal_state;
 
 	priv->corona->setUpSurface(width, height);
-
-	return 0;
 }
 
 int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
@@ -204,21 +192,22 @@ int lv_corona_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return true;
 }
 
 VisPalette *lv_corona_palette (VisPluginData *plugin)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
 
 	priv->pcyl->updateVisPalette (&priv->pal);
 
 	return &priv->pal;
 }
 
-int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+void lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	CoronaPrivate *priv = (CoronaPrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<CoronaPrivate*> (visual_plugin_get_private (plugin));
+
 	float freq[2][256];
 	float pcm[256];
 	short freqdata[2][512]; // FIXME Move to floats
@@ -266,8 +255,6 @@ int lv_corona_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	                                          video->get_height (),
 	                                          VISUAL_VIDEO_DEPTH_8BIT);
 	video->mirror (vidcorona, VISUAL_VIDEO_MIRROR_Y);
-
-	return 0;
 }
 
 } // anonymous namespace

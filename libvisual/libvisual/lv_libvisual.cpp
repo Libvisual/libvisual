@@ -33,6 +33,7 @@
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_util.h"
+#include "private/lv_time_system.hpp"
 
 #include "gettext.h"
 
@@ -46,31 +47,9 @@ namespace LV
 
   namespace {
 
-    void init_params (VisParamList *params)
+    RandomSeed random_seed ()
     {
-        // Song information parameters
-        visual_param_list_add_many (params,
-            visual_param_new_integer ("songinfo-show",
-                                      "Show song info",
-                                      1,
-                                      NULL),
-            visual_param_new_integer ("songinfo-timeout",
-                                      "Songinfo timeout in seconds",
-                                      5,
-                                      NULL),
-            visual_param_new_bool    ("songinfo-in-plugins",
-                                      "Show songinfo in plugins",
-                                      TRUE,
-                                      NULL),
-            visual_param_new_integer ("songinfo-cover-width",
-                                      "Song cover art width",
-                                      128,
-                                      visual_param_in_range_integer (32, 1000)),
-            visual_param_new_integer ("songinfo-cover-height",
-                                      "Song cover art height",
-                                      128,
-                                      visual_param_in_range_integer (32, 1000)),
-            nullptr);
+        return RandomSeed (Time::now ().to_usecs ());
     }
 
   } // anonymous namespace
@@ -79,20 +58,56 @@ namespace LV
   {
   public:
 
-      VisParamList *params;
+      ParamList     params;
+      RandomContext rng;
 
-      Impl ()
-          : params (0)
-      {}
+      Impl ();
+
+      static ParamList initial_params ();
   };
+
+  System::Impl::Impl ()
+      : params (std::move (initial_params ()))
+      , rng    { random_seed () }
+  {}
+
+  ParamList System::Impl::initial_params ()
+  {
+      return {
+           visual_param_new_integer ("songinfo-show",
+                                     "Show song info",
+                                     1,
+                                     nullptr),
+           visual_param_new_integer ("songinfo-timeout",
+                                     "Songinfo timeout in seconds",
+                                     5,
+                                     nullptr),
+           visual_param_new_bool    ("songinfo-in-plugins",
+                                     "Show songinfo in plugins",
+                                     true,
+                                     nullptr),
+           visual_param_new_integer ("songinfo-cover-width",
+                                     "Song cover art width",
+                                     128,
+                                     visual_param_in_range_integer (32, 1000)),
+           visual_param_new_integer ("songinfo-cover-height",
+                                     "Song cover art height",
+                                     128,
+                                     visual_param_in_range_integer (32, 1000))
+      };
+  }
 
   template <>
   LV_API System* Singleton<System>::m_instance = nullptr;
 
   void System::init (int& argc, char**& argv)
   {
-      if (!m_instance)
-          m_instance = new System (argc, argv);
+      if (m_instance) {
+          visual_log (VISUAL_LOG_WARNING, "Attempt to initialize LV a second time");
+          return;
+      }
+
+      m_instance = new System (argc, argv);
   }
 
   std::string System::get_version () const
@@ -105,9 +120,19 @@ namespace LV
       return VISUAL_API_VERSION;
   }
 
-  VisParamList *System::get_params () const
+  ParamList& System::get_params () const
   {
       return m_impl->params;
+  }
+
+  RandomContext& System::get_rng () const
+  {
+      return m_impl->rng;
+  }
+
+  void System::set_rng_seed (VisRandomSeed seed)
+  {
+      m_impl->rng.set_seed (seed);
   }
 
   System::System (int& argc, char**& argv)
@@ -127,25 +152,16 @@ namespace LV
       visual_mem_initialize ();
 
       // Initialize high-resolution timer system
-      Time::init ();
-
-      // Initialize FFT system
-      Fourier::init ();
+      TimeSystem::start ();
 
       // Initialize the plugin registry
       PluginRegistry::init ();
-
-      m_impl->params = visual_param_list_new ();
-      init_params (m_impl->params);
   }
 
   System::~System ()
   {
-      PluginRegistry::deinit ();
-      Fourier::deinit ();
-      Time::deinit ();
-
-      visual_object_unref (VISUAL_OBJECT (m_impl->params));
+      PluginRegistry::destroy ();
+      TimeSystem::shutdown ();
   }
 
 } // LV namespace

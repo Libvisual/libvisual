@@ -16,14 +16,12 @@ extern "C" {
 
   VisParamList *visual_get_params ()
   {
-      return LV::System::instance()->get_params ();
+      return &LV::System::instance()->get_params ();
   }
 
-  int visual_init (int *argc, char ***argv)
+  void visual_init (int *argc, char ***argv)
   {
-      LV::System::init(*argc, *argv);
-
-      return VISUAL_OK;
+      LV::System::init (*argc, *argv);
   }
 
   int visual_is_initialized ()
@@ -31,11 +29,19 @@ extern "C" {
       return LV::System::instance() != nullptr;
   }
 
-  int visual_quit ()
+  void visual_quit ()
   {
-      LV::System::deinit ();
+      LV::System::destroy ();
+  }
 
-      return VISUAL_OK;
+  void visual_set_rng_seed (VisRandomSeed seed)
+  {
+      LV::System::instance()->set_rng_seed (seed);
+  }
+
+  VisRandomContext *visual_get_rng (void)
+  {
+      return &LV::System::instance()->get_rng ();
   }
 
 } // extern C

@@ -22,6 +22,7 @@
 #include "config.h"
 #include "lv_songinfo.h"
 #include "lv_common.h"
+#include "lv_util.hpp"
 
 extern "C" {
 
@@ -93,7 +94,7 @@ extern "C" {
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
-      return self->get_simple_name ().c_str ();
+      return LV::string_to_c (self->get_simple_name ());
   }
 
   void visual_songinfo_set_artist (VisSongInfo *self, const char *artist)
@@ -107,7 +108,7 @@ extern "C" {
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
-      return self->get_artist ().c_str ();
+      return LV::string_to_c (self->get_artist ());
   }
 
   void visual_songinfo_set_album (VisSongInfo *self, const char *album)
@@ -121,7 +122,7 @@ extern "C" {
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
-      return self->get_album ().c_str ();
+      return LV::string_to_c (self->get_album ());
   }
 
   void visual_songinfo_set_song (VisSongInfo *self, const char *song)
@@ -135,7 +136,7 @@ extern "C" {
   {
 	  visual_return_val_if_fail (self != nullptr, nullptr);
 
-      return self->get_song ().c_str ();
+      return LV::string_to_c (self->get_song ());
   }
 
   void visual_songinfo_set_cover (VisSongInfo *self, VisVideo *cover)

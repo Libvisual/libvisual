@@ -10,7 +10,7 @@
 #include "goomsl_yacc.h"
 
 void yyerror(char *);
-void yyparse(void);
+int yyparse(void);
 
 GoomSL *currentGoomSL;
 static int  string_size;

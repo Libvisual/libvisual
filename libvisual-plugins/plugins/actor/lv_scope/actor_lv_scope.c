@@ -39,20 +39,20 @@ typedef struct {
     VisTimer *timer;
 } ScopePrivate;
 
-static int lv_scope_init (VisPluginData *plugin);
-static int lv_scope_cleanup (VisPluginData *plugin);
-static int lv_scope_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_scope_resize (VisPluginData *plugin, int width, int height);
-static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_scope_palette (VisPluginData *plugin);
-static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         lv_scope_init        (VisPluginData *plugin);
+static void        lv_scope_cleanup     (VisPluginData *plugin);
+static void        lv_scope_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_scope_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_scope_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_scope_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_scope_palette     (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
 {
     static VisActorPlugin actor = {
         .requisition = lv_scope_requisition,
-        .palette = lv_scope_palette,
-        .render = lv_scope_render,
+        .palette     = lv_scope_palette,
+        .render      = lv_scope_render,
         .vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
     };
 
@@ -60,18 +60,17 @@ const VisPluginInfo *get_plugin_info (void)
         .type = VISUAL_PLUGIN_TYPE_ACTOR,
 
         .plugname = "lv_scope",
-        .name = "libvisual scope",
-        .author = "Dennis Smit <ds@nerds-incorporated.org>",
-        .version = "0.1",
-        .about = N_("Libvisual scope plugin"),
-        .help = N_("This is a test plugin that'll display a simple scope"),
-        .license = VISUAL_PLUGIN_LICENSE_LGPL,
+        .name     = "libvisual scope",
+        .author   = "Dennis Smit <ds@nerds-incorporated.org>",
+        .version  = "0.1",
+        .about    = N_("Libvisual scope plugin"),
+        .help     = N_("This is a test plugin that'll display a simple scope"),
+        .license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-        .init = lv_scope_init,
-        .cleanup = lv_scope_cleanup,
-        .events = lv_scope_events,
-
-        .plugin = VISUAL_OBJECT (&actor)
+        .init     = lv_scope_init,
+        .cleanup  = lv_scope_cleanup,
+        .events   = lv_scope_events,
+        .plugin   = &actor
     };
 
     return &info;
@@ -86,7 +85,7 @@ static int lv_scope_init (VisPluginData *plugin)
 #endif
 
     priv = visual_mem_new0 (ScopePrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     priv->pal = visual_palette_new (256);
 
@@ -96,12 +95,12 @@ static int lv_scope_init (VisPluginData *plugin)
 
     priv->timer = visual_timer_new();
 
-    return 0;
+    return TRUE;
 }
 
-static int lv_scope_cleanup (VisPluginData *plugin)
+static void lv_scope_cleanup (VisPluginData *plugin)
 {
-    ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    ScopePrivate *priv = visual_plugin_get_private (plugin);
 
     visual_palette_free (priv->pal);
 
@@ -110,11 +109,9 @@ static int lv_scope_cleanup (VisPluginData *plugin)
     visual_timer_free(priv->timer);
 
     visual_mem_free (priv);
-
-    return 0;
 }
 
-static int lv_scope_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_scope_requisition (VisPluginData *plugin, int *width, int *height)
 {
     int reqw, reqh;
 
@@ -135,13 +132,10 @@ static int lv_scope_requisition (VisPluginData *plugin, int *width, int *height)
 
     *width = reqw;
     *height = reqh;
-
-    return 0;
 }
 
-static int lv_scope_resize (VisPluginData *plugin, int width, int height)
+static void lv_scope_resize (VisPluginData *plugin, int width, int height)
 {
-    return 0;
 }
 
 static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events)
@@ -158,12 +152,12 @@ static int lv_scope_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return 0;
+    return TRUE;
 }
 
 static VisPalette *lv_scope_palette (VisPluginData *plugin)
 {
-    ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    ScopePrivate *priv = visual_plugin_get_private (plugin);
     VisColor *pal_colors = visual_palette_get_colors (priv->pal);
     int i;
 
@@ -212,12 +206,12 @@ static void run_point(ScopePrivate *priv)
 
     priv->x=(priv->r2*2-1)*priv->z1;
     priv->y=(priv->r1*2-1)*priv->z1;
-    priv->color=(1-exp(-priv->z1*priv->z1)) * 255.0; 
+    priv->color=(1-exp(-priv->z1*priv->z1)) * 255.0;
 }
 
-static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-    ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    ScopePrivate *priv = visual_plugin_get_private (plugin);
     VisColor col;
     float *pcmbuf;
     int i, y, y_old, x;
@@ -233,9 +227,6 @@ static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
     video_width  = visual_video_get_width  (video);
     video_height = visual_video_get_height (video);
     video_pitch  = visual_video_get_pitch  (video);
-
-    if (!video)
-        return -1;
 
     visual_audio_get_sample_mixed_simple (audio, priv->pcm, 2,
             VISUAL_AUDIO_CHANNEL_LEFT,
@@ -311,7 +302,5 @@ static int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
                 buf[(j * video_pitch) + i] = 255;
         }
     }
-
-    return 0;
 }
 

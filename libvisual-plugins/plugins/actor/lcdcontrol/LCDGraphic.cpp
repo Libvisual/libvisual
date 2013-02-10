@@ -149,8 +149,7 @@ LCDGraphic::~LCDGraphic() {
         free(DisplayFB[l]);
         free(LayoutFB[l]);
         free(TransitionFB[l]);
-        visual_video_free_buffer(VideoFB[l]);
-        visual_object_unref(VISUAL_OBJECT(VideoFB[l]));
+        visual_video_unref(VideoFB[l]);
     }
     free(DisplayFB);
     free(LayoutFB);
@@ -1190,8 +1189,7 @@ void GraphicVisualizationPCMDraw(WidgetVisualization *widget) {
    if(!lcd->IsTransitioning())
         lcd->GraphicUpdate(row, col, height, width);
 
-    visual_video_free_buffer(sub);
-    visual_object_unref(VISUAL_OBJECT(sub));
+    visual_video_unref(sub);
 }
 
 void GraphicVisualizationSpectrumDraw(WidgetVisualization *w) {

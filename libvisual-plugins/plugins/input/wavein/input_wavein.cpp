@@ -41,17 +41,16 @@ struct WaveInPrivate {
 
 namespace {
 
-  int inp_wavein_init    (VisPluginData *plugin);
-  int inp_wavein_cleanup (VisPluginData *plugin);
-  int inp_wavein_events  (VisPluginData *plugin, VisEventQueue* events);
-  int inp_wavein_upload  (VisPluginData *plugin, VisAudio* audio);
+  int  inp_wavein_init    (VisPluginData *plugin);
+  void inp_wavein_cleanup (VisPluginData *plugin);
+  int  inp_wavein_events  (VisPluginData *plugin, VisEventQueue* events);
+  int  inp_wavein_upload  (VisPluginData *plugin, VisAudio* audio);
 
 } // anonymous namespace
 
 VisPluginInfo const* get_plugin_info ()
 {
     static VisInputPlugin input = {
-        { 0 },
         inp_wavein_upload
     };
 
@@ -72,7 +71,7 @@ VisPluginInfo const* get_plugin_info ()
         inp_wavein_events,
 
         0,
-        VISUAL_OBJECT (&input)
+        &input
     };
 
     return &info;
@@ -174,19 +173,17 @@ namespace {
 
   int inp_wavein_init (VisPluginData* plugin)
   {
-      visual_return_val_if_fail (plugin != NULL, -1);
-
 #if ENABLE_NLS
       bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
       if (!check_available_devices ()) {
           visual_log (VISUAL_LOG_ERROR, "No input device can be found!");
-          return -1;
+          return FALSE;
       }
 
-      WaveInPrivate* priv = visual_mem_new0 (WaveInPrivate, 1);
-      visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+      auto priv = visual_mem_new0 (WaveInPrivate, 1);
+      visual_plugin_set_private (plugin, priv);
 
       visual_log (VISUAL_LOG_DEBUG, "Querying audio formats supported by input device");
 
@@ -206,7 +203,7 @@ namespace {
 
       if (result == WAVERR_BADFORMAT) {
           log_wavein_error ("Required audio format is not supported by device", result);
-          return -1;
+          return FALSE;
       }
 
       // Create background processing thread
@@ -226,7 +223,7 @@ namespace {
       if (result != MMSYSERR_NOERROR) {
           // FIXME: Do we need to destroy the thread?
           log_wavein_error ("Failed to open capture device", result);
-          return -1;
+          return FALSE;
       }
 
       priv->loaded = true;
@@ -251,17 +248,12 @@ namespace {
 
       waveInStart (priv->device_handle);
 
-      return 0;
+      return TRUE;
   }
 
-  int inp_wavein_cleanup (VisPluginData* plugin)
+  void inp_wavein_cleanup (VisPluginData* plugin)
   {
-      visual_return_val_if_fail (plugin != NULL, -1);
-
-      WaveInPrivate* priv = static_cast<WaveInPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
-      visual_return_val_if_fail (priv != NULL, -1);
-
-      int retval = 0;
+      auto priv = static_cast<WaveInPrivate*> (visual_plugin_get_private (plugin));
 
       if (priv->loaded) {
           visual_log (VISUAL_LOG_DEBUG, "Stopping audio capturing and clearing all pending buffers");
@@ -269,7 +261,6 @@ namespace {
           MMRESULT result = waveInReset (priv->device_handle);
           if (result != MMSYSERR_NOERROR) {
               log_wavein_error ("Failed to clear pending buffers", result);
-              retval = -1;
           }
 
           visual_log (VISUAL_LOG_DEBUG, "Closing capture device");
@@ -277,15 +268,12 @@ namespace {
           result = waveInClose (priv->device_handle);
           if (result != MMSYSERR_NOERROR) {
               log_wavein_error ("Failed to close capture device", result);
-              retval = -1;
           }
 
           CloseHandle (priv->mutex);
       }
 
       visual_mem_free (priv);
-
-      return retval;
   }
 
   int inp_wavein_events (VisPluginData* plugin, VisEventQueue* events)
@@ -298,16 +286,12 @@ namespace {
           }
       }
 
-      return 0;
+      return TRUE;
   }
 
   int inp_wavein_upload (VisPluginData* plugin, VisAudio* audio)
   {
-      visual_return_val_if_fail (plugin != NULL, -1);
-      visual_return_val_if_fail (audio  != NULL, -1);
-
-      WaveInPrivate* priv = static_cast<WaveInPrivate*> (visual_object_get_private (VISUAL_OBJECT (plugin)));
-      visual_return_val_if_fail (priv != NULL, -1);
+      auto priv = static_cast<WaveInPrivate*> (visual_plugin_get_private (plugin));
 
       int buffer_to_read;
 
@@ -334,7 +318,7 @@ namespace {
           ReleaseMutex (priv->mutex);
       }
 
-      return 0;
+      return TRUE;
   }
 
 } // anonymous namespace

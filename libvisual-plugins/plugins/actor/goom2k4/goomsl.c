@@ -1286,7 +1286,7 @@ static void gsl_create_fast_iflow(void)
 } /* }}} */
 
 void yy_scan_string(const char *str);
-void yyparse(void);
+int  yyparse(void);
 
 GoomHash *gsl_globals(GoomSL *_this)
 {

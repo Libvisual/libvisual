@@ -52,8 +52,6 @@ ENDFOREACH()
 CHECK_INCLUDE_FILE(unistd.h    HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE(dlfcn.h     HAVE_DLFCN_H)
 CHECK_INCLUDE_FILE(dirent.h    HAVE_DIRENT_H)
-CHECK_INCLUDE_FILE(sched.h     HAVE_SCHED_H)
-CHECK_INCLUDE_FILE(sys/sched.h HAVE_SYS_SCHED_H)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 
 # Check threading implementation
@@ -140,9 +138,9 @@ SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wun
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
   SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
-ELSEif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_C_FLAGS_DEBUG "-ggdb")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
+ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_C_FLAGS_DEBUG "-g")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-g")
 ENDIF()
 
 # Miscellaneous optimizations
@@ -194,14 +192,34 @@ ADD_CUSTOM_TARGET(update-version ALL
 OPTION(ENABLE_TOOLS "Build Libvisual tools" yes)
 IF(ENABLE_TOOLS)
   FIND_PACKAGE(SDL)
-  FIND_PACKAGE(OpenGL)
-
   SET(HAVE_SDL ${SDL_FOUND})
+
+  FIND_PACKAGE(OpenGL)
   SET(HAVE_GL ${OPENGL_FOUND})
 
-  ADD_SUBDIRECTORY(tools/tests)
+  # Give users heads up about needing SDL and OpenGL for visual display
+  IF(NOT HAVE_SDL)
+    MESSAGE(WARNING "SDL is required for lv-tool to support visual display")
+  ENDIF()
+  IF(NOT HAVE_GL)
+    MESSAGE(WARNING "OpenGL is required for lv-tool to support OpenGL visualisations")
+  ENDIF()
+
   ADD_SUBDIRECTORY(tools/lv-tool)
   ADD_SUBDIRECTORY(tools/benchmarks)
+ENDIF()
+
+# Tests
+OPTION(ENABLE_TESTS "Build tests" no)
+IF(ENABLE_TESTS)
+  ENABLE_TESTING()
+  ADD_SUBDIRECTORY(tests)
+ENDIF()
+
+# Examples
+OPTION(ENABLE_EXAMPLES "Build examples" yes)
+IF(ENABLE_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
 ENDIF()
 
 # Generate pkg-config file

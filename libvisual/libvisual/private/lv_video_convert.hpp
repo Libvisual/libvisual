@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012 Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
@@ -30,27 +30,27 @@ namespace LV {
   {
   public:
 
-      static void convert_get_smallest (Video& dest, Video const& src, int& width, int& height);
+      static void convert_get_smallest (Video& dst, Video const& src, int& width, int& height);
 
-      static void index8_to_rgb16  (Video& dest, Video const& src);
-      static void index8_to_rgb24  (Video& dest, Video const& src);
-      static void index8_to_argb32 (Video& dest, Video const& src);
+      static void index8_to_rgb16  (Video& dst, Video const& src);
+      static void index8_to_rgb24  (Video& dst, Video const& src);
+      static void index8_to_argb32 (Video& dst, Video const& src);
 
-      static void rgb16_to_index8 (Video& dest, Video const& src);
-      static void rgb16_to_rgb24  (Video& dest, Video const& src);
-      static void rgb16_to_argb32 (Video& dest, Video const& src);
+      static void rgb16_to_index8 (Video& dst, Video const& src);
+      static void rgb16_to_rgb24  (Video& dst, Video const& src);
+      static void rgb16_to_argb32 (Video& dst, Video const& src);
 
-      static void rgb24_to_index8 (Video& dest, Video const& src);
-      static void rgb24_to_rgb16  (Video& dest, Video const& src);
-      static void rgb24_to_argb32 (Video& dest, Video const& src);
+      static void rgb24_to_index8 (Video& dst, Video const& src);
+      static void rgb24_to_rgb16  (Video& dst, Video const& src);
+      static void rgb24_to_argb32 (Video& dst, Video const& src);
 
-      static void argb32_to_index8 (Video& dest, Video const& src);
-      static void argb32_to_rgb16  (Video& dest, Video const& src);
-      static void argb32_to_rgb24  (Video& dest, Video const& src);
+      static void argb32_to_index8 (Video& dst, Video const& src);
+      static void argb32_to_rgb16  (Video& dst, Video const& src);
+      static void argb32_to_rgb24  (Video& dst, Video const& src);
 
-      static void flip_pixel_bytes_color16 (Video& dest, Video const& src);
-      static void flip_pixel_bytes_color24 (Video& dest, Video const& src);
-      static void flip_pixel_bytes_color32 (Video& dest, Video const& src);
+      static void flip_pixel_bytes_color16 (Video& dst, Video const& src);
+      static void flip_pixel_bytes_color24 (Video& dst, Video const& src);
+      static void flip_pixel_bytes_color32 (Video& dst, Video const& src);
   };
 }
 

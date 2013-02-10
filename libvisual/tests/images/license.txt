@@ -1,0 +1,7 @@
+landscape.png
+-------------
+Name       : Landscape Painted Desert
+Description: Geological wonder "The Painted Desert" in Arizona
+Author     : katsrcool
+URL        : http://www.flickr.com/photos/katsrcool/7275923984/
+License    : CC BY 2.0

@@ -5,7 +5,9 @@
 VisBuffer *visual_buffer_new (void)
 {
     auto self = LV::Buffer::create ();
-    self->ref ();
+    if (self) {
+        LV::intrusive_ptr_add_ref (self.get ());
+    }
 
     return self.get ();
 }
@@ -13,7 +15,9 @@ VisBuffer *visual_buffer_new (void)
 VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own)
 {
     auto self = LV::Buffer::wrap (data, size, own);
-    self->ref ();
+    if (self) {
+        LV::intrusive_ptr_add_ref (self.get ());
+    }
 
     return self.get ();
 }
@@ -21,7 +25,9 @@ VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own)
 VisBuffer *visual_buffer_new_allocate (visual_size_t size)
 {
     auto self = LV::Buffer::create (size);
-    self->ref ();
+    if (self) {
+        LV::intrusive_ptr_add_ref (self.get ());
+    }
 
     return self.get ();
 }
@@ -31,9 +37,10 @@ VisBuffer *visual_buffer_clone (VisBuffer *source)
     visual_return_val_if_fail (source != nullptr, nullptr);
 
     auto self = LV::Buffer::create ();
-    self->ref ();
-
-    self->copy (LV::BufferPtr (source));
+    if (self) {
+        LV::intrusive_ptr_add_ref (self.get ());
+        self->copy (LV::BufferPtr (source));
+    }
 
     return self.get ();
 }
@@ -106,11 +113,20 @@ void visual_buffer_destroy_content (VisBuffer *self)
     self->destroy_content ();
 }
 
-void visual_buffer_copy_data_to (VisBuffer *self, void *dest)
+void visual_buffer_copy_to (VisBuffer *self, VisBuffer *dest)
 {
    visual_return_if_fail (self != nullptr);
+   visual_return_if_fail (dest != nullptr);
 
-   self->copy_data_to (dest);
+   self->copy_to (dest);
+}
+
+void visual_buffer_copy_to_data (VisBuffer *self, void *dest, visual_size_t size)
+{
+   visual_return_if_fail (self != nullptr);
+   visual_return_if_fail (dest != nullptr);
+
+   self->copy_to (dest, size);
 }
 
 void visual_buffer_put (VisBuffer *self, VisBuffer *src, visual_size_t offset)
@@ -145,12 +161,12 @@ void visual_buffer_ref (VisBuffer *self)
 {
     visual_return_if_fail (self != nullptr);
 
-    self->ref ();
+    LV::intrusive_ptr_add_ref (self);
 }
 
 void visual_buffer_unref (VisBuffer *self)
 {
     visual_return_if_fail (self != nullptr);
 
-    self->unref ();
+    LV::intrusive_ptr_release (self);
 }

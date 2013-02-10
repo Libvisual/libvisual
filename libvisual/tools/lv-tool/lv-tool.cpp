@@ -1,36 +1,39 @@
-/* Libvisual - The audio visualisation framework cli tool
- *
- * Copyright (C) 2012      Libvisual team
- *               2004-2006 Dennis Smit
- *
- * Authors: Daniel Hiepler <daniel@niftylight.de>
- *          Chong Kai Xiong <kaixiong@codeleft.sg>
- *          Dennis Smit <ds@nerds-incorporated.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
+// lv-tool - Libvisual commandline tool
+//
+// Copyright (C) 2012-2013 Libvisual team
+//               2004-2006 Dennis Smit
+//
+// Authors: Daniel Hiepler <daniel@niftylight.de>
+//          Chong Kai Xiong <kaixiong@codeleft.sg>
+//          Dennis Smit <ds@nerds-incorporated.org>
+//
+// This file is part of lv-tool.
+//
+// lv-tool is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// lv-tool is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with lv-tool.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config.h"
+#include "version.h"
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
+#include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <stdexcept>
+#include <iostream>
 #include <string>
 #include <cstdio>
-#include <iostream>
 #include <cstdlib>
-#include <cstring>
+#include <csignal>
 #include <getopt.h>
 
 // Defaults
@@ -45,7 +48,7 @@
 #if HAVE_SDL
 # define DEFAULT_DRIVER "sdl"
 #else
-# define DEFAULT_DRIVER "stdout"
+# define DEFAULT_DRIVER "null"
 #endif
 
 namespace {
@@ -66,13 +69,39 @@ namespace {
   bool have_seed = 0;
   uint32_t seed = 0;
 
+  volatile std::sig_atomic_t terminate_process = false;
+
+  enum class CycleDir
+  {
+      PREV,
+      NEXT
+  };
+
+  /** Class to manage LV's lifecycle */
+  class Libvisual
+  {
+  public:
+
+      Libvisual (int& argc, char**& argv)
+      {
+          LV::System::init (argc, argv);
+      }
+
+      ~Libvisual ()
+      {
+          LV::System::destroy ();
+      }
+  };
+
   /** print info about libvisual plugin */
   void print_plugin_info(VisPluginInfo const& info)
   {
       std::printf("Plugin: \"%s\" (%s)\n"
+                  "\tURL: %s\n"
                   "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
                   "\t%s - %s\n\n",
                   info.name, info.plugname,
+                  info.url ? info.url : "<n/a>",
                   info.author, info.version, info.license,
                   info.about, info.help);
   }
@@ -81,41 +110,74 @@ namespace {
   /** print help for plugins */
   void print_plugin_help()
   {
+      std::printf("===== INPUTS =====\n");
+      auto const& inputs =
+          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
+
+      // print inputs
+      if(inputs.empty())
+      {
+          std::cerr << "No input plugins found\n";
+      }
+      else
+      {
+          for (auto input : inputs)
+              print_plugin_info(*input.info);
+      }
+
+
+      std::printf("===== ACTORS =====\n");
       auto const& actors =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
 
       // print actors
-      if(!actors.empty())
+      if(actors.empty())
+      {
+          std::cerr << "No actor plugins found\n";
+      }
+      else
       {
           for (auto actor : actors)
               print_plugin_info(*actor.info);
       }
+
+
+      std::printf("===== MORPHS =====\n");
+      auto const& morphs =
+          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
+
+      // print morphs
+      if(morphs.empty())
+      {
+          std::cerr << "No morph plugins found\n";
+      }
       else
       {
-          std::cerr << "No actors found\n";
+          for (auto morph : morphs)
+              print_plugin_info(*morph.info);
       }
+
   }
 
   /** print commandline help */
   void print_help(std::string const& name)
   {
-      std::printf("libvisual commandline tool - %s\n"
-                  "Usage: %s [options]\n\n"
+      std::printf("Usage: %s [options]\n\n"
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
-                  "\t--verbose\t\t-v\t\tOutput debugging info\n"
+                  "\t--verbose\t\t-v\t\tIncrease verbosity (use multiple times for more effect)\n"
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
-                  "\t--depth <depth>\t-c <depth>\tSet output colour depth (automatic by default)\n"
+                  "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
                   "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
                   "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
-                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n\n"
-                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n\n",
-                  "http://github.com/StarVisuals/libvisual",
+                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
+                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
+                  "\n",
                   name.c_str (),
                   width, height,
                   driver_name.c_str (),
@@ -123,6 +185,13 @@ namespace {
                   actor_name.c_str (),
                   morph_name.c_str (),
                   frame_rate);
+
+        std::printf("Available output drivers:\n");
+        for(auto driver_name : DisplayDriverFactory::instance().get_driver_list())
+        {
+            std::printf("\t%s\n", driver_name.c_str());
+        }
+
   }
 
 
@@ -135,21 +204,21 @@ namespace {
   int parse_args(int argc, char *argv[])
   {
       static struct option loptions[] = {
-		  {"help",        no_argument,       0, 'h'},
-		  {"plugin-help", no_argument,       0, 'p'},
-		  {"verbose",     no_argument,       0, 'v'},
-		  {"dimensions",  required_argument, 0, 'D'},
-		  {"driver",      required_argument, 0, 'd'},
-		  {"input",       required_argument, 0, 'i'},
-		  {"actor",       required_argument, 0, 'a'},
-		  {"morph",       required_argument, 0, 'm'},
-		  {"fps",         required_argument, 0, 'f'},
-		  {"seed",        required_argument, 0, 's'},
+          {"help",        no_argument,       0, 'h'},
+          {"plugin-help", no_argument,       0, 'p'},
+          {"verbose",     no_argument,       0, 'v'},
+          {"dimensions",  required_argument, 0, 'D'},
+          {"driver",      required_argument, 0, 'd'},
+          {"input",       required_argument, 0, 'i'},
+          {"actor",       required_argument, 0, 'a'},
+          {"morph",       required_argument, 0, 'm'},
+          {"fps",         required_argument, 0, 'f'},
+          {"seed",        required_argument, 0, 's'},
           {"exclude",     required_argument, 0, 'x'},
-		  {"framecount",  required_argument, 0, 'F'},
-		  {"depth",       required_argument, 0, 'c'},
-		  {0,             0,                 0,  0 }
-	  };
+          {"framecount",  required_argument, 0, 'F'},
+          {"depth",       required_argument, 0, 'c'},
+          {0,             0,                 0,  0 }
+      };
 
       int index, argument;
 
@@ -168,9 +237,15 @@ namespace {
                   return 1;
               }
 
-              // --version
+              // --verbose
               case 'v': {
-                  visual_log_set_verbosity(VISUAL_LOG_DEBUG);
+                  VisLogSeverity level = visual_log_get_verbosity ();
+                  level = VisLogSeverity (int (level) - 1);
+
+                  if (int (level) >= 0) {
+                      visual_log_set_verbosity (level);
+                  }
+
                   break;
               }
 
@@ -189,7 +264,7 @@ namespace {
                   if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
                       visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
                   {
-                      std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+                      std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;
                   }
                   break;
@@ -266,36 +341,54 @@ namespace {
           }
       }
 
-
       return 0;
   }
 
-  void v_cycleActor (int prev)
+  void handle_termination_signal (int signal)
   {
-      auto name = prev ? visual_actor_get_prev_by_name(actor_name.c_str())
-                       : visual_actor_get_next_by_name(actor_name.c_str());
+      terminate_process = true;
+  }
 
-      if (!name) {
-          name = prev ? visual_actor_get_prev_by_name(0)
-                      : visual_actor_get_next_by_name(0);
+  /**
+   * Handle process termination signals.
+   */
+  void setup_signal_handlers ()
+  {
+      std::signal (SIGINT, handle_termination_signal);
+      std::signal (SIGTERM, handle_termination_signal);
+  }
+
+  std::string cycle_actor_name (std::string const& name, CycleDir dir)
+  {
+      auto cycler = (dir == CycleDir::NEXT) ? visual_actor_get_next_by_name
+                                            : visual_actor_get_prev_by_name;
+
+      auto new_name = cycler (name.c_str ());
+      if (!new_name) {
+          new_name = cycler (nullptr);
       }
 
-      actor_name = name;
+      // FIXME: this won't work if an actor's name is used as part of
+      // another actor's name
+      if (exclude_actors.find (new_name) != std::string::npos) {
+          return cycle_actor_name (new_name, dir);
+      }
 
-      if (std::strstr (exclude_actors.c_str(), name) != 0)
-          v_cycleActor(prev);
+      return new_name;
   }
 
 #if 0
-  void v_cycleMorph ()
+  std::string cycle_morph_name (std::string const& name, CycleDir dir)
   {
-      auto name = visual_morph_get_next_by_name(morph_name.c_str());
+      auto cycler = (dir == CycleDir::NEXT) ? visual_morph_get_next_by_name
+                                            : visual_morph_get_prev_by_name;
 
-      if(!name) {
-          name = visual_morph_get_next_by_name(0);
+      auto new_name = cycler (name.c_str ());
+      if (!new_name) {
+          new_name = cycler (nullptr);
       }
 
-      morph_name = name;
+      return new_name;
   }
 #endif
 
@@ -304,82 +397,87 @@ namespace {
 
 int main (int argc, char **argv)
 {
-    // print warm welcome
-    std::cerr << argv[0] << " v0.1\n";
-
-    // initialize libvisual once (this is meant to be called only once,
-    // visual_init() after visual_quit() results in undefined state)
-    visual_log_set_verbosity (VISUAL_LOG_DEBUG);
-    LV::System::init (argc, argv);
-
     try {
+        // print warm welcome
+        std::cerr << visual_truncate_path (argv[0], 1) << " - "
+                  << PACKAGE_STRING
+                  << " (" << LV_REVISION << ") commandline tool - "
+                  << PACKAGE_URL << "\n";
+
+        // setup signal handlers
+        setup_signal_handlers ();
+
+        // default loglevel
+        visual_log_set_verbosity (VISUAL_LOG_ERROR);
+
+        // initialize LV
+        Libvisual main {argc, argv};
+
         // parse commandline arguments
-        int parseRes = parse_args(argc, argv);
-        if (parseRes < 0)
+        int parse_result = parse_args (argc, argv);
+        if (parse_result < 0) {
             throw std::runtime_error ("Failed to parse arguments");
-        else if (parseRes > 0)
-            throw std::runtime_error ("");
+        }
+        if (parse_result > 0) {
+            return EXIT_SUCCESS;
+        }
+
+        // Set system-wide random seed
+        if (have_seed) {
+            LV::System::instance()->set_rng_seed (seed);
+        }
 
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
-        bin.switch_set_style(VISUAL_SWITCH_STYLE_DIRECT);
+        bin.use_morph(false);
 
         // Let the bin manage plugins. There's a bug otherwise.
-        bin.connect(actor_name, input_name);
+        if (!bin.connect(actor_name, input_name)) {
+            throw std::runtime_error ("Failed to start pipeline with actor '" + actor_name + "' and input '" + input_name + "'");
+        }
 
-        // initialize actor plugin
-        std::cerr << "Loading actor '" << actor_name << "'...\n";
         auto actor = bin.get_actor();
-        if (!actor)
-            throw std::runtime_error ("Failed to load actor '" + actor_name + "'");
-
-        // Set random seed
-        if (have_seed) {
-            auto  plugin_data = visual_actor_get_plugin(actor);
-            auto& r_context   = *visual_plugin_get_random_context (plugin_data);
-
-            r_context.set_seed (seed);
-            seed++;
-        }
-
-        // initialize input plugin
-        std::cerr << "Loading input '" << input_name << "'...\n";
-        auto input = bin.get_input();
-        if (!input) {
-            throw std::runtime_error ("Failed to load input '" + input_name + "'");
-        }
 
         // Select output colour depth
 
         VisVideoDepth depth;
+        int depthflag = actor->get_supported_depths ();
 
-        if (color_depth == 0) {
-            // Pick the best display depth directly supported by actor
-
-            int depthflag = visual_actor_get_supported_depth (actor);
-
-            if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
-                depth = visual_video_depth_get_highest (depthflag);
-            }
-            else {
+        // Pick the best display depth directly supported by non GL actor
+        if(depthflag != VISUAL_VIDEO_DEPTH_GL)
+        {
+            if (color_depth == 0)
+            {
                 depth = visual_video_depth_get_highest_nogl (depthflag);
             }
-        } else {
-            depth = visual_video_depth_enum_from_value (color_depth);
+            // Pick user chosen colordepth
+            else
+            {
+                depth = visual_video_depth_enum_from_value (color_depth);
+            }
+        }
+        /* GL actor */
+        else
+        {
+            depth = visual_video_depth_get_highest (depthflag);
         }
 
         bin.set_depth (depth);
 
-        auto vidoptions = visual_actor_get_video_attribute_options(actor);
+        auto vidoptions = actor->get_video_attribute_options ();
 
         // initialize display
         Display display (driver_name);
 
         // create display
         auto video = display.create(depth, vidoptions, width, height, true);
-        if(!video)
-            throw std::runtime_error("Failed to get VisVideo from display");
+        if(!video) {
+            throw std::runtime_error("Failed to setup display for rendering");
+        }
+
+        // Set the display title
+        display.set_title(_("lv-tool"));
 
         // put it all together
         bin.set_video(video);
@@ -395,18 +493,55 @@ int main (int argc, char **argv)
         // rendering statistics
         uint64_t frames_drawn = 0;
 
+        // frame rate control state
+        uint64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
+        LV::Time last_frame_time;
+        bool draw_frame = true;
+
         // main loop
         bool running = true;
-        bool visible = true;
+        //bool visible = true;
 
         while (running)
         {
+            // Check if process termination was signaled
+            if (terminate_process) {
+                std::cerr << "Received signal to terminate process, exiting..\n";
+                return EXIT_SUCCESS;
+            }
+
+            // Control frame rate
+            if (frame_rate > 0) {
+                if (frames_drawn > 0) {
+                    draw_frame = (LV::Time::now () - last_frame_time).to_usecs () >= frame_period_us;
+                }
+            }
+
+            if (draw_frame) {
+                DisplayLock lock {display};
+
+                // Draw audio data and render
+                bin.run();
+
+                // Display rendering
+                display.update_all ();
+
+                // Record frame time
+                last_frame_time = LV::Time::now ();
+
+                // All frames rendered?
+                frames_drawn++;
+                if (frame_count > 0 && frames_drawn >= frame_count) {
+                    break;
+                }
+            }
+
             LV::Event ev;
 
             // Handle all events
             display.drain_events(localqueue);
 
-            auto pluginqueue = visual_plugin_get_eventqueue(visual_actor_get_plugin (bin.get_actor()));
+            auto pluginqueue = visual_plugin_get_event_queue (bin.get_actor()->get_plugin ());
 
             while (localqueue.poll(ev))
             {
@@ -422,15 +557,16 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_RESIZE:
                     {
-                        display.lock();
+                        DisplayLock lock {display};
+
                         width = ev.event.resize.width;
                         height = ev.event.resize.height;
+
                         video = display.create(depth, vidoptions, width, height, true);
+                        display.set_title(_("lv-tool"));
 
                         bin.set_video (video);
                         bin.sync(false);
-
-                        display.unlock();
 
                         break;
                     }
@@ -443,9 +579,10 @@ int main (int argc, char **argv)
                     case VISUAL_EVENT_MOUSEBUTTONDOWN:
                     {
                         // switch to next actor
-                        v_cycleActor(1);
+                        actor_name = cycle_actor_name (actor_name, CycleDir::NEXT);
 
-                        bin.switch_actor(actor_name);
+                        std::cerr << "Switching to actor '" << actor_name << "'...\n";
+                        bin.switch_actor (actor_name);
 
                         break;
                     }
@@ -484,13 +621,13 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_QUIT:
                     {
-                        running = FALSE;
+                        running = false;
                         break;
                     }
 
                     case VISUAL_EVENT_VISIBILITY:
                     {
-                        visible = ev.event.visibility.is_visible;
+                        //visible = ev.event.visibility.is_visible;
                         break;
                     }
 
@@ -503,7 +640,8 @@ int main (int argc, char **argv)
 
             if (bin.depth_changed())
             {
-                display.lock();
+                DisplayLock lock {display};
+
                 int depthflag = bin.get_depth();
                 VisVideoDepth depth = visual_video_depth_get_highest(depthflag);
 
@@ -513,37 +651,14 @@ int main (int argc, char **argv)
                 bin.set_video(video);
 
                 bin.sync(true);
-
-                display.unlock();
             }
-
-            // Do a run cycle
-            if (!visible)
-                continue;
-
-            display.lock();
-
-            bin.run();
-
-            // All frames rendered?
-            frames_drawn++;
-            if (frame_count > 0 && frames_drawn >= frame_count)
-                running = false;
-
-            display.update_all();
-            display.unlock();
         }
 
-        /* Cleanup */
-        //visual_plugin_unload(visual_actor_get_plugin(actor));
-        //visual_plugin_unload(visual_input_get_plugin(input));
-
+        return EXIT_SUCCESS;
     }
     catch (std::exception& error) {
         std::cerr << error.what () << std::endl;
+
+        return EXIT_FAILURE;
     }
-
-    visual_quit ();
-
-    return EXIT_SUCCESS;
 }

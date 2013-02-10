@@ -2,8 +2,6 @@
 #define _LV_EVENT_H
 
 #include <libvisual/lv_songinfo.h>
-#include <libvisual/lv_video.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_keysym.h>
 
 /**
@@ -11,58 +9,39 @@
  * @{
  */
 
-#define VISUAL_EVENT_KEYBOARD(obj)			(VISUAL_CHECK_CAST ((obj), VisEventKeyboard))
-#define VISUAL_EVENT_MOUSEMOTION(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseMotion))
-#define VISUAL_EVENT_MOUSEBUTTON(obj)			(VISUAL_CHECK_CAST ((obj), VisEventMouseButton))
-#define VISUAL_EVENT_RESIZE(obj)			(VISUAL_CHECK_CAST ((obj), VisEventResize))
-#define VISUAL_EVENT_NEWSONG(obj)			(VISUAL_CHECK_CAST ((obj), VisEventNewSong))
-#define VISUAL_EVENT_QUIT(obj)				(VISUAL_CHECK_CAST ((obj), VisEventQuit))
-#define VISUAL_EVENT_VISIBILITY(obj)			(VISUAL_CHECK_CAST ((obj), VisEventVisibility))
-#define VISUAL_EVENT_GENERIC(obj)			(VISUAL_CHECK_CAST ((obj), VisEventGeneric))
-#define VISUAL_EVENT_PARAM(obj)				(VISUAL_CHECK_CAST ((obj), VisEventParam))
-#define VISUAL_EVENT(obj)				(VISUAL_CHECK_CAST ((obj), VisEvent))
-
 /**
- * Number of events allowed in the queue
- */
-#define VISUAL_EVENT_MAXEVENTS	256
-
-/**
- * Used to define what kind of event is emitted by the VisEvent system.
+ * Types of events supported by LV
  */
 typedef enum {
-	VISUAL_EVENT_NOEVENT,		/**< No event. */
-	VISUAL_EVENT_KEYDOWN,		/**< Keyboard key pressed event. */
-	VISUAL_EVENT_KEYUP,		/**< Keyboard key released event. */
-	VISUAL_EVENT_MOUSEMOTION,	/**< Mouse movement event. */
-	VISUAL_EVENT_MOUSEBUTTONDOWN,	/**< Mouse button pressed event. */
-	VISUAL_EVENT_MOUSEBUTTONUP,	/**< Mouse button released event. */
-	VISUAL_EVENT_NEWSONG,		/**< Song change event. */
-	VISUAL_EVENT_RESIZE,		/**< Window dimension change event. */
-	VISUAL_EVENT_PARAM,		/**< Param set event, gets emitted when a parameter has been changed. */
-	VISUAL_EVENT_QUIT,		/**< Quit event, Should get emitted when a program is about to quit. */
-	VISUAL_EVENT_GENERIC,		/**< A Generic event. Libvisual has nothing to do with it, this can be used for custom events. */
-	VISUAL_EVENT_VISIBILITY,	/**< A visibility event. Will be emited by lvdisplay (?) or app itself when window becomes (in)visible */
-
-	VISUAL_EVENT_LAST = 0xffffff	/**< last event number. Libvisual & friends will never use ids greater than this */
+    VISUAL_EVENT_NOEVENT,         /**< No event */
+    VISUAL_EVENT_KEYDOWN,         /**< Key press event */
+    VISUAL_EVENT_KEYUP,           /**< Key release event */
+    VISUAL_EVENT_MOUSEMOTION,     /**< Mouse movement event */
+    VISUAL_EVENT_MOUSEBUTTONDOWN, /**< Mouse button press event */
+    VISUAL_EVENT_MOUSEBUTTONUP,   /**< Mouse button release event */
+    VISUAL_EVENT_NEWSONG,         /**< Song change event */
+    VISUAL_EVENT_RESIZE,          /**< Video resize event */
+    VISUAL_EVENT_PARAM,           /**< Parameter change event */
+    VISUAL_EVENT_QUIT,            /**< Quit event */
+    VISUAL_EVENT_CUSTOM,          /**< Custom event */
+    VISUAL_EVENT_VISIBILITY,      /**< Visibility event */
 } VisEventType;
 
 /**
- * Used to define key states within the VisEvent system.
+ * Indicates the state of a key.
  */
 typedef enum {
-	VISUAL_KEY_DOWN,		/**< Key is pressed. */
-	VISUAL_KEY_UP			/**< Key is released. */
+    VISUAL_KEY_DOWN,        /**< Key is pressed. */
+    VISUAL_KEY_UP           /**< Key is released. */
 } VisKeyState;
 
 /**
- * Used to define mouse button states within the VisEvent system.
+ * Indicates the state of a mouse button.
  */
 typedef enum {
-	VISUAL_MOUSE_DOWN,		/**< Mouse button is pressed. */
-	VISUAL_MOUSE_UP			/**< Mouse button is released. */
+    VISUAL_MOUSE_DOWN,      /**< Mouse button is pressed. */
+    VISUAL_MOUSE_UP         /**< Mouse button is released. */
 } VisMouseState;
-
 
 typedef struct _VisEventKeyboard VisEventKeyboard;
 typedef struct _VisEventMouseMotion VisEventMouseMotion;
@@ -71,147 +50,128 @@ typedef struct _VisEventResize VisEventResize;
 typedef struct _VisEventNewSong VisEventNewSong;
 typedef struct _VisEventQuit VisEventQuit;
 typedef struct _VisEventVisibility VisEventVisibility;
-typedef struct _VisEventGeneric VisEventGeneric;
 typedef struct _VisEventParam VisEventParam;
+typedef struct _VisEventCustom VisEventCustom;
 typedef struct _VisEvent VisEvent;
 
 /**
- * Keyboard event data structure.
+ * Keyboard event.
  *
- * Contains information about keyboard events.
- *
- * @see visual_event_queue_add_keyboard
+ * @see visual_event_new_keyboard()
  */
 struct _VisEventKeyboard {
-	VisKeySym	keysym;		/**< A keysym entry that contains which key had an
-					  * event and information about modifier keys. */
+    VisKeySym keysym;     /**< Key code and key modifier state */
 };
 
 /**
- * Mouse movement event data structure.
+ * Mouse movement event.
  *
- * Contains information about mouse movement events.
- *
- * @see visual_event_queue_add_mousemotion
+ * @see visual_event_new_mousemotion()
  */
 struct _VisEventMouseMotion {
-	VisMouseState	state;		/**< Mouse button state. */
-	int		x;		/**< The absolute mouse X value, where 0 is left of screen. */
-	int		y;		/**< The absolute mouse Y value. where 0 is top of screen. */
-	int		xrel;		/**< Relative X movement to the previous location. */
-	int		yrel;		/**< Relative Y movement to the previous location. */
+    VisMouseState state;  /**< Mouse button state. */
+    int           x;      /**< X-coordinate of mouse pointer position. */
+    int           y;      /**< Y-coordinate of mouse pointer position. */
+    int           xrel;   /**< Relative motion along the X-axis */
+    int           yrel;   /**< Relative motion along the Y-axis */
 };
 
 /**
- * Mouse button event data structure.
+ * Mouse button event.
  *
- * Contains information about mouse button events.
- *
- * @see visual_event_queue_add_mousebutton
+ * @see visual_event_new_mousebutton()
  */
 struct _VisEventMouseButton {
-	VisMouseState	state;		/**< Mouse button state. */
-	int		button;		/**< The button the state relates to. */
-	int		x;		/**< The absolute mouse X value. */
-	int		y;		/**< The absolute mouse Y value. */
+    VisMouseState state;    /**< Mouse button state. */
+    int           button;   /**< Mouse button. */
+    int           x;        /**< Relative motion along the X-axis. */
+    int           y;        /**< Relative motion along the Y-axis. */
 };
 
 /**
- * Dimension change event data structure.
+ * Resize event.
  *
- * Contains information about screen dimension and depth changes.
- *
- * @see visual_event_queue_add_resize
+ * @see visual_event_new_resize()
  */
 struct _VisEventResize {
-	int		 width;		/**< Width of the surface. */
-	int		 height;	/**< Height of the surface. */
+    int width;   /**< Width of the surface. */
+    int height;  /**< Height of the surface. */
 };
 
 /**
- * Song change event data structure.
+ * Song change event.
  *
- * Contains information about song changes.
- *
- * @see visual_event_queue_add_newsong
+ * @see visual_event_new_newsong()
  */
 struct _VisEventNewSong {
-	VisSongInfo	*songinfo;	/**< Pointer to the VisSongInfo structure containing all the information about
-					 * the new song. */
+    VisSongInfo *songinfo;  /**< Song information */
 };
 
 /**
- * Quit event data structure.
+ * Application quit event.
  *
- * Contains quit request.
- *
- * @see visual_event_queue_add_quit
+ * @see visual_event_new_quit()
  */
-struct _VisEventQuit {
-	int		 dummy;		/**< some day may contain a request urgency: quit NOW or schedule quit. */
-};
+struct _VisEventQuit {};
 
 /**
- * Visibility event data structure.
+ * Visibility event.
  *
- * Contains window's new visibility value.
- *
- * @see visual_event_queue_add_visibiity
+ * @see visual_event_new_visibiity()
  */
 struct _VisEventVisibility {
-	int		 dummy;		/**< Some day will contain window ID. very OS-specific. maybe use indices ? */
-	int		 is_visible;	/**< Set TRUE or FALSE to indicate visibility. */
+    int is_visible;    /** Visibility */
 };
 
 /**
- * Generic event data structure.
- *
- * Contains pointer to some struct.
- *
- * @see visual_event_queue_add_generic
- */
-struct _VisEventGeneric {
-	int		 event_id;	/**< some event id. */
-	int		 data_int;	/**< Data in the form of an integer. */
-	void		*data_ptr;	/**< More advanced generic events can use a pointer. */
-};
-
-/**
- * Param change event data structure.
+ * Parameter change event.
  *
  * Contains information about parameter changes.
  *
- * @see visual_event_queue_add_param
+ * @see visual_event_new_param()
  */
 struct _VisEventParam {
-	/* FiXME: Having VisEventParam here creates a circulair depency in lv_event.h and lv_param.h */
-	void		*param;		/**< The parameter entry which has been changed. */
+    // FIXME: Have to use void* as there is a circular dependency
+    // between lv_event.h and lv_param.h
+
+    void *param;   /**< Parameter that was changed. */
 };
 
+/**
+ * Custom event.
+ *
+ * @note Used for creating custom events.
+ *
+ * @see visual_event_new_custom()
+ */
+struct _VisEventCustom {
+    int   event_id;  /**< Unique number for identification */
+    int   data_int;  /**< Optional integer data */
+    void *data_ptr;  /**< Optional data pointer */
+};
+
+/**
+ * Generic event.
+ *
+ * @see visual_event_new()
+ */
 struct _VisEvent
 {
     VisEventType type;
 
     union {
-        VisEventKeyboard    keyboard;	 /**< Keyboard event. */
+        VisEventKeyboard    keyboard;    /**< Keyboard event. */
         VisEventMouseMotion mousemotion; /**< Mouse movement event. */
         VisEventMouseButton mousebutton; /**< Mouse button event. */
         VisEventResize      resize;      /**< Dimension change event. */
-        VisEventNewSong     newsong;	 /**< Song change event. */
+        VisEventNewSong     newsong;     /**< Song change event. */
         VisEventQuit        quit;        /**< Quit event. */
         VisEventVisibility  visibility;  /**< Plugin visible event. */
-        VisEventGeneric     generic;	 /**< Generic event. */
-        VisEventParam       param;	 /**< Param change event. */
+        VisEventCustom      custom;      /**< Custom event. */
+        VisEventParam       param;       /**< Param change event. */
     } event;
 };
 
-/**
- * The main event data structure.
- *
- * All events are encapsulated using the VisEvent structure.
- *
- * @see visual_event_new
- */
 #ifdef __cplusplus
 
 #include <memory>
@@ -273,74 +233,103 @@ LV_BEGIN_DECLS
 /**
  * Creates a new keyboard event
  *
- * @param keysym A keysym from the VisKey enumerate to set the key to which the event relates.
- * @param keymod Key modifier information from the VisKeyMod enumerate.
- * @param state Contains information about whatever the key is down or up.
+ * @param keysym Key used
+ * @param keymod Key modifier used
+ * @param state  State of key i.e. pressed or released
  */
-LV_API VisEvent *visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState state);
+LV_API VisEvent *visual_event_new_keyboard (VisKey keysym, VisKeyMod keymod, VisKeyState state);
 
 /**
- * Creates a new mouse movement event
+ * Creates a new mouse movement event.
  *
  * @param dx X displacement
  * @param dy Y displacement
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_mousemotion (int dx, int dy);
 
 /**
  * Creates a new mouse button event
  *
- * @param button Index that indicates to which mouse button the state relates.
- * @param state Contains information about whatever the button is down or up
- * @param x Absolute X value for the mouse location.
- * @param y Absolute Y value for the mouse location.
+ * @param button Mouse button that was used
+ * @param state  State of mouse button i.e. pressed or released
+ * @param x      X-coordinate of the mouse pointer
+ * @param y      Y-coordinate of the mouse pointer
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
-    
+
 /**
  * Creates a resize event.
  *
  * @param width New width
  * @param height New height
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_resize (int width, int height);
-    
+
 /**
  * Creates a new song change event.
+ *
+ * @param songinfo Song information
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
 
 /**
- * Creates a new parameter change event
+ * Creates a new parameter change event.
  *
- * @param param Pointer to the VisParamEntry containing the parameter that has been changed.
+ * @param param Param that has changed
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_param (void *param);
-    
+
 /**
  * Creates a quit event
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_quit (void);
 
 /**
- * Adds a new visibility event to the event queue.
+ * Creates a new visibility event.
  *
  * @param is_visible TRUE when visible, FALSE when not visible.
+ *
+ * @return New event object
  */
 LV_API VisEvent *visual_event_new_visibility (int is_visible);
 
+/**
+ * Copies a VisEvent.
+ *
+ * @param dest Event to copy to
+ * @param src  Event to copy
+ */
 LV_API void visual_event_copy (VisEvent *dest, VisEvent *src);
 
+/**
+ * Frees a VisEvent.
+ *
+ * @param event Event to free
+ */
 LV_API void visual_event_free (VisEvent* event);
 
 /**
- * Adds a new generic event to the event queue.
+ * Creates a new custom event.
  *
- * @param eid ID of the custom event..
- * @param param_int Integer value for the custom event.
- * @param param_ptr Pointer to data for the custom event..
+ * @param eid       Unique ID for type identification
+ * @param param_int Optional integer value
+ * @param param_ptr Optional data pointer
+ *
+ * @return New event object
  */
-LV_API VisEvent *visual_event_new_generic (int eid, int param_int, void *param_ptr);
+LV_API VisEvent *visual_event_new_custom (int eid, int param_int, void *param_ptr);
 
 LV_API VisEventQueue *visual_event_queue_new  (void);
 LV_API void           visual_event_queue_free (VisEventQueue *eventqueue);

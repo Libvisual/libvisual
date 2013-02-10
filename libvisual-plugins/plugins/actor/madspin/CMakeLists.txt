@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(MADSPIN_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_madspin)
 
 LV_BUILD_ACTOR_PLUGIN(madspin

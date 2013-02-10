@@ -1,5 +1,6 @@
 #include <config.h>
 
+#include <libvisual/libvisual.h>
 #include <stdio.h>
 #include <gettext.h>
 
@@ -722,7 +723,7 @@ void GForce::ManageParticleChanges() {
 	if ( mT > mNextParticleCheck && mParticlesOn ) {
 
 		// Generate a random probability value.
-		rndVar = ( (float) rand() ) / ( (float) RAND_MAX );
+		rndVar = ( (float) LV::rand() ) / ( (float) std::numeric_limits<uint32_t>::max() );
 
 		// Comparing that to the evalated probability of a new particle being spawned determines if a new one *should* be spawned
 		if ( rndVar < mParticleProbabilityFcn.Evaluate() ) {

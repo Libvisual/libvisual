@@ -1,6 +1,7 @@
 FILE(GLOB gforce_ui_HEADERS "Headers/*")
 
 INCLUDE_DIRECTORIES(
+  ${LIBVISUAL_INCLUDE_DIRS}
   ${GFORCE_SOURCE_DIR}/Common
   ${GFORCE_SOURCE_DIR}/Common/GeneralTools/Headers
   ${GFORCE_SOURCE_DIR}/Common/UI/Headers

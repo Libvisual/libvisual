@@ -27,39 +27,38 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static int act_bumpscope_init (VisPluginData *plugin);
-static int act_bumpscope_cleanup (VisPluginData *plugin);
-static int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_bumpscope_resize (VisPluginData *plugin, int width, int height);
-static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_bumpscope_palette (VisPluginData *plugin);
-static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         act_bumpscope_init        (VisPluginData *plugin);
+static void        act_bumpscope_cleanup     (VisPluginData *plugin);
+static void        act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_bumpscope_resize      (VisPluginData *plugin, int width, int height);
+static int         act_bumpscope_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        act_bumpscope_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *act_bumpscope_palette     (VisPluginData *plugin);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = act_bumpscope_requisition,
-		.palette = act_bumpscope_palette,
-		.render = act_bumpscope_render,
+		.palette     = act_bumpscope_palette,
+		.render      = act_bumpscope_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "bumpscope",
-		.name = "Bumpscope plugin",
-		.author = N_("Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.0.1",
-		.about = N_("Bumpscope visual plugin"),
-		.help = N_("This is the libvisual port of the xmms Bumpscope plugin"),
-		.license = VISUAL_PLUGIN_LICENSE_GPL,
+		.name     = "Bumpscope plugin",
+		.author   = N_("Original by: Zinx Verituse <zinx@xmms.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.0.1",
+		.about    = N_("Bumpscope visual plugin"),
+		.help     = N_("This is the libvisual port of the xmms Bumpscope plugin"),
+		.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-		.init = act_bumpscope_init,
-		.cleanup = act_bumpscope_cleanup,
-		.events = act_bumpscope_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = act_bumpscope_init,
+		.cleanup  = act_bumpscope_cleanup,
+		.events   = act_bumpscope_events,
+		.plugin   = &actor
 	};
 
 	return &info;
@@ -96,19 +95,19 @@ static int act_bumpscope_init (VisPluginData *plugin)
                                 NULL);
 
 	BumpscopePrivate *priv = visual_mem_new0 (BumpscopePrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->phongres = 256;
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 	priv->pal      = visual_palette_new (256);
 	priv->pcmbuf   = visual_buffer_new_allocate (512 * sizeof (float));
 
-	return 0;
+	return TRUE;
 }
 
-static int act_bumpscope_cleanup (VisPluginData *plugin)
+static void act_bumpscope_cleanup (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 
 	__bumpscope_cleanup (priv);
 
@@ -117,11 +116,9 @@ static int act_bumpscope_cleanup (VisPluginData *plugin)
 	visual_buffer_unref (priv->pcmbuf);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_bumpscope_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -142,26 +139,22 @@ static int act_bumpscope_requisition (VisPluginData *plugin, int *width, int *he
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-static int act_bumpscope_resize (VisPluginData *plugin, int width, int height)
+static void act_bumpscope_resize (VisPluginData *plugin, int width, int height)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 
 	priv->width  = width;
 	priv->height = height;
 
 	__bumpscope_cleanup (priv);
 	__bumpscope_init (priv);
-
-	return 0;
 }
 
 static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 	VisEvent ev;
 	VisParam *param;
 	VisColor *tmp;
@@ -214,19 +207,19 @@ static int act_bumpscope_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *act_bumpscope_palette (VisPluginData *plugin)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 
 	return priv->pal;
 }
 
-static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	BumpscopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	BumpscopePrivate *priv = visual_plugin_get_private (plugin);
 	priv->video = video;
 
 	visual_audio_get_sample_mixed_simple (audio, priv->pcmbuf, 2,
@@ -249,6 +242,4 @@ static int act_bumpscope_render (VisPluginData *plugin, VisVideo *video, VisAudi
 			visual_param_list_get (
 				visual_plugin_get_params (plugin), "color"), &priv->color);
 	}
-
-	return 0;
 }

@@ -33,42 +33,23 @@
 
 #ifdef __cplusplus
 
-#include <libvisual/lv_singleton.hpp>
 #include <memory>
 
 namespace LV {
 
-  class Fourier
-      : public Singleton<Fourier>
-  {
-  public:
-
-      static void init ();
-
-      ~Fourier ();
-
-  private:
-
-      class Impl;
-
-      const std::unique_ptr<Impl> m_impl;
-
-      Fourier ();
-  };
-
+  //! Computes a Discrete Fourier Transform
   class LV_API DFT
   {
   public:
 
       /**
-       * Creates a DFT (Discrete Fourier Transform) object used to
-       * calculate amplitude spectrums over audio data.
+       * Creates a DFT object used to calculate amplitude spectrums over audio data.
        *
        * @note For optimal performance, use a power-of-2 spectrum
        * size. The current implementation does not use the Fast
        * Fourier Transform for non powers of 2.
        *
-       * note If samples_in is smaller than 2 * samples_out, the input
+       * @note If samples_in is smaller than 2 * samples_out, the input
        * will be padded with zeroes.
        *
        * @param samples_in  The number of samples provided to every
@@ -79,8 +60,30 @@ namespace LV {
        */
       DFT (unsigned int samples_out, unsigned int samples_in);
 
+      DFT (DFT const&) = delete;
+
+      /**
+       * Move constructor
+       */
+      DFT (DFT&& rhs);
+
+      /**
+       * Destructor
+       */
       ~DFT ();
 
+      DFT& operator= (DFT const&) = delete;
+
+      /**
+       * Move assignment operator
+       */
+      DFT& operator= (DFT&& rhs);
+
+      /**
+       * Returns the output size of the DFT.
+       *
+       * @return Output size
+       */
       unsigned int get_spectrum_size () const;
 
       /**
@@ -92,9 +95,9 @@ namespace LV {
       void perform (float *output, float const* input);
 
       /**
-       * Scales an ampltitude spectrum logarithmically.
+       * Logarithmically scales an amplitude spectrum.
        *
-       * \note Scaled values are guaranteed to be in [0.0, 1.0].
+       * @note Scaled values are guaranteed to be in [0.0, 1.0].
        *
        * @param output Array of output samples
        * @param input  Array of input samples with values in [0.0, 1.0]
@@ -111,7 +114,7 @@ namespace LV {
 
       class Impl;
 
-      const std::unique_ptr<Impl> m_impl;
+      std::unique_ptr<Impl> m_impl;
   };
 
 }  // LV namespace
@@ -120,8 +123,6 @@ namespace LV {
 
 
 /* C API bindings */
-
-#define VISUAL_DFT(obj)                 (VISUAL_CHECK_CAST ((obj), VisDFT))
 
 #ifdef __cplusplus
 typedef ::LV::DFT VisDFT;
@@ -132,14 +133,14 @@ struct _VisDFT;
 
 LV_BEGIN_DECLS
 
-VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
-void    visual_dft_free (VisDFT *dft);
+LV_API VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
+LV_API void    visual_dft_free (VisDFT *dft);
 
-void visual_dft_perform (VisDFT *dft, float *output, float const *input);
+LV_API void visual_dft_perform (VisDFT *dft, float *output, float const *input);
 
-void visual_dft_log_scale (float *output, float const *input, unsigned int size);
-void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
-void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
+LV_API void visual_dft_log_scale (float *output, float const *input, unsigned int size);
+LV_API void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
+LV_API void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
 
 LV_END_DECLS
 

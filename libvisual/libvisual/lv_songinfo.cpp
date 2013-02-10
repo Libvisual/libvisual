@@ -23,7 +23,6 @@
 #include "lv_songinfo.h"
 #include "lv_common.h"
 #include "lv_libvisual.h"
-#include <string.h>
 
 namespace LV {
 
@@ -113,9 +112,9 @@ namespace LV {
   void SongInfo::set_cover (VideoPtr const& cover)
   {
       // Get the desired cover art size
-      auto params = visual_get_params ();
-      auto xparam = visual_param_list_get (params, "songinfo-cover-width");
-      auto yparam = visual_param_list_get (params, "songinfo-cover-height");
+      auto& system_params = LV::System::instance()->get_params ();
+      auto  xparam = system_params.get ("songinfo-cover-width");
+      auto  yparam = system_params.get ("songinfo-cover-height");
 
       int cover_width = 64;
       int cover_height = 64;

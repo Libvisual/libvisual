@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012 Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
@@ -30,24 +30,24 @@ namespace LV {
   {
   public:
 
-      static void rotate_90  (Video& dest, Video const& src);
-      static void rotate_180 (Video& dest, Video const& src);
-      static void rotate_270 (Video& dest, Video const& src);
+      static void rotate_90  (Video& dst, Video const& src);
+      static void rotate_180 (Video& dst, Video const& src);
+      static void rotate_270 (Video& dst, Video const& src);
 
-      static void mirror_x (Video& dest, Video const& src);
-      static void mirror_y (Video& dest, Video const& src);
+      static void mirror_x (Video& dst, Video const& src);
+      static void mirror_y (Video& dst, Video const& src);
 
-      static void scale_nearest_color8  (Video& dest, Video const& src);
-      static void scale_nearest_color16 (Video& dest, Video const& src);
-      static void scale_nearest_color24 (Video& dest, Video const& src);
-      static void scale_nearest_color32 (Video& dest, Video const& src);
+      static void scale_nearest_color8  (Video& dst, Video const& src);
+      static void scale_nearest_color16 (Video& dst, Video const& src);
+      static void scale_nearest_color24 (Video& dst, Video const& src);
+      static void scale_nearest_color32 (Video& dst, Video const& src);
 
-      static void scale_bilinear_color8  (Video& dest, Video const& src);
-      static void scale_bilinear_color16 (Video& dest, Video const& src);
-      static void scale_bilinear_color24 (Video& dest, Video const& src);
-      static void scale_bilinear_color32 (Video& dest, Video const& src);
+      static void scale_bilinear_color8  (Video& dst, Video const& src);
+      static void scale_bilinear_color16 (Video& dst, Video const& src);
+      static void scale_bilinear_color24 (Video& dst, Video const& src);
+      static void scale_bilinear_color32 (Video& dst, Video const& src);
 
-      static void scale_bilinear_color32_mmx (Video& dest, Video const& src);
+      static void scale_bilinear_color32_mmx (Video& dst, Video const& src);
   };
 
 } // LV namespace

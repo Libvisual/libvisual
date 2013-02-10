@@ -331,7 +331,7 @@ namespace {
 
   typedef void (*DeinterleaveStereoFunc)(void*, void*, void const*, std::size_t);
 
-  DeinterleaveStereoFunc const deinterleave_stereo_func_table[7] = {
+  DeinterleaveStereoFunc const deinterleave_stereo_func_table[] = {
       deinterleave_stereo<uint8_t>,
       deinterleave_stereo<int8_t>,
       deinterleave_stereo<uint16_t>,

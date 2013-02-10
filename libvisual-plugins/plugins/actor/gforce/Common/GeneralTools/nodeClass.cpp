@@ -1,10 +1,10 @@
-#include <libvisual/libvisual.h>
-
 #include "nodeClass.h"
 
 #include "CEgIStream.h"
 #include "CEgOStream.h"
 
+#include <libvisual/libvisual.h>
+#include <limits>
 #include <stdlib.h>
 
 
@@ -24,7 +24,7 @@ long			nodeClass::sClassIDs[ 30 ];
 CreatorFuncT	nodeClass::sCreatorFunc[ 30 ];
 int				nodeClass::sNumRegistered = 0;
 
-	
+
 nodeClass::nodeClass() {
 
 	initSelf();
@@ -911,13 +911,13 @@ void nodeClass::RandomizeSubs() {
 
 /* FIXME use VisRandomContext */
 long nodeClass::Rnd( long min, long max ) {
-	long maxRnd 	= RAND_MAX;
+	long maxRnd 	= std::numeric_limits<uint32_t>::max();
 	long retNum;
 
 	LV::Time curTime = LV::Time::now ();
 
 	srand (curTime.nsec + curTime.sec);
-	retNum = rand() / (maxRnd / (max - min + 1)) + min;
+	retNum = LV::rand() / (maxRnd / (max - min + 1)) + min;
 
 	if ( retNum >= max )
 		return max;

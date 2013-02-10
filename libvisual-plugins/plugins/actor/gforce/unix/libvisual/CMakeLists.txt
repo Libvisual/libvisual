@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(INCLUDE_DIRS
   ${GFORCE_SOURCE_DIR}/GForceCommon/Headers
   ${GFORCE_SOURCE_DIR}/Common/UI/Headers

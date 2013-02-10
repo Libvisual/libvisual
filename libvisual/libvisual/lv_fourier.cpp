@@ -81,11 +81,6 @@ namespace LV {
   } // anonymous namespace
 
 
-  class Fourier::Impl
-  {
-      // nothing for now
-  };
-
   class DFT::Impl
   {
   public:
@@ -205,35 +200,27 @@ namespace LV {
 
   } // anonymous namespace
 
-  template <>
-  LV_API Fourier* Singleton<Fourier>::m_instance = nullptr;
-
-  void Fourier::init ()
-  {
-      if (!m_instance)
-          m_instance = new Fourier;
-  }
-
-  Fourier::Fourier ()
-      : m_impl (new Impl)
-  {
-      // empty
-  }
-
-  Fourier::~Fourier ()
-  {
-      // empty
-  }
-
   DFT::DFT (unsigned int samples_out, unsigned int samples_in)
       : m_impl (new Impl (samples_out, samples_in))
   {
       // empty
   }
 
+  DFT::DFT (DFT&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // nothing
+  }
+
   DFT::~DFT ()
   {
       // empty
+  }
+
+  DFT& DFT::operator= (DFT&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
+      return *this;
   }
 
   void DFT::perform (float *output, float const* input)

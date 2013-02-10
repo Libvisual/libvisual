@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(DANCINGPARTICLES_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_dancingparticles)
 
 SET(SOURCES

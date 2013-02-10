@@ -24,7 +24,7 @@
 #ifndef _LV_COLOR_H
 #define _LV_COLOR_H
 
-#include <libvisual/lv_object.h>
+#include <libvisual/lv_types.h>
 
 /**
  * @defgroup VisColor VisColor
@@ -146,8 +146,6 @@ struct _VisColor
     uint8_t r, g, b, a; // NOTE: this must be synced with LV::Color
 };
 #endif
-
-#define VISUAL_COLOR(obj) (VISUAL_CHECK_CAST ((obj), VisColor))
 
 LV_API VisColor *visual_color_new   (void);
 LV_API VisColor *visual_color_clone (VisColor *color);

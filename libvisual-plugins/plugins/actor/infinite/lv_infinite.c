@@ -30,56 +30,52 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static int act_infinite_init (VisPluginData *plugin);
-static int act_infinite_cleanup (VisPluginData *plugin);
-static int act_infinite_resize (VisPluginData *plugin, int width, int height);
-static int act_infinite_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_infinite_palette (VisPluginData *plugin);
-static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         act_infinite_init        (VisPluginData *plugin);
+static void        act_infinite_cleanup     (VisPluginData *plugin);
+static void        act_infinite_resize      (VisPluginData *plugin, int width, int height);
+static void        act_infinite_requisition (VisPluginData *plugin, int *width, int *height);
+static int         act_infinite_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        act_infinite_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *act_infinite_palette     (VisPluginData *plugin);
+
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = act_infinite_requisition,
-		.palette = act_infinite_palette,
-		.render = act_infinite_render,
+		.palette     = act_infinite_palette,
+		.render      = act_infinite_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "infinite",
-		.name = "infinite plugin",
-		.author = N_("Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
-		.version = "0.1",
-		.about = N_("Infinite visual plugin"),
-		.help = N_("This is the libvisual plugin for the infinite visual"),
-		.license = VISUAL_PLUGIN_LICENSE_GPL,
+		.name     = "infinite plugin",
+		.author   = N_("Original by: Julien Carme <julien.carme@acm.org>, Port by: Dennis Smit <ds@nerds-incorporated.org>"),
+		.version  = "0.1",
+		.about    = N_("Infinite visual plugin"),
+		.help     = N_("This is the libvisual plugin for the infinite visual"),
+		.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
-		.init = act_infinite_init,
-		.cleanup = act_infinite_cleanup,
-		.events = act_infinite_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = act_infinite_init,
+		.cleanup  = act_infinite_cleanup,
+		.events   = act_infinite_events,
+		.plugin   = &actor
 	};
 
 	return &info;
 }
 
-static int act_infinite_init (VisPluginData *plugin)
+int act_infinite_init (VisPluginData *plugin)
 {
-	InfinitePrivate *priv;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	priv = visual_mem_new0 (InfinitePrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	InfinitePrivate *priv = visual_mem_new0 (InfinitePrivate, 1);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->rcontext = visual_plugin_get_random_context (plugin);
 
@@ -91,37 +87,30 @@ static int act_infinite_init (VisPluginData *plugin)
 	_inf_init_renderer (priv);
 	_inf_load_random_effect(priv, &priv->current_effect);
 
-
 	priv->color = visual_random_context_int_range (priv->rcontext, 0, NB_PALETTES - 1);
 	_inf_change_color(priv, priv->old_color, priv->color, 256);
 	priv->old_color = priv->color;
 
 	priv->color = visual_random_context_int_range (priv->rcontext, 0, NB_PALETTES - 1);
 
-	return 0;
+	return TRUE;
 }
 
-int act_infinite_cleanup (VisPluginData *plugin)
+static void act_infinite_cleanup (VisPluginData *plugin)
 {
 	InfinitePrivate *priv;
 
-	visual_return_val_if_fail (plugin != NULL, -1);
-
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 
 	_inf_close_renderer (priv);
 
 	visual_palette_free (priv->pal);
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int act_infinite_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_infinite_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
-
-	visual_return_val_if_fail (plugin != NULL, -1);
 
 	reqw = *width;
 	reqh = *height;
@@ -140,20 +129,16 @@ static int act_infinite_requisition (VisPluginData *plugin, int *width, int *hei
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-static int act_infinite_resize (VisPluginData *plugin, int width, int height)
+static void act_infinite_resize (VisPluginData *plugin, int width, int height)
 {
-	InfinitePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	InfinitePrivate *priv = visual_plugin_get_private (plugin);
 	priv->plugwidth = width;
 	priv->plugheight = height;
 
 	_inf_close_renderer (priv);
 	_inf_init_renderer (priv);
-
-	return 0;
 }
 
 static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
@@ -170,7 +155,7 @@ static int act_infinite_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *act_infinite_palette (VisPluginData *plugin)
@@ -179,21 +164,17 @@ static VisPalette *act_infinite_palette (VisPluginData *plugin)
 
 	visual_return_val_if_fail (plugin != NULL, NULL);
 
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 
 	return priv->pal;
 }
 
-static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	VisBuffer *buffer;
 	InfinitePrivate *priv;
 
-	visual_return_val_if_fail (plugin != NULL, -1);
-	visual_return_val_if_fail (video != NULL, -1);
-	visual_return_val_if_fail (audio != NULL, -1);
-
-	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	priv = visual_plugin_get_private (plugin);
 
 	buffer = visual_buffer_new ();
 
@@ -207,7 +188,4 @@ static int act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudio
 	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), visual_video_get_pitch (video));
 
 	visual_buffer_unref (buffer);
-
-	return 0;
 }
-

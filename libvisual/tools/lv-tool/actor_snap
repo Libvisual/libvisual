@@ -1,0 +1,172 @@
+#!/bin/bash
+
+####
+# small script to create snapshots of actors
+# using lv-tool and imagemagick - 2013 - D.Hiepler
+
+
+# path where actor plugins are
+if [ -n $ACTORPATH ] ; then ACTORPATH="/usr/local/lib/libvisual-0.5/actor" ; fi
+
+
+
+# print brief usage
+function help()
+{
+    echo -e "Usage: $0 [option]\n" \
+            "Options:\n" \
+            "\t-h\t\t\tThis help\n" \
+            "\t-m <mode>\t\tChoose operating mode [single]\n" \
+            "\t\t\"single\"\tcreate single snapshot\n" \
+            "\t\t\"anim\"\t\tcreate animation strip\n" \
+            "\t-a <actor>\t\tChoose specific actor [all installed actors]\n" \
+            "\t-f <frames>\t\tAmount of frames to snapshot [1]\n" \
+            "\t-F <frames>\t\tAmount of frames to skip before starting to snapshot [0]\n" \
+            "\t-d <width>x<height>\tDimensions of snapshot [320x200]\n" \
+            "\t-V\t\t\tRender video when in single mode & more than 1 frame\n" \
+            "\n"
+}
+
+
+# mode
+MODE="single"
+# actor
+ACTOR=""
+# amount of frames to capture
+FRAMES=1
+# snapshot the n-th rendered frame
+SKIP_FRAMES=0
+# dimensions of snapshot
+WIDTH=320
+HEIGHT=200
+# render video
+DO_VIDEO=0
+
+
+# parse commandline arguments
+while getopts  "hm:a:f:F:d:V" flag ; do
+    case $flag in
+
+        # help
+        h)
+            help
+            exit 1
+            ;;
+
+        # mode
+        m)
+            case $OPTARG in
+                "single")
+                    MODE="single"
+                    continue;
+                    ;;
+
+                "anim")
+                    MODE="anim"
+                    continue;
+                    ;;
+            esac
+            echo "Unknown mode. Valid are: \"single\" and \"anim\"" >&2
+            help
+            exit 1
+            ;;
+
+        # actor
+        a)
+            ACTOR=$OPTARG
+            ;;
+
+        # frames
+        f)
+            [[ "$OPTARG" =~ [[:digit:]]+ ]] && FRAMES=$OPTARG && continue
+            echo "Not an integer: $OPTARG" >&2
+            ;;
+
+        # skip-frames
+        F)
+            [[ "$OPTARG" =~ [[:digit:]]+ ]] && SKIP_FRAMES=$OPTARG && continue
+            echo "Not an integer: $OPTARG" >&2
+            ;;
+
+        # dimensions
+        d)
+            TMP=(`echo $OPTARG | tr 'x' ' '`)
+            [[ "${TMP[0]}" =~ [[:digit:]]+ ]] && WIDTH=${TMP[0]}
+            [[ "${TMP[1]}" =~ [[:digit:]]+ ]] && HEIGHT=${TMP[1]} && continue
+            echo "Invalid dimensions. Use e.g. \"320x200\"" >&2 && exit 1
+            ;;
+
+        # render video
+        V)
+            echo "Will also render video"
+            DO_VIDEO=1
+            ;;
+
+        # huh?
+        ?)
+            echo "Invalid option: $OPTARG" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+
+
+# check if parameters are valid
+if [ $SKIP_FRAMES -ge $FRAMES ] ; then echo "Skipped frames ($SKIP_FRAMES) must be smaller than total frames ($FRAMES)" ; exit 1 ; fi
+if [ $MODE == "anim" ] && [ $FRAMES -eq 1 ] ; then echo "Warning: Snapshotting animation with just 1 frame!" ; fi
+
+
+
+
+# build list of actors to snapshot (or single actor, 
+# depending on cmdline argument)
+if [[ -n $ACTOR ]] ; then
+    ACTORS=$ACTOR
+    if ! [[ -e ${ACTORPATH}/libactor_${ACTOR}.so ]] ; then
+        echo "Actor \"${ACTOR}\" not found!"
+        exit 1
+    fi
+else
+    n=0
+    # walk through all actors
+    for ACTORFILE in ${ACTORPATH}/libactor_* ; do
+        TMP=${ACTORFILE##*/libactor_}
+        TMP=${TMP%%.*}
+        ACTORS[$n]=$TMP
+        n=$[n+1]
+    done
+fi
+
+
+
+
+
+# walk wanted actors & do snapshot
+for ACTOR in ${ACTORS[@]} ; do
+    # calculate amount of bytes to skip
+    SKIP=$[WIDTH*HEIGHT*3*SKIP_FRAMES]
+
+    echo "Snapshotting ${ACTOR}"
+
+    case $MODE in
+        single)
+            lv-tool -F${FRAMES} -s ${RANDOM} -d stdout_sdl -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
+            convert -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 bgr:-'[0--1]' ${ACTOR}%03d.png
+
+            if [ $DO_VIDEO -eq 1 ] && [ $FRAMES -gt 1 ] ; then
+                ffmpeg -i ${ACTOR}%03d.png -metadata title="libvisual ${ACTOR}" -vcodec libx264 -b:v 10000k ${ACTOR}.mp4
+            fi
+        ;;
+
+        anim)
+            lv-tool -F${FRAMES} -s ${RANDOM} -d stdout_sdl -D${WIDTH}x${HEIGHT} -c24 -a ${ACTOR} 2>/dev/null | \
+            montage -size ${WIDTH}x${HEIGHT}+${SKIP} -depth 8 bgr:-'[0--1]' -coalesce -tile x1 -geometry '+0+0' ${ACTOR}%03d.png
+        ;;
+   esac
+done
+
+
+
+

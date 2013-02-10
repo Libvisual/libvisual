@@ -67,7 +67,25 @@ namespace LV {
       // empty
   }
 
-  /* Precomputation functions */
+  void Video::Impl::set_buffer (void* ptr)
+  {
+      if (buffer->is_allocated ()) {
+          visual_log (VISUAL_LOG_ERROR,
+                      "Cannot set a new pixel buffer for Video objects "
+                      "with allocated buffers");
+          return;
+      }
+
+      buffer->set_data (ptr);
+
+      pixel_rows.clear ();
+
+      if (buffer->get_data ()) {
+          pixel_rows.resize (height);
+          precompute_row_table ();
+      }
+  }
+
   void Video::Impl::precompute_row_table ()
   {
       auto ptr = static_cast<uint8_t *> (buffer->get_data ());
@@ -111,15 +129,19 @@ namespace LV {
 
       if (!vrect.contains (area))
       {
-          visual_log(VISUAL_LOG_DEBUG, "provided area (%d, %d, %d, %d) is not contained by source area (%d, %d, %d, %d)", area.x, area.y, area.width, area.height, vrect.x, vrect.y, vrect.width, vrect.height);
-          return VideoPtr ();
+          visual_log (VISUAL_LOG_DEBUG,
+                      "provided area (%d, %d, %d, %d) is not contained by "
+                      "source area (%d, %d, %d, %d)",
+                      area.x, area.y, area.width, area.height,
+                      vrect.x, vrect.y, vrect.width, vrect.height);
+          return nullptr;
       }
 
       self->m_impl->extents = area;
       self->m_impl->parent  = src;
 
       self->set_attrs (area.width, area.height, src->m_impl->pitch, src->m_impl->depth);
-      self->set_buffer (src->get_pixel_ptr (area.x, area.y));
+      self->m_impl->set_buffer (src->get_pixel_ptr (area.x, area.y));
 
       self->m_impl->compose_type = src->m_impl->compose_type;
       self->m_impl->compose_func = src->m_impl->compose_func;
@@ -140,7 +162,7 @@ namespace LV {
       return create_sub (src, rsrect);
   }
 
-  VideoPtr Video::wrap (void *data, bool owner, int width, int height, VisVideoDepth depth)
+  VideoPtr Video::wrap (void *data, bool owner, int width, int height, VisVideoDepth depth, int pitch)
   {
       // FIXME: Support this
       if (owner) {
@@ -150,8 +172,8 @@ namespace LV {
       VideoPtr self (new Video, false);
 
       self->set_depth (depth);
-      self->set_dimension (width, height);
-      self->set_buffer (data);
+      self->set_dimension (width, height, pitch);
+      self->m_impl->set_buffer (data);
 
       return self;
   }
@@ -196,18 +218,6 @@ namespace LV {
   Video::~Video ()
   {
       // empty
-  }
-
-  void Video::ref () const
-  {
-      m_ref_count++;
-  }
-
-  void Video::unref () const
-  {
-      if (--m_ref_count == 0) {
-          delete this;
-      }
   }
 
   void Video::free_buffer ()
@@ -302,29 +312,11 @@ namespace LV {
       return m_impl->palette;
   }
 
-  void Video::set_buffer (void *ptr)
-  {
-      if (m_impl->buffer->is_allocated ()) {
-          visual_log (VISUAL_LOG_ERROR,
-                      "Trying to set a screen buffer on a Video object pointing to an allocated screen buffer");
-          return;
-      }
-
-      m_impl->buffer->set_data (ptr);
-
-      m_impl->pixel_rows.clear ();
-
-      if (m_impl->buffer->get_data ()) {
-          m_impl->pixel_rows.resize (m_impl->height);
-          m_impl->precompute_row_table ();
-      }
-  }
-
-  void Video::set_dimension (int width, int height)
+  void Video::set_dimension (int width, int height, int pitch)
   {
       m_impl->width  = width;
       m_impl->height = height;
-      m_impl->pitch  = m_impl->width * m_impl->bpp;
+      m_impl->pitch  = std::max (pitch, width * m_impl->bpp);
 
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
 
@@ -343,11 +335,9 @@ namespace LV {
 
   void Video::set_pitch (int pitch)
   {
-      if(pitch <= 0)
+      if(pitch <= 0 || m_impl->bpp <= 0) {
           return;
-
-      if (m_impl->bpp <= 0)
-          return;
+      }
 
       m_impl->pitch = pitch;
       m_impl->buffer->set_size (m_impl->pitch * m_impl->height);
@@ -900,13 +890,9 @@ const char *visual_video_depth_name (VisVideoDepth depth)
 
 int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 {
-    if (visual_video_depth_is_sane (depth) == 0)
-        return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+    visual_return_val_if_fail (visual_video_depth_is_sane (depth), FALSE);
 
-    if ((depth & depthflag) > 0)
-        return TRUE;
-
-    return FALSE;
+    return (depth & depthflag) > 0;
 }
 
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
@@ -1034,10 +1020,8 @@ int visual_video_depth_value_from_enum (VisVideoDepth depth)
             return 32;
 
         default:
-            return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
+            return 0;
     }
-
-    return -VISUAL_ERROR_VIDEO_INVALID_DEPTH;
 }
 
 VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
@@ -1051,8 +1035,6 @@ VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
         default:
             return VISUAL_VIDEO_DEPTH_NONE;
     }
-
-    return VISUAL_VIDEO_DEPTH_NONE;
 }
 
 int visual_video_bpp_from_depth (VisVideoDepth depth)

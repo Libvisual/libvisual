@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 LV_BUILD_INPUT_PLUGIN(pulseaudio
   SOURCES       input_pulseaudio.c
   INCLUDE_DIRS  ${PULSE_INCLUDE_DIRS}

@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
@@ -30,29 +30,34 @@
 
 #pragma pack(1)
 
-typedef struct {
+struct rgb16_t {
 #if VISUAL_LITTLE_ENDIAN == 1
-    uint16_t b:5, g:6, r:5;
-#else
     uint16_t r:5, g:6, b:5;
+#else
+    uint16_t b:5, g:6, r:5;
 #endif
-} rgb16_t;
+};
 
 #pragma pack()
 
+#if VISUAL_LITTLE_ENDIAN == 1
+  #define ARGB(a,r,g,b) ((a)<<24 | (r)<<16 | (g) << 8 | (b))
+  #define RGB(r,g,b)    ((r)<<16 | (g)<<8  | (b))
+#else
+  #define ARGB(a,r,g,b) ((b)<<24 | (g)<<16 | (r) << 8 | (a))
+  #define RGB(r,g,b)    ((b)<<16 | (g)<<8  | (r))
+#endif
+
 namespace LV {
 
-  void VideoConvert::convert_get_smallest (Video& dest, Video const& src, int& width, int& height)
+  void VideoConvert::convert_get_smallest (Video& dst, Video const& src, int& width, int& height)
   {
-      width  = std::min (dest.m_impl->width,  src.m_impl->width);
-      height = std::min (dest.m_impl->height, src.m_impl->height);
+      width  = std::min (dst.m_impl->width,  src.m_impl->width);
+      height = std::min (dst.m_impl->height, src.m_impl->height);
   }
 
-  void VideoConvert::index8_to_rgb16 (Video& dest, Video const& src)
+  void VideoConvert::index8_to_rgb16 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
-
       std::array<rgb16_t, 256> colors;
 
       auto const& src_colors = src.m_impl->palette.colors;
@@ -63,450 +68,444 @@ namespace LV {
           colors[i].b = src_colors[i].b >> 3;
       }
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int ddiff = (dest.m_impl->pitch / dest.m_impl->bpp) - w;
-      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-              *(dbuf++) = colors[*(sbuf++)];
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = reinterpret_cast<rgb16_t*> (dst_pixel_row);
+          auto dst_pixel_end = reinterpret_cast<rgb16_t*> (dst_pixel_row) + width;
+          auto src_pixel     = src_pixel_row;
+
+          while (dst_pixel != dst_pixel_end) {
+              *dst_pixel = colors[*src_pixel];
+              dst_pixel++;
+              src_pixel++;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::index8_to_rgb24 (Video& dest, Video const& src)
+  void VideoConvert::index8_to_rgb24 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
-
       auto const& src_colors = src.m_impl->palette.colors;
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              *(dbuf++) = src_colors[*(sbuf)].b;
-              *(dbuf++) = src_colors[*(sbuf)].g;
-              *(dbuf++) = src_colors[*(sbuf)].r;
-#else
-              *(dbuf++) = src_colors[*(sbuf)].r;
-              *(dbuf++) = src_colors[*(sbuf)].g;
-              *(dbuf++) = src_colors[*(sbuf)].b;
-#endif // VISUAL_LITTLE_ENDIAN
-              sbuf++;
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width * 3;
+          auto src_pixel     = src_pixel_row;
+
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_colors[*src_pixel].b;
+              dst_pixel[1] = src_colors[*src_pixel].g;
+              dst_pixel[2] = src_colors[*src_pixel].r;
+
+              dst_pixel += 3;
+              src_pixel++;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::index8_to_argb32 (Video& dest, Video const& src)
+  void VideoConvert::index8_to_argb32 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint32_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
-
       std::array<uint32_t, 256> colors;
 
       auto const& src_colors = src.m_impl->palette.colors;
 
       for (int i = 0; i < 256; ++i) {
-          colors[i] =
-              255 << 24 |
-              src_colors[i].r << 16 |
-              src_colors[i].g << 8 |
-              src_colors[i].b;
+          colors[i] = ARGB (255, src_colors[i].r, src_colors[i].g, src_colors[i].b);
       }
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int ddiff = (dest.m_impl->pitch >> 2) - w;
-      int sdiff = src.m_impl->pitch - w;
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-              *(dbuf++) = colors[*(sbuf++)];
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = reinterpret_cast<uint32_t*> (dst_pixel_row);
+          auto dst_pixel_end = reinterpret_cast<uint32_t*> (dst_pixel_row) + width;
+          auto src_pixel     = src_pixel_row;
+
+          while (dst_pixel != dst_pixel_end) {
+              *dst_pixel = colors[*src_pixel];
+              dst_pixel++;
+              src_pixel++;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
-      }
-  }
-
-  void VideoConvert::rgb16_to_index8 (Video& dest, Video const& src)
-  {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
-
-      auto& dest_colors = dest.m_impl->palette.colors;
-
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
-
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = (src.m_impl->pitch  / src.m_impl->bpp) - w;
-
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-              uint8_t r = sbuf->r << 3;
-              uint8_t g = sbuf->g << 2;
-              uint8_t b = sbuf->b << 3;
-              sbuf++;
-
-              uint8_t col = (r + g + b) / 3;
-
-              dest_colors[col].r = r;
-              dest_colors[col].g = g;
-              dest_colors[col].b = b;
-
-              *(dbuf++) = col;
-          }
-
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::rgb16_to_rgb24 (Video& dest, Video const& src)
+  void VideoConvert::rgb16_to_index8 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto& dst_colors = dst.m_impl->palette.colors;
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = (src.m_impl->pitch  / src.m_impl->bpp) - w;
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              *(dbuf++) = sbuf->b << 3;
-              *(dbuf++) = sbuf->g << 2;
-              *(dbuf++) = sbuf->r << 3;
-#else
-              *(dbuf++) = sbuf->r << 3;
-              *(dbuf++) = sbuf->g << 2;
-              *(dbuf++) = sbuf->b << 3;
-#endif /* VISUAL_LITTLE_ENDIAN */
-              sbuf++;
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width;
+          auto src_pixel     = reinterpret_cast<rgb16_t const*> (src_pixel_row);
+
+          while (dst_pixel != dst_pixel_end) {
+              uint8_t r = src_pixel->r << 3;
+              uint8_t g = src_pixel->g << 2;
+              uint8_t b = src_pixel->b << 3;
+              uint8_t i = (r + g + b) / 3;
+
+              dst_colors[i].r = r;
+              dst_colors[i].g = g;
+              dst_colors[i].b = b;
+
+              *dst_pixel = i;
+
+              dst_pixel++;
+              src_pixel++;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::rgb16_to_argb32 (Video& dest, Video const& src)
+  void VideoConvert::rgb16_to_rgb24 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<rgb16_t const*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t*> (src.get_pixels ());
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = (src.m_impl->pitch  / src.m_impl->bpp) - w;
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width * 3;
+          auto src_pixel     = reinterpret_cast<rgb16_t const*> (src_pixel_row);
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              *(dbuf++) = sbuf->b << 3;
-              *(dbuf++) = sbuf->g << 2;
-              *(dbuf++) = sbuf->r << 3;
-              *(dbuf++) = 255;
-#else
-              *(dbuf++) = 255;
-              *(dbuf++) = sbuf->r << 3;
-              *(dbuf++) = sbuf->g << 2;
-              *(dbuf++) = sbuf->b << 3;
-#endif /* VISUAL_LITTLE_ENDIAN */
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_pixel->b << 3;
+              dst_pixel[1] = src_pixel->g << 2;
+              dst_pixel[2] = src_pixel->r << 3;
 
-              sbuf++;
+              dst_pixel += 3;
+              src_pixel++;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::rgb24_to_index8 (Video& dest, Video const& src)
+  void VideoConvert::rgb16_to_argb32 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      auto& dest_colors = dest.m_impl->palette.colors;
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width * 4;
+          auto src_pixel     = reinterpret_cast<rgb16_t const*> (src_pixel_row);
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_pixel->b << 3;
+              dst_pixel[1] = src_pixel->g << 2;
+              dst_pixel[2] = src_pixel->r << 3;
+              dst_pixel[3] = 255;
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              uint8_t b = *(sbuf++);
-              uint8_t g = *(sbuf++);
-              uint8_t r = *(sbuf++);
-#else
-              uint8_t r = *(sbuf++);
-              uint8_t g = *(sbuf++);
-              uint8_t b = *(sbuf++);
-#endif /* VISUAL_LITTLE_ENDIAN */
-
-              uint8_t col = (b + g + r) / 3;
-
-              dest_colors[col].r = r;
-              dest_colors[col].g = g;
-              dest_colors[col].b = b;
-
-              *(dbuf++) = col;
+              dst_pixel += 4;
+              src_pixel++;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::rgb24_to_rgb16 (Video& dest, Video const& src)
+  void VideoConvert::rgb24_to_index8 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      auto& dst_colors = dst.m_impl->palette.colors;
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = (src.m_impl->pitch / src.m_impl->bpp) - w;
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              dbuf->b = *(sbuf++) >> 3;
-              dbuf->g = *(sbuf++) >> 2;
-              dbuf->r = *(sbuf++) >> 3;
-#else
-              dbuf->r = *(sbuf++) >> 3;
-              dbuf->g = *(sbuf++) >> 2;
-              dbuf->b = *(sbuf++) >> 3;
-#endif
-              dbuf++;
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width;
+          auto src_pixel     = src_pixel_row;
+
+          while (dst_pixel != dst_pixel_end) {
+              uint8_t b = src_pixel[0];
+              uint8_t g = src_pixel[1];
+              uint8_t r = src_pixel[2];
+              uint8_t i = (b + g + r) / 3;
+
+              dst_colors[i].r = r;
+              dst_colors[i].g = g;
+              dst_colors[i].b = b;
+
+              *dst_pixel = i;
+
+              dst_pixel++;
+              src_pixel += 3;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::rgb24_to_argb32 (Video& dest, Video const& src)
+  void VideoConvert::rgb24_to_rgb16 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = reinterpret_cast<rgb16_t*> (dst_pixel_row);
+          auto dst_pixel_end = reinterpret_cast<rgb16_t*> (dst_pixel_row) + width;
+          auto src_pixel     = src_pixel_row;
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = 255;
-#else
-              *(dbuf++) = 255;
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-#endif /* VISUAL_LITTLE_ENDIAN */
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel->b = src_pixel[0] >> 3;
+              dst_pixel->g = src_pixel[1] >> 2;
+              dst_pixel->r = src_pixel[2] >> 3;
+
+              dst_pixel++;
+              src_pixel += 3;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::argb32_to_index8 (Video& dest, Video const& src)
+  void VideoConvert::rgb24_to_argb32 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      auto& dest_colors = dest.m_impl->palette.colors;
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width * 4;
+          auto src_pixel     = src_pixel_row;
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_pixel[0];
+              dst_pixel[1] = src_pixel[1];
+              dst_pixel[2] = src_pixel[2];
+              dst_pixel[3] = 255;
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              uint8_t b = *(sbuf++);
-              uint8_t g = *(sbuf++);
-              uint8_t r = *(sbuf++);
-              sbuf++;
-#else
-              sbuf++;
-              uint8_t r = *(sbuf++);
-              uint8_t g = *(sbuf++);
-              uint8_t b = *(sbuf++);
-#endif /* VISUAL_LITTLE_ENDIAN */
-
-              uint8_t col = (r + g + b) / 3;
-
-              dest_colors[col].r = r;
-              dest_colors[col].g = g;
-              dest_colors[col].b = b;
-
-              *(dbuf++) = col;
+              dst_pixel += 4;
+              src_pixel += 3;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::argb32_to_rgb16 (Video& dest, Video const& src)
+  void VideoConvert::argb32_to_index8 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      auto& dst_colors = dst.m_impl->palette.colors;
 
-      int ddiff = (dest.m_impl->pitch / dest.m_impl->bpp) - w;
-      int sdiff = src.m_impl->pitch - (w * src.m_impl->bpp);
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              dbuf->b = *(sbuf++) >> 3;
-              dbuf->g = *(sbuf++) >> 2;
-              dbuf->r = *(sbuf++) >> 3;
-              sbuf++;
-#else
-              sbuf++;
-              dbuf->r = *(sbuf++) >> 3;
-              dbuf->g = *(sbuf++) >> 2;
-              dbuf->b = *(sbuf++) >> 3;
-#endif /* VISUAL_LITTLE_ENDIAN */
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + width;
+          auto src_pixel     = src_pixel_row;
 
-              dbuf++;
+          while (dst_pixel != dst_pixel_end) {
+              uint8_t b = src_pixel[0];
+              uint8_t g = src_pixel[1];
+              uint8_t r = src_pixel[2];
+              uint8_t i = (r + g + b) / 3;
+
+              dst_colors[i].r = r;
+              dst_colors[i].g = g;
+              dst_colors[i].b = b;
+
+              *dst_pixel = i;
+
+              dst_pixel++;
+              src_pixel += 4;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::argb32_to_rgb24 (Video& dest, Video const& src)
+  void VideoConvert::argb32_to_rgb16 (Video& dst, Video const& src)
   {
-      auto dbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto sbuf = static_cast<uint8_t const*> (src.get_pixels ());
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      int w, h;
-      convert_get_smallest (dest, src, w, h);
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + height * dst.m_impl->pitch;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int ddiff = dest.m_impl->pitch - (w * dest.m_impl->bpp);
-      int sdiff = src.m_impl->pitch  - (w * src.m_impl->bpp);
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = reinterpret_cast<rgb16_t*> (dst_pixel_row);
+          auto dst_pixel_end = reinterpret_cast<rgb16_t*> (dst_pixel_row) + width;
+          auto src_pixel     = src_pixel_row;
 
-      for (int y = 0; y < h; y++) {
-          for (int x = 0; x < w; x++) {
-#if VISUAL_LITTLE_ENDIAN == 1
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-              sbuf++;
-#else
-              sbuf++;
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-              *(dbuf++) = *(sbuf++);
-#endif /* VISUAL_LITTLE_ENDIAN */
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel->b = src_pixel[0] >> 3;
+              dst_pixel->g = src_pixel[1] >> 2;
+              dst_pixel->r = src_pixel[2] >> 3;
+
+              dst_pixel++;
+              src_pixel += 4;
           }
 
-          dbuf += ddiff;
-          sbuf += sdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::flip_pixel_bytes_color16 (Video& dest, Video const& src)
+  void VideoConvert::argb32_to_rgb24 (Video& dst, Video const& src)
   {
-      auto destbuf = static_cast<rgb16_t*> (dest.get_pixels ());
-      auto srcbuf  = static_cast<rgb16_t const*> (src.get_pixels ());
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ());
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int pitchdiff = (dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp)) >> 1;
+      int width, height;
+      convert_get_smallest (dst, src, width, height);
 
-      for (int y = 0; y < dest.m_impl->height; y++) {
-          for (int x = 0; x < dest.m_impl->width; x++) {
-              destbuf->b = srcbuf->r;
-              destbuf->g = srcbuf->g;
-              destbuf->r = srcbuf->b;
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + dst.m_impl->width * 3;
+          auto src_pixel     = src_pixel_row;
 
-              destbuf++;
-              srcbuf++;
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_pixel[0];
+              dst_pixel[1] = src_pixel[1];
+              dst_pixel[2] = src_pixel[2];
+
+              dst_pixel += 3;
+              src_pixel += 4;
           }
 
-          destbuf += pitchdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::flip_pixel_bytes_color24 (Video& dest, Video const& src)
+  void VideoConvert::flip_pixel_bytes_color16 (Video& dst, Video const& src)
   {
-      auto destbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto srcbuf  = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int pitchdiff = dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = reinterpret_cast<uint16_t*> (dst_pixel_row);
+          auto dst_pixel_end = reinterpret_cast<uint16_t*> (dst_pixel_row) + dst.m_impl->width;
+          auto src_pixel     = reinterpret_cast<uint16_t const*> (src_pixel_row);
 
-      for (int y = 0; y < dest.m_impl->height; y++) {
-          for (int x = 0; x < dest.m_impl->width; x++) {
-              destbuf[2] = srcbuf[0];
-              destbuf[1] = srcbuf[1];
-              destbuf[0] = srcbuf[2];
+          while (dst_pixel != dst_pixel_end) {
+              *dst_pixel = (*src_pixel >> 8) | (*src_pixel << 8);
 
-              destbuf += 3;
-              srcbuf  += 3;
+              dst_pixel++;
+              src_pixel++;
           }
 
-          destbuf += pitchdiff;
+          dst_pixel += dst.m_impl->pitch;
+          src_pixel += src.m_impl->pitch;
       }
   }
 
-  void VideoConvert::flip_pixel_bytes_color32 (Video& dest, Video const& src)
+  void VideoConvert::flip_pixel_bytes_color24 (Video& dst, Video const& src)
   {
-      auto destbuf = static_cast<uint8_t*> (dest.get_pixels ());
-      auto srcbuf  = static_cast<uint8_t const*> (src.get_pixels ());
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
 
-      int pitchdiff = dest.m_impl->pitch - (dest.m_impl->width * dest.m_impl->bpp);
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + dst.m_impl->width * 3;
+          auto src_pixel     = src_pixel_row;
 
-      for (int y = 0; y < dest.m_impl->height; y++) {
-          for (int x = 0; x < dest.m_impl->width; x++) {
-              destbuf[0] = srcbuf[3];
-              destbuf[1] = srcbuf[2];
-              destbuf[2] = srcbuf[1];
-              destbuf[3] = srcbuf[0];
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_pixel[2];
+              dst_pixel[1] = src_pixel[1];
+              dst_pixel[2] = src_pixel[0];
 
-              destbuf += 4;
-              srcbuf  += 4;
+              dst_pixel += 3;
+              src_pixel += 3;
           }
 
-          destbuf += pitchdiff;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
+      }
+  }
+
+  void VideoConvert::flip_pixel_bytes_color32 (Video& dst, Video const& src)
+  {
+      auto dst_pixel_row     = static_cast<uint8_t*> (dst.get_pixels ());
+      auto dst_pixel_row_end = static_cast<uint8_t*> (dst.get_pixels ()) + dst.m_impl->pitch * dst.m_impl->height;
+      auto src_pixel_row     = static_cast<uint8_t const*> (src.get_pixels ());
+
+      while (dst_pixel_row != dst_pixel_row_end) {
+          auto dst_pixel     = dst_pixel_row;
+          auto dst_pixel_end = dst_pixel_row + dst.m_impl->width * 4;
+          auto src_pixel     = src_pixel_row;
+
+          while (dst_pixel != dst_pixel_end) {
+              dst_pixel[0] = src_pixel[3];
+              dst_pixel[1] = src_pixel[2];
+              dst_pixel[2] = src_pixel[1];
+              dst_pixel[3] = src_pixel[0];
+
+              dst_pixel += 4;
+              src_pixel += 4;
+          }
+
+          dst_pixel += dst.m_impl->pitch;
+          src_pixel += src.m_impl->pitch;
       }
   }
 

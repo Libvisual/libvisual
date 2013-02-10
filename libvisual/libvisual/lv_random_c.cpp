@@ -7,7 +7,7 @@ extern "C" {
 
   typedef RandomContext VisRandomContext;
 
-  VisRandomContext *visual_random_context_new (uint32_t seed)
+  VisRandomContext *visual_random_context_new (VisRandomSeed seed)
   {
       return new RandomContext (seed);
   }
@@ -17,7 +17,7 @@ extern "C" {
       delete rcontext;
   }
 
-  void visual_random_context_set_seed (VisRandomContext *rcontext, uint32_t seed)
+  void visual_random_context_set_seed (VisRandomContext *rcontext, VisRandomSeed seed)
   {
       visual_return_if_fail (rcontext != nullptr);
 
@@ -50,13 +50,6 @@ extern "C" {
       visual_return_val_if_fail (rcontext != nullptr, 0.0);
 
       return rcontext->get_float ();
-  }
-
-  int visual_random_context_decide (VisRandomContext *rcontext, float a)
-  {
-      visual_return_val_if_fail (rcontext != nullptr, 0.0);
-
-      return rcontext->decide (a);
   }
 
 } // C extern

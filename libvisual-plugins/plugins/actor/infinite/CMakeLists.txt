@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(SOURCES
   compute.c
   compute.h

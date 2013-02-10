@@ -130,6 +130,10 @@ namespace LV {
           png_set_gray_to_rgb (png_ptr);
       }
 
+#if VISUAL_LITTLE_ENDIAN
+      png_set_bgr (png_ptr);
+#endif
+
       png_read_update_info (png_ptr, info_ptr);
 
       VisVideoDepth depth = VISUAL_VIDEO_DEPTH_NONE;

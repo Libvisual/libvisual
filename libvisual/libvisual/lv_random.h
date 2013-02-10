@@ -5,7 +5,7 @@
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *          Dennis Smit <ds@nerds-incorporated.org>
- * 	        Vitaly V. Bursov <vitalyvb@ukr.net>
+ *          Vitaly V. Bursov <vitalyvb@ukr.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -42,91 +42,83 @@ namespace LV {
 
   typedef uint32_t RandomSeed;
 
+  /**
+   * Pseudorandom number generator class.
+   */
   class LV_API RandomContext
   {
   public:
 
-	typedef RandomSeed Seed;
+      typedef RandomSeed Seed;
 
-	/**
-	 * Creates a new VisRandomContext data structure.
-	 *
-	 * @param seed The seed to be used to initialize the VisRandomContext with.
-	 *
-	 * @return A newly allocated VisRandomContext, or NULL on failure.
-	 */
-	explicit RandomContext (Seed seed);
+      /**
+       * Creates a new RandomContext with a given seed.
+       *
+       * @param seed Initial seed for generating random number sequences
+       */
+      explicit RandomContext (Seed seed);
 
-	~RandomContext ();
+      RandomContext (RandomContext const&) = delete;
 
-	/**
-	 * Set the seed to for a VisRandomContext.
-	 *
-	 * @param rcontext Pointer to the VisRandomContext for which the seed it set.
-	 * @param seed The seed which is set in the VisRandomContext.
-	 *
-	 * @return VISUAL_OK on success, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
-	 */
-	void set_seed (uint32_t seed);
+      /**
+       * Move constructor
+       */
+      RandomContext (RandomContext&& rhs);
 
-	/**
-	 * Gives a random integer using the VisRandomContext as context for the randomizer.
-	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 *
-	 * @return A pseudo random integer.
-	 */
-	uint32_t get_int ();
+      /**
+       * Destructor
+       */
+      ~RandomContext ();
 
-	/**
-	 * Gives a random integer ranging between min and max using the
-	 * VisRandomContext as context for the randomizer.  This function may
-	 * use floating point instructions. Remeber, this will break things if
-	 * used inside of MMX code.
-	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 * @param min The minimum for the output.
-	 * @param max The maximum for the output.
-	 *
-	 * @return A pseudo random integer confirm to the minimum and maximum.
-	 */
-	uint32_t get_int (unsigned int min, unsigned int max);
+      RandomContext& operator= (RandomContext const&) = delete;
 
-	/**
-	 * Gives a random double precision floating point value
-	 * using the VisRandomContext as context for the randomizer.
-	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 *
-	 * @return A pseudo random integer.
-	 */
-	double get_double ();
+      /*
+       * Move assignment operator
+       */
+      RandomContext& operator= (RandomContext&& rhs);
 
-	/**
-	 * Gives a random single precision floating point value
-	 * using the VisRandomContext as context for the randomizer.
-	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 *
-	 * @return A pseudo random integer.
-	 */
-	float get_float ();
+      /**
+       * Sets the seed.
+       *
+       * @param seed New seed
+       */
+      void set_seed (uint32_t seed);
 
-	/**
-	 * Function which returns 1 with a propability of p (0.0 <= p <= 1.0)
-	 * using the VisRandomContext as context for the randomizer.
-	 *
-	 * @param rcontext The pointer to the VisRandomContext in which the state of the randomizer is set.
-	 * @param p The float to be used in the decide.
-	 *
-	 * @returns 0 or 1, -VISUAL_ERROR_RANDOM_CONTEXT_NULL on failure.
-	 */
-	bool decide (float p);
+      /**
+       * Returns a random integer.
+       *
+       * @return A random integer
+       */
+      uint32_t get_int ();
+
+      /**
+       * Returns a random integer in a given range.
+       *
+       * @param min Lower bound
+       * @param max Upper bound
+       *
+       * @return A random integer between min and max inclusive
+       */
+      uint32_t get_int (unsigned int min, unsigned int max);
+
+      /**
+       * Returns a random double-precision floating point value between 0.0 and 1.0.
+       *
+       * @return A random value between 0.0 and 1.0
+       */
+      double get_double ();
+
+      /**
+       * Returns a random single-precision floating point value between 0.0 and 1.0.
+       *
+       * @return A random value between 0.0 and 1.0
+       */
+      float get_float ();
 
   private:
 
-	class Impl;
-	const std::unique_ptr<Impl> m_impl;
+      class Impl;
+      std::unique_ptr<Impl> m_impl;
   };
 
 } // LV namespace
@@ -137,30 +129,24 @@ namespace LV {
 
 #ifdef __cplusplus
 typedef ::LV::RandomContext VisRandomContext;
+typedef ::LV::RandomSeed    VisRandomSeed;
 #else
   typedef struct _VisRandomContext VisRandomContext;
   struct _VisRandomContext;
+
+  typedef uint32_t VisRandomSeed;
 #endif
-
-/**
- * The VisRandomContext data structure is used to keep track of
- * the randomizer it's state. When state tracking is used you need
- * to use the visual_random_context_* functions.
- */
-
-#define VISUAL_RANDOM_CONTEXT(obj)			(VISUAL_CHECK_CAST ((obj), VisRandomContext))
 
 LV_BEGIN_DECLS
 
-LV_API VisRandomContext *visual_random_context_new  (uint32_t seed);
+LV_API VisRandomContext *visual_random_context_new  (VisRandomSeed seed);
 LV_API void              visual_random_context_free (VisRandomContext *rcontext);
 
-LV_API void     visual_random_context_set_seed  (VisRandomContext *rcontext, uint32_t seed);
+LV_API void     visual_random_context_set_seed  (VisRandomContext *rcontext, VisRandomSeed seed);
 LV_API uint32_t visual_random_context_int       (VisRandomContext *rcontext);
 LV_API uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
 LV_API double   visual_random_context_double    (VisRandomContext *rcontext);
 LV_API float    visual_random_context_float     (VisRandomContext *rcontext);
-LV_API int      visual_random_context_decide    (VisRandomContext *rcontext, float a);
 
 LV_END_DECLS
 

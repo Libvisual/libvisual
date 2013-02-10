@@ -29,7 +29,6 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 #define BARS_DEFAULT 25
 #define BARS_DEFAULT_SPACE 1
 
-
 /* helper macro */
 #define QTY(array)  (sizeof(array) / sizeof(*(array)))
 
@@ -40,41 +39,42 @@ typedef struct
 	int width, height;
 } AnalyzerPrivate;
 
+static int         lv_analyzer_init        (VisPluginData *plugin);
+static void        lv_analyzer_cleanup     (VisPluginData *plugin);
+static void        lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_analyzer_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_analyzer_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_analyzer_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_analyzer_palette     (VisPluginData *plugin);
+
 static void draw_bar (VisVideo *video, int x, int width, float amplitude);
 
-static int lv_analyzer_init (VisPluginData *plugin);
-static int lv_analyzer_cleanup (VisPluginData *plugin);
-static int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_analyzer_resize (VisPluginData *plugin, int width, int height);
-static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_analyzer_palette (VisPluginData *plugin);
-static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = lv_analyzer_requisition,
-		.palette = lv_analyzer_palette,
-		.render = lv_analyzer_render,
+		.palette     = lv_analyzer_palette,
+		.render      = lv_analyzer_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "lv_analyzer",
-		.name = "libvisual analyzer",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "1.0",
-		.about = N_("Libvisual analyzer plugin"),
-		.help = N_("A nice simple spectrum analyzer plugin."),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "libvisual analyzer",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "1.0",
+		.about    = N_("Libvisual analyzer plugin"),
+		.help     = N_("A nice simple spectrum analyzer plugin."),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_analyzer_init,
+		.init    = lv_analyzer_init,
 		.cleanup = lv_analyzer_cleanup,
-		.events = lv_analyzer_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.events  = lv_analyzer_events,
+		.plugin  = &actor
 	};
 
 	return &info;
@@ -82,7 +82,7 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int _bars(VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 	return priv->bars;
 }
 
@@ -93,7 +93,7 @@ static int lv_analyzer_init (VisPluginData *plugin)
 #endif
 
 	AnalyzerPrivate *priv = visual_mem_new0 (AnalyzerPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	/* get plugins param-container */
 	VisParamList *params = visual_plugin_get_params (plugin);
@@ -109,40 +109,34 @@ static int lv_analyzer_init (VisPluginData *plugin)
 	/* allocate space for palette */
 	priv->pal = visual_palette_new (256);
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_analyzer_cleanup (VisPluginData *plugin)
+static void lv_analyzer_cleanup (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_palette_free (priv->pal);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
+static void lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height)
 {
-	int reqw;
+    AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
-	reqw = *width;
+	int total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
 
-	while (reqw % 2 || reqw % 4)
-		reqw--;
+    int min_width = priv->bars + total_space;
 
-	/*if (reqw < 32)
-		reqw = 32;*/
-
-	*width = reqw;
-
-	return 0;
+    if (*width < min_width) {
+        *width = min_width;
+    }
 }
 
 static int _validate_bars(VisPluginData *plugin, int *bars)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	if(*bars > 0 && *bars < priv->width)
 		return 1;
@@ -154,7 +148,7 @@ static void _change_bars(VisPluginData *plugin,
                          VisParam *p,
                          int (*validator)(VisPluginData *plugin, void *value))
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
 	int integer = visual_param_get_value_integer(p);
 
@@ -211,20 +205,12 @@ static void _change_param(VisPluginData *plugin, VisParam *p)
     visual_log(VISUAL_LOG_WARNING, "Unknown param '%s'", visual_param_get_name(p));
 }
 
-static int lv_analyzer_resize (VisPluginData *plugin, int width, int height)
+static void lv_analyzer_resize (VisPluginData *plugin, int width, int height)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
-	int total_space;
-
-	priv->width = width;
+	priv->width  = width;
 	priv->height = height;
-
-	total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
-	if(priv->width < priv->bars + total_space)
-		priv->bars = priv->width - total_space;
-
-	return 0;
 }
 
 static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
@@ -256,12 +242,12 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
-	AnalyzerPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
 	int i;
 
@@ -312,7 +298,7 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 /**
  * render analyzer - calledback
  */
-static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	int bars = _bars(plugin);
 
@@ -341,6 +327,4 @@ static int lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio 
 	}
 
     visual_buffer_unref (freq_buffer);
-
-	return 0;
 }

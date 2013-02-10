@@ -3,7 +3,8 @@
  * Copyright (C) 2012      Libvisual team
  *               2004-2006 Dennis Smit
  *
- * Authors: Dennis Smit <ds@nerds-incorporated.org>
+ * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
+ *          Dennis Smit <ds@nerds-incorporated.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,38 +21,43 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef _LV_OS_H
-#define _LV_OS_H
+#ifndef _LV_AUDIO_STREAM_HPP
+#define _LV_AUDIO_STREAM_HPP
 
-#include <libvisual/lv_defines.h>
+#include "lvconfig.h"
+#include "lv_defines.h"
+#include "lv_buffer.h"
+#include "lv_time.h"
 
-/**
- * @defgroup VisOS VisOS
- * @{
- */
+#include <memory>
 
-LV_BEGIN_DECLS
+namespace LV {
 
-/**
- * Puts the process in soft realtime mode. Be very careful with using this, it's very much possible to lock your
- * system up. Only works as super user.
- */
-LV_API int visual_os_scheduler_realtime_start (void);
+  class AudioStream
+  {
+  public:
 
-/**
- * Returns to normal execution mode. Only works as super user.
- */
-LV_API int visual_os_scheduler_realtime_stop (void);
+      AudioStream ();
 
-/**
- * Yield the process. Don't rely on this.
- */
-LV_API int visual_os_scheduler_yield (void);
+      AudioStream (AudioStream const&) = delete;
 
-LV_END_DECLS
+      ~AudioStream ();
 
-/**
- * @}
- */
+      AudioStream& operator= (AudioStream const&) = delete;
 
-#endif /* _LV_OS_H */
+      std::size_t get_size () const;
+
+      void write (BufferConstPtr const& buffer, Time const& timestamp);
+
+      std::size_t read (BufferPtr const& buffer, std::size_t nbytes);
+
+  private:
+
+      class Impl;
+
+      const std::unique_ptr<Impl> m_impl;
+  };
+
+} // LV namespace
+
+#endif // _LV_AUDIO_STREAM_HPP

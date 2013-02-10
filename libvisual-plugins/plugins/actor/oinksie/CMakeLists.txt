@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(SOURCES
   actor_oinksie.c
   oinksie.c

@@ -29,13 +29,13 @@
 #include "config.h"
 #include "gettext.h"
 
+#include <libvisual/libvisual.h>
+
 #include "G-Force_Proj.h"
 #include "G-Force.h"
 #include "EgOSUtils.h"
 #include "RectUtils.h"
 #include "CEgFileSpec.h"
-
-#include <libvisual/libvisual.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -49,52 +49,48 @@ typedef struct {
 	GForce		*gGF;
 } GForcePrivate;
 
-static int lv_gforce_init (VisPluginData *plugin);
-static int lv_gforce_cleanup (VisPluginData *plugin);
-static int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
-static int lv_gforce_resize (VisPluginData *plugin, int width, int height);
-static int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *lv_gforce_palette (VisPluginData *plugin);
-static int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int         lv_gforce_init        (VisPluginData *plugin);
+static void        lv_gforce_cleanup     (VisPluginData *plugin);
+static void        lv_gforce_requisition (VisPluginData *plugin, int *width, int *height);
+static void        lv_gforce_resize      (VisPluginData *plugin, int width, int height);
+static int         lv_gforce_events      (VisPluginData *plugin, VisEventQueue *events);
+static void        lv_gforce_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static VisPalette *lv_gforce_palette     (VisPluginData *plugin);
 
-const VisPluginInfo *get_plugin_info (void)
+const VisPluginInfo *get_plugin_info ()
 {
 	static VisActorPlugin actor;
-	static VisPluginInfo info;
 
 	actor.requisition = lv_gforce_requisition;
-	actor.palette = lv_gforce_palette;
-	actor.render = lv_gforce_render;
+	actor.palette     = lv_gforce_palette;
+	actor.render      = lv_gforce_render;
 	actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_8BIT;
 
-	info.type = VISUAL_PLUGIN_TYPE_ACTOR;
+	static VisPluginInfo info;
 
+	info.type     = VISUAL_PLUGIN_TYPE_ACTOR;
 	info.plugname = "gforce";
-	info.name = "libvisual G-Force plugin";
-	info.author = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
-	info.version = "0.1.0";
-	info.about = N_("Libvisual G-Force plugin");
-	info.help = N_("This plugin is a port of the well known G-Force winamp plugin, based on an old unix port");
-	info.license = "Unknown",
+	info.name     = "libvisual G-Force plugin";
+	info.author   = "Winamp version: Andy O'Meara, Unix port: Boris Gjenero, Libvisual port and cleanups: Dennis Smit <ds@nerds-incorporated.org";
+	info.version  = "0.1.0";
+	info.about    = N_("Libvisual G-Force plugin");
+	info.help     = N_("This plugin is a port of the well known G-Force winamp plugin, based on an old unix port");
+	info.license  = "Unknown",
 
-	info.init = lv_gforce_init;
-	info.cleanup = lv_gforce_cleanup;
-	info.events = lv_gforce_events;
-
-	info.plugin = VISUAL_OBJECT (&actor);
+	info.init     = lv_gforce_init;
+	info.cleanup  = lv_gforce_cleanup;
+	info.events   = lv_gforce_events;
+	info.plugin   = &actor;
 
 	return &info;
 }
 
 int lv_gforce_init (VisPluginData *plugin)
 {
-	GForcePrivate *priv;
-	Rect r;
-
-	priv = new GForcePrivate;
+	auto priv = new GForcePrivate;
 	visual_mem_set (priv, 0, sizeof (GForcePrivate));
 
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->pal = new LV::Palette (256);
 
@@ -104,20 +100,20 @@ int lv_gforce_init (VisPluginData *plugin)
 	/* Randomize the seed */
 	srand (EgOSUtils::CurTimeMS ());
 
-
 	priv->gGF = new GForce;
 
+	Rect r;
 	SetRect (&r, 0, 0, 64, 64);
 
 	priv->gGF->SetWinPort (0, &r);
 	priv->gGF->StoreWinRect ();
 
-	return 0;
+    return true;
 }
 
-int lv_gforce_cleanup (VisPluginData *plugin)
+void lv_gforce_cleanup (VisPluginData *plugin)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
 
 	if (priv->gGF)
 		delete priv->gGF;
@@ -127,11 +123,9 @@ int lv_gforce_cleanup (VisPluginData *plugin)
 	delete priv->pal;
 
 	delete priv;
-
-	return 0;
 }
 
-int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
+void lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw, reqh;
 
@@ -152,24 +146,21 @@ int lv_gforce_requisition (VisPluginData *plugin, int *width, int *height)
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-int lv_gforce_resize (VisPluginData *plugin, int width, int height)
+void lv_gforce_resize (VisPluginData *plugin, int width, int height)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
-	Rect r;
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
 
+	Rect r;
 	SetRect (&r, 0, 0, width, height);
 	priv->gGF->SetWinPort (0, &r);
-
-	return 0;
 }
 
 int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
+
 	VisEvent ev;
 
 	while (visual_event_queue_poll (events, &ev)) {
@@ -194,12 +185,13 @@ int lv_gforce_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return true;
 }
 
 VisPalette *lv_gforce_palette (VisPluginData *plugin)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
+
 	PixPalEntry *GFpal;
 	int i;
 
@@ -214,9 +206,10 @@ VisPalette *lv_gforce_palette (VisPluginData *plugin)
 	return priv->pal;
 }
 
-int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+void lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	GForcePrivate *priv = (GForcePrivate *) visual_object_get_private (VISUAL_OBJECT (plugin));
+	auto priv = static_cast<GForcePrivate*> (visual_plugin_get_private (plugin));
+
 	int i;
 	long time;
 	float gSoundBuf[SND_BUF_SIZE];
@@ -240,7 +233,4 @@ int lv_gforce_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	time = EgOSUtils::CurTimeMS ();
 	priv->gGF->RecordSample (time, gSoundBuf, .000043, NUMSAMPLES, gFFTBuf, 1, FFT_BUF_SIZE);
-
-	return 0;
 }
-

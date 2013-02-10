@@ -46,6 +46,7 @@ namespace LV {
   typedef IntrusivePtr<Buffer> BufferPtr;
   typedef IntrusivePtr<Buffer const> BufferConstPtr;
 
+  //! Reference-counted memory block
   class LV_API Buffer
   {
   public:
@@ -60,19 +61,20 @@ namespace LV {
       static BufferPtr create ();
 
       /**
-       * Constructs a new Buffer with externally allocated content.
+       * Constructs a new Buffer with an externally allocated block.
        *
-       * @param data Pointer to the data which the newly allocated
-       *             Buffer encapsulates
-       * @param size The size of the data (in bytes)
-       * @param own  Indicates whether to take ownership
+       * @note Use this to wrap and optionally manage memory blocks allocated by C functions.
+       *
+       * @param data pointer to memory block
+       * @param size size of memory block in bytes
+       * @param own  indicates whether to take ownership
        */
       static BufferPtr wrap (void *data, std::size_t size, bool own = true);
 
       /**
-       * Constructs a new Buffer
+       * Constructs a new Buffer of a given size.
        *
-       * @param size size of the buffer
+       * @param size size in bytes
        */
       static BufferPtr create (std::size_t size);
 
@@ -84,10 +86,12 @@ namespace LV {
       void destroy_content ();
 
       /**
-       * Sets the data pair (data and its size)
+       * Sets the data pair (data and its size).
        *
-       * @param data Pointer to the data.
-       * @param size Size in bytes of the data.
+       * @param data Pointer to memory block
+       * @param size Size of memory block
+       *
+       * @todo remove this.
        */
       void set (void* data, std::size_t size);
 
@@ -95,34 +99,45 @@ namespace LV {
        * Sets the size of the data.
        *
        * @param size Size in bytes of the data.
+       *
+       * @note This is *obsolete* and reserved for internal use.
+       * @todo Remove this.
        */
       void set_size (std::size_t size);
 
       /**
-       * Sets the data to a Buffer.
+       * Sets the pointer to a memory block to manage
        *
        * @param data Pointer to the data.
+       *
+       * @note This is *obsolete* and reserved for internal use.
+       * @todo Remove this.
        */
       void set_data (void* data);
 
       /**
-       * Allocates the data for a Buffer, the amount of bytes allocated is defined by the data size
-       * that is set to the Buffer.
+       * Allocates the data for a Buffer.
+       *
+       * @param size Size of memory block
+       *
+       * @note This is *obsolete* and reserved for internal use.
+       * @todo Remove this.
        */
       void allocate (std::size_t size);
 
       /**
-       * Gets pointer to the data that is encapsulated by the VisBuffer.
+       * Return the pointer to the managed memory block.
+       *
+       * @return Pointer to memory block
        */
       void* get_data () const;
 
       /**
-       * Gets pointer to the data that is encapsulated by the VisBuffer using an
-       * offset.
+       * Returns the pointer to the managed memory block, starting at a given offset.
        *
-       * @param offset offset in bytes.
+       * @param offset offset in bytes
        *
-       * @return Pointer to the data on success, NULL on failure.
+       * @return Pointer to memory block
        */
       void* get_data (std::size_t offset) const;
 
@@ -134,9 +149,9 @@ namespace LV {
       std::size_t get_size () const;
 
       /**
-       * Returns if the content is allocated and managed by the Buffer
+       * Returns true if memory block is allocated and managed by the Buffer
        *
-       * @return true if content is allocated and managed, false otherwise
+       * @return true if memory block is allocated and managed, false otherwise
        */
       bool is_allocated () const;
 
@@ -148,24 +163,34 @@ namespace LV {
       void copy (BufferConstPtr const& src);
 
       /**
-       * Copies all the data contained by the buffer into dest.
+       * Copies all data to a given Buffer.
+       *
+       * @param dest Buffer to copy to
        */
-      void copy_data_to (void *dest);
+      void copy_to (BufferPtr const& dest);
 
       /**
-       * Copies data from another Buffer starting at a given offset.
+       * Copies all data to a given memory location.
+       *
+       * @param dest pointer to memory location
+       * @param size number of bytes to copy
+       */
+      void copy_to (void *dest, std::size_t size);
+
+      /**
+       * Copies data from another Buffer.
        *
        * @param src    source Buffer
-       * @param offset write offset
+       * @param offset offset to copy first byte to
        */
       void put (BufferConstPtr const& src, std::size_t offset);
 
       /**
-       * Copies a block of data.
+       * Copies data from a memory location.
        *
-       * @param data   pointer to data
-       * @param size   size of data
-       * @param offset write offset
+       * @param data   pointer to memory location
+       * @param size   number of bytes to copy
+       * @param offset offset to copy first byte to
        */
       void put (void const* data, std::size_t size, std::size_t offset);
 
@@ -177,17 +202,17 @@ namespace LV {
       void fill (uint8_t value);
 
       /**
-       * Fills the buffer with a pattern of data.
+       * Fills the buffer with a data pattern drawn from a memory location.
        *
-       * @param data pointer to memory block containing the pattern
-       * @param size size of the memory block
+       * @param data pointer to memory block to source pattern from
+       * @param size number of bytes to fill
        */
       void fill_with_pattern (void const* data, std::size_t size);
 
-      void ref () const;
-      void unref () const;
-
   private:
+
+      friend void intrusive_ptr_add_ref (Buffer const* buffer);
+      friend void intrusive_ptr_release (Buffer const* buffer);
 
       class Impl;
       const std::unique_ptr<Impl> m_impl;
@@ -197,24 +222,16 @@ namespace LV {
       Buffer ();
   };
 
-  inline void intrusive_ptr_add_ref (Buffer* buffer)
-  {
-      buffer->ref ();
-  }
-
-  inline void intrusive_ptr_release (Buffer* buffer)
-  {
-      buffer->unref ();
-  }
-
   inline void intrusive_ptr_add_ref (Buffer const* buffer)
   {
-      buffer->ref ();
+      buffer->m_ref_count++;
   }
 
   inline void intrusive_ptr_release (Buffer const* buffer)
   {
-      buffer->unref ();
+      if (--buffer->m_ref_count == 0) {
+          delete buffer;
+      }
   }
 
 } // LV namespace
@@ -247,7 +264,8 @@ LV_API int  visual_buffer_is_allocated    (VisBuffer *buffer);
 LV_API void visual_buffer_allocate        (VisBuffer *buffer, visual_size_t size);
 LV_API void visual_buffer_destroy_content (VisBuffer *buffer);
 
-LV_API void visual_buffer_copy_data_to (VisBuffer *src, void *dest);
+LV_API void visual_buffer_copy_to (VisBuffer *src, VisBuffer *dest);
+LV_API void visual_buffer_copy_to_data (VisBuffer *src, void *dest, visual_size_t size);
 
 LV_API void visual_buffer_put      (VisBuffer *dest, VisBuffer *src, visual_size_t offset);
 LV_API void visual_buffer_put_data (VisBuffer *dest, const void *data, visual_size_t size, visual_size_t offset);

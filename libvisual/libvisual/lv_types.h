@@ -29,7 +29,6 @@
 
 LV_BEGIN_DECLS
 
-#define VISUAL_CHECK_CAST(uiobj, cast)	((cast*) (uiobj))
 #define VISUAL_TABLESIZE(table)			(sizeof (table) / sizeof (table[0]))
 
 LV_END_DECLS

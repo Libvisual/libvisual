@@ -21,28 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define _POSIX_C_SOURCE 200112L
-
 #include "config.h"
 #include "lv_time.h"
+#include "private/lv_time_system.hpp"
 #include "lv_common.h"
-#include <thread>
-
-#if defined(VISUAL_OS_WIN32)
-// Performance counters, timer resolution, and sleep function
-#include <windows.h>
-#else
-// High-resolution monotonic clock, and nanosleep (Android)
-#include <time.h>
-#endif
 
 namespace LV {
-
-#if defined(VISUAL_OS_WIN32)
-  namespace {
-    uint64_t perf_counter_freq;
-  }
-#endif
 
   class Timer::Impl
   {
@@ -53,58 +37,14 @@ namespace LV {
     bool active;
   };
 
-  void Time::init ()
-  {
-#if defined(VISUAL_OS_WIN32)
-      LARGE_INTEGER freq;
-      QueryPerformanceFrequency (&freq);
-      perf_counter_freq = freq.QuadPart;
-#endif
-
-      // Increase timer resolution for fine-grained sleeps
-#if defined(VISUAL_WITH_MINGW) && defined(ENABLE_WIN32_HIGH_RES_SLEEP)
-      timeBeginPeriod (1);
-#endif
-  }
-
-  void Time::deinit ()
-  {
-#if defined(VISUAL_WITH_MINGW) && defined(ENABLE_WIN32_HIGH_RES_SLEEP)
-      timeEndPeriod (1);
-#endif
-  }
-
   Time Time::now ()
   {
-#if defined(VISUAL_OS_WIN32)
-      LARGE_INTEGER perf_counter;
-      QueryPerformanceCounter (&perf_counter);
-
-      return Time (perf_counter.QuadPart / perf_counter_freq,
-                   ((perf_counter.QuadPart % perf_counter_freq) * VISUAL_NSEC_PER_SEC) / perf_counter_freq);
-#else
-      struct timespec clock_time;
-      clock_gettime (CLOCK_MONOTONIC, &clock_time);
-
-      return Time (clock_time.tv_sec, clock_time.tv_nsec);
-#endif
+      return TimeSystem::now ();
   }
 
   void Time::usleep (uint64_t usecs)
   {
-      // libstdc++'s sleep_for() requires the POSIX function
-      // nanosleep() to work. This is a workaround using the Windows
-      // Sleep() function.
-  #if defined(VISUAL_WITH_MINGW)
-      Sleep (usecs / VISUAL_USEC_PER_MSEC);
-  #elif defined(VISUAL_OS_ANDROID)
-      timespec request;
-      request.tv_sec  = usecs / VISUAL_USEC_PER_SEC;
-      request.tv_nsec = VISUAL_NSEC_PER_USEC * (usecs % VISUAL_USEC_PER_SEC);
-      nanosleep (&request, nullptr);
-  #else
-      std::this_thread::sleep_for (std::chrono::microseconds (usecs));
-  #endif
+      TimeSystem::usleep (usecs);
   }
 
   Timer::Timer ()
@@ -118,15 +58,27 @@ namespace LV {
       // empty
   }
 
-  Timer::Timer (Timer const& timer)
-      : m_impl (new Impl (*timer.m_impl))
+  Timer::Timer (Timer const& rhs)
+      : m_impl {new Impl (*rhs.m_impl)}
   {
-      // empty
+      // nothing
+  }
+
+  Timer::Timer (Timer&& rhs)
+      : m_impl {std::move (rhs.m_impl)}
+  {
+      // nothing
   }
 
   Timer& Timer::operator= (Timer const& rhs)
   {
       *m_impl = *rhs.m_impl;
+      return *this;
+  }
+
+  Timer& Timer::operator= (Timer&& rhs)
+  {
+      m_impl.swap (rhs.m_impl);
       return *this;
   }
 

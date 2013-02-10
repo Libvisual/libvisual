@@ -30,9 +30,8 @@ int visual_event_queue_poll (VisEventQueue *self, VisEvent *event)
     return self->poll (*event);
 }
 
-VisEvent* visual_event_new_keyboard (VisKey keysym, int keymod, VisKeyState state)
+VisEvent* visual_event_new_keyboard (VisKey keysym, VisKeyMod keymod, VisKeyState state)
 {
-    // FIXME name to VISUAL_KEYB_DOWN and KEYB_UP
     auto event = new LV::Event;
 
     if (state == VISUAL_KEY_DOWN)
@@ -132,15 +131,15 @@ VisEvent* visual_event_new_visibility (int is_visible)
     return event;
 }
 
-VisEvent* visual_event_new_generic (int eid, int param_int, void *param_ptr)
+VisEvent* visual_event_new_custom (int eid, int param_int, void *param_ptr)
 {
     auto event = new LV::Event;
 
-    event->type = VISUAL_EVENT_GENERIC;
+    event->type = VISUAL_EVENT_CUSTOM;
 
-    event->event.generic.event_id = eid;
-    event->event.generic.data_int = param_int;
-    event->event.generic.data_ptr = param_ptr;
+    event->event.custom.event_id = eid;
+    event->event.custom.data_int = param_int;
+    event->event.custom.data_ptr = param_ptr;
 
     return event;
 }

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
+#include <stdint.h>
 
 #include "goom.h"
 #include "goom_tools.h"
@@ -25,6 +25,8 @@
 #include "goom_plugin_info.h"
 #include "goom_fx.h"
 #include "goomsl.h"
+
+#include <libvisual/libvisual.h>
 
 /* #define VERBOSE */
 
@@ -362,7 +364,7 @@ uint32_t *goom_update (PluginInfo *goomInfo, int16_t data[2][512],
                     goomInfo->update.lockvar = 50;
                     newvit = STOP_SPEED + 1 - ((float)3.5f * log10(goomInfo->sound.speedvar * 60 + 1));
                     /* retablir le zoom avant.. */
-                    if ((goomInfo->update.zoomFilterData.reverse) && (!(goomInfo->cycle % 13)) && (rand () % 5 == 0)) {
+                    if ((goomInfo->update.zoomFilterData.reverse) && (!(goomInfo->cycle % 13)) && (visual_rand () % 5 == 0)) {
                         goomInfo->update.zoomFilterData.reverse = 0;
                         goomInfo->update.zoomFilterData.vitesse = STOP_SPEED - 2;
                         goomInfo->update.lockvar = 75;
@@ -765,6 +767,8 @@ void goom_close (PluginInfo *goomInfo)
     goomInfo->star_fx.free(&goomInfo->star_fx);
     goomInfo->tentacles_fx.free(&goomInfo->tentacles_fx);
     goomInfo->zoomFilter_fx.free(&goomInfo->zoomFilter_fx);
+
+    gfont_unload ();
 
     free(goomInfo);
 }

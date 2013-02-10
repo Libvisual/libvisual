@@ -36,20 +36,20 @@ typedef struct {
 	uint8_t replacetable[256];
 } FlashPrivate;
 
-static void replacetable_generate_24 (FlashPrivate *priv, float rate);
-static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
-static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static int  lv_morph_flash_init    (VisPluginData *plugin);
+static void lv_morph_flash_cleanup (VisPluginData *plugin);
+static void lv_morph_flash_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static void lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
 
-static int lv_morph_flash_init (VisPluginData *plugin);
-static int lv_morph_flash_cleanup (VisPluginData *plugin);
-static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2);
-static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static void replacetable_generate_24 (FlashPrivate *priv, float progress);
+static void flash_8 (FlashPrivate *priv, float progress, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+static void flash_24 (FlashPrivate *priv, float progress, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisMorphPlugin morph = {
 		.palette = lv_morph_flash_palette,
-		.apply = lv_morph_flash_apply,
+		.apply   = lv_morph_flash_apply,
 		.vidoptions.depth =
 			VISUAL_VIDEO_DEPTH_8BIT  |
 			VISUAL_VIDEO_DEPTH_16BIT |
@@ -61,17 +61,16 @@ const VisPluginInfo *get_plugin_info (void)
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "flash",
-		.name = "flash morph",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.1",
-		.about = N_("An flash in and out morph plugin"),
-		.help = N_("This morph plugin morphs between two video sources using a bright flash"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "flash morph",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "0.1",
+		.about    = N_("An flash in and out morph plugin"),
+		.help     = N_("This morph plugin morphs between two video sources using a bright flash"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_morph_flash_init,
-		.cleanup = lv_morph_flash_cleanup,
-
-		.plugin = VISUAL_OBJECT (&morph)
+		.init     = lv_morph_flash_init,
+		.cleanup  = lv_morph_flash_cleanup,
+		.plugin   = &morph
 	};
 
 	return &info;
@@ -88,7 +87,7 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 #endif
 
 	priv = visual_mem_new0 (FlashPrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_plugin_set_private (plugin, priv);
 
 	priv->whitepal = visual_palette_new (256);
 	whitepal_colors = visual_palette_get_colors (priv->whitepal);
@@ -99,45 +98,41 @@ static int lv_morph_flash_init (VisPluginData *plugin)
 		whitepal_colors[i].b = 0xff;
 	}
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_morph_flash_cleanup (VisPluginData *plugin)
+static void lv_morph_flash_cleanup (VisPluginData *plugin)
 {
-	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FlashPrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_palette_free (priv->whitepal);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
+static void lv_morph_flash_palette (VisPluginData *plugin, float progress, VisAudio *audio, VisPalette *pal, VisVideo *src1, VisVideo *src2)
 {
-	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FlashPrivate *priv = visual_plugin_get_private (plugin);
 
 	VisPalette *src1_pal = visual_video_get_palette (src1);
 	VisPalette *src2_pal = visual_video_get_palette (src2);
 
 	if (!src1_pal || !src2_pal)
-		return 0;
+		return;
 
-	if (rate < 0.5)
-		visual_palette_blend (pal, src1_pal, priv->whitepal, rate * 2);
+	if (progress < 0.5)
+		visual_palette_blend (pal, src1_pal, priv->whitepal, progress * 2);
 	else
-		visual_palette_blend (pal, priv->whitepal, src2_pal, (rate - 0.5) * 2);
-
-	return 0;
+		visual_palette_blend (pal, priv->whitepal, src2_pal, (progress - 0.5) * 2);
 }
 
-static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void lv_morph_flash_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	FlashPrivate *priv = visual_plugin_get_private (plugin);
 
 	switch (visual_video_get_depth (dest)) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
-			flash_8 (priv, rate, dest, src1, src2);
+			flash_8 (priv, progress, dest, src1, src2);
 			break;
 
 		case VISUAL_VIDEO_DEPTH_16BIT:
@@ -145,51 +140,49 @@ static int lv_morph_flash_apply (VisPluginData *plugin, float rate, VisAudio *au
 			break;
 
 		case VISUAL_VIDEO_DEPTH_24BIT:
-			replacetable_generate_24 (priv, rate);
-			flash_24 (priv, rate, dest, src1, src2);
+			replacetable_generate_24 (priv, progress);
+			flash_24 (priv, progress, dest, src1, src2);
 			break;
 
 		case VISUAL_VIDEO_DEPTH_32BIT:
-			replacetable_generate_24 (priv, rate);
-			flash_24 (priv, rate, dest, src1, src2);
+			replacetable_generate_24 (priv, progress);
+			flash_24 (priv, progress, dest, src1, src2);
 			break;
 
 		default:
 			break;
 	}
-
-	return 0;
 }
 
-static void replacetable_generate_24 (FlashPrivate *priv, float rate)
+static void replacetable_generate_24 (FlashPrivate *priv, float progress)
 {
 	int i;
 
 	for (i = 0; i < 256; i++) {
-		if (rate < 0.5)
-			priv->replacetable[i] = i + (((255.00 - i) / 100.00) * ((rate * 2) * 100));
+		if (progress < 0.5)
+			priv->replacetable[i] = i + (((255.00 - i) / 100.00) * ((progress * 2) * 100));
 		else
-			priv->replacetable[i] = i + (((255.00 - i) / 100.00) * ((1.0 - ((rate - 0.5) * 2)) * 100));
+			priv->replacetable[i] = i + (((255.00 - i) / 100.00) * ((1.0 - ((progress - 0.5) * 2)) * 100));
 	}
 
 }
 
-static void flash_8 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void flash_8 (FlashPrivate *priv, float progress, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	if (rate < 0.5)
+	if (progress < 0.5)
 		visual_mem_copy (visual_video_get_pixels (dest), visual_video_get_pixels (src1), visual_video_get_size (src1));
 	else
 		visual_mem_copy (visual_video_get_pixels (dest), visual_video_get_pixels (src2), visual_video_get_size (src2));
 }
 
-static void flash_24 (FlashPrivate *priv, float rate, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void flash_24 (FlashPrivate *priv, float progress, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
 	uint8_t *scrbuf;
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	int size;
 	int i;
 
-	if (rate < 0.5) {
+	if (progress < 0.5) {
 		scrbuf = visual_video_get_pixels (src1);
 		size = visual_video_get_size (src1);
 	} else {

@@ -11,30 +11,28 @@ VisMorphPlugin morph = {
 
 int lv_morph_slide_init (VisPluginData *plugin, SlideType type)
 {
-    SlidePrivate *priv = visual_mem_new0 (SlidePrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
-
-    priv->slide_type = type;
-
 #if ENABLE_NLS
     bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-    return 0;
+    SlidePrivate *priv = visual_mem_new0 (SlidePrivate, 1);
+    visual_plugin_set_private (plugin, priv);
+
+    priv->slide_type = type;
+
+    return TRUE;
 }
 
-int lv_morph_slide_cleanup (VisPluginData *plugin)
+void lv_morph_slide_cleanup (VisPluginData *plugin)
 {
-    SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    SlidePrivate *priv = visual_plugin_get_private (plugin);
 
     visual_mem_free (priv);
-
-    return 0;
 }
 
-int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+void lv_morph_slide_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-    SlidePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+    SlidePrivate *priv = visual_plugin_get_private (plugin);
     uint8_t *destbuf = visual_video_get_pixels (dest);
     uint8_t *srcbuf1 = visual_video_get_pixels (src1);
     uint8_t *srcbuf2 = visual_video_get_pixels (src2);
@@ -50,9 +48,9 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
     visual_mem_set (destbuf, 0, visual_video_get_size (dest));
 
     if (priv->slide_type == SLIDE_RIGHT || priv->slide_type == SLIDE_UP)
-        rate = 1.0 - rate;
+        progress = 1.0 - progress;
 
-    diff1 = dest_pitch * rate;
+    diff1 = dest_pitch * progress;
     diff1 -= diff1 % visual_video_get_bpp (dest);
 
     if (diff1 > dest_pitch)
@@ -60,7 +58,7 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
     diff2 = dest_pitch - diff1;
 
-    hadd = dest_height * rate;
+    hadd = dest_height * progress;
 
     switch (priv->slide_type) {
         case SLIDE_LEFT:
@@ -97,6 +95,4 @@ int lv_morph_slide_apply (VisPluginData *plugin, float rate, VisAudio *audio, Vi
 
             break;
     }
-
-    return 0;
 }

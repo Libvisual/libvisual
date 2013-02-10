@@ -28,8 +28,6 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-const VisPluginInfo *get_plugin_info (void);
-
 typedef struct {
 	uint16_t b:5, g:6, r:5;
 } _color16;
@@ -38,16 +36,16 @@ typedef struct {
 	float	move;
 } TentaclePrivate;
 
+static int  lv_morph_tentacle_init (VisPluginData *plugin);
+static void lv_morph_tentacle_cleanup (VisPluginData *plugin);
+static void lv_morph_tentacle_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
+
 static void sane_coords (VisVideo *dest, int *x, int *y1, int *y2);
 
-static void vline_from_video_8 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
+static void vline_from_video_8  (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 static void vline_from_video_16 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 static void vline_from_video_24 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
 static void vline_from_video_32 (VisVideo *dest, VisVideo *src, int x, int y1, int y2);
-
-static int lv_morph_tentacle_init (VisPluginData *plugin);
-static int lv_morph_tentacle_cleanup (VisPluginData *plugin);
-static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -64,17 +62,16 @@ const VisPluginInfo *get_plugin_info (void)
 		.type = VISUAL_PLUGIN_TYPE_MORPH,
 
 		.plugname = "tentacle",
-		.name = "tentacle morph",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.1",
-		.about = N_("An sine wave morph plugin"),
-		.help = N_("This morph plugin morphs between two video sources using some sort of wave that grows in size"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "tentacle morph",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "0.1",
+		.about    = N_("An sine wave morph plugin"),
+		.help     = N_("This morph plugin morphs between two video sources using some sort of wave that grows in size"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = lv_morph_tentacle_init,
-		.cleanup = lv_morph_tentacle_cleanup,
-
-		.plugin = VISUAL_OBJECT (&morph)
+		.init     = lv_morph_tentacle_init,
+		.cleanup  = lv_morph_tentacle_cleanup,
+		.plugin   = &morph
 	};
 
 	return &info;
@@ -82,30 +79,26 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int lv_morph_tentacle_init (VisPluginData *plugin)
 {
-	TentaclePrivate *priv;
-
 #if ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-	priv = visual_mem_new0 (TentaclePrivate, 1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	TentaclePrivate *priv = visual_mem_new0 (TentaclePrivate, 1);
+	visual_plugin_set_private (plugin, priv);
 
-	return 0;
+	return TRUE;
 }
 
-static int lv_morph_tentacle_cleanup (VisPluginData *plugin)
+static void lv_morph_tentacle_cleanup (VisPluginData *plugin)
 {
-	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	TentaclePrivate *priv = visual_plugin_get_private (plugin);
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
+static void lv_morph_tentacle_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	TentaclePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	TentaclePrivate *priv = visual_plugin_get_private (plugin);
 
 	uint8_t *destbuf = visual_video_get_pixels (dest);
 	uint8_t *src1buf = visual_video_get_pixels (src1);
@@ -129,8 +122,8 @@ static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio 
 	visual_mem_copy (destbuf, src1buf, visual_video_get_size (src1));
 
 	for (i = 0; i < dest_width; i++) {
-		add1 = (dest_height / 2) - ((dest_height / 2) * (rate * 1.5));
-		add2 = (dest_height / 2) + ((dest_height / 2) * (rate * 1.5));
+		add1 = (dest_height / 2) - ((dest_height / 2) * (progress * 1.5));
+		add2 = (dest_height / 2) + ((dest_height / 2) * (progress * 1.5));
 
 		height1 = (sin (sinrate) * ((dest_height / 4) * multiplier)) + add1;
 		height2 = (sin (sinrate) * ((dest_height / 4) * multiplier)) + add2;
@@ -160,8 +153,6 @@ static int lv_morph_tentacle_apply (VisPluginData *plugin, float rate, VisAudio 
 		sinrate += 0.02;
 		priv->move += 0.0002;
 	}
-
-	return 0;
 }
 
 static void sane_coords (VisVideo *dest, int *x, int *y1, int *y2)

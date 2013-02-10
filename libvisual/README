@@ -13,12 +13,12 @@ developers who write visualisations.
 Why Libvisual?
 --------------
 
-As an application developer, using Libvisual provides you an easy way
-to do audio visualisation. When using Libvisual you'll have easy
-access to all the visualisations that are written for Libvisual.
+As an application developer, Libvisual provides you an easy way to do
+audio visualisation. Using Libvisual gets you easy access to all the
+visualisations that are written for Libvisual.
 
 As a plugin writer, Libvisual provides a nice host for your plugin.
-It runs analysis over the audio input usage and handles all everything
+It runs analysis over the audio input usage and handles everything
 necessary for display in any Libvisual-using application.
 
 License
@@ -32,9 +32,13 @@ GNU Public License (GPL) v2.
 
 The tools in tools/ are licensed under the GPLv2.
 
+The images in tests/images are licensed under Creative Commons
+(CC). See tests/images/license.txt for details.
+
 Full license texts:
 * LGPL v2.1: http://www.gnu.org/licenses/lgpl-2.1.html
 * GPL v2.0 : http://www.gnu.org/licenses/gpl-2.0.html
+* CC       : http://creativecommons.org/licenses/
 
 Development
 -----------

@@ -24,8 +24,6 @@
 #ifndef _LV_RECTANGLE_H
 #define _LV_RECTANGLE_H
 
-#include <libvisual/lv_object.h>
-
 /**
  * @defgroup VisRectangle VisRectangle
  * @{
@@ -37,6 +35,7 @@
 
 namespace LV {
 
+  //! Class describing an axis-aligned rectangle.
   class LV_API Rect
   {
   public:
@@ -46,6 +45,9 @@ namespace LV {
       int width;
       int height;
 
+      /**
+       * Creates a new empty Rect.
+       */
       Rect ()
           : x (0), y (0), width (0), height (0)
       {}
@@ -238,8 +240,6 @@ namespace LV {
 } // LV namespace
 
 #endif /* __cplusplus */
-
-#define VISUAL_RECTANGLE(obj)               (VISUAL_CHECK_CAST ((obj, VisRectangle))
 
 #ifdef __cplusplus
 typedef ::LV::Rect VisRectangle;

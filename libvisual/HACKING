@@ -64,17 +64,20 @@ Configuration
             Linux.
 
             CMAKE_BUILD_TYPE
-            Build profile. Options: Release, Debug
+            Build profile.
+            Options: Release, Debug
 
             ENABLE_DOCS
-            Enable documentation. Options: yes, no
+            Enable documentation.
+            Options: yes, no
 
             ENABLE_PROFILING
-            Build with profiling information (for gprof)
+            Build with profiling information (for gprof).
+            Options: yes, no
 
      Compiler Selection:
 
-         Use the enviroment variables CC and CXX to set the C and C++
+         Use the environment variables CC and CXX to set the C and C++
          compiler of your choice. Here is an example for Clang:
 
              CC=clang CXX=clang++ cmake <...>
@@ -141,16 +144,13 @@ Source Control (FIXME: Format and edit this)
     * We obviously use git. The GitHub repository is the master
       repository.
 
-    * All development currently happens in cxx, so please base your
-      development there. cxx will become the new master once the new
-      C++ API is complete and 0.5 is released. Workflow: flying fish.
-
-    * In the future, once cxx becomes master, we will create a
-      separate devel branch and work there. Then on, HEAD will be the
-      latest stable.  New features must be written in separate
-      branches, branched off devel. Once a feature branch is proven
-      relatively stable, we will integrate it into devel. Once devel
-      proves stable and ready for release, we will merge it into
+    * All development currently happens in master, so please base your
+      development there. Once we release 0.5.0, we will create a
+      separate devel branch and work there. Then on, HEAD will be
+      considered latest stable.  New features must be written in
+      separate branches, branched off devel. Once a feature branch is
+      proven relatively stable, we will integrate it into devel. Once
+      devel proves stable and ready for release, we will merge it into
       master. For more information on this workflow, see:
 
           http://nvie.com/posts/a-successful-git-branching-model

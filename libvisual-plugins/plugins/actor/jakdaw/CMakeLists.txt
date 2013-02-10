@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 SET(SOURCES
   actor_jakdaw.c
   actor_jakdaw.h

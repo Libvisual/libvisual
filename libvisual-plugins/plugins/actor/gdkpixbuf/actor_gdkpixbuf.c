@@ -27,8 +27,7 @@
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 typedef struct {
-	GdkPixbuf	*pixbuf;
-	GdkPixbuf	*scaled;
+	GdkPixbuf	*source;
 	VisVideo	*target;
 	char		*filename;
 	int		 width;
@@ -46,43 +45,44 @@ typedef struct {
 	int		 interpolate;
 } PixbufPrivate;
 
-static int load_new_file (PixbufPrivate *priv, const char *filename);
-static int update_scaled_pixbuf (PixbufPrivate *priv);
-static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src);
+static int         act_gdkpixbuf_init        (VisPluginData *plugin);
+static void        act_gdkpixbuf_cleanup     (VisPluginData *plugin);
+static void        act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
+static void        act_gdkpixbuf_resize      (VisPluginData *plugin, int width, int height);
+static int         act_gdkpixbuf_events      (VisPluginData *plugin, VisEventQueue *events);
+static VisPalette *act_gdkpixbuf_palette     (VisPluginData *plugin);
+static void        act_gdkpixbuf_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-static int act_gdkpixbuf_init (VisPluginData *plugin);
-static int act_gdkpixbuf_cleanup (VisPluginData *plugin);
-static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height);
-static int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height);
-static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events);
-static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin);
-static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
+static int  act_gdkpixbuf_load_file    (PixbufPrivate *priv, const char *filename);
+static void act_gdkpixbuf_update_image (PixbufPrivate *priv);
+
+static VisVideo *visvideo_from_gdkpixbuf        (GdkPixbuf *src);
+static VisVideo *visvideo_from_scaled_gdkpixbuf (GdkPixbuf *src, int width, int height, GdkInterpType interp);
 
 const VisPluginInfo *get_plugin_info (void)
 {
 	static VisActorPlugin actor = {
 		.requisition = act_gdkpixbuf_requisition,
-		.palette = act_gdkpixbuf_palette,
-		.render = act_gdkpixbuf_render,
+		.palette     = act_gdkpixbuf_palette,
+		.render      = act_gdkpixbuf_render,
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_24BIT
 	};
 
 	static VisPluginInfo info = {
-		.type = VISUAL_PLUGIN_TYPE_ACTOR,
+		.type     = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = "gdkpixbuf",
-		.name = "GdkPixbuf image loader",
-		.author = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version = "0.0.1",
-		.about = N_("GdkPixbuf image loader for libvisual"),
-		.help = N_("This plugin can be used to show images"),
-		.license = VISUAL_PLUGIN_LICENSE_LGPL,
+		.name     = "GdkPixbuf image loader",
+		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
+		.version  = "0.0.1",
+		.about    = N_("GdkPixbuf image loader for libvisual"),
+		.help     = N_("This plugin can be used to show images"),
+		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
 
-		.init = act_gdkpixbuf_init,
-		.cleanup = act_gdkpixbuf_cleanup,
-		.events = act_gdkpixbuf_events,
-
-		.plugin = VISUAL_OBJECT (&actor)
+		.init     = act_gdkpixbuf_init,
+		.cleanup  = act_gdkpixbuf_cleanup,
+		.events   = act_gdkpixbuf_events,
+		.plugin   = &actor
 	};
 
 	return &info;
@@ -98,7 +98,7 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
 #endif
 
     PixbufPrivate *priv = visual_mem_new0 (PixbufPrivate, 1);
-    visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+    visual_plugin_set_private (plugin, priv);
 
     VisParamList *params = visual_plugin_get_params (plugin);;
     visual_param_list_add_many (params,
@@ -134,33 +134,29 @@ static int act_gdkpixbuf_init (VisPluginData *plugin)
                                                           NULL),
                                 NULL);
 
-    priv->target = visual_video_new ();
+    priv->target = NULL;
 
-    return 0;
+    return TRUE;
 }
 
-static int act_gdkpixbuf_cleanup (VisPluginData *plugin)
+static void act_gdkpixbuf_cleanup (VisPluginData *plugin)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
-	if (priv->filename)
-		free (priv->filename);
+	visual_mem_free (priv->filename);
 
-	if (priv->pixbuf)
-		g_object_unref (priv->pixbuf);
+	if (priv->source) {
+		g_object_unref (priv->source);
+	}
 
-	if (priv->scaled)
-		g_object_unref (priv->scaled);
-
-	if (priv->target)
+	if (priv->target) {
 		visual_video_unref (priv->target);
+	}
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
-static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
+static void act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *height)
 {
 	int reqw = *width;
 	int reqh = *height;
@@ -173,32 +169,23 @@ static int act_gdkpixbuf_requisition (VisPluginData *plugin, int *width, int *he
 
 	*width = reqw;
 	*height = reqh;
-
-	return 0;
 }
 
-int act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
+void act_gdkpixbuf_resize (VisPluginData *plugin, int width, int height)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
-	priv->width = width;
+	priv->width  = width;
 	priv->height = height;
 
-	if (priv->pixbuf != NULL)
-		update_scaled_pixbuf (priv);
-	else {
-		/* If there is no image reset the VisVideo pixels, just to be sure */
-		if (visual_video_get_pixels (priv->target) != NULL)
-			visual_video_free_buffer (priv->target);
-
-		visual_video_set_buffer (priv->target, NULL);
+	if (priv->source) {
+		act_gdkpixbuf_update_image (priv);
 	}
-	return 0;
 }
 
 static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 	VisParam *param;
 	VisEvent ev;
 
@@ -215,17 +202,17 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 					visual_log (VISUAL_LOG_DEBUG, "New file to be loaded: %s",
 							visual_param_get_value_string (param));
 
-					load_new_file (priv, visual_param_get_value_string (param));
+					act_gdkpixbuf_load_file (priv, visual_param_get_value_string (param));
 
 				} else if (visual_param_has_name (param, "scaled")) {
 					priv->set_scaled = visual_param_get_value_bool (param);
 
-					update_scaled_pixbuf (priv);
+					act_gdkpixbuf_update_image (priv);
 
 				} else if (visual_param_has_name (param, "aspect")) {
 					priv->aspect = visual_param_get_value_bool (param);
 
-					update_scaled_pixbuf (priv);
+					act_gdkpixbuf_update_image (priv);
 
 				} else if (visual_param_has_name (param, "center")) {
 					priv->center = visual_param_get_value_bool (param);
@@ -233,17 +220,17 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 				} else if (visual_param_has_name (param, "set size")) {
 					priv->set_size = visual_param_get_value_bool (param);
 
-					update_scaled_pixbuf (priv);
+					act_gdkpixbuf_update_image (priv);
 
 				} else if (visual_param_has_name (param, "width")) {
 					priv->set_width = visual_param_get_value_integer (param);
 
-					update_scaled_pixbuf (priv);
+					act_gdkpixbuf_update_image (priv);
 
 				} else if (visual_param_has_name (param, "height")) {
 					priv->set_height = visual_param_get_value_integer (param);
 
-					update_scaled_pixbuf (priv);
+					act_gdkpixbuf_update_image (priv);
 
 				} else if (visual_param_has_name (param, "x")) {
 					priv->x_offset = visual_param_get_value_integer (param);
@@ -254,8 +241,7 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 				} else if (visual_param_has_name (param, "interpolate")) {
 					priv->interpolate = visual_param_get_value_integer (param);
 
-					update_scaled_pixbuf (priv);
-
+					act_gdkpixbuf_update_image (priv);
 				}
 
 			default: /* to avoid warnings */
@@ -263,7 +249,7 @@ static int act_gdkpixbuf_events (VisPluginData *plugin, VisEventQueue *events)
 		}
 	}
 
-	return 0;
+	return TRUE;
 }
 
 static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
@@ -271,146 +257,146 @@ static VisPalette *act_gdkpixbuf_palette (VisPluginData *plugin)
 	return NULL;
 }
 
-static int act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
+static void act_gdkpixbuf_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
-	PixbufPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
+	PixbufPrivate *priv = visual_plugin_get_private (plugin);
 
-	if (visual_video_get_pixels (priv->target) != NULL) {
-		if (priv->center == TRUE) {
-			int xoff, yoff;
+	if (priv->target) {
+		int xoff, yoff;
 
-			xoff = (visual_video_get_width  (video) - visual_video_get_width  (priv->target)) / 2;
+		if (priv->center) {
+			xoff = (visual_video_get_width	(video) - visual_video_get_width  (priv->target)) / 2;
 			yoff = (visual_video_get_height (video) - visual_video_get_height (priv->target)) / 2;
-
-			visual_video_blit (video, priv->target, xoff, yoff, FALSE);
-
 		} else {
-			visual_video_blit (video, priv->target, priv->x_offset, priv->y_offset, FALSE);
+			xoff = priv->x_offset;
+			yoff = priv->y_offset;
 		}
-	}
 
-	return 0;
+		visual_video_blit (video, priv->target, xoff, yoff, FALSE);
+	}
 }
 
-static int load_new_file (PixbufPrivate *priv, const char *filename)
+static int act_gdkpixbuf_load_file (PixbufPrivate *priv, const char *filename)
 {
-	if (priv->pixbuf != NULL)
-		g_object_unref (priv->pixbuf);
+	visual_log (VISUAL_LOG_INFO, "Loading image from '%s'", filename);
 
-	if (priv->scaled != NULL)
-		g_object_unref (priv->scaled);
+	if (priv->source) {
+		g_object_unref (priv->source);
+		priv->source = NULL;
+	}
 
-	if (priv->filename != NULL)
-		free (priv->filename);
+	if (priv->target) {
+		visual_video_unref (priv->target);
+		priv->target = NULL;
+	}
 
+	visual_mem_free (priv->filename);
 	priv->filename = visual_strdup (filename);
 
-	priv->pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
-	visual_return_val_if_fail (priv->pixbuf != NULL, -1);
-
-	return update_scaled_pixbuf (priv);
-}
-
-static int update_scaled_pixbuf (PixbufPrivate *priv)
-{
-	GdkInterpType inter;
-
-	if (priv->scaled != NULL)
-		g_object_unref (priv->scaled);
-
-	switch (priv->interpolate) {
-		case 0:
-			inter = GDK_INTERP_NEAREST;
-			break;
-
-		case 1:
-			inter = GDK_INTERP_TILES;
-			break;
-
-		case 2:
-			inter = GDK_INTERP_BILINEAR;
-			break;
-
-		case 3:
-			inter = GDK_INTERP_HYPER;
-			break;
-
-		default:
-			inter = GDK_INTERP_NEAREST;
-			break;
+	priv->source = gdk_pixbuf_new_from_file (filename, NULL);
+	if (!priv->source) {
+		visual_log (VISUAL_LOG_ERROR, "Failed to load image from file '%s'", filename);
+		return FALSE;
 	}
 
-	if (priv->set_scaled == TRUE) {
-		if (priv->set_size == TRUE) {
-			/* We want to allow this, but gdk_pixbuf does spit warnings, so we catch this */
-			if (priv->set_width == 0 || priv->set_height == 0) {
-				visual_video_set_buffer (priv->target, NULL);
+	act_gdkpixbuf_update_image (priv);
 
-				return 0;
-			}
+	return TRUE;
+}
 
-			priv->scaled = gdk_pixbuf_scale_simple (priv->pixbuf, priv->set_width, priv->set_height, inter);
+static void act_gdkpixbuf_update_image (PixbufPrivate *priv)
+{
+	if (priv->target) {
+		visual_video_unref (priv->target);
+		priv->target = NULL;
+	}
 
-		} else if (priv->aspect == TRUE) {
-			int as_w, as_h;
-			int rw, rh;
+	if (!priv->source) {
+		return;
+	}
 
-			rw = gdk_pixbuf_get_width (priv->pixbuf);
-			rh = gdk_pixbuf_get_height (priv->pixbuf);
+	if (priv->set_scaled) {
+		GdkInterpType interp;
 
-			/* Determine which dimension we need to create aspect */
-			if ((priv->width - rw) > (priv->height - rh)) {
-				as_h = priv->height;
-				as_w = rw * ((float) as_h / rh);
-			} else {
-				as_w = priv->width;
-				as_h = rh * ((float) as_w / rw);
-			}
-
-			priv->scaled = gdk_pixbuf_scale_simple (priv->pixbuf, as_w, as_h, inter);
-
-		} else {
-			priv->scaled = gdk_pixbuf_scale_simple (priv->pixbuf, priv->width, priv->height, inter);
+		switch (priv->interpolate) {
+			case 0:
+				interp = GDK_INTERP_NEAREST;
+				break;
+			case 1:
+				interp = GDK_INTERP_TILES;
+				break;
+			case 2:
+				interp = GDK_INTERP_BILINEAR;
+				break;
+			case 3:
+				interp = GDK_INTERP_HYPER;
+				break;
+			default:
+				interp = GDK_INTERP_NEAREST;
+				break;
 		}
 
-		visual_return_val_if_fail (priv->scaled != NULL, -1);
+		int width  = 0;
+		int height = 0;
 
-		update_into_visvideo (priv, priv->scaled);
+		if (priv->set_size) {
+			width  = priv->set_width;
+			height = priv->set_height;
+		} else if (priv->aspect) {
+			int rw = gdk_pixbuf_get_width (priv->source);
+			int rh = gdk_pixbuf_get_height (priv->source);
 
+			if ((priv->width - rw) > (priv->height - rh)) {
+				height = priv->height;
+				width  = rw * ((float) height / rh);
+			} else {
+				width  = priv->width;
+				height = rh * ((float) width / rw);
+			}
+		} else {
+			width  = priv->width;
+			height = priv->height;
+		}
+
+		if (width == 0 || height == 0) {
+			return;
+		}
+
+		priv->target = visvideo_from_scaled_gdkpixbuf (priv->source, width, height, interp);
 	} else {
-		visual_return_val_if_fail (priv->pixbuf != NULL, -1);
-
-		update_into_visvideo (priv, priv->pixbuf);
-
+		priv->target = visvideo_from_gdkpixbuf (priv->source);
 	}
-
-	return 0;
 }
 
-static int update_into_visvideo (PixbufPrivate *priv, GdkPixbuf *src)
+static VisVideo *visvideo_from_scaled_gdkpixbuf (GdkPixbuf *src, int width, int height, GdkInterpType interp)
 {
-	VisVideo *target;
-	VisVideo *bgr;
+	GdkPixbuf *scaled = gdk_pixbuf_scale_simple (src, width, height, interp);
+	VisVideo  *result = visvideo_from_gdkpixbuf (scaled);
+	g_object_unref (scaled);
 
-	target = priv->target;
-	if (visual_video_get_pixels (target) != NULL)
-		visual_video_free_buffer (target);
+	return result;
+}
 
-	/* Wrap pixbuf in VisVideo */
-	bgr = visual_video_new_wrap_buffer (gdk_pixbuf_get_pixels (src),
-                                        FALSE,
-                                        gdk_pixbuf_get_width (src),
-                                        gdk_pixbuf_get_height (src),
-                                        visual_video_depth_enum_from_value (gdk_pixbuf_get_n_channels (src) * 8));
+static VisVideo *visvideo_from_gdkpixbuf (GdkPixbuf *src)
+{
+	int width  = gdk_pixbuf_get_width (src);
+	int height = gdk_pixbuf_get_height (src);
 
-	visual_video_copy_attrs (target, bgr);
-	visual_video_allocate_buffer (target);
+	VisVideoDepth depth = visual_video_depth_enum_from_value (gdk_pixbuf_get_n_channels (src) * 8);
 
-	/* Gdk uses a different color order than we do */
+	/* Wrap GdkPixbuf's pixel buffer in VisVideo */
+	VisVideo *bgr = visual_video_new_wrap_buffer (gdk_pixbuf_get_pixels (src),
+	                                              FALSE,
+	                                              width,
+	                                              height,
+	                                              depth,
+	                                              gdk_pixbuf_get_rowstride (src));
+
+	/* Flip RGB byte order */
+	VisVideo *target = visual_video_new_with_buffer (width, height, depth);
 	visual_video_flip_pixel_bytes (target, bgr);
 
 	visual_video_unref (bgr);
 
-	return 0;
+	return target;
 }
-

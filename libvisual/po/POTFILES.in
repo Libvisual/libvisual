@@ -8,7 +8,6 @@ libvisual/lv_buffer.cpp
 libvisual/lv_buffer_c.cpp
 libvisual/lv_bin.cpp
 libvisual/lv_bin_c.cpp
-libvisual/lv_collection.c
 libvisual/lv_color.cpp
 libvisual/lv_color_c.cpp
 libvisual/lv_cpu.c
@@ -22,8 +21,7 @@ libvisual/lv_input.cpp
 libvisual/lv_log.c
 libvisual/lv_mem.c
 libvisual/lv_morph.cpp
-libvisual/lv_os.c
-libvisual/lv_param.c
+libvisual/lv_param.cpp
 libvisual/lv_plugin.cpp
 libvisual/lv_plugin_registry.cpp
 libvisual/lv_plugin_registry_c.cpp
@@ -35,14 +33,12 @@ libvisual/lv_songinfo.cpp
 libvisual/lv_songinfo_c.cpp
 libvisual/lv_time.cpp
 libvisual/lv_time_c.cpp
-libvisual/lv_transform.cpp
 libvisual/lv_video.cpp
 libvisual/lv_video_c.cpp
 
-libvisual/private/lv_buffer_ring.cpp
+libvisual/private/lv_audio_stream.cpp
 
 libvisual/private/lv_video_bmp.cpp
-
 libvisual/private/lv_video_blit.cpp
 libvisual/private/lv_video_convert.cpp
 libvisual/private/lv_video_fill.cpp

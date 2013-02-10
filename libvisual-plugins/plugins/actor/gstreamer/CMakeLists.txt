@@ -1,5 +1,3 @@
-INCLUDE(LVBuildPlugin)
-
 LV_BUILD_ACTOR_PLUGIN(gstreamer
   SOURCES      actor_gstreamer.c
   INCLUDE_DIRS ${GSTREAMER_INCLUDE_DIRS}

@@ -14,44 +14,41 @@ namespace {
 
       MorphBench (std::string const& morph_name, unsigned int width, unsigned int height, VisVideoDepth depth)
           : Benchmark { "MorphBench" }
-          , m_morph { visual_morph_new (morph_name.c_str ()) }
+          , m_morph { LV::Morph::load (morph_name) }
       {
           if (!m_morph) {
               throw std::invalid_argument ("Cannot load morph " + morph_name);
           }
 
-          visual_morph_realize (m_morph);
+          m_morph->realize ();
 
           m_dest = LV::Video::create (width, height, depth);
           m_src1 = LV::Video::create (width, height, depth);
           m_src2 = LV::Video::create (width, height, depth);
 
-          visual_morph_set_video (m_morph, m_dest.get ());
+          m_morph->set_video (m_dest);
       }
 
       virtual void operator() (unsigned int max_runs)
       {
-          float rate = 0.0;
+          float progress = 0.0;
 
           for (unsigned int i = 0; i < max_runs; i++) {
-              visual_morph_set_rate (m_morph, rate);
-              visual_morph_run (m_morph, &m_audio, m_src1.get (), m_src2.get ());
+              m_morph->set_progress (progress);
+              m_morph->run (m_audio, m_src1, m_src2);
 
-              rate += 0.1;
-
-              if (rate > 1.0)
-                  rate = 0.0;
+              progress = std::min (progress + 0.1, 1.0);
           }
       }
 
       virtual ~MorphBench ()
       {
-          visual_object_unref (VISUAL_OBJECT (m_morph));
+          // nothing
       }
 
   private:
 
-      VisMorph*    m_morph;
+      LV::MorphPtr m_morph;
       LV::Audio    m_audio;
       LV::VideoPtr m_dest;
       LV::VideoPtr m_src1;

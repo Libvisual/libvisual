@@ -26,7 +26,6 @@
 #include <libvisual/lv_audio.h>
 #include <libvisual/lv_palette.h>
 #include <libvisual/lv_plugin.h>
-#include <libvisual/lv_list.h>
 #include <libvisual/lv_video.h>
 #include <libvisual/lv_time.h>
 
@@ -35,282 +34,259 @@
  * @{
  */
 
-#define VISUAL_MORPH(obj)               (VISUAL_CHECK_CAST ((obj), VisMorph))
-#define VISUAL_MORPH_PLUGIN(obj)        (VISUAL_CHECK_CAST ((obj), VisMorphPlugin))
-
 /**
  * Morph morphing methods.
  */
 typedef enum {
-    VISUAL_MORPH_MODE_SET,      /**< Morphing is done by a rate set,
-                                  * nothing is automated here. */
-    VISUAL_MORPH_MODE_STEPS,    /**< Morphing is done by setting a number of steps,
-                                  * the morph will be automated. */
-    VISUAL_MORPH_MODE_TIME      /**< Morphing is done by setting a target time when the morph should be done,
-                                  * This is as well automated. */
+    VISUAL_MORPH_MODE_SET,      /**< Morph progress is directly set */
+    VISUAL_MORPH_MODE_TIME      /**< Morph progress is automatically
+                                     measured and set using real time */
 } VisMorphMode;
 
+#ifdef __cplusplus
+
+#include <libvisual/lv_intrusive_ptr.hpp>
+#include <string>
+#include <memory>
+
+namespace LV {
+
+  class Morph;
+
+  typedef LV::IntrusivePtr<Morph> MorphPtr;
+
+  //! Morph class
+  class LV_API Morph
+  {
+  public:
+
+      /**
+       * Creates a new Morph wit a plugin of a given name.
+       *
+       * @see realize()
+       *
+       * @param name Name of plugin to load
+       *
+       * @return New morph, or nullptr if plugin failed to load
+       */
+      static MorphPtr load (std::string const& name);
+
+      Morph (Morph const& morph) = delete;
+
+      ~Morph ();
+
+      Morph& operator= (Morph const&) = delete;
+
+      /**
+       * Returns the plugin object.
+       *
+       * @return Plugin object
+       */
+      VisPluginData* get_plugin ();
+
+      /**
+       * Realizes a morph.
+       *
+       * This also calls the plugin init() method.
+       *
+       * @return true on success, false otherwise
+       */
+      bool realize ();
+
+      /**
+       * Returns the set of colour depths natively supported.
+       *
+       * @return Set of supported depths
+       */
+      VisVideoDepth get_supported_depths ();
+
+      VisVideoAttrOptions const* get_video_attribute_options ();
+
+      /**
+       * Sets the video target for rendering.
+       *
+       * @param video Video target
+       */
+      void set_video (VideoPtr const& video);
+
+      /**
+       * Sets the morph duration.
+       *
+       * @param time Duration
+       */
+      void set_time (Time const& time);
+
+      /**
+       * Sets the progress of a morph.
+       *
+       * @param progress Progress of morph (must be in [0.0, 1.0])
+       */
+      void set_progress (float progress);
+
+      /**
+       * Sets the method of morphing to apply.
+       *
+       * @param mode Method of morphing
+       */
+      void set_mode (VisMorphMode mode);
+
+      /**
+       * Returns the colour palette used.
+       *
+       * @note Only 8-bit morphs will have colour palettes.
+       *
+       * @return Colour palette, or nullptr if there is none
+       */
+      Palette const* get_palette ();
+
+      /**
+       * Determines if morph has completed.
+       *
+       * @return true if completed, false otherwise
+       */
+      bool is_done ();
+
+      /**
+       * Runs the morph.
+       *
+       * @note The rendering will be performed on the Video set with set_video().
+       *
+       * @param audio Audio data
+       * @param src1  First source Video
+       * @param src2  Second source Video
+       *
+       * @return true on success, false otherwise
+       */
+      bool run (Audio const& audio, VideoPtr const& src1, VideoPtr const& src2);
+
+private:
+
+      friend void intrusive_ptr_add_ref (Morph const* morph);
+      friend void intrusive_ptr_release (Morph const* morph);
+
+      class Impl;
+      const std::unique_ptr<Impl> m_impl;
+
+      mutable unsigned int m_ref_count;
+
+      explicit Morph (std::string const& name);
+  };
+
+  inline void intrusive_ptr_add_ref (Morph const* morph)
+  {
+      morph->m_ref_count++;
+  }
+
+  inline void intrusive_ptr_release (Morph const* morph)
+  {
+      if (--morph->m_ref_count == 0) {
+          delete morph;
+      }
+  }
+
+} // LV namespace
+
+typedef LV::Morph VisMorph;
+
+#else
+
 typedef struct _VisMorph VisMorph;
+struct _VisMorph;
+
+#endif
+
 typedef struct _VisMorphPlugin VisMorphPlugin;
 
-/* Morph plugin methods */
-
 /**
- * A morph plugin needs this signature for the palette function. The palette function
- * is used to give a palette for the morph. The palette function isn't mandatory and the
- * VisMorph system will interpolate between the two palettes in VISUAL_VIDEO_DEPTH_8BIT when
- * a palette function isn't set.
+ * Function signature and type of the Morph palette() method.
  *
- * @arg plugin Pointer to the VisPluginData instance structure.
- * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
- * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
- * @arg pal A pointer to the target VisPalette in which the morph between the two palettes is saved. Should have
- *  256 VisColor entries.
- * @arg src1 A pointer to the first VisVideo source.
- * @arg src2 A pointer to the second VisVideo source.
+ * The palette() method is called to obtain the colour palette used in 8-bit rendering modes.
  *
- * @return 0 on succes -1 on error.
+ * @param plugin   Plugin object
+ * @param progress Morph progress (must be in [0.0, 1.0])
+ * @param audio    Audio data
+ * @param palette  Palette generated by LV
+ * @param src1     First source Video
+ * @param src2     Second source Video
  */
-typedef int (*VisPluginMorphPaletteFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisPalette *pal,
-        VisVideo *src1, VisVideo *src2);
+typedef void (*VisPluginMorphPaletteFunc) (VisPluginData *plugin,
+                                           float          progress,
+                                           VisAudio      *audio,
+                                           VisPalette    *palette,
+                                           VisVideo      *src1,
+                                           VisVideo      *src2);
 
 /**
- * A morph plugin needs this signature for the apply function. The apply function
- * is used to execute a morph between two VisVideo sources. It's the 'render' function of
- * the morph plugin and here is the morphing done.
+ * Function signature and type of the Morph apply() method.
  *
- * @arg plugin Pointer to the VisPluginData instance structure.
- * @arg rate A float between 0.0 and 1.0 that tells how far the morph has proceeded.
- * @arg audio Pointer to the VisAudio containing all the data regarding the current audio sample.
- * @arg src1 A pointer to the first VisVideo source.
- * @arg src2 A pointer to the second VisVideo source.
+ * The apply() method is called to render the morph of two Actor renders.
  *
- * @return 0 on succes -1 on error.
+ * @param plugin   Plugin object
+ * @param progress Morph progress (must be in [0.0 and 1])
+ * @param audio    Audio data
+ * @param src1     First source Video
+ * @param src2     Second source Video
  */
-typedef int (*VisPluginMorphApplyFunc)(VisPluginData *plugin, float rate, VisAudio *audio, VisVideo *dest,
-        VisVideo *src1, VisVideo *src2);
+typedef void (*VisPluginMorphApplyFunc) (VisPluginData *plugin,
+                                         float          progress,
+                                         VisAudio      *audio,
+                                         VisVideo      *dest,
+                                         VisVideo      *src1,
+                                         VisVideo      *src2);
 
 /**
- * The VisMorph structure encapsulates the morph plugin and provides
- * abstract interfaces for morphing between actors, or rather between
- * two video sources.
- *
- * Members in the structure shouldn't be accessed directly but instead
- * it's adviced to use the methods provided.
- *
- * @see visual_morph_new
- */
-struct _VisMorph {
-    VisObject      object;    /**< The VisObject data. */
-
-    VisPluginData *plugin;    /**< Pointer to the plugin itself. */
-    VisVideo      *dest;      /**< Destination video, this is where
-                                 * the result of the morph gets drawn. */
-    float          rate;      /**< The rate of morph, 0 draws the first video source
-                                 * 1 the second video source, 0.5 is a 50/50, final
-                                 * content depends on the plugin being used. */
-    VisPalette    *morphpal;  /**< Morph plugins can also set a palette for indexed
-                                 * color depths. */
-    VisTime       *morphtime; /**< Amount of time which the morphing should take. */
-    VisTimer      *timer;     /**< Private entry that holds the time elapsed from
-                                 * the beginning of the switch. */
-    int            steps;     /**< Private entry that contains the number of steps
-                                 * a morph suppose to take. */
-    int            stepsdone; /**< Private entry that contains the number of steps done. */
-
-    VisMorphMode   mode;      /**< Private entry that holds the mode of morphing. */
-};
-
-/**
- * The VisMorphPlugin structure is the main data structure
- * for the morph plugin.
- *
- * The morph plugin is capable of morphing between two VisVideo
- * sources, and thus is capable of morphing between two
- * VisActors.
+ * Morph plugin class.
  */
 struct _VisMorphPlugin {
-    VisObject                 object;         /**< The VisObject data. */
-    VisPluginMorphPaletteFunc palette;        /**< The plugin's palette function. This can be used
-                                                * to obtain a palette for VISUAL_VIDEO_DEPTH_8BIT surfaces.
-                                                * However the function may be set to NULL. In this case the
-                                                * VisMorph system morphs between palettes itself. */
-    VisPluginMorphApplyFunc   apply;          /**< The plugin it's main function. This is used to morph
-                                                 * between two VisVideo sources. */
-    int                       requests_audio; /**< When set on TRUE this will indicate that the Morph plugin
-                                                 * requires an VisAudio context in order to render properly. */
+    VisPluginMorphPaletteFunc palette;        /**< Returns the color palette (only for 8-bit morphs) */
+    VisPluginMorphApplyFunc   apply;          /**< Renders the morph */
+    int                       requests_audio; /**< Flag indicating if morph plugin uses audio data */
     VisVideoAttrOptions       vidoptions;
 };
 
 LV_BEGIN_DECLS
 
 /**
- * Gives the encapsulated VisPluginData from a VisMorph.
+ * Returns the name of the next available morph plugin.
  *
- * @param morph Pointer of a VisMorph of which the VisPluginData needs to be returned.
+ * @see visual_morph_get_prev_by_name()
  *
- * @return VisPluginData that is encapsulated in the VisMorph, possibly NULL.
- */
-LV_API VisPluginData *visual_morph_get_plugin (VisMorph *morph);
-
-/**
- * Gives the next morph plugin based on the name of a plugin.
- *
- * @see visual_morph_get_prev_by_name
- *
- * @param name The name of the current plugin, or NULL to get the first.
+ * @param name Name of the current plugin, or NULL to retrieve the first.
  *
  * @return The name of the next plugin within the list.
  */
 LV_API const char *visual_morph_get_next_by_name (const char *name);
 
 /**
- * Gives the previous morph plugin based on the name of a plugin.
+ * Returns the name of the previous available morph plugin.
  *
- * @see visual_morph_get_next_by_name
+ * @see visual_morph_get_next_by_name()
  *
- * @param name The name of the current plugin. or NULL to get the last.
+ * @param name Name of the current plugin. or NULL to retrieve the last.
  *
  * @return The name of the previous plugin within the list.
  */
 LV_API const char *visual_morph_get_prev_by_name (const char *name);
 
-/**
- * Creates a new VisMorph from name, the plugin will be loaded but won't be realized.
- *
- * @param morphname
- *  The name of the plugin to load, or NULL to simply allocate a new
- *  morph.
- *
- * @return A newly allocated VisMorph, optionally containing a loaded plugin. Or NULL on failure.
- */
-LV_API VisMorph *visual_morph_new (const char *morphname);
+LV_API VisMorph *visual_morph_new   (const char *name);
+LV_API void      visual_morph_ref   (VisMorph *morph);
+LV_API void      visual_morph_unref (VisMorph *morph);
 
-/**
- * Realize the VisMorph. This also calls the plugin init function.
- *
- * @param morph Pointer to a VisMorph that needs to be realized.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_PLUGIN_NULL or error values
- *  returned by visual_plugin_realize () on failure.
- */
-LV_API void visual_morph_realize (VisMorph *morph);
-
-/**
- * Gives the by the plugin natively supported depths
- *
- * @param morph Pointer to a VisMorph of which the supported depth of it's
- *    encapsulated plugin is requested.
- *
- * @return an OR value of the VISUAL_VIDEO_CONTEXT_* values which can be checked against using AND on success, -1 on failure
- */
-LV_API VisVideoDepth visual_morph_get_supported_depth (VisMorph *morph);
-
+LV_API VisPluginData       *visual_morph_get_plugin                  (VisMorph *morph);
+LV_API VisVideoDepth        visual_morph_get_supported_depths        (VisMorph *morph);
 LV_API VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *morph);
+LV_API int                  visual_morph_requests_audio              (VisMorph *morph);
 
-/**
- * Used to connect the target display, or a buffer it's VisVideo to the VisMorph plugin.
- *
- * @see visual_video_new
- *
- * @param morph Pointer to a VisMorph to which the VisVideo needs to be set.
- * @param video Pointer to a VisVideo which contains information about the target display and the pointer
- *    to it's screenbuffer.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
- */
-LV_API void visual_morph_set_video (VisMorph *morph, VisVideo *video);
+LV_API void visual_morph_set_video    (VisMorph *morph, VisVideo *video);
+LV_API void visual_morph_set_time     (VisMorph *morph, VisTime *time);
+LV_API void visual_morph_set_progress (VisMorph *morph, float progress);
+LV_API void visual_morph_set_mode     (VisMorph *morph, VisMorphMode mode);
 
-/**
- * Set the time when the morph should be finished morphing.
- * The VisMorph keeps a local copy of the given time.
- *
- * @param morph Pointer to the VisMorph to which finish time is set.
- * @param time Pointer to the VisTime that contains the finish time.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_TIME_NULL or error values returned by
- *  visual_time_copy () on failure.
- */
-LV_API void visual_morph_set_time (VisMorph *morph, VisTime *time);
-
-/**
- * Used to set the rate of the VisMmorph. The rate ranges from 0 to 1
- * and the content of the result depends on the morph plugin being used.
- *
- * @param morph Pointer to a VisMorph to which the rate needs to be set.
- * @param rate Value that sets the rate of the current morph. The rate
- *    contains the amount that is currently being morphed and needs to be
- *    manually adjust. The morph system doesn't increase the rate itself.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
- */
-LV_API void visual_morph_set_rate (VisMorph *morph, float rate);
-
-/**
- * Used to set the number of steps that a morph will take to finish.
- *
- * @param morph Pointer to a VisMorph to which the number of morph steps is set.
- * @param steps The number of steps that a morph should take.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
- */
-LV_API void visual_morph_set_steps (VisMorph *morph, int steps);
-
-/**
- * Used to set the method of morphing.
- *
- * @param morph Pointer to a VisMorph to which the method of morphing is set.
- * @param mode Method of morphing that is of type VisMorphMode.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL on failure.
- */
-LV_API void visual_morph_set_mode (VisMorph *morph, VisMorphMode mode);
-
-/**
- * Some morph plugins can give a custom palette while morphing two 8 bits plugins.
- *
- * @param morph Pointer to a VisMorph of which the palette needs to be retrieved.
- *
- * @return The pointer to the custom palette on succes or NULL on failure.
- */
-LV_API VisPalette *visual_morph_get_palette (VisMorph *morph);
-
-/**
- * Function that helps to check if a morph is done with it's morphing.
- *
- * @param morph Pointer to a VisMorph of which we want to know if it's done yet.
- *
- * @return TRUE or FALSE, -VISUAL_ERROR_MORPH_NULL on failure.
- */
+LV_API int visual_morph_realize (VisMorph *morph);
+LV_API int visual_morph_run     (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
 LV_API int visual_morph_is_done (VisMorph *morph);
 
-/**
- * Some morph plugins request an VisAudio context to draw properly. Using this function
- * you can check if the VisMorphPlugin being used in the VisMorph requests this.
- *
- * @param morph Pointer to a VisMorph of which we want to know if it wants a VisAudio.
- *
- * @return TRUE or FALSE, -VISUAL_ERROR_MORPH_NULL or -VISUAL_ERROR_MORPH_PLUGIN_NULL on failure.
- */
-LV_API int visual_morph_requests_audio (VisMorph *morph);
-
-/**
- * This is called to run the VisMorph. It will put the result in the buffer that is previously
- * set by visual_morph_set_video and also when the morph is being runned in 8 bits mode
- * it will automaticly interpolate between the two palettes if the plugin doesn't have
- * a method for adjusting the palette.
- *
- * Note that all the VisVideo structures being used need to be clones.
- *
- * @param morph Pointer to a VisMorph that needs to be runned.
- * @param audio Pointer to a VisAudio which a morph could use for extra effects
- * @param src1 Pointer to a VisVideo that acts as the first source for the morph.
- * @param src2 Pointer to a VisVideo that acts as the second source for the morph.
- *
- * @return VISUAL_OK on success, -VISUAL_ERROR_MORPH_NULL, -VISUAL_ERROR_AUDIO_NULL,
- *  -VISUAL_ERROR_VIDEO_NULL or -VISUAL_ERROR_VIDEO_NULL on failure.
- */
-LV_API int visual_morph_run (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);
+LV_API VisPalette *visual_morph_get_palette (VisMorph *morph);
 
 LV_END_DECLS
 
