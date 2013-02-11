@@ -185,7 +185,7 @@ namespace LV
       param->parent = this;
 
       // libstdc++ 4.6/4.7 still does not have std::map<T>::emplace()
-      m_impl->entries[param->name] = std::move (std::unique_ptr<Param> {param});
+      m_impl->entries[param->name] = std::unique_ptr<Param> {param};
   }
 
   bool ParamList::remove (std::string const& name)

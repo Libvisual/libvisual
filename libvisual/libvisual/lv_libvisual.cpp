@@ -67,8 +67,8 @@ namespace LV
   };
 
   System::Impl::Impl ()
-      : params (std::move (initial_params ()))
-      , rng    { random_seed () }
+      : params {initial_params ()}
+      , rng    {random_seed ()}
   {}
 
   ParamList System::Impl::initial_params ()

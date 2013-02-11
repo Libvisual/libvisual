@@ -91,7 +91,7 @@ namespace LV {
   void Audio::Impl::upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp)
   {
       if (!get_channel (name)) {
-          channels[name] = std::move (make_unique<AudioChannel> (name));
+          channels[name] = make_unique<AudioChannel> (name);
       }
 
       channels[name]->add_samples (samples, timestamp);
