@@ -248,7 +248,7 @@ static void check_os_katmai_support (void)
 	/* Save the original signal handlers.
 	*/
 	sigaction (SIGILL, NULL, &saved_sigill);
-	sigaction (SIGFPE, NULL, &saved_sigfped);
+	sigaction (SIGFPE, NULL, &saved_sigfpe);
 
 	signal (SIGILL, (void (*)(int)) sigill_handler_sse);
 	signal (SIGFPE, (void (*)(int)) sigfpe_handler_sse);

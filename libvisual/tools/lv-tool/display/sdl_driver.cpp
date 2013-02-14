@@ -118,13 +118,16 @@ namespace {
               if (videoinfo->blit_hw)
                   videoflags |= SDL_HWACCEL;
 
-              for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
-                  SDL_GLattr sdl_attribute = sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
+              if (vidoptions) {
+                  for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
+                      SDL_GLattr sdl_attribute = sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
-                  if (sdl_attribute < 0)
-                      continue;
+                      if (sdl_attribute < 0) {
+                          continue;
+                      }
 
-                  SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
+                      SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
+                  }
               }
 
               int bpp = videoinfo->vfmt->BitsPerPixel;
