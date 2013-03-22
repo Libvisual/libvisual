@@ -96,21 +96,69 @@ namespace LV {
        */
       Audio& operator= (Audio&& rhs);
 
+      /**
+       * Retrieves samples from a channel.
+       *
+       * @note Output samples will be truncated to fit the user-supplied buffer.
+       *
+       * @param[out] buffer  buffer to hold the retrieved samples (32-bit floating point PCM)
+       * @param channel_name name of channel
+       *
+       * @return true if successful, false if channel does not exist
+       */
       bool get_sample (BufferPtr const& buffer, std::string const& channel_name);
 
+      /**
+       * Returns samples downmixed by averaging a set of channels.
+       *
+       * @note Output samples will be truncated to fit the user-supplied buffer.
+       *
+       * @param[out] buffer buffer to hold the mixed samples (32-bit floating point PCM)
+       * @param channels    number of channels
+       * @param ...         list of channel names (each of type const char *)
+       */
       void get_sample_mixed_simple (BufferPtr const& buffer, unsigned int channels, ...);
+
       void get_sample_mixed_simple (BufferPtr const& buffer, unsigned int channels, va_list args);
 
+      /**
+       * Returns samples downmixed by weighted summing or averaging a set of channels.
+       *
+       * @note Output samples will be truncated to fit the user-supplied buffer.
+       *
+       * @param[out] buffer buffer to hold the mixed samples (32-bit floating point PCM)
+       * @param divide      perform averaging
+       * @param channels    number of channels
+       * @param ...         list of channel names (each of type const char *), followed by a list of respective weights (each of type double)
+       */
       void get_sample_mixed (BufferPtr const& buffer, bool divide, unsigned int channels, ...);
+
       void get_sample_mixed (BufferPtr const& buffer, bool divide, unsigned int channels, va_list args);
 
-      void get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised);
+      /**
+       * Returns the amplitude spectrum of a set of samples from a channel.
+       *
+       * @param[out] buffer  buffer to hold the amplitude spectrum (32-bit floats)
+       * @param sample_count number of samples to draw from channel
+       * @param channel_name name of channel
+       * @param normalised   normalise ampltitudes to [0.0, 1.0]
+       */
+      void get_spectrum (BufferPtr const& buffer, std::size_t sample_count, std::string const& channel_name, bool normalised);
 
-      void get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised, float multiplier);
+      void get_spectrum (BufferPtr const& buffer, std::size_t sample_count, std::string const& channel_name, bool normalised, float multiplier);
 
-      static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised);
+      /**
+       * Returns the amplitude spectrum of a set of samples.
+       *
+       * @note The output spectrum will be truncated to fit the user-supplied buffer.
+       *
+       * @param[out] buffer buffer to hold the ampltitude spectrum (32-bit floats)
+       * @param samples     input samples
+       * @param normalised  normalise ampltitudes to [0.0, 1.0]
+       */
+      static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& samples, bool normalised);
 
-      static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised, float multiplier);
+      static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& samples, bool normalised, float multiplier);
 
       void input (BufferPtr const& buffer,
                   VisAudioSampleRateType rate,
