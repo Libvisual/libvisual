@@ -71,10 +71,18 @@ typedef enum {
 
 namespace LV {
 
+  /**
+   * Multi-channel audio stream class.
+   *
+   * @note Samples are stored as 32-bit floating point PCM at 44.1kHz.
+   */
   class LV_API Audio
   {
   public:
 
+      /**
+       * Default constructor
+       */
       Audio ();
 
       Audio (Audio const&) = delete;
@@ -138,6 +146,8 @@ namespace LV {
       /**
        * Returns the amplitude spectrum of a set of samples from a channel.
        *
+       * @note The output spectrum will be truncated to fit the user-supplied buffer.
+       *
        * @param[out] buffer  buffer to hold the amplitude spectrum (32-bit floats)
        * @param sample_count number of samples to draw from channel
        * @param channel_name name of channel
@@ -160,17 +170,33 @@ namespace LV {
 
       static void get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& samples, bool normalised, float multiplier);
 
+      static void normalise_spectrum (BufferPtr const& buffer);
+
+      /**
+       * Adds an interleaved set of samples to the stream.
+       *
+       * @param buffer       buffer containing the input samples
+       * @param rate         sampling rate
+       * @param format       sample format
+       * @param channel_type channel format
+       */
       void input (BufferPtr const& buffer,
                   VisAudioSampleRateType rate,
                   VisAudioSampleFormatType format,
-                  VisAudioSampleChannelType channeltype);
+                  VisAudioSampleChannelType channel_type);
 
+      /**
+       * Adds a set of channel samples to the stream.
+       *
+       * @param buffer       buffer containing the input samples
+       * @param rate         sampling rate
+       * @param format       sample format
+       * @param channel_name name of channel
+       */
       void input (BufferPtr const& buffer,
                   VisAudioSampleRateType rate,
                   VisAudioSampleFormatType format,
                   std::string const& channel_name);
-
-      static void normalise_spectrum (BufferPtr const& buffer);
 
   private:
 
