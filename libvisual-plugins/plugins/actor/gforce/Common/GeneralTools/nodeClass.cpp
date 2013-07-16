@@ -917,7 +917,7 @@ long nodeClass::Rnd( long min, long max ) {
 	LV::Time curTime = LV::Time::now ();
 
 	srand (curTime.nsec + curTime.sec);
-	retNum = LV::rand() / (maxRnd / (max - min + 1)) + min;
+	retNum = LV::rand() / ((maxRnd / (max - min + 1))+1) + min;
 
 	if ( retNum >= max )
 		return max;
