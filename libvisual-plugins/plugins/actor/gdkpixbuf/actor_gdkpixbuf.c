@@ -90,8 +90,10 @@ const VisPluginInfo *get_plugin_info (void)
 
 static int act_gdkpixbuf_init (VisPluginData *plugin)
 {
-    /* Initialize GObjects, needed for GdkPixbuf */
+#if GLIB_VERSION_CUR_STABLE < GLIB_VERSION_2_36
+    /* Initialize GObjects, needed for GdkPixbuf if Glib < 2.36 */
     g_type_init ();
+#endif
 
 #if ENABLE_NLS
     bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
