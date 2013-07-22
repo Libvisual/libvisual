@@ -74,14 +74,16 @@ namespace LV {
   uint32_t RandomContext::get_int (unsigned int min, unsigned int max)
   {
   #if VISUAL_RANDOM_FAST_FP_RND
+      // FIXME: Test this to see if this is really faster or produce
+      // better distributed numbers
+
       // Uses fast floating number generator and two divisions elimitated.
       // More than 2 times faster than original.
       float fm = min; // +10% speedup...
 
       return get_float () * (max - min + 1) + fm;
   #else
-      // FIXME: this looks wrong
-      return (get_int () / (Generator::max () / (max - min + 1))) + min;
+      return (get_int () * (max - min)) / (Generator::max () - Generator::min ()) + min;
   #endif
   }
 
