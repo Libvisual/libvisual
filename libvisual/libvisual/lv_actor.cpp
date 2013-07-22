@@ -174,7 +174,7 @@ namespace LV {
                           visual_video_depth_name (m_impl->run_depth),
                           visual_video_depth_name (output_depth));
 
-              m_impl->to_convert = Video::create (output_width, output_height, m_impl->run_depth);
+              m_impl->to_convert = Video::create (run_width, run_height, m_impl->run_depth);
           }
 
           // Configure any necessary scaling
@@ -182,7 +182,7 @@ namespace LV {
               visual_log (VISUAL_LOG_DEBUG, "Setting up scaling: (%dx%d) -> (%dx%d)",
                           run_width, run_height, output_width, output_height);
 
-              m_impl->to_scale = Video::create (run_width, run_height, output_depth);
+              m_impl->to_scale = Video::create (output_width, output_height, output_depth);
           }
       } else {
           visual_log (VISUAL_LOG_DEBUG, "Conversions skipped in OpenGL rendering mode");
