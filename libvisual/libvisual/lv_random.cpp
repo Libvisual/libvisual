@@ -83,7 +83,7 @@ namespace LV {
 
       return get_float () * (max - min + 1) + fm;
   #else
-      return (get_int () * (max - min)) / (Generator::max () - Generator::min ()) + min;
+      return get_int () % (max - min + 1) + min;
   #endif
   }
 

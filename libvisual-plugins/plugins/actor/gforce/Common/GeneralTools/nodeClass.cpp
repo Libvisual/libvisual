@@ -908,7 +908,5 @@ void nodeClass::RandomizeSubs() {
 
 
 long nodeClass::Rnd( long min, long max ) {
-	const long maxRnd = std::numeric_limits<uint32_t>::max();
-
-	return (LV::rand() * (max - min)) / maxRnd + min;
+	return LV::rand() % (max - min + 1) + min;
 }
