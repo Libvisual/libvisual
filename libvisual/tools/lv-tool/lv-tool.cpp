@@ -242,10 +242,13 @@ namespace {
                   VisLogSeverity level = visual_log_get_verbosity ();
                   level = VisLogSeverity (int (level) - 1);
 
-                  if (int (level) >= 0) {
+                  // 0 is maximum verbosity, don't go further
+                  if (int (level) <= 0) {
+                      visual_log_set_verbosity ((VisLogSeverity) 0);
+                  }
+                  else {
                       visual_log_set_verbosity (level);
                   }
-
                   break;
               }
 
