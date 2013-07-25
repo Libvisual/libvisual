@@ -69,7 +69,7 @@ const VisPluginInfo *get_plugin_info (void)
 		.plugname = "lv_analyzer",
 		.name     = "libvisual analyzer",
 		.author   = "Dennis Smit <ds@nerds-incorporated.org>",
-		.version  = "1.0",
+		.version  = "1.1",
 		.about    = N_("Libvisual analyzer plugin"),
 		.help     = N_("A nice simple spectrum analyzer plugin."),
 		.license  = VISUAL_PLUGIN_LICENSE_LGPL,
