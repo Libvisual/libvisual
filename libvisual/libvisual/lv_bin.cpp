@@ -43,7 +43,6 @@ namespace LV {
       bool         use_morph;
       MorphPtr     morph;
       bool         morphing;
-      VisMorphMode morphmode;
       Time         morphtime;
 
       VisBinDepth   depthpreferred;    /* Prefered depth, highest or lowest */
@@ -503,7 +502,6 @@ namespace LV {
           if (m_impl->morph) {
               m_impl->morph->set_progress (0.0f);
               m_impl->morph->set_video (m_impl->actvideo);
-              m_impl->morph->set_mode (VISUAL_MORPH_MODE_TIME);
               m_impl->morph->set_time (m_impl->morphtime);
           }
 

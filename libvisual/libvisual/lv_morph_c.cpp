@@ -104,13 +104,6 @@ void visual_morph_set_progress (VisMorph *self, float progress)
     self->set_progress (progress);
 }
 
-void visual_morph_set_mode (VisMorph *self, VisMorphMode mode)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_mode (mode);
-}
-
 VisPalette *visual_morph_get_palette (VisMorph *self)
 {
     visual_return_val_if_fail (self != nullptr, nullptr);
