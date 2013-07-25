@@ -39,7 +39,6 @@ namespace LV {
       Palette*       morphpal;
       Time           morphtime;
       Timer          timer;
-      VisMorphMode   mode;
 
       Impl ();
 
@@ -52,7 +51,6 @@ namespace LV {
       : plugin   {nullptr}
       , progress {0}
       , morphpal {nullptr}
-      , mode     {VISUAL_MORPH_MODE_SET}
   {
       // nothing
   }
@@ -139,11 +137,6 @@ namespace LV {
       m_impl->progress = std::min (std::max (progress, 0.0f), 1.0f);
   }
 
-  void Morph::set_mode (VisMorphMode mode)
-  {
-      m_impl->mode = mode;
-  }
-
   Palette const* Morph::get_palette ()
   {
       // FIXME: This should return nullptr if there is no palette
@@ -153,10 +146,7 @@ namespace LV {
   bool Morph::is_done ()
   {
       if (m_impl->progress >= 1.0) {
-          if (m_impl->mode == VISUAL_MORPH_MODE_TIME) {
-              m_impl->timer.stop ();
-          }
-
+          m_impl->timer.stop ();
           return true;
       }
 
@@ -191,13 +181,12 @@ namespace LV {
 
       m_impl->dest->set_palette (*get_palette ());
 
-      /* On automatic morphing increase the progress. */
-      if (m_impl->mode == VISUAL_MORPH_MODE_TIME) {
-          double usec_elapsed = m_impl->timer.elapsed ().to_usecs ();
-          double usec_morph   = m_impl->morphtime.to_usecs ();
+      // Update morph progression
 
-          m_impl->progress = std::min (std::max (usec_elapsed / usec_morph, 0.0), 1.0);
-      }
+      double usec_elapsed = m_impl->timer.elapsed ().to_usecs ();
+      double usec_morph   = m_impl->morphtime.to_usecs ();
+
+      m_impl->progress = std::min (std::max (usec_elapsed / usec_morph, 0.0), 1.0);
 
       return true;
   }

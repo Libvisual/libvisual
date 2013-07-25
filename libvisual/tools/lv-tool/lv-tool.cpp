@@ -166,7 +166,7 @@ namespace {
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
-                  "\t--verbose\t\t-v\t\tIncrease verbosity (use multiple times for more effect)\n"
+                  "\t--verbose\t\t-v\t\tIncrease log verbosity (may be used multiple times)\n"
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                   "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"

@@ -34,15 +34,6 @@
  * @{
  */
 
-/**
- * Morph morphing methods.
- */
-typedef enum {
-    VISUAL_MORPH_MODE_SET,      /**< Morph progress is directly set */
-    VISUAL_MORPH_MODE_TIME      /**< Morph progress is automatically
-                                     measured and set using real time */
-} VisMorphMode;
-
 #ifdef __cplusplus
 
 #include <libvisual/lv_intrusive_ptr.hpp>
@@ -122,13 +113,6 @@ namespace LV {
        * @param progress Progress of morph (must be in [0.0, 1.0])
        */
       void set_progress (float progress);
-
-      /**
-       * Sets the method of morphing to apply.
-       *
-       * @param mode Method of morphing
-       */
-      void set_mode (VisMorphMode mode);
 
       /**
        * Returns the colour palette used.
@@ -280,7 +264,6 @@ LV_API int                  visual_morph_requests_audio              (VisMorph *
 LV_API void visual_morph_set_video    (VisMorph *morph, VisVideo *video);
 LV_API void visual_morph_set_time     (VisMorph *morph, VisTime *time);
 LV_API void visual_morph_set_progress (VisMorph *morph, float progress);
-LV_API void visual_morph_set_mode     (VisMorph *morph, VisMorphMode mode);
 
 LV_API int visual_morph_realize (VisMorph *morph);
 LV_API int visual_morph_run     (VisMorph *morph, VisAudio *audio, VisVideo *src1, VisVideo *src2);

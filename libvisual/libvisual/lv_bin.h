@@ -93,10 +93,6 @@ namespace LV {
 
 	  void use_morph (bool use);
 
-	  void switch_set_automatic (bool automatic);
-
-	  void switch_set_mode (VisMorphMode mode);
-
 	  void switch_set_time (Time const& time);
 
 	  void run ();
