@@ -124,7 +124,7 @@ static void lv_analyzer_requisition (VisPluginData *plugin, int *width, int *hei
 {
     AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
-	int total_space = (priv->bars - 1) * BARS_DEFAULT_SPACE;
+	int total_space = priv->bar_space * (priv->bars - 1);
 
     int min_width = priv->bars + total_space;
 
@@ -352,7 +352,7 @@ static void lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio
 
 	for (i = 0; i < priv->bars; i++) {
 		draw_bar (video, x, width, freq[i]);
-		x += width + BARS_DEFAULT_SPACE;
+		x += width + priv->bar_space;
 	}
 
     visual_buffer_unref (freq_buffer);
