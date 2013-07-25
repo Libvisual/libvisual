@@ -572,106 +572,93 @@ LV_API VisVideo *visual_video_scale_depth_new (VisVideo*           src,
 LV_API const char *visual_video_depth_name (VisVideoDepth depth);
 
 /**
- * Checks if a certain depth is supported by checking against an ORred depthflag.
+ * Checks if a given depth is supported.
  *
- * @param depthflag The ORred depthflag that we check against.
- * @param depth The depth that we want to test.
+ * @param depthflag Set of depths
+ * @param depth     Depth to check for
  *
- * @return TRUE when supported, FALSE when unsupported and -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ * @return TRUE if supported, FALSE otherwise
  */
 LV_API int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth);
 
 /**
- * Get the previous depth from the ORred depthflag. By giving a depth and a depthflag
- * this returns the previous supported depth checked from the depthflag.
+ * Returns the next lower depth in a depth set.
  *
  * @see visual_video_depth_get_next
  *
- * @param depthflag The ORred depthflag that we check against.
- * @param depth The depth of which we want the previous supported depth.
+ * @param depthflag Set of depths
+ * @param depth     Reference depth
  *
- * @return The previous supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
+ * @return Next lower depth in set, or the reference depth if there is none
  */
 LV_API VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth);
 
 /**
- * Get the next depth from the ORred depthflag. By giving a depth and a depthflag
- * this returns the next supported depth checked from the depthflag.
+ * Returns the next higher depth in a depth set.
  *
  * @see visual_video_depth_get_prev
  *
- * @param depthflag The ORred depthflag that we check against.
- * @param depth The depth of which we want the next supported depth.
+ * @param depthflag Set of depths
+ * @param depth     Reference depth
  *
- * @return The next supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
+ * @return Next higher depth in set, or the reference depth if there is none
  */
 LV_API VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth);
 
 /**
- * Return the lowest supported graphical depth from the ORred depthflag.
+ * Returns the lowest depth contained in a depth set.
  *
- * @param depthflag The ORred depthflag that we check against.
+ * @param depthflag Set of depths
  *
- * @return The lowest supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
+ * @return Lowest depth in set, or VISUAL_VIDEO_DEPTH_NONE if set is empty
  */
 LV_API VisVideoDepth visual_video_depth_get_lowest (int depthflag);
 
 /**
- * Return the highest supported graphical depth from the ORred depthflag.
+ * Returns the highest depth contained in a depth set.
  *
- * @param depthflag The ORred depthflag that we check against.
+ * @param depthflag Set of depths
  *
- * @return The highest supported depth or VISUAL_VIDEO_DEPTH_ERROR on failure.
+ * @return Highest depth in set, or VISUAL_VIDEO_DEPTH_NONE if set is empty
  */
 LV_API VisVideoDepth visual_video_depth_get_highest (int depthflag);
 
 /**
- * Return the highest supported depth that is NOT openGL.
+ * Returns the highest depth in a set that is NOT OpenGL
  *
- * @param depthflag The ORred depthflag that we check against.
+ * @param depthflag Set of depths
  *
- * @return The highest supported depth that is not openGL or
- *  VISUAL_VIDEO_DEPTH_ERROR on failure.
+ * @return Highest non-GL depth in set
  */
 LV_API VisVideoDepth visual_video_depth_get_highest_nogl (int depthflag);
 
 /**
  * Checks if a certain value is a sane depth.
  *
- * @param depth Depth to be checked if it's sane.
+ * @param depth Depth to check
  *
- * @return TRUE if the depth is sane, FALSE if the depth is not sane.
+ * @return TRUE if given depth is sane, FALSE otherwise
  */
 LV_API int visual_video_depth_is_sane (VisVideoDepth depth);
 
 /**
- * Returns the number of bits per pixel from a VisVideoDepth enumerate value.
+ * Returns the number of bits per pixel of a given VisVideoDepth.
  *
- * @param depth The VisVideodepth enumerate value from which the bits per pixel
- *  needs to be returned.
+ * @param depth Depth given in VisVideoDepth
  *
- * @return The bits per pixel or -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
+ * @return Bits per pixel
  */
-LV_API int visual_video_depth_value_from_enum (VisVideoDepth depth);
+LV_API int visual_video_depth_bpp (VisVideoDepth depth);
 
 /**
- * Returns a VisVideoDepth enumerate value from bits per pixel.
+ * Returns the VisVideoDepth enum value that corresponds to a colour
+ * depth given in bits per pixel.
  *
- * @param depthvalue Integer containing the number of bits per pixel.
+ * @param bpp Colour depth in bits per pixel
  *
- * @return The corespondending enumerate value or VISUAL_VIDEO_DEPTH_ERROR on failure.
+ * @return VisVideoDepth enum value, or VISUAL_VIDEO_DEPTH_NONE if depth is unsupported
  */
-LV_API VisVideoDepth visual_video_depth_enum_from_value (int depthvalue);
-
-/**
- * Returns the number of bytes per pixel from the VisVideoDepth enumerate.
- *
- * @param depth The VisVideodepth enumerate value from which the bytes per pixel
- *  needs to be returned.
- *
- * @return The number of bytes per pixel, -VISUAL_ERROR_VIDEO_INVALID_DEPTH on failure.
- */
-LV_API int visual_video_bpp_from_depth (VisVideoDepth depth);
+LV_API VisVideoDepth visual_video_depth_from_bpp (int bpp);
 
 LV_END_DECLS
 

@@ -380,7 +380,7 @@ namespace LV {
           depth = 8;
 
       /* Make the target VisVideo ready for use */
-      auto video = Video::create (bi_width, bi_height, visual_video_depth_enum_from_value (depth));
+      auto video = Video::create (bi_width, bi_height, visual_video_depth_from_bpp (depth));
 
       if (palette)
           video->set_palette (*palette);

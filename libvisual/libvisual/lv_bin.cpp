@@ -182,7 +182,7 @@ namespace LV {
       if (depthflag == VISUAL_VIDEO_DEPTH_GL) {
           set_depth (VISUAL_VIDEO_DEPTH_GL);
       } else {
-          set_depth (m_impl->get_suitable_depth(depthflag));
+          set_depth (m_impl->get_suitable_depth (depthflag));
       }
 
       m_impl->depthforcedmain = m_impl->depth;
@@ -459,7 +459,7 @@ namespace LV {
 
           visual_log (VISUAL_LOG_INFO, "Target depth selected: %d", depth);
 
-          video->set_pitch(video->get_width() * visual_video_bpp_from_depth(depth));
+          video->set_pitch(video->get_width() * (visual_video_depth_bpp(depth) >> 3));
 
           video->allocate_buffer();
       }

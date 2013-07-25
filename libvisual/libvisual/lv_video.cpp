@@ -351,7 +351,7 @@ namespace LV {
   void Video::set_depth (VisVideoDepth depth)
   {
       m_impl->depth = depth;
-      m_impl->bpp = visual_video_bpp_from_depth (m_impl->depth);
+      m_impl->bpp = visual_video_depth_bpp (m_impl->depth) >> 3;
   }
 
   VisVideoDepth Video::get_depth () const
@@ -897,23 +897,24 @@ int visual_video_depth_is_supported (int depthflag, VisVideoDepth depth)
 
 VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
 {
-    int i = depth;
+    visual_return_val_if_fail (visual_video_depth_is_sane (depth), VISUAL_VIDEO_DEPTH_NONE);
 
-    if (visual_video_depth_is_sane (depth) == 0)
-        return VISUAL_VIDEO_DEPTH_NONE;
+    int i = depth;
 
     if (i == VISUAL_VIDEO_DEPTH_NONE) {
         i = VISUAL_VIDEO_DEPTH_8BIT;
 
-        if ((i & depthflag) > 0)
+        if ((i & depthflag) > 0) {
             return VisVideoDepth (i);
+        }
     }
 
     while (i < VISUAL_VIDEO_DEPTH_GL) {
-        i *= 2;
+        i <<= 1;
 
-        if ((i & depthflag) > 0)
+        if ((i & depthflag) > 0) {
             return VisVideoDepth (i);
+        }
     }
 
     return depth;
@@ -921,19 +922,16 @@ VisVideoDepth visual_video_depth_get_next (int depthflag, VisVideoDepth depth)
 
 VisVideoDepth visual_video_depth_get_prev (int depthflag, VisVideoDepth depth)
 {
+    visual_return_val_if_fail (visual_video_depth_is_sane (depth), VISUAL_VIDEO_DEPTH_NONE);
+
     int i = depth;
-
-    if (visual_video_depth_is_sane (depth) == 0)
-        return VISUAL_VIDEO_DEPTH_NONE;
-
-    if (i == VISUAL_VIDEO_DEPTH_NONE)
-        return VISUAL_VIDEO_DEPTH_NONE;
 
     while (i > VISUAL_VIDEO_DEPTH_NONE) {
         i >>= 1;
 
-        if ((i & depthflag) > 0)
+        if ((i & depthflag) > 0) {
             return VisVideoDepth (i);
+        }
     }
 
     return depth;
@@ -1004,7 +1002,7 @@ int visual_video_depth_is_sane (VisVideoDepth depth)
     return TRUE;
 }
 
-int visual_video_depth_value_from_enum (VisVideoDepth depth)
+int visual_video_depth_bpp (VisVideoDepth depth)
 {
     switch (depth) {
         case VISUAL_VIDEO_DEPTH_8BIT:
@@ -1024,27 +1022,13 @@ int visual_video_depth_value_from_enum (VisVideoDepth depth)
     }
 }
 
-VisVideoDepth visual_video_depth_enum_from_value (int depthvalue)
+VisVideoDepth visual_video_depth_from_bpp (int bpp)
 {
-    switch (depthvalue) {
+    switch (bpp) {
         case  8: return VISUAL_VIDEO_DEPTH_8BIT;
         case 16: return VISUAL_VIDEO_DEPTH_16BIT;
         case 24: return VISUAL_VIDEO_DEPTH_24BIT;
         case 32: return VISUAL_VIDEO_DEPTH_32BIT;
-
-        default:
-            return VISUAL_VIDEO_DEPTH_NONE;
-    }
-}
-
-int visual_video_bpp_from_depth (VisVideoDepth depth)
-{
-    switch (depth) {
-        case VISUAL_VIDEO_DEPTH_8BIT:  return 1;
-        case VISUAL_VIDEO_DEPTH_16BIT: return 2;
-        case VISUAL_VIDEO_DEPTH_24BIT: return 3;
-        case VISUAL_VIDEO_DEPTH_32BIT: return 4;
-        case VISUAL_VIDEO_DEPTH_GL:    return 0;
 
         default:
             return VISUAL_VIDEO_DEPTH_NONE;

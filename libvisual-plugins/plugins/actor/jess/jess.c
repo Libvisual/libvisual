@@ -276,7 +276,7 @@ static void act_jess_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
 	priv->pitch = visual_video_get_pitch (video);
 
     depth = priv->video;
-	priv->video = visual_video_depth_value_from_enum (visual_video_get_depth (video));
+	priv->video = visual_video_depth_bpp (visual_video_get_depth (video));
     if(depth != priv->video)
     {
         free(priv->buffer);

@@ -151,7 +151,7 @@ namespace {
           }
           else
           {
-              bpp = visual_video_depth_value_from_enum (depth);
+              bpp = visual_video_depth_bpp (depth);
           }
 
           // Create surface

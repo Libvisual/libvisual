@@ -135,7 +135,7 @@ namespace {
 
           } else {
               m_screen = SDL_SetVideoMode (width, height,
-                                           visual_video_depth_value_from_enum (depth),
+                                           visual_video_depth_bpp (depth),
                                            videoflags);
           }
 

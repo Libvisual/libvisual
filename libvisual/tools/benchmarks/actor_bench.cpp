@@ -78,7 +78,7 @@ namespace {
       }
 
       if (argc > 1) {
-          depth = visual_video_depth_enum_from_value (std::atoi (argv[1]));
+          depth = visual_video_depth_from_bpp (std::atoi (argv[1]));
           if (depth == VISUAL_VIDEO_DEPTH_NONE) {
               throw std::invalid_argument ("Invalid video depth specified");
           }

@@ -61,8 +61,8 @@ namespace {
       }
 
       if (argc > 2) {
-          src_depth = visual_video_depth_enum_from_value (std::atoi (argv[1]));
-          dst_depth = visual_video_depth_enum_from_value (std::atoi (argv[2]));
+          src_depth = visual_video_depth_from_bpp (std::atoi (argv[1]));
+          dst_depth = visual_video_depth_from_bpp (std::atoi (argv[2]));
 
           if (src_depth == VISUAL_VIDEO_DEPTH_NONE || dst_depth == VISUAL_VIDEO_DEPTH_NONE) {
               throw std::invalid_argument ("Invalid bit depths specified");

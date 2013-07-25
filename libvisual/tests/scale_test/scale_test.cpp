@@ -27,7 +27,7 @@ namespace {
                               false,
                               surface->w,
                               surface->h,
-                              visual_video_depth_enum_from_value (surface->format->BitsPerPixel),
+                              visual_video_depth_from_bpp (surface->format->BitsPerPixel),
                               surface->pitch);
   }
 

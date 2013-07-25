@@ -109,7 +109,7 @@ LV::VideoPtr SimpleExample::create_display (int width, int height, VisVideoDepth
     } else {
         int flags = SDL_RESIZABLE | SDL_HWPALETTE;
 
-        m_sdl_screen = SDL_SetVideoMode (width, height, visual_video_depth_value_from_enum (depth), flags);
+        m_sdl_screen = SDL_SetVideoMode (width, height, visual_video_depth_from_bpp (depth), flags);
     }
 
     if (!m_sdl_screen) {
