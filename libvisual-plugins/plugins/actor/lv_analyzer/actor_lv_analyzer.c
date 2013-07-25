@@ -45,12 +45,10 @@ typedef struct
 static int         lv_analyzer_init        (VisPluginData *plugin);
 static void        lv_analyzer_cleanup     (VisPluginData *plugin);
 static void        lv_analyzer_requisition (VisPluginData *plugin, int *width, int *height);
-static void        lv_analyzer_resize      (VisPluginData *plugin, int width, int height);
 static int         lv_analyzer_events      (VisPluginData *plugin, VisEventQueue *events);
 static void        lv_analyzer_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 static VisPalette *lv_analyzer_palette     (VisPluginData *plugin);
 
-static void draw_bar (VisVideo *video, int x, int width, float amplitude);
 
 
 
