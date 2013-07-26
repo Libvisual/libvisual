@@ -96,9 +96,8 @@ static int lv_analyzer_init (VisPluginData *plugin)
 	/* get plugins param-container */
 	VisParamList *params = visual_plugin_get_params (plugin);
 	visual_param_list_add_many (params,
-                                visual_param_new_integer ("bars", "Number of bars in graph",
-                                                          BARS_DEFAULT,
-                                                          NULL),
+                                visual_param_new_integer ("bars", "Number of bars in graph", BARS_DEFAULT, NULL),
+	                            visual_param_new_integer ("bar-space", "Amount of pixels between bars in graph", BARS_DEFAULT_SPACE, NULL),
                                 NULL);
 
 	/* default values */
@@ -344,7 +343,6 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 static void lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
-	
 	
 	visual_audio_get_sample_mixed_simple (audio, priv->pcm_buffer, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
