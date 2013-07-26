@@ -40,6 +40,8 @@ typedef struct
 	int bars;
 	int bar_space;
 	int width, height;
+	VisBuffer *pcm_buffer;
+	VisBuffer *freq_buffer;
 } AnalyzerPrivate;
 
 static int         lv_analyzer_init        (VisPluginData *plugin);
@@ -102,6 +104,10 @@ static int lv_analyzer_init (VisPluginData *plugin)
 	/* default values */
 	priv->bars = BARS_DEFAULT;
 	priv->bar_space = BARS_DEFAULT_SPACE;
+
+	/* allocate buffers */
+	priv->pcm_buffer = visual_buffer_new_allocate (priv->bars*2 * sizeof (float));
+	priv->freq_buffer = visual_buffer_new_allocate (priv->bars * sizeof (float));
 		
 	/* allocate space for palette */
 	priv->pal = visual_palette_new (256);
@@ -133,6 +139,9 @@ static void lv_analyzer_cleanup (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
+	visual_buffer_unref (priv->freq_buffer);
+	visual_buffer_unref (priv->pcm_buffer);
+		
 	visual_palette_free (priv->pal);
 
 	visual_mem_free (priv);
@@ -201,6 +210,10 @@ static void _change_bars(VisPluginData *plugin,
 	if(!validator || validator(plugin, &integer))
     {
 		priv->bars = integer;
+
+		/* adapt buffer size */
+		visual_buffer_set_size(priv->pcm_buffer, priv->bars*2 * sizeof (float));
+		visual_buffer_set_size(priv->freq_buffer, priv->bars * sizeof (float));
         return;
     }
     /* reset to previous value */
@@ -332,29 +345,23 @@ static void lv_analyzer_render (VisPluginData *plugin, VisVideo *video, VisAudio
 {
 	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 	
-	VisBuffer *pcm_buffer = visual_buffer_new_allocate (priv->bars*2 * sizeof (float));
-	visual_audio_get_sample_mixed_simple (audio, pcm_buffer, 2,
+	
+	visual_audio_get_sample_mixed_simple (audio, priv->pcm_buffer, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_audio_get_spectrum_for_sample (priv->freq_buffer, priv->pcm_buffer, TRUE);
 
-	VisBuffer *freq_buffer = visual_buffer_new_allocate (priv->bars * sizeof (float));
-	visual_audio_get_spectrum_for_sample (freq_buffer, pcm_buffer, TRUE);
-
-	visual_buffer_unref (pcm_buffer);
-
-	int i;
+	
 	int spaces = priv->bar_space * (priv->bars - 1);
 	int width  = (visual_video_get_width (video) - spaces) / priv->bars;
 	int x	   = ((visual_video_get_width (video) - spaces) % priv->bars) / 2;
 
 	visual_video_fill_color (video, NULL);
 
-	float *freq = (float *) visual_buffer_get_data (freq_buffer);
+	float *freq = (float *) visual_buffer_get_data (priv->freq_buffer);
 
-	for (i = 0; i < priv->bars; i++) {
+	for(int i = 0; i < priv->bars; i++) {
 		draw_bar (video, x, width, freq[i]);
 		x += width + priv->bar_space;
 	}
-
-    visual_buffer_unref (freq_buffer);
 }
