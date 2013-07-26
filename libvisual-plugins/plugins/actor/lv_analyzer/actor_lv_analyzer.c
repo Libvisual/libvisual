@@ -106,6 +106,26 @@ static int lv_analyzer_init (VisPluginData *plugin)
 	/* allocate space for palette */
 	priv->pal = visual_palette_new (256);
 
+	/* initialize palette */
+	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
+	int i;
+
+	for (i = 0; i < 256; i++) {
+		pal_colors[i].r = 0;
+		pal_colors[i].g = 0;
+		pal_colors[i].b = 0;
+	}
+
+	for (i = 1; i < 64; i++) {
+		pal_colors[i].r = i * 4;
+		pal_colors[i].g = 255;
+		pal_colors[i].b = 0;
+
+		pal_colors[i + 63].r = 255;
+		pal_colors[i + 63].g = (63 - i) * 4;
+		pal_colors[i + 63].b = 0;
+	}
+		
 	return TRUE;
 }
 
@@ -275,25 +295,6 @@ static int lv_analyzer_events (VisPluginData *plugin, VisEventQueue *events)
 static VisPalette *lv_analyzer_palette (VisPluginData *plugin)
 {
 	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
-	VisColor *pal_colors = visual_palette_get_colors (priv->pal);
-	int i;
-
-	for (i = 0; i < 256; i++) {
-		pal_colors[i].r = 0;
-		pal_colors[i].g = 0;
-		pal_colors[i].b = 0;
-	}
-
-	for (i = 1; i < 64; i++) {
-		pal_colors[i].r = i * 4;
-		pal_colors[i].g = 255;
-		pal_colors[i].b = 0;
-
-		pal_colors[i + 63].r = 255;
-		pal_colors[i + 63].g = (63 - i) * 4;
-		pal_colors[i + 63].b = 0;
-	}
-
 	return priv->pal;
 }
 
@@ -307,19 +308,21 @@ static inline void draw_bar (VisVideo *video, int x, int width, float amplitude)
 	int video_pitch	 = visual_video_get_pitch (video);
 	int y = (1.0 - amplitude) * video_height;
 
-	if (y < video_height) {
-		int color  = (1 << 16) + (amplitude * (125 << 16));
-		int dcolor = (125 << 16) / video_height;
+	if (y >= video_height) 
+		return;
+		
+	int color  = (1 << 16) + (amplitude * (125 << 16));
+	int dcolor = (125 << 16) / video_height;
 
-		uint8_t *row = (uint8_t *) visual_video_get_pixel_ptr (video, x, y);
+	uint8_t *row = (uint8_t *) visual_video_get_pixel_ptr (video, x, y);
 
-		while (y < video_height) {
-			visual_mem_set (row, color >> 16, width);
+	while (y < video_height) {
+		visual_mem_set (row, color >> 16, width);
 
-			y++; row += video_pitch;
-			color -= dcolor;
-		}
+		y++; row += video_pitch;
+		color -= dcolor;
 	}
+
 }
 
 /**
