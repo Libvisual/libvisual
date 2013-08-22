@@ -12,15 +12,20 @@ SET(LV_VERSION        "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}.${LV_VERSION_MICR
 SET(LV_VERSION_SUFFIX "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}")
 
 # Package information
-SET(PACKAGE           "libvisual")
-SET(PACKAGE_VERSION   "${LV_VERSION}")
-SET(PACKAGE_BUGREPORT "http://github.com/Libvisual/libvisual/issues")
-SET(PACKAGE_NAME      "${PACKAGE}")
-SET(PACKAGE_STRING    "${PACKAGE}-${PACKAGE_VERSION}")
-SET(PACKAGE_VENDOR    "Libvisual team")
-SET(PACKAGE_URL       "http://libvisual.org")
-SET(PACKAGE_CONTACT   "http://libvisual.org")
-SET(PACKAGE_SUMMARY   "Libvisual visualization framework")
+SET(PACKAGE             "libvisual")
+SET(PACKAGE_VERSION     "${LV_VERSION}")
+SET(PACKAGE_BUGREPORT   "http://github.com/Libvisual/libvisual/issues")
+SET(PACKAGE_NAME        "${PACKAGE}")
+SET(PACKAGE_STRING      "${PACKAGE}-${PACKAGE_VERSION}")
+SET(PACKAGE_VENDOR      "Libvisual team")
+SET(PACKAGE_URL         "http://libvisual.org")
+SET(PACKAGE_CONTACT     "http://libvisual.org")
+SET(PACKAGE_SUMMARY     "Libvisual visualization framework")
+SET(PACKAGE_DESCRIPTION "Libvisual instantly transforms your favourite music "
+                        "into psychedelic art. It works by running audio "
+                        "streams through an impressive array of effects that "
+                        "crunches the waveform into pixels. With the right "
+                        "drivers, you can display visuals on just about anything.")
 
 # Installation Paths
 INCLUDE(GNUInstallDirs)
@@ -259,11 +264,15 @@ SET(CPACK_PACKAGE_VERSION_PATCH ${LV_VERSION_MICRO})
 SET(CPACK_PACKAGE_VENDOR ${PACKAGE_VENDOR})
 SET(CPACK_PACKAGE_CONTACT ${PACKAGE_CONTACT})
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PACKAGE_SUMMARY})
+SET(CPACK_PACKAGE_DESCRIPTION ${PACKAGE_DESCRIPTION})
 SET(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/COPYING)
 SET(CPACK_RESOURCE_FILE_README  ${PROJECT_SOURCE_DIR}/README)
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "libvisual.org")
+SET(CPACK_DEBIAN_PACKAGE_SECTION "libs")
+SET(CPACK_DEBIAN_PACKAGE_VERSION "1")
 
-SET(CPACK_GENERATOR TGZ TBZ2)
-SET(CPACK_SOURCE_GENERATOR TGZ TBZ2)
+SET(CPACK_GENERATOR TGZ TBZ2 DEB)
+SET(CPACK_SOURCE_GENERATOR TGZ TBZ2 DEB)
 
 SET(CPACK_SOURCE_IGNORE_FILES
   /\\\\.git/
@@ -289,5 +298,6 @@ SET(CPACK_SOURCE_IGNORE_FILES
   \\\\.tar\\\\.bz2$
   ~$
 )
+
 
 INCLUDE(CPack)
