@@ -65,7 +65,9 @@ namespace {
 
   unsigned int frame_rate  = DEFAULT_FPS;
   unsigned int frame_count = 0;
-
+  unsigned int actor_switch_after_frames = 0;
+  unsigned int actor_switch_framecount = 0;
+		
   bool have_seed = 0;
   uint32_t seed = 0;
 
@@ -176,6 +178,7 @@ namespace {
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
                   "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
+                  "\t--switch <n>\t\t-S <n>\t\tSwitch actor after n frames.\n"
                   "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
                   "\n",
                   name.c_str (),
@@ -216,13 +219,14 @@ namespace {
           {"seed",        required_argument, 0, 's'},
           {"exclude",     required_argument, 0, 'x'},
           {"framecount",  required_argument, 0, 'F'},
+          {"switch",      required_argument, 0, 'S'},
           {"depth",       required_argument, 0, 'c'},
           {0,             0,                 0,  0 }
       };
 
       int index, argument;
 
-      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:x:c:", loptions, &index)) >= 0) {
+      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:S:x:c:", loptions, &index)) >= 0) {
 
           switch(argument) {
               // --help
@@ -254,7 +258,7 @@ namespace {
 
               // --dimensions
               case 'D': {
-                  if (std::sscanf (optarg, "%dx%d", &width, &height) != 2)
+                  if (std::sscanf (optarg, "%ux%u", &width, &height) != 2)
                   {
                       std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
                       return -1;
@@ -264,7 +268,7 @@ namespace {
 
               // --depth
               case 'c': {
-                  if (std::sscanf (optarg, "%d", &color_depth) != 1 ||
+                  if (std::sscanf (optarg, "%u", &color_depth) != 1 ||
                       visual_video_depth_from_bpp(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
                   {
                       std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
@@ -308,24 +312,31 @@ namespace {
               // --fps
               case 'f': {
                   // set frame_rate
-                  std::sscanf(optarg, "%d", &frame_rate);
+                  std::sscanf(optarg, "%u", &frame_rate);
                   break;
               }
 
               // --seed
               case 's': {
                   have_seed = true;
-                  std::sscanf(optarg, "%u", &seed);
+                  std::sscanf(optarg, "%d", &seed);
                   break;
               }
 
               // --framecount
               case 'F': {
                   // set framecount
-                  std::sscanf(optarg, "%d", &frame_count);
+                  std::sscanf(optarg, "%u", &frame_count);
                   break;
               }
 
+			  // --switch
+			  case 'S': {
+                  // switch actor after n frames
+				  std::sscanf(optarg, "%u", &actor_switch_after_frames);
+				  break;
+			  }
+				  
               // --exclude
               case 'x': {
                   exclude_actors = optarg;
@@ -537,6 +548,18 @@ int main (int argc, char **argv)
                 if (frame_count > 0 && frames_drawn >= frame_count) {
                     break;
                 }
+
+				// switch actor?
+				if(actor_switch_after_frames > 0 &&
+				   frames_drawn >= actor_switch_after_frames + 
+				                  actor_switch_framecount)
+				{
+					actor_switch_framecount += actor_switch_after_frames;
+						
+					actor_name = cycle_actor_name (actor_name, CycleDir::NEXT);
+					std::cerr << "Switching to actor '" << actor_name << "'...\n";
+					bin.switch_actor (actor_name);
+				}
             }
 
             LV::Event ev;
