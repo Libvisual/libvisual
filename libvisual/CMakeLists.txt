@@ -21,11 +21,6 @@ SET(PACKAGE_VENDOR      "Libvisual team")
 SET(PACKAGE_URL         "http://libvisual.org")
 SET(PACKAGE_CONTACT     "http://libvisual.org")
 SET(PACKAGE_SUMMARY     "Libvisual visualization framework")
-SET(PACKAGE_DESCRIPTION "Libvisual instantly transforms your favourite music "
-                        "into psychedelic art. It works by running audio "
-                        "streams through an impressive array of effects that "
-                        "crunches the waveform into pixels. With the right "
-                        "drivers, you can display visuals on just about anything.")
 
 # Installation Paths
 INCLUDE(GNUInstallDirs)
@@ -271,7 +266,6 @@ SET(CPACK_DEBIAN_PACKAGE_VERSION "${LV_VERSION_MAJOR}.${LV_VERSION_MINOR}-${LV_V
 SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "${PACKAGE_VENDOR} <info@libvisual.org>")
 SET(CPACK_DEBIAN_PACKAGE_SECTION "libs")
 SET(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${PACKAGE_URL})
-SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION ${PACKAGE_DESCRIPTION})
 SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS "on")
 
 SET(CPACK_GENERATOR TGZ TBZ2 DEB)
