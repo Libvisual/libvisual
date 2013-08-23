@@ -67,7 +67,7 @@ namespace {
   unsigned int frame_count = 0;
   unsigned int actor_switch_after_frames = 0;
   unsigned int actor_switch_framecount = 0;
-		
+
   bool have_seed = 0;
   uint32_t seed = 0;
 
@@ -330,13 +330,13 @@ namespace {
                   break;
               }
 
-			  // --switch
-			  case 'S': {
+              // --switch
+              case 'S': {
                   // switch actor after n frames
-				  std::sscanf(optarg, "%u", &actor_switch_after_frames);
-				  break;
-			  }
-				  
+                  std::sscanf(optarg, "%u", &actor_switch_after_frames);
+                  break;
+              }
+
               // --exclude
               case 'x': {
                   exclude_actors = optarg;
@@ -549,17 +549,16 @@ int main (int argc, char **argv)
                     break;
                 }
 
-				// switch actor?
-				if(actor_switch_after_frames > 0 &&
-				   frames_drawn >= actor_switch_after_frames + 
-				                  actor_switch_framecount)
-				{
-					actor_switch_framecount += actor_switch_after_frames;
-						
-					actor_name = cycle_actor_name (actor_name, CycleDir::NEXT);
-					std::cerr << "Switching to actor '" << actor_name << "'...\n";
-					bin.switch_actor (actor_name);
-				}
+                // switch actor?
+                if (actor_switch_after_frames > 0 &&
+                    frames_drawn >= actor_switch_after_frames + actor_switch_framecount)
+                {
+                    actor_switch_framecount += actor_switch_after_frames;
+
+                    actor_name = cycle_actor_name (actor_name, CycleDir::NEXT);
+                    std::cerr << "Switching to actor '" << actor_name << "'...\n";
+                    bin.switch_actor (actor_name);
+                }
             }
 
             LV::Event ev;
