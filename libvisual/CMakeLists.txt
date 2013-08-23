@@ -160,7 +160,7 @@ IF(ENABLE_DOCS)
     ENDIF()
     CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile)
     # FIXME/TODO: Figure out how to generate the docs in the first make run
-    ADD_CUSTOM_TARGET(docs
+    ADD_CUSTOM_TARGET(docs ALL
       COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
       COMMENT "Generating API documentation.."
       VERBATIM
