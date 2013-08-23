@@ -5,8 +5,13 @@
 # using lv-tool and imagemagick - 2013 - D.Hiepler
 
 
-# path where actor plugins are
-if [ -n $ACTORPATH ] ; then ACTORPATH="/usr/local/lib/libvisual-0.5/actor" ; fi
+
+# libvisual
+LIBVISUAL="libvisual-0.5"
+
+# libvisual installed?
+if pkg-config --uninstalled $LIBVISUAL ; then echo "This only works with libvisual-0.5 installed" ; exit ; fi
+
 
 
 
@@ -118,6 +123,9 @@ if [ $SKIP_FRAMES -ge $FRAMES ] ; then echo "Skipped frames ($SKIP_FRAMES) must 
 if [ $MODE == "anim" ] && [ $FRAMES -eq 1 ] ; then echo "Warning: Snapshotting animation with just 1 frame!" ; fi
 
 
+# get path where actor plugins are
+PLUGINPATH="$(pkg-config --variable=pluginsbasedir $LIBVISUAL)"
+if [ -n $ACTORPATH ] ; then ACTORPATH="$PLUGINPATH/actor" ; fi
 
 
 # build list of actors to snapshot (or single actor, 
