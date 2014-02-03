@@ -413,10 +413,10 @@ void PixPort::_CrossBlur( char* inSrce, int inWidth, int inHeight, int inBytesPe
 #define DENOM_SHIFT 14
 
 void PixPort::_BoxBlur( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowWidth, int inDestRowWidth, uint32_t* b, uint32_t inBackColor ) {
-	register uint32_t* bEnd;
-	register char *dest;
-	register uint32_t b1R, b1G, b1B, b2R, b2G, b2B, b3R, b3G, b3B, val, box9W, i, numerator;
-	register int x, half, useWidth;
+	uint32_t* bEnd;
+	char *dest;
+	uint32_t b1R, b1G, b1B, b2R, b2G, b2B, b3R, b3G, b3B, val, box9W, i, numerator;
+	int x, half, useWidth;
 
 	i = inBoxWidth * inBoxWidth * inBoxWidth;
 	numerator = ( 1 << DENOM_SHIFT ) / ( i );
@@ -491,9 +491,9 @@ void PixPort::_BoxBlur( char* inSrce, char* inDest, int inBoxWidth, int inWidth,
 this modification to BoxBlur only blurs the x row
 void PixPort::_BoxBlur( char* inSrce, char*, int inBoxWidth, int inWidth, int inHeight, int inSrceRowWidth, int, char* b, unsigned long inBackColor ) {
 
-	register char *bEnd;
-	register unsigned long b1R, b1G, b1B, b2R, b2G, b2B, b3R, b3G, b3B, val, box9W, i, denom;
-	register int x, half, useWidth;
+	char *bEnd;
+	unsigned long b1R, b1G, b1B, b2R, b2G, b2B, b3R, b3G, b3B, val, box9W, i, denom;
+	int x, half, useWidth;
 
 
 	denom = inBoxWidth * inBoxWidth * inBoxWidth;

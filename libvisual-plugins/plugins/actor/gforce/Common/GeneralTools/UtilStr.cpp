@@ -134,7 +134,7 @@ char* UtilStr::getCStr() const {
 
 
 void UtilStr::Append( const  char* inCStr ) {
-	register unsigned long i = 0;
+	unsigned long i = 0;
 
 	if ( inCStr ) {
 		while( inCStr[ i ] != '\0' )
@@ -397,8 +397,8 @@ void UtilStr::Insert( unsigned long inPos, const char* inSrce, long inBytes ) {
 void UtilStr::Move( void* inDest, const void* inSrce, unsigned long inNumBytes ) {
 
 	if ( inNumBytes <= 64 ) {
-		register unsigned char* dest = (unsigned char*) inDest;
-		register unsigned char* srce = (unsigned char*) inSrce;
+		unsigned char* dest = (unsigned char*) inDest;
+		unsigned char* srce = (unsigned char*) inSrce;
 		if ( srce > dest )
 			while ( inNumBytes > 0 ) {
 				*dest = *srce;

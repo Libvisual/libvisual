@@ -240,8 +240,8 @@ void ExprVirtualMachine::PrepForExecution() {
 // 24-31:	Dest Register number
 
 float ExprVirtualMachine::Execute/*_Inline*/() {
-	register float	FR0, FR1, FR2, FR3, FR4, FR5, FR6, FR7; // FR8, FR9, FR10, FR11, FR12, FR13, FR14, FR15;
-	register float	v1, v2;
+	float	FR0, FR1, FR2, FR3, FR4, FR5, FR6, FR7; // FR8, FR9, FR10, FR11, FR12, FR13, FR14, FR15;
+	float	v1, v2;
 	const char*	PC	= mPCStart;
 	const char*	end	= mPCEnd;
 	unsigned long	inst, opcode, subop, size, i, r2, r1;
