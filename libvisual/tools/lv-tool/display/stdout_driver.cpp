@@ -42,7 +42,6 @@ namespace {
   public:
 
       StdoutDriver (Display& display)
-          : m_display (display)
       {}
 
       virtual ~StdoutDriver ()
@@ -110,7 +109,6 @@ namespace {
 
   private:
 
-      Display&     m_display;
       LV::VideoPtr m_screen_video;
   };
 

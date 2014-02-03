@@ -1,6 +1,6 @@
 SET(GFORCE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/plugins/actor/gforce)
 SET(GFORCE_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_gforce)
-SET(GFORCE_COMPILE_FLAGS "-DUNIX_X -D_REENTRANT -fno-strict-aliasing")
+SET(GFORCE_COMPILE_FLAGS "-DUNIX_X -D_REENTRANT -fno-strict-aliasing -Wno-unknown-warning-option -Wno-sometimes-uninitialized")
 
 IF(NOT MINGW)
   SET(GFORCE_COMPILE_FLAGS "-fPIC ${GFORCE_COMPILE_FLAGS}")

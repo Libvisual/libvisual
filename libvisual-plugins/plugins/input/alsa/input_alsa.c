@@ -50,7 +50,6 @@ static int  inp_alsa_init    (VisPluginData *plugin);
 static void inp_alsa_cleanup (VisPluginData *plugin);
 static int  inp_alsa_upload  (VisPluginData *plugin, VisAudio *audio);
 
-static const int   inp_alsa_var_btmul      = sizeof (short);
 static const char *inp_alsa_var_cdevice    = "hw:0,0";
 static const int   inp_alsa_var_samplerate = 44100;
 static const int   inp_alsa_var_channels   = 2;

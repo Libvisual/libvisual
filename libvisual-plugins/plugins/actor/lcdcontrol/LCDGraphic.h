@@ -87,10 +87,6 @@ class LCDGraphic : public LCDBase {
     //LCDGraphicWrapper *graphic_wrapper_;
     int refresh_rate_;
 
-    int shmid_display_;
-    int shmid_layout_;
-    int shmid_transition_;
-
     bool fill_;
 
     int transition_tick_;

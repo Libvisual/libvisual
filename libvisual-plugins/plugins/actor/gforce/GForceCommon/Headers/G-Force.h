@@ -63,14 +63,6 @@ enum {
 
 
 
-class PortPage {
-
-	PixPort*	mPort;
-	
-};
-
-	
-
 class GForce {
 
 	public:	

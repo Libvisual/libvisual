@@ -72,7 +72,7 @@ void LCDTimer::Tick()
     }
 }
 
-LCDTimerBin::LCDTimerBin() : mTimers(0), mEvents()
+LCDTimerBin::LCDTimerBin() : mTimers(0)
 {
 }
 

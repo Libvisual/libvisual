@@ -38,8 +38,7 @@ class LCDTimer
 class LCDTimerBin {
     private:
     std::vector<LCDTimer *> mTimers;
-    VisEventQueue *mEvents;
-    
+
     public:
     LCDTimerBin();
     ~LCDTimerBin();
