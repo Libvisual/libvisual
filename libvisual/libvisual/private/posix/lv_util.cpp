@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define _SVID_SOURCE
+#define _DEFAULT_SOURCE
 
 #include "config.h"
 #include "lv_util.hpp"
