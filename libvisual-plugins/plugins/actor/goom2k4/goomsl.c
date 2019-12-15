@@ -1272,7 +1272,7 @@ static void gsl_create_fast_iflow(void)
 #else
   InstructionFlow     *iflow     = currentGoomSL->iflow;
   FastInstructionFlow *fastiflow = (FastInstructionFlow*)malloc(sizeof(FastInstructionFlow));
-  fastiflow->mallocedInstr = calloc(number*16, sizeof(FastInstruction));
+  fastiflow->mallocedInstr = calloc(number, 16*sizeof(FastInstruction));
   /* fastiflow->instr = (FastInstruction*)(((int)fastiflow->mallocedInstr) + 16 - (((int)fastiflow->mallocedInstr)%16)); */
   fastiflow->instr = (FastInstruction*)fastiflow->mallocedInstr;
   fastiflow->number = number;
