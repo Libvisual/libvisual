@@ -35,6 +35,7 @@
 #ifdef __cplusplus
 
 #include <libvisual/lv_intrusive_ptr.hpp>
+#include <functional>
 #include <memory>
 
 namespace LV {
