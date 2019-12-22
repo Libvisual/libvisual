@@ -287,9 +287,14 @@ IF(ENABLE_PROFILING)
   SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg --coverage")
 ENDIF()
 
-# Add -Werror to debug builds?
-SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes -Werror -fstrict-aliasing")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused -Werror -fstrict-aliasing")
+# Fatal warnings
+OPTION(ENABLE_FATAL_WARNINGS "Compile with -Werror" no)
+IF(ENABLE_FATAL_WARNINGS)
+  SET(WERROR_C_FLAGS "-Werror")
+ENDIF()
+
+SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes ${WERROR_C_FLAGS} -fstrict-aliasing")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused ${WERROR_C_FLAGS} -fstrict-aliasing")
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
