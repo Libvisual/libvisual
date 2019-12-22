@@ -1,0 +1,95 @@
+name: Build and test
+
+on:
+- pull_request
+- push
+
+env:
+  LV_BUILD_TYPE: Debug
+  LV_INSTALL_PREFIX: /home/runner/.local/
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install build dependencies
+        run: |-
+          set -e
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            bison \
+            doxygen \
+            flex \
+            gettext \
+            graphviz \
+            libgstreamer1.0-dev \
+            libgtk2.0-dev \
+            libjack-dev \
+            libluajit-5.1-dev \
+            liborc-0.4-dev \
+            libpng-dev \
+            libasound2-dev \
+            libsdl1.2-dev \
+            libgl1-mesa-dev \
+            pkg-config
+
+      - name: Checkout Git branch
+        uses: actions/checkout@v2.0.0
+
+      - name: '[LV] Run CMake'
+        run: |-
+          set -e
+          mkdir build_lv
+          cd build_lv
+          cmake \
+            -DCMAKE_BUILD_TYPE=${LV_BUILD_TYPE} \
+            -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
+            \
+            -DENABLE_DOCS=yes \
+            -DENABLE_TESTS=yes \
+            ../libvisual/ \
+
+      - name: '[LV] Run "make"'
+        run: |-
+          make -C build_lv -j2 VERBOSE=1
+
+      - name: '[LV] Run tests (exit code ignored for now!)'
+        # TODO Fix tests and remove " || true" here
+        run: |-
+          make -C build_lv \
+            CMAKE_CONFIG_TYPE=${LV_BUILD_TYPE} \
+            CTEST_OUTPUT_ON_FAILURE=1 \
+            VERBOSE=1 \
+            test || true
+
+      - name: '[LV] Run "make install"'
+        run: |-
+          make -C build_lv install
+          find ${LV_INSTALL_PREFIX} | sort
+
+      - name: '[Plugins] Run CMake'
+        # TODO Make gstreamer plugin work with GStreamer 1.x
+        # TODO Make LCDControl plugin work with luajit-2.1/5.1
+        run: |-
+          set -e
+          mkdir build_plugins
+          cd build_plugins
+          PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
+            cmake \
+              -DCMAKE_BUILD_TYPE=${LV_BUILD_TYPE} \
+              -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
+              \
+              -DENABLE_GSTREAMER=no \
+              -DENABLE_LCDCONTROL=no \
+              ../libvisual-plugins/
+
+      - name: '[Plugins] Run "make"'
+        run: |-
+          make -C build_plugins -j2 VERBOSE=1
+
+      - name: '[Plugins] Run "make install"'
+        run: |-
+          set -e
+          make -C build_plugins install DESTDIR="${PWD}"/ROOT_PLUGINS
+          find ROOT_PLUGINS/ | sort
