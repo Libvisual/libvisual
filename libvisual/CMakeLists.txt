@@ -130,10 +130,16 @@ IF(ENABLE_PROFILING)
   SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
 ENDIF()
 
+# Fatal warnings
+OPTION(ENABLE_FATAL_WARNINGS "Compile with -Werror" no)
+IF(ENABLE_FATAL_WARNINGS)
+  SET(WERROR_C_FLAGS "-Werror")
+ENDIF()
+
 # Build profiles
 # Standard
-SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused -Werror -fstrict-aliasing")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wunused -Werror -fstrict-aliasing")
+SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wunused ${WERROR_C_FLAGS} -fstrict-aliasing")
+SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wunused ${WERROR_C_FLAGS} -fstrict-aliasing")
 # Debug
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
