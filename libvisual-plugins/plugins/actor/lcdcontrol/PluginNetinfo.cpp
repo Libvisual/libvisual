@@ -71,7 +71,6 @@ double PluginNetinfo::Exists(std::string arg1) {
     char buf[10240];
     struct ifconf ifcnf;
     struct ifreq *ifreq;
-    int len;
     double value = 0.0;             // netdev doesn't exists
     char devname[80];
 
@@ -94,7 +93,6 @@ double PluginNetinfo::Exists(std::string arg1) {
     }
 
     ifreq = (struct ifreq *) buf;
-    len = sizeof(struct ifreq);
     strncpy(devname, arg1.c_str(), sizeof(devname));
 
     while (ifreq && *((char *) ifreq) && ((char *) ifreq) < buf + ifcnf.ifc_len) {
@@ -104,7 +102,7 @@ double PluginNetinfo::Exists(std::string arg1) {
             return value;
         }
 
-        (*(char **) &ifreq) += len;
+        ifreq++;
     }
 
     /* device doesn't exists */
