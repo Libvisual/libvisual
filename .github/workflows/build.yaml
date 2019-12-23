@@ -71,6 +71,7 @@ jobs:
 
       - name: '[Plugins] Run CMake'
         # TODO Make gstreamer plugin work with GStreamer 1.x
+        # TODO Make LCDcontrol plugin compile with -Werror
         run: |-
           set -e
           mkdir build_plugins
@@ -82,6 +83,7 @@ jobs:
               \
               -DENABLE_FATAL_WARNINGS=yes \
               -DENABLE_GSTREAMER=no \
+              -DENABLE_LCDCONTROL=no \
               ../libvisual-plugins/
 
       - name: '[Plugins] Run "make"'
