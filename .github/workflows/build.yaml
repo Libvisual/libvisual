@@ -69,7 +69,6 @@ jobs:
           find ${LV_INSTALL_PREFIX} | sort
 
       - name: '[Plugins] Run CMake'
-        # TODO Make gstreamer plugin work with GStreamer 1.x
         # TODO Make LCDControl plugin work with luajit-2.1/5.1
         run: |-
           set -e
@@ -80,7 +79,6 @@ jobs:
               -DCMAKE_BUILD_TYPE=${LV_BUILD_TYPE} \
               -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
               \
-              -DENABLE_GSTREAMER=no \
               -DENABLE_LCDCONTROL=no \
               ../libvisual-plugins/
 
