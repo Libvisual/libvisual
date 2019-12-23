@@ -44,8 +44,6 @@
 
 using namespace LCD;
 
-extern int round(float n);
-
 LCDText::LCDText(LCDCore *visitor) {
     visitor_ = visitor;
     TextRealBlit = 0;
