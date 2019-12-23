@@ -229,6 +229,8 @@ double PluginUptime::Uptime() {
     int age;
     struct timeval now;
 
+    gettimeofday(&now, NULL);
+
     age = (now.tv_sec - last_value.tv_sec) * 1000 + (now.tv_usec - last_value.tv_usec) / 1000;
     if (fd == -2 || age == 0 || age > 100) {
         uptime = GetUptime();
