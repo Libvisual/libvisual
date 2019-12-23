@@ -55,15 +55,6 @@ jobs:
         run: |-
           make -C build_lv -j2 VERBOSE=1
 
-      - name: '[LV] Run tests (exit code ignored for now!)'
-        # TODO Fix tests and remove " || true" here
-        run: |-
-          make -C build_lv \
-            CMAKE_CONFIG_TYPE=${LV_BUILD_TYPE} \
-            CTEST_OUTPUT_ON_FAILURE=1 \
-            VERBOSE=1 \
-            test || true
-
       - name: '[LV] Run "make install"'
         run: |-
           make -C build_lv install
@@ -95,3 +86,12 @@ jobs:
           set -e
           make -C build_plugins install DESTDIR="${PWD}"/ROOT_PLUGINS
           find ROOT_PLUGINS/ | sort
+
+      - name: '[LV] Run tests (exit code ignored for now!)'
+        # TODO Fix tests and remove " || true" here
+        run: |-
+          make -C build_lv \
+            CMAKE_CONFIG_TYPE=${LV_BUILD_TYPE} \
+            CTEST_OUTPUT_ON_FAILURE=1 \
+            VERBOSE=1 \
+            test || true
