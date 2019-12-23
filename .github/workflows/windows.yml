@@ -51,6 +51,7 @@ jobs:
             mingw-w64-x86_64-cmake `
             mingw-w64-x86_64-gcc `
             mingw-w64-x86_64-ninja `
+            mingw-w64-x86_64-gstreamer `
             mingw-w64-x86_64-libpng `
             mingw-w64-x86_64-SDL `
             mingw-w64-x86_64-gettext

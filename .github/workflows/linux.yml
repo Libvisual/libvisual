@@ -102,7 +102,6 @@ jobs:
           find ${LV_INSTALL_PREFIX} | sort
 
       - name: '[Plugins] Run CMake'
-        # TODO Make gstreamer plugin work with GStreamer 1.x
         run: |-
           mkdir build_plugins
           cd build_plugins
@@ -114,7 +113,6 @@ jobs:
               -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
               \
               -DENABLE_FATAL_WARNINGS=yes \
-              -DENABLE_GSTREAMER=no \
               ../libvisual-plugins/
 
       - name: '[Plugins] Run "make"'

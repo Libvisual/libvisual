@@ -90,7 +90,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
 
     gst_init (NULL, NULL);
 
-    char *launch_str = g_strdup_printf ("filesrc location=%s ! decodebin ! ffmpegcolorspace ! "
+    char *launch_str = g_strdup_printf ("filesrc location=%s ! decodebin ! videoconvert ! "
                                         "videoscale ! capsfilter name=capsfilter ! "
                                         "fakesink name=sink signal-handoffs=true sync=true",
                                         "test.mpg");
@@ -106,10 +106,10 @@ static int act_gstreamer_init (VisPluginData *plugin)
     }
 
     priv->capsfilter = gst_bin_get_by_name (GST_BIN (priv->pipeline), "capsfilter");
-    GstCaps *caps = gst_caps_new_simple ("video/x-raw-rgb",
-                                         "depth" , G_TYPE_INT, 24,
-                                         "bpp"   , G_TYPE_INT, 24,
-                                         "width" , G_TYPE_INT, 320,
+    GstCaps *caps = gst_caps_new_simple ("video/x-raw",
+                                         "width", G_TYPE_INT, 320,
+                                         "height", G_TYPE_INT, 240,
+                                         "format", G_TYPE_STRING, "BGR",
                                          NULL);
     g_object_set (priv->capsfilter, "caps", caps, NULL);
     gst_caps_unref (caps);
@@ -161,7 +161,9 @@ static void act_gstreamer_cleanup (VisPluginData *plugin)
         gst_element_set_state (priv->pipeline, GST_STATE_NULL);
         gst_object_unref (priv->pipeline);
 
-        gst_buffer_unref (priv->buffer);
+        if (priv->buffer) {
+            gst_buffer_unref (priv->buffer);
+        }
 
 #if GLIB_VERSION_CUR_STABLE >= GLIB_VERSION_2_32
         g_mutex_clear (priv->mutex);
@@ -194,11 +196,10 @@ static void act_gstreamer_resize (VisPluginData *plugin, int width, int height)
 {
     GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
-    GstCaps *caps = gst_caps_new_simple ("video/x-raw-rgb",
+    GstCaps *caps = gst_caps_new_simple ("video/x-raw",
                                          "width" , G_TYPE_INT, width,
                                          "height", G_TYPE_INT, height,
-                                         "depth" , G_TYPE_INT, 24,
-                                         "bpp"   , G_TYPE_INT, 24,
+                                         "format", G_TYPE_STRING, "BGR",
                                          NULL);
     g_object_set (priv->capsfilter, "caps", caps, NULL);
     gst_caps_unref (caps);
@@ -262,22 +263,29 @@ static void act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAud
     /* Draw if we have a buffer */
     g_mutex_lock (priv->mutex);
     if (priv->buffer) {
-        int buffer_size = visual_video_get_pitch (video) * visual_video_get_height (video);
+        // NOTE: GStreamer format "BGR" does not have any padding
+        const int expected_row_pitch = visual_video_get_width (video) * (24 / 8);
+        const int expected_buffer_size = expected_row_pitch * visual_video_get_height (video);
 
         /* Copy buffer to video only if dimensions match, ignoring
          * buffers received from GStreamer before their corresponding
          * resizes were completed. */
-        if (GST_BUFFER_SIZE (priv->buffer) == buffer_size) {
-            VisVideo *source = visual_video_new_wrap_buffer (GST_BUFFER_DATA (priv->buffer),
-                                                             FALSE,
-                                                             visual_video_get_width  (video),
-                                                             visual_video_get_height (video),
-                                                             VISUAL_VIDEO_DEPTH_24BIT,
-                                                             0);
+        if (gst_buffer_get_size (priv->buffer) == expected_buffer_size) {
+            GstMapInfo info;
+            if (gst_buffer_map(priv->buffer, &info, GST_MAP_READ)) {
+                VisVideo * const source = visual_video_new_wrap_buffer (info.data,
+                                                                       FALSE,
+                                                                       visual_video_get_width  (video),
+                                                                       visual_video_get_height (video),
+                                                                       VISUAL_VIDEO_DEPTH_24BIT,
+                                                                       0 /* i.e. auto-calculated */);
 
-            visual_video_flip_pixel_bytes (video, source);
+                visual_video_convert_depth (video, source);
 
-            visual_video_unref (source);
+                visual_video_unref (source);
+
+                gst_buffer_unmap(priv->buffer, &info);
+            }
         }
 
         gst_buffer_unref (priv->buffer);
