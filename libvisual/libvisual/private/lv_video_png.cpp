@@ -42,11 +42,15 @@ namespace LV {
 
     void handle_png_warning (png_structp png_ptr, char const* message)
     {
+        (void)png_ptr;
+
         visual_log (VISUAL_LOG_WARNING, "PNG load error: %s", message);
     }
 
     void handle_png_error (png_structp png_ptr, char const* message)
     {
+        (void)png_ptr;
+
         visual_log (VISUAL_LOG_ERROR, "PNG load error: %s", message);
     }
 

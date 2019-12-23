@@ -57,6 +57,8 @@ const char *visual_actor_get_prev_by_name_gl (const char *name)
 
 const char *visual_actor_get_next_by_name_gl (const char *name)
 {
+    (void)name;
+
     const char *next = nullptr;
     bool have_gl;
 

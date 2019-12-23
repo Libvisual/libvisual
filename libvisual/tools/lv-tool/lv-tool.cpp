@@ -360,6 +360,8 @@ namespace {
 
   void handle_termination_signal (int signal)
   {
+      (void)signal;
+
       terminate_process = true;
   }
 

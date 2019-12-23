@@ -16,6 +16,9 @@ namespace {
           : Benchmark { "ActorBench" }
           , m_actor { LV::Actor::load (actor_name) }
       {
+          (void)width;
+          (void)height;
+
           if (!m_actor) {
               throw std::invalid_argument ("Cannot load actor '" + actor_name);
           }
