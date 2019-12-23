@@ -47,6 +47,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
             \
             -DENABLE_DOCS=yes \
+            -DENABLE_FATAL_WARNINGS=yes \
             -DENABLE_TESTS=yes \
             ../libvisual/ \
 
@@ -80,6 +81,7 @@ jobs:
               -DCMAKE_BUILD_TYPE=${LV_BUILD_TYPE} \
               -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
               \
+              -DENABLE_FATAL_WARNINGS=yes \
               -DENABLE_GSTREAMER=no \
               -DENABLE_LCDCONTROL=no \
               ../libvisual-plugins/
