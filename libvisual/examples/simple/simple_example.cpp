@@ -184,7 +184,7 @@ bool SimpleExample::handle_events ()
 
 void SimpleExample::morph_to_actor (std::string const& actor_name, std::string const& morph_name)
 {
-    //m_bin.set_morph (morph_name);
+    (void)morph_name; //m_bin.set_morph (morph_name);
     m_bin.switch_actor (actor_name);
 
     m_actor_name = actor_name;

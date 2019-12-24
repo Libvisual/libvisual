@@ -408,6 +408,8 @@ namespace LV {
 
   void Video::set_compose_colorkey (Color const& color)
   {
+      (void)color;
+
       m_impl->colorkey->set (0, 0, 0);
   }
 

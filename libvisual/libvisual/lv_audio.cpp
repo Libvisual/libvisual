@@ -275,6 +275,8 @@ namespace LV {
                      VisAudioSampleFormatType  format,
                      VisAudioSampleChannelType channeltype)
   {
+      (void)rate;
+
       auto timestamp = Time::now ();
 
       auto sample_count = buffer->get_size () / visual_audio_sample_format_get_size (format);
@@ -310,6 +312,8 @@ namespace LV {
                      VisAudioSampleFormatType format,
                      std::string const&       channel_name)
   {
+      (void)rate;
+
       auto timestamp = Time::now ();
 
       auto sample_count = buffer->get_size () / visual_audio_sample_format_get_size (format);

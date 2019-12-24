@@ -138,6 +138,9 @@ namespace LV
   System::System (int& argc, char**& argv)
       : m_impl(new Impl)
   {
+      (void)argc;
+      (void)argv;
+
       visual_log (VISUAL_LOG_INFO, "Starting Libvisual %s", get_version ().c_str ());
 
 #if ENABLE_NLS

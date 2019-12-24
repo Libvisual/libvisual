@@ -21,6 +21,11 @@ extern "C" {
 
   void visual_rectangle_set (VisRectangle *self, int x, int y, int width, int height)
   {
+      (void)x;
+      (void)y;
+      (void)width;
+      (void)height;
+
       visual_return_if_fail (self != nullptr);
   }
 

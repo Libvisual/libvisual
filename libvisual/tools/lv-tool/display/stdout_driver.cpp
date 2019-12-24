@@ -42,7 +42,9 @@ namespace {
   public:
 
       StdoutDriver (Display& display)
-      {}
+      {
+          (void)display;
+      }
 
       virtual ~StdoutDriver ()
       {
@@ -55,6 +57,9 @@ namespace {
                                    unsigned int height,
                                    bool resizable)
       {
+          (void)vidoptions;
+          (void)resizable;
+
           if (depth == VISUAL_VIDEO_DEPTH_GL)
           {
               visual_log (VISUAL_LOG_ERROR, "Cannot use stdout driver for OpenGL rendering");
@@ -83,6 +88,9 @@ namespace {
 
       virtual void set_fullscreen (bool fullscreen, bool autoscale)
       {
+          (void)fullscreen;
+          (void)autoscale;
+
           // nothing to do
       }
 
@@ -93,17 +101,23 @@ namespace {
 
       virtual void set_title(std::string const& title)
       {
+          (void)title;
+
           // nothing to do
       }
 
       virtual void update_rect (LV::Rect const& rect)
       {
+          (void)rect;
+
           if (write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
               visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
       }
 
       virtual void drain_events (VisEventQueue& eventqueue)
       {
+          (void)eventqueue;
+
           // nothing to do
       }
 
