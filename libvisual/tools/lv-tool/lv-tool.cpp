@@ -98,7 +98,7 @@ namespace {
   /** print info about libvisual plugin */
   void print_plugin_info(VisPluginInfo const& info)
   {
-      std::printf("Plugin: \"%s\" (%s)\n"
+      printf("Plugin: \"%s\" (%s)\n"
                   "\tURL: %s\n"
                   "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
                   "\t%s - %s\n\n",
@@ -112,7 +112,7 @@ namespace {
   /** print help for plugins */
   void print_plugin_help()
   {
-      std::printf("===== INPUTS =====\n");
+      printf("===== INPUTS =====\n");
       auto const& inputs =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
 
@@ -128,7 +128,7 @@ namespace {
       }
 
 
-      std::printf("===== ACTORS =====\n");
+      printf("===== ACTORS =====\n");
       auto const& actors =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
 
@@ -144,7 +144,7 @@ namespace {
       }
 
 
-      std::printf("===== MORPHS =====\n");
+      printf("===== MORPHS =====\n");
       auto const& morphs =
           LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
 
@@ -164,7 +164,7 @@ namespace {
   /** print commandline help */
   void print_help(std::string const& name)
   {
-      std::printf("Usage: %s [options]\n\n"
+      printf("Usage: %s [options]\n\n"
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
                   "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
@@ -189,10 +189,10 @@ namespace {
                   morph_name.c_str (),
                   frame_rate);
 
-        std::printf("Available output drivers:\n");
+        printf("Available output drivers:\n");
         for(auto driver_name : DisplayDriverFactory::instance().get_driver_list())
         {
-            std::printf("\t%s\n", driver_name.c_str());
+            printf("\t%s\n", driver_name.c_str());
         }
 
   }
