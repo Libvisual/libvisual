@@ -1,0 +1,88 @@
+name: mingw-w64
+
+on:
+  - pull_request
+  - push
+
+env:
+  LV_INSTALL_PREFIX: C:/LV_INSTALL
+
+jobs:
+  mingw-w64:
+    name: Build and test (Windows, mingw-w64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Git branch
+        uses: actions/checkout@v2
+
+      - name: Cache Msys2
+        id: cache-msys2
+        uses: actions/cache@v1.1.2
+        with:
+          path: msys64
+          key: ${{ runner.os }}-msys64
+
+      - name: Get Msys2
+        if: steps.cache-msys2.outputs.cache-hit != 'true'
+        run: |
+          Invoke-WebRequest -Outfile msys2.tar.xz -Uri "https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.tar.xz"
+          xz -d msys2.tar.xz
+          tar -xf msys2.tar
+          rm msys2.tar
+
+      - name: Add Msys2 to Path
+        run: |
+          echo "::add-path::${env:GITHUB_WORKSPACE}/msys64/mingw64/bin"
+          echo "::add-path::${env:GITHUB_WORKSPACE}/msys64/usr/bin"
+
+      - name: Initialize msys2
+        shell: cmd
+        if: steps.cache-msys2.outputs.cache-hit != 'true'
+        run: bash -lc 'exit'
+
+      - name: Update Pacman
+        run: pacman -Syy
+
+      - name: Cache pacman Packages
+        id: cache-pacman
+        uses: actions/cache@v1.1.2
+        with:
+          path: msys64/var/cache/pacman/pkg
+          key: ${{ runner.os }}-pacman
+
+      - name: Update Msys2 Packages
+        run: pacman -Suu --needed --ask=20 --noconfirm
+
+      - name: Install packages
+        run: |
+          pacman -S --needed --ask=20 --noconfirm `
+            make `
+            mingw-w64-x86_64-orc `
+            mingw-w64-x86_64-pkg-config `
+            mingw-w64-x86_64-cmake `
+            mingw-w64-x86_64-gcc `
+            mingw-w64-x86_64-libpng `
+            mingw-w64-x86_64-SDL `
+            mingw-w64-x86_64-gettext
+
+      - name: "[LV] Run CMake"
+        run: |
+          cmake -B build_lv -S libvisual -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DENABLE_DOCS=yes -DENABLE_NLS=OFF -DENABLE_TESTS=yes -DCMAKE_INSTALL_PREFIX="${env:LV_INSTALL_PREFIX}"
+
+      - name: '[LV] Run "make"'
+        run: |
+          make -C build_lv -j2 VERBOSE=1
+
+      - name: '[LV] Run "make install"'
+        run: |
+          make -C build_lv install
+          find ${env:LV_INSTALL_PREFIX} | sort
+
+      - name: "[LV] Run tests (exit code ignored for now!)"
+        shell: cmd
+        run: |
+          make -C build_lv ^
+            CMAKE_CONFIG_TYPE=Debug ^
+            CTEST_OUTPUT_ON_FAILURE=1 ^
+            VERBOSE=1 ^
+            test || true
