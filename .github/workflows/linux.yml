@@ -1,4 +1,4 @@
-name: Build and test
+name: Build and test (Linux)
 
 on:
 - pull_request
@@ -9,8 +9,8 @@ env:
   LV_INSTALL_PREFIX: /home/runner/.local/
 
 jobs:
-  build:
-    name: Build and test
+  linux:
+    name: Build and test (Linux)
     runs-on: ubuntu-latest
     steps:
       - name: Install build dependencies
