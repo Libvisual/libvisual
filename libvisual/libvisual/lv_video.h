@@ -121,6 +121,7 @@ struct _VisVideoAttrOptions {
 #include <libvisual/lv_intrusive_ptr.hpp>
 #include <iosfwd>
 #include <memory>
+#include <string>
 
 namespace LV {
 
