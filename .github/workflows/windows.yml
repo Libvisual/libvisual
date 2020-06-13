@@ -12,32 +12,14 @@ jobs:
     name: Build and test (Windows, mingw-w64)
     runs-on: windows-latest
     steps:
-      - name: Checkout Git branch
-        uses: actions/checkout@v2
-
-      - name: Cache Msys2
-        id: cache-msys2
-        uses: actions/cache@v1.1.2
-        with:
-          path: msys64
-          key: ${{ runner.os }}-msys64
-
-      - name: Get Msys2
-        if: steps.cache-msys2.outputs.cache-hit != 'true'
-        run: |
-          Invoke-WebRequest -Outfile msys2.tar.xz -Uri "https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.tar.xz"
-          xz -d msys2.tar.xz
-          tar -xf msys2.tar
-          rm msys2.tar
 
       - name: Add Msys2 to Path
         run: |
-          echo "::add-path::${env:GITHUB_WORKSPACE}/msys64/mingw64/bin"
-          echo "::add-path::${env:GITHUB_WORKSPACE}/msys64/usr/bin"
+          echo "::add-path::C:/msys64/usr/bin"
+          echo "::add-path::C:/msys64/mingw64/bin"
 
       - name: Initialize msys2
         shell: cmd
-        if: steps.cache-msys2.outputs.cache-hit != 'true'
         run: bash -lc 'exit'
 
       - name: Update Pacman
@@ -45,37 +27,43 @@ jobs:
 
       - name: Cache pacman Packages
         id: cache-pacman
-        uses: actions/cache@v1.1.2
+        uses: actions/cache@v2
         with:
-          path: msys64/var/cache/pacman/pkg
+          path: C:/msys64/var/cache/pacman/pkg
           key: ${{ runner.os }}-pacman
 
       - name: Update Msys2 Packages
-        run: pacman -Suu --needed --ask=20 --noconfirm
+        run: |
+          # We're deleting these packages because trying to upgrade to the latest bugfix version of gcc without doing a Suu will result in
+          # errors such as unmet dependencies, removing them would be much faster than upgrading them as well.
+          pacman -R --noconfirm mingw-w64-x86_64-gcc-ada mingw-w64-x86_64-gcc-objc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran
+          pacman -Suu --needed --ask=20 --noconfirm
 
       - name: Install packages
         run: |
           pacman -S --needed --ask=20 --noconfirm `
-            make `
+            mingw-w64-x86_64-dlfcn `
             mingw-w64-x86_64-orc `
             mingw-w64-x86_64-pkg-config `
             mingw-w64-x86_64-cmake `
             mingw-w64-x86_64-gcc `
+            mingw-w64-x86_64-ninja `
             mingw-w64-x86_64-libpng `
             mingw-w64-x86_64-SDL `
             mingw-w64-x86_64-gettext
 
+      - name: Checkout Git branch
+        uses: actions/checkout@v2
+
       - name: "[LV] Run CMake"
-        run: |
-          cmake -B build_lv -S libvisual -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DENABLE_DOCS=yes -DENABLE_NLS=OFF -DENABLE_TESTS=yes -DCMAKE_INSTALL_PREFIX="${env:LV_INSTALL_PREFIX}"
+        run: cmake -B build_lv -S libvisual -GNinja -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DENABLE_DOCS=yes -DENABLE_NLS=OFF -DENABLE_TESTS=yes -DCMAKE_INSTALL_PREFIX="${env:LV_INSTALL_PREFIX}"
 
-      - name: '[LV] Run "make"'
-        run: |
-          make -C build_lv -j2 VERBOSE=1
+      - name: "[LV] Build libvisual"
+        run: cmake --build build_lv -v --parallel 2
 
-      - name: '[LV] Run "make install"'
+      - name: "[LV] Install libvisual"
         run: |
-          make -C build_lv install
+          cmake --build build_lv -v --target install
           find ${env:LV_INSTALL_PREFIX} | sort
 
       - name: "[LV] Run tests (exit code ignored for now!)"
