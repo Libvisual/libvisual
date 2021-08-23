@@ -1,8 +1,10 @@
 name: Build and test (Windows, mingw-w64)
 
 on:
-  - pull_request
-  - push
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 3 * * 5'  # Every Friday at 3am
 
 env:
   LV_INSTALL_PREFIX: C:/LV_INSTALL
@@ -14,9 +16,10 @@ jobs:
     steps:
 
       - name: Add Msys2 to Path
+        shell: bash
         run: |
-          echo "::add-path::C:/msys64/usr/bin"
-          echo "::add-path::C:/msys64/mingw64/bin"
+          echo "C:/msys64/usr/bin" >> "${GITHUB_PATH}"
+          echo "C:/msys64/mingw64/bin" >> "${GITHUB_PATH}"
 
       - name: Initialize msys2
         shell: cmd
@@ -44,7 +47,7 @@ jobs:
           pacman -S --needed --ask=20 --noconfirm `
             mingw-w64-x86_64-dlfcn `
             mingw-w64-x86_64-orc `
-            mingw-w64-x86_64-pkg-config `
+            mingw-w64-x86_64-pkgconf `
             mingw-w64-x86_64-cmake `
             mingw-w64-x86_64-gcc `
             mingw-w64-x86_64-ninja `
