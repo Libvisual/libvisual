@@ -47,7 +47,7 @@ jobs:
           pacman -S --needed --ask=20 --noconfirm `
             mingw-w64-x86_64-dlfcn `
             mingw-w64-x86_64-orc `
-            mingw-w64-x86_64-pkg-config `
+            mingw-w64-x86_64-pkgconf `
             mingw-w64-x86_64-cmake `
             mingw-w64-x86_64-gcc `
             mingw-w64-x86_64-ninja `
