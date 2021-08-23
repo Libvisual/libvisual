@@ -1,8 +1,10 @@
 name: Build and test (Windows, mingw-w64)
 
 on:
-  - pull_request
-  - push
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 3 * * 5'  # Every Friday at 3am
 
 env:
   LV_INSTALL_PREFIX: C:/LV_INSTALL
