@@ -16,9 +16,10 @@ jobs:
     steps:
 
       - name: Add Msys2 to Path
+        shell: bash
         run: |
-          echo "::add-path::C:/msys64/usr/bin"
-          echo "::add-path::C:/msys64/mingw64/bin"
+          echo "C:/msys64/usr/bin" >> "${GITHUB_PATH}"
+          echo "C:/msys64/mingw64/bin" >> "${GITHUB_PATH}"
 
       - name: Initialize msys2
         shell: cmd
