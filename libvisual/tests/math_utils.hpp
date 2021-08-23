@@ -12,7 +12,7 @@ namespace LV {
 
     // Floating point equality comparison functions
     //
-    // Adapted from the orignal code by Bruce Dawson, Valve Software.
+    // Adapted from the original code by Bruce Dawson, Valve Software.
     // See: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
     //
     // TODO: Generalize this to work with all C++11 supported floating
