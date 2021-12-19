@@ -30,7 +30,7 @@ jobs:
 
       - name: Cache pacman Packages
         id: cache-pacman
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.7
         with:
           path: C:/msys64/var/cache/pacman/pkg
           key: ${{ runner.os }}-pacman
@@ -56,7 +56,7 @@ jobs:
             mingw-w64-x86_64-gettext
 
       - name: Checkout Git branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.4.0
 
       - name: "[LV] Run CMake"
         run: cmake -B build_lv -S libvisual -GNinja -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DENABLE_DOCS=yes -DENABLE_NLS=OFF -DENABLE_TESTS=yes -DCMAKE_INSTALL_PREFIX="${env:LV_INSTALL_PREFIX}"

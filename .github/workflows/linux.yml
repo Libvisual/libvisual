@@ -35,7 +35,7 @@ jobs:
             pkg-config
 
       - name: Checkout Git branch
-        uses: actions/checkout@v2.0.0
+        uses: actions/checkout@v2.4.0
 
       - name: '[LV] Run CMake'
         run: |-
