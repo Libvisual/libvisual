@@ -39,7 +39,7 @@ jobs:
         run: |
           # We're deleting these packages because trying to upgrade to the latest bugfix version of gcc without doing a Suu will result in
           # errors such as unmet dependencies, removing them would be much faster than upgrading them as well.
-          pacman -R --noconfirm mingw-w64-x86_64-gcc-ada mingw-w64-x86_64-gcc-objc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran
+          pacman -R --noconfirm mingw-w64-x86_64-gcc-ada mingw-w64-x86_64-gcc-objc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc-libgfortran mingw-w64-x86_64-libgccjit
           pacman -Suu --needed --ask=20 --noconfirm
 
       - name: Install packages
