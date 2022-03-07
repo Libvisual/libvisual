@@ -56,7 +56,7 @@ jobs:
             mingw-w64-x86_64-gettext
 
       - name: Checkout Git branch
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
 
       - name: "[LV] Run CMake"
         run: cmake -B build_lv -S libvisual -GNinja -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DENABLE_DOCS=yes -DENABLE_NLS=OFF -DENABLE_TESTS=yes -DCMAKE_INSTALL_PREFIX="${env:LV_INSTALL_PREFIX}"
