@@ -30,7 +30,7 @@ jobs:
 
       - name: Cache pacman Packages
         id: cache-pacman
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: C:/msys64/var/cache/pacman/pkg
           key: ${{ runner.os }}-pacman
