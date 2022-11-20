@@ -63,7 +63,6 @@
 
 /* Compiler specific optimalization macros */
 #if __GNUC__ >= 3
-# define inline			inline __attribute__ ((always_inline))
 # define __malloc		__attribute__ ((malloc))
 # define __packed		__attribute__ ((packed))
 # define VIS_LIKELY(x)		__builtin_expect (!!(x), 1)
