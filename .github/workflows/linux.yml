@@ -1,0 +1,84 @@
+name: Build and test (Linux)
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 3 * * 5'  # Every Friday at 3am
+
+env:
+  LV_INSTALL_PREFIX: /home/runner/.local/
+
+jobs:
+  linux:
+    name: Build and test (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install build dependencies
+        run: |-
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            autopoint \
+            bison \
+            doxygen \
+            flex \
+            gettext \
+            graphviz \
+            libgstreamer1.0-dev \
+            libgtk2.0-dev \
+            libjack-dev \
+            libluajit-5.1-dev \
+            liborc-0.4-dev \
+            libpng-dev \
+            libasound2-dev \
+            libsdl1.2-dev \
+            libgl1-mesa-dev \
+            pkg-config
+
+      - name: Checkout Git branch
+        uses: actions/checkout@v3
+
+      - name: '[LV] Run autoreconf'
+        run: |-
+          for i in libvisual libvisual-plugins ; do
+            pushd ${i}
+              autoreconf --install --verbose --force
+            popd
+          done
+
+      - name: '[LV] Run "./configure"'
+        run: |-
+          mkdir build_lv
+          cd build_lv
+          ../libvisual/configure \
+            --prefix ${LV_INSTALL_PREFIX} \
+            --enable-debug \
+            --enable-threads \
+
+      - name: '[LV] Run "make"'
+        run: |-
+          make -C build_lv -j2 VERBOSE=1
+
+      - name: '[LV] Run "make install"'
+        run: |-
+          make -C build_lv install
+          find ${LV_INSTALL_PREFIX} | sort
+
+      - name: '[Plugins] Run "./configure"'
+        # TODO Make gstreamer plugin work with GStreamer 1.x (on master!)
+        run: |-
+          mkdir build_plugins
+          cd build_plugins
+          PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
+            ../libvisual-plugins/configure \
+              --prefix ${LV_INSTALL_PREFIX} \
+              --disable-gstreamer-plugin \
+
+      - name: '[Plugins] Run "make"'
+        run: |-
+          make -C build_plugins -j2 VERBOSE=1
+
+      - name: '[Plugins] Run "make install"'
+        run: |-
+          make -C build_plugins install DESTDIR="${PWD}"/ROOT_PLUGINS
+          find ROOT_PLUGINS/ | sort
