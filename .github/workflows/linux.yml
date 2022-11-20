@@ -1,8 +1,10 @@
 name: Build and test (Linux)
 
 on:
-- pull_request
-- push
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 3 * * 5'  # Every Friday at 3am
 
 env:
   LV_BUILD_TYPE: Debug
