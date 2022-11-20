@@ -191,7 +191,7 @@ AIX_COMPILE_INFO="AIX's C compiler needs to be called by a different name, when
 		with the right compiler. Ususally just '_r' is appended 
 		to the compiler name."
 
-AC_ARG_ENABLE([enable_threads],
+AC_ARG_ENABLE([threads],
   AC_HELP_STRING([--enable-threads],
 		[Turn on basic thread support @<:@default=enabled@:>@]),
 		[enable_threads=$enableval],
