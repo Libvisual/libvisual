@@ -39,6 +39,7 @@
 #include "lv_log.h"
 #include "lv_param.h"
 #include "lv_thread.h"
+#include "lv_cpu.h"
 #include "config.h"
 
 
