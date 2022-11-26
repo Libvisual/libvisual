@@ -34,6 +34,8 @@ static int         act_blursk_events      (VisPluginData *plugin, VisEventQueue 
 static void        act_blursk_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 static VisPalette *act_blursk_palette     (VisPluginData *plugin);
 
+BlurskConfig config;
+
 const VisPluginInfo *get_plugin_info (void)
 {
         static VisActorPlugin actor = {
