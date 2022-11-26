@@ -60,6 +60,13 @@ effect my_effect_old[EFFECT_NUMBER];
 
 GLint maxtexsize;
 
+VisVideo *child_image;
+VisVideo *energy_image;
+VisVideo *tentacle_image;
+VisVideo *tunnel_image;
+VisVideo *twist_image;
+VisVideo *background_image;
+
 static int nebulus_random_effect ();
 static int nebulus_detect_beat   (int loudness);
 static int nebulus_sound          (NebulusPrivate *priv, VisAudio *audio);

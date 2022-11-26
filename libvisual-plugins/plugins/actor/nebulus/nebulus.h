@@ -64,12 +64,12 @@ typedef struct
   GLfloat x, y, z;
 } glcoord;
 
-VisVideo *child_image;
-VisVideo *energy_image;
-VisVideo *tentacle_image;
-VisVideo *tunnel_image;
-VisVideo *twist_image;
-VisVideo *background_image;
+extern VisVideo *child_image;
+extern VisVideo *energy_image;
+extern VisVideo *tentacle_image;
+extern VisVideo *tunnel_image;
+extern VisVideo *twist_image;
+extern VisVideo *background_image;
 
 extern nebulus general;
 extern nebulus *point_general;

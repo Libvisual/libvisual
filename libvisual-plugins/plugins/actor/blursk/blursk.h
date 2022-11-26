@@ -96,7 +96,7 @@ extern char config_default_show_info[];
 extern char config_default_fullscreen_method[];
 
 
-BlurskConfig config;
+extern BlurskConfig config;
 
 void __blursk_render_pcm (BlurskPrivate *priv, int16_t *pcmbuf);
 void __blursk_init (BlurskPrivate *priv);
