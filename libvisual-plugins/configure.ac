@@ -361,7 +361,7 @@ AC_ARG_ENABLE([analyzer],
   [ENABLE_ANALYZER=$enableval],
   [ENABLE_ANALYZER=yes])
 
-if test "$ENABLE_ANALYZER" = xyes; then
+if test "$ENABLE_ANALYZER" = "yes"; then
   build_actor_plugins="$build_actor_plugins lv_analyzer"
 fi
 
