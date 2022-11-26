@@ -3,6 +3,7 @@
 #include <libvisual/libvisual.h>
 #include <stdio.h>
 #include <gettext.h>
+#include <limits>
 
 #include "G-Force_Proj.h"
 #include "G-Force.h"
