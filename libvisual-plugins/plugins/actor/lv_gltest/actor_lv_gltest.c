@@ -49,7 +49,7 @@ typedef struct {
 	GLfloat z_speed;
 	GLfloat heights[16][16];
 
-	int transparant;
+	int transparent;
 } GLtestPrivate;
 
 static int         lv_gltest_init        (VisPluginData *plugin);
@@ -215,9 +215,9 @@ static int lv_gltest_events (VisPluginData *plugin, VisEventQueue *events)
 				param = ev.event.param.param;
 
 				if (visual_param_has_name (param, "transparent_bars")) {
-					priv->transparant = visual_param_get_value_bool (param);
+					priv->transparent = visual_param_get_value_bool (param);
 
-					if (priv->transparant == FALSE)
+					if (priv->transparent == FALSE)
 						glDisable (GL_BLEND);
 					else
 						glEnable (GL_BLEND);
