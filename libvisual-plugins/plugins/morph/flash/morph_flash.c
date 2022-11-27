@@ -116,7 +116,7 @@ int lv_morph_flash_palette (VisPluginData *plugin, float rate, VisAudio *audio, 
 	FlashPrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 
 	if (src1->pal == NULL || src2->pal == NULL)
-		return;
+		return -1;
 
 	if (rate < 0.5)
 		visual_palette_blend (pal, src1->pal, &priv->whitepal, rate * 2);
