@@ -774,7 +774,7 @@ msgid "Given coordinates are out of bounds"
 msgstr "Las coordenadas dadas están fuera de los límites"
 
 #: libvisual/lv_error.c:201
-msgid "Given VisVideos are not indentical"
+msgid "Given VisVideos are not identical"
 msgstr "Los VisVideos dados no son idénticos"
 
 #: libvisual/lv_error.c:202
