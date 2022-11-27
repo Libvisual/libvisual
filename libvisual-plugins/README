@@ -15,7 +15,7 @@ libvisual can be drawn everywhere. That is but not limited
 to: ascii art, sdl, on gl object as a surface , alpha blended
 or just, anywhere.
 
-Libvisual also provides complete easy to use transparant
+Libvisual also provides complete easy to use transparent
 depth transformation, so that even when the display
 isn't supported by the plugin, libvisual will make
 it suite. Besides using libvisual for rendering your

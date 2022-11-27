@@ -28,7 +28,7 @@
 
 
 typedef struct {
-	int transparant;
+	int transparent;
 	int titleHasChanged;
 } DancingParticlesPrivate;
 
