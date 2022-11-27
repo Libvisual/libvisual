@@ -84,7 +84,12 @@ jobs:
 
       - name: '[Plugins] Run "make"'
         run: |-
+          set -x -o pipefail
+
           make -C build_plugins -j2 VERBOSE=1
+
+          # Detect and deny underlinking
+          ! find -name \*.so | sort | xargs ldd -r | grep -F 'undefined symbol'
 
       - name: '[Plugins] Run "make install"'
         run: |-
