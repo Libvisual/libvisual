@@ -17,7 +17,7 @@ actor_nebulus_la_LDFLAGS = -module -avoid-version
 actor_nebulus_la_CFLAGS = \
 	-I$(top_srcdir) $(LIBVISUAL_CFLAGS) -DBITMAP_DIR=\"$(imagesdir)/\"
 
-actor_nebulus_la_LIBS = $(LIBVISUAL_LIBS) $(X_LIBS) -lGL -lGLU 
+actor_nebulus_la_LIBADD = $(LIBVISUAL_LIBS) $(X_LIBS) -lGL -lGLU
 
 actor_nebulus_la_SOURCES =                   \
 	nebulus.c nebulus.h                  \

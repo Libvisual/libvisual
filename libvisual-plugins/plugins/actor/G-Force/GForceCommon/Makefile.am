@@ -17,12 +17,12 @@ INCLUDES = \
 
 DATADIR = $(LIBVISUAL_PLUGINS_DATA_DIR)/actor/actor_gforce
 
-LIBS = $(LIBVISUAL_LIBS)
 AM_CXXFLAGS = -DDATADIR=\"$(DATADIR)\" $(LIBVISUAL_CFLAGS)
 
 
 noinst_LTLIBRARIES = libgforce.la
 
+libgforce_la_LIBADD = $(LIBVISUAL_LIBS)
 libgforce_la_SOURCES = DeltaField.cpp G-Force.cpp GF_Palette.cpp\
 		       GForcePixPort.cpp ParticleGroup.cpp WaveShape.cpp 
 

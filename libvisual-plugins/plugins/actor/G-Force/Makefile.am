@@ -4,8 +4,6 @@ SUBDIRS = Common GForceCommon unix GForceColorMaps \
 
 actor_plugin_LTLIBRARIES = actor_gforce.la
 
-LIBS = $(LIBVISUAL_LIBS)
-
 INCLUDES = $(all_includes) -I$(top_srcdir)
 
 actor_gforce_la_LDFLAGS = -module -avoid-version
@@ -13,6 +11,7 @@ actor_gforce_la_LDFLAGS = -module -avoid-version
 actor_gforce_la_SOURCES = null.cpp
 
 actor_gforce_la_LIBADD = \
+	$(LIBVISUAL_LIBS) \
 	GForceCommon/libgforce.la \
 	Common/io/libio.la \
 	Common/math/libmath.la \
