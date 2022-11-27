@@ -98,8 +98,8 @@ AC_LIBTOOL_WIN32_DLL
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 
-AC_PATH_PROG(PKG_CONFIG, [pkg-config], [no])
-if test x$PKG_CONFIG = xno ; then
+PKG_PROG_PKG_CONFIG
+if test x$PKG_CONFIG = x ; then
   AC_MSG_WARN([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/.
 	       *** You will need pkg-config to compile against Libvisual Library])
 fi
