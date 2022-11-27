@@ -100,8 +100,8 @@ AC_PROG_LIBTOOL
 
 PKG_PROG_PKG_CONFIG
 if test x$PKG_CONFIG = x ; then
-  AC_MSG_WARN([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/.
-	       *** You will need pkg-config to compile against Libvisual Library])
+  AC_MSG_ERROR([*** pkg-config not found. See http://www.freedesktop.org/software/pkgconfig/.
+                  *** You will need pkg-config to compile against Libvisual Library])
 fi
 if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
   :
