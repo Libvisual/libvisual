@@ -760,7 +760,7 @@
 
 	* plugins/actor/lv_gltest/actor_lv_gltest.c
 	(lv_gltest_init): Add a parameter for enabling
-	transparant bars, and enable this by default.
+	transparent bars, and enable this by default.
 
 	(lv_gltest_events): Listen to the new parameter.
 
