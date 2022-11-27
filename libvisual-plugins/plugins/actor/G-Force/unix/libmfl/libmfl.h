@@ -55,7 +55,7 @@ void mfl_SetDrawMode(mfl_context cx, int mode);
 /* Info */
 inline unsigned int mfl_GetTextWidth(const mfl_context cx, 
 				     const char *s);
-inline unsigned int mfl_GetTextWidthL(const mfl_context cx, 
+       unsigned int mfl_GetTextWidthL(const mfl_context cx, 
 				      const char *s, int l);
 
 /* Character drawing */

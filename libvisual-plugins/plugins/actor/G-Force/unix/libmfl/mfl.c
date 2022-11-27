@@ -123,7 +123,7 @@ void mfl_SetDrawMode(mfl_context cx, int mode) {
   cx->opmode = mode;
 }
 
-inline unsigned int mfl_GetTextWidthL(const mfl_context cx, 
+unsigned int mfl_GetTextWidthL(const mfl_context cx, 
 				      const char *s, int l) {
   return l * 8;
 }
