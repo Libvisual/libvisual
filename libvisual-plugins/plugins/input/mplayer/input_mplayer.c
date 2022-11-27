@@ -22,6 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#define _GNU_SOURCE  /* for function mremap */
+
 #include <config.h>
 
 #include <stdio.h>
