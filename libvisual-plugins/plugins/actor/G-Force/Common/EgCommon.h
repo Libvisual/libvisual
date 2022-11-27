@@ -3,11 +3,6 @@
 
 #include <libmfl.h>
 
-	#ifndef true
-	#define true -1
-	#define false 0
-	#endif
-
 	struct Rect {
 		short left, top, right, bottom;
 	};
