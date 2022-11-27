@@ -14,7 +14,35 @@ jobs:
   linux:
     name: Build and test (Linux)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: gcc-11
+            cxx: g++-11
+            clang_major_version: null
+            clang_repo_suffix: null
+          - cc: gcc-12
+            cxx: g++-12
+            clang_major_version: null
+            clang_repo_suffix: null
+          - cc: clang-15
+            cxx: clang++-15
+            clang_major_version: 15
+            clang_repo_suffix: -15
+          - cc: clang-16
+            cxx: clang++-16
+            clang_major_version: 16
+            clang_repo_suffix:
     steps:
+      - name: Add Clang/LLVM repositories
+        if: "${{ contains(matrix.cxx, 'clang') }}"
+        run: |-
+          set -x
+          source /etc/os-release
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}${{ matrix.clang_repo_suffix }} main"
+
       - name: Install build dependencies
         run: |-
           sudo apt-get update
@@ -40,6 +68,12 @@ jobs:
             libgl1-mesa-dev \
             pkg-config
 
+      - name: Install build dependency Clang ${{ matrix.clang_major_version }}
+        if: "${{ contains(matrix.cxx, 'clang') }}"
+        run: |-
+          sudo apt-get install --yes --no-install-recommends -V \
+              clang-${{ matrix.clang_major_version }}
+
       - name: Checkout Git branch
         uses: actions/checkout@v3
 
@@ -48,6 +82,8 @@ jobs:
           mkdir build_lv
           cd build_lv
           cmake \
+            -DCMAKE_C_COMPILER=${{ matrix.cc }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
             -DCMAKE_BUILD_TYPE=${LV_BUILD_TYPE} \
             -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
             \
@@ -72,6 +108,8 @@ jobs:
           cd build_plugins
           PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
             cmake \
+              -DCMAKE_C_COMPILER=${{ matrix.cc }} \
+              -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
               -DCMAKE_BUILD_TYPE=${LV_BUILD_TYPE} \
               -DCMAKE_INSTALL_PREFIX:PATH=${LV_INSTALL_PREFIX} \
               \
