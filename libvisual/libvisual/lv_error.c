@@ -198,7 +198,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_VIDEO_INVALID_SCALE_METHOD] =	N_("Invalid scale method given"),
 	[VISUAL_ERROR_VIDEO_INVALID_ROTATE] =		N_("Invalid rotate degrees given"),
 	[VISUAL_ERROR_VIDEO_OUT_OF_BOUNDS] =		N_("Given coordinates are out of bounds"),
-	[VISUAL_ERROR_VIDEO_NOT_INDENTICAL] =		N_("Given VisVideos are not indentical"),
+	[VISUAL_ERROR_VIDEO_NOT_INDENTICAL] =		N_("Given VisVideos are not identical"),
 	[VISUAL_ERROR_VIDEO_NOT_TRANSFORMED] =		N_("VisVideo is not depth transformed as requested")
 };
 
