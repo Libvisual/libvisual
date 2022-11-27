@@ -106,7 +106,7 @@ static const char *__lv_error_human_readable[] = {
 	[VISUAL_ERROR_MORPH_NULL] =			N_("VisMorph is NULL"),
 	[VISUAL_ERROR_MORPH_PLUGIN_NULL] =		N_("VisMorph it's plugin is NULL"),
 
-	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't succesful."),
+	[VISUAL_ERROR_OS_SCHED] =			N_("The scheduler related call wasn't successful."),
 	[VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED] =		N_("Scheduler operations are not supported on the platform."),
 
 	[VISUAL_ERROR_PALETTE_NULL] =			N_("VisPalette is NULL"),

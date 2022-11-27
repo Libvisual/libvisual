@@ -430,7 +430,7 @@ msgid "VisMorph it's plugin is NULL"
 msgstr ""
 
 #: libvisual/lv_error.c:109
-msgid "The scheduler related call wasn't succesful."
+msgid "The scheduler related call wasn't successful."
 msgstr ""
 
 #: libvisual/lv_error.c:110

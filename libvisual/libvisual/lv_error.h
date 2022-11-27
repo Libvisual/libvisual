@@ -127,7 +127,7 @@ enum {
 	VISUAL_ERROR_MORPH_PLUGIN_NULL,			/**< The VisMorphPlugin is NULL. */
 
 	/* Error entries for the VisOS system */
-	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't succesful. */
+	VISUAL_ERROR_OS_SCHED,				/**< The scheduler related call wasn't successful. */
 	VISUAL_ERROR_OS_SCHED_NOT_SUPPORTED,		/**< Scheduler operations are not supported on the platform. */
 
 	/* Error entries for the VisPalette system */
