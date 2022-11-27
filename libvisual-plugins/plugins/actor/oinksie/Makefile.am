@@ -2,14 +2,12 @@
 
 actor_plugin_LTLIBRARIES = actor_oinksie.la
 
-LIBS += $(LIBVISUAL_LIBS)
-
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
 INCLUDES = $(all_includes) -I$(top_srcdir) 
 
 actor_oinksie_la_LDFLAGS = -module -avoid-version 
-
+actor_oinksie_la_LIBADD = $(LIBVISUAL_LIBS)
 actor_oinksie_la_SOURCES = actor_oinksie.c\
 			   oinksie.c oinksie.h\
 			   config.c config.h\

@@ -4,8 +4,6 @@ noinst_LTLIBRARIES = libactor_gforce.la
 
 GFORCE_TOP_SRCDIR = $(top_srcdir)/plugins/actor/G-Force
 
-LIBS = $(LIBVISUAL_LIBS)
-
 AM_CXXFLAGS = $(LIBVISUAL_CFLAGS)
 
 INCLUDES = \
@@ -20,5 +18,5 @@ INCLUDES = \
 	-I$(top_srcdir)
 
 libactor_gforce_la_LDFLAGS = -module -avoid-version
-
+libactor_gforce_la_LIBADD = $(LIBVISUAL_LIBS)
 libactor_gforce_la_SOURCES = actor_gforce.cpp
