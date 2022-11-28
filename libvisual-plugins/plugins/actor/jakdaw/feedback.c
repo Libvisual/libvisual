@@ -251,7 +251,8 @@ static uint32_t zoom_ripplenew(JakdawPrivate *priv, int x, int y)
 	dist*=3.14*priv->zoom_ripplesize/sqrt((priv->xres*priv->xres)+(priv->yres*priv->yres));
 	
 	// FIXME - implement the rest of this!
-	
+	(void)dist;  // just for -Wunused-but-set-variable
+
 	nx=x;
 	ny=y;
 	
