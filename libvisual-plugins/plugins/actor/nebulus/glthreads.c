@@ -23,7 +23,7 @@ createglthreads(void)
   xval += speed_xval;
   xabs += speed_xabs;
   p.x = ((GLfloat)point_general->WIDTH/2)/(GLfloat)
-        (point_general->WIDTH/8)-(abs(sin(xval)*4)*2)+(sin(xabs)/1.5f);
+        (point_general->WIDTH/8)-(fabs(sin(xval)*4)*2)+(sin(xabs)/1.5f);
   p.y = -2.0f;
   p.z = (GLfloat)((point_general->HEIGHT/2)+((GLfloat)val_pcm
         *(0.11f*point_general->HEIGHT)/1800))/(GLfloat)
