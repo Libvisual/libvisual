@@ -1232,10 +1232,9 @@ static struct styles {
  * groups of 8.  For example, if the window is 256x128 then the image should
  * have size 258x130, and img should store ((258*130+7)&~7)=33544 pixels.
  */
-int blur(priv, beat, quiet)
-    BlurskPrivate *priv;
-    int beat;   /* Boolean: is this a beat? */
-    int quiet;  /* Boolean: is this the start of a quiet period? */
+int blur(BlurskPrivate *priv,
+         int beat /* Boolean: is this a beat? */,
+         int quiet /* Boolean: is this the start of a quiet period? */)
 {
     int     i, j, k;
     int     transition, transfrom;
