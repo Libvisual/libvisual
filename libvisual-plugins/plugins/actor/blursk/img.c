@@ -509,7 +509,7 @@ uint8_t *img_ripple(int *widthref, int *heightref, int *bplref)
     /* Compute the mapping table */
     for (i = QTY(tbl); --i >= 0; )
     {
-        tbl[i] = i + (uint8_t)((double)((QTY(tbl)/2 - abs(QTY(tbl)/2 - i)) >> 1) * sin((double)(i + img_rippleshift) / 10.0));
+        tbl[i] = i + (uint8_t)((double)((QTY(tbl)/2 - abs((int)QTY(tbl)/2 - i)) >> 1) * sin((double)(i + img_rippleshift) / 10.0));
     }
 
     /* Copy the image, expanding it for lower CPU speeds */
