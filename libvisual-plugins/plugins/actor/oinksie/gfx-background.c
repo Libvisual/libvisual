@@ -21,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include <math.h>
 #include <string.h>
 
 #include "common.h"
@@ -66,9 +67,9 @@ void _oink_gfx_background_circles_sine (OinksiePrivate *priv,
 		_oink_pixel_rotate (&x, &y, rotate);
 		_oink_pixel_rotate (&x1, &y1, rotate);
 
-		_oink_gfx_circle_filled (priv, buf, color - abs (sden * 20), 15 - abs (sden * 10),
+		_oink_gfx_circle_filled (priv, buf, color - fabs (sden * 20), 15 - fabs (sden * 10),
 				x + priv->screen_halfwidth, y + priv->screen_halfheight);
-		_oink_gfx_circle_filled (priv, buf, color - abs (sden * 20), 15 - abs (sden * 10),
+		_oink_gfx_circle_filled (priv, buf, color - fabs (sden * 20), 15 - fabs (sden * 10),
 				x1 + priv->screen_halfwidth, y1 + priv->screen_halfheight);
 		
 		tab += stretch;
