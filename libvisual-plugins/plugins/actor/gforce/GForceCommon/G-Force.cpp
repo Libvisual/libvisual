@@ -43,6 +43,7 @@ GForce::GForce( void* inRefCon ) :
 #endif
 	mConsoleLines( cDuplicatesAllowed, cOrderImportant ),
 	mLineExpireTimes( cOrderImportant ),
+	mT( 0 ),
 	mPal1( mT, mIntensityParam ),
 	mPal2( mT, mIntensityParam ),
 	mDeltaFields	( cNoDuplicates_CaseInsensitive, cSortLowToHigh ),
@@ -63,8 +64,7 @@ GForce::GForce( void* inRefCon ) :
 	mLastGetKeys		=
 	mT_MS				= 0;
 	mFrameCountStart	=
-	mNextPaletteUpdate	=
-	mT					= 0;
+	mNextPaletteUpdate		= 0;
 	mNextShapeChange	= mT + 10;
 	mNextFieldChange	= mT + 10;
 	mNextColorChange	= mT + 10;

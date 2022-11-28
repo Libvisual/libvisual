@@ -139,7 +139,10 @@ class GForce {
 		void					Print( UtilStr* inStr )											{ if ( inStr ) Print( inStr -> getCStr() );		}
 		void					Println( const char* inStr );
 		void					Println( UtilStr* inStr )										{ Println( inStr ? inStr -> getCStr() : 0 ); }
-				
+
+		// Linked dict vars/addressed data spaces
+		float					mT;
+
 		// Palette stuff
 		PixPalEntry				mPalette[ 256 ];
 		GF_Palette				mPal1, mPal2, *mGF_Palette, *mNextPal;
@@ -197,10 +200,6 @@ class GForce {
 		Expression				mFieldInterval,		mColorInterval,		mShapeInterval;
 		#define			TRANSITION_ALPHA	1.45
 
-
-		// Linked dict vars/addressed data spaces
-		float					mT;
-		
 		// Field stuff
 		DeltaField*				mField, *mNextField;
 		DeltaField				mField1, mField2;
