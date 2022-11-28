@@ -320,7 +320,7 @@ void l2_grilles_3d (JessPrivate *priv, uint8_t * buffer, float data[2][512], flo
 		{
 			y = RESFACTYF ((j - ((float) nb_y / 2)) * 15);
 
-			z = abs(RESFACTXF ((float) (data[1][i + nb_x * j]) * 256));
+			z = fabs(RESFACTXF ((float) (data[1][i + nb_x * j]) * 256));
 			color[i][j] = data[1][i + nb_x * j] * 64 + 100;
 
 			rotation_3d (&x, &y, &z, alpha, beta, gamma);
