@@ -15,6 +15,10 @@ namespace LV {
 
   typedef ::VisPluginType PluginType;
 
+  class LV_API PluginRegistry;
+  template<>
+  LV_API PluginRegistry* Singleton<PluginRegistry>::m_instance;
+
   //! Manages the registry of plugins
   //!
   //! @note This is a singleton class. Its only instance must
