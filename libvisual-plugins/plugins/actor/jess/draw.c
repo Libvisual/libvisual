@@ -124,7 +124,7 @@ void super_spectral_balls(JessPrivate *priv, uint8_t * buffer)
 			/* initialisation de la ligne */
 			priv->lifev[i][j] = LINE_VIE;
 			priv->vx[i][j] = RESFACTXF( 0.025*((float) i - 128.0) * 32 +0*
-					(1-(float)visual_random_context_int(priv->rcontext)/UINT32_MAX) );
+					(1-visual_random_context_int(priv->rcontext)/(float)UINT32_MAX) );
 			priv->vy[i][j] = RESFACTYF( (10+i)*i*priv->lys.Ed_moyen[i]*5000*(   (float)j+1)/4);
 			priv->x[i][j] = RESFACTXF( 2*(i - 128) ) +((float)j*(i-128))/2;
 			priv->y[i][j] = 0*RESFACTXF( yres2/2-(float)((i-128)*(i-128))/256) -20*j ;
@@ -190,8 +190,8 @@ void super_spectral(JessPrivate *priv, uint8_t * buffer)
 			/* initialisation de la ligne */
 			priv->lifet[i][j] = LINE_VIE;
 			priv->ssvx[i][j] = 0*RESFACTXF( 0.025*((float) i - 128.0) * 32 +
-					(float)visual_random_context_int(priv->rcontext)/UINT32_MAX*60 );
-			priv->ssvy[i][j] = 0*RESFACTYF( 64 +(float)visual_random_context_int(priv->rcontext)/UINT32_MAX*64);
+					visual_random_context_int(priv->rcontext)/(float)UINT32_MAX*60 );
+			priv->ssvy[i][j] = 0*RESFACTYF( 64 +visual_random_context_int(priv->rcontext)/(float)UINT32_MAX*64);
 			priv->ssx[i][j] = RESFACTXF( 2*(i - 128) ) +((float)j*(i-128))/2;
 			priv->ssy[i][j] = 0*RESFACTXF( yres2/2-(float)((i-128)*(i-128))/256) -20*j+60 ;
 			priv->sstheta[i][j] = 0;
@@ -514,7 +514,7 @@ void stars_create_state(JessPrivate *priv, float pos[3][STARS_MAX], int mode)
 			{
 				for(j=0; j<3 ; j++)
 				{
-					pos[j][i] = ((float)visual_random_context_int(priv->rcontext)/UINT32_MAX-0.5);
+					pos[j][i] = (visual_random_context_int(priv->rcontext)/(float)UINT32_MAX-0.5);
 
 				}
 			}
