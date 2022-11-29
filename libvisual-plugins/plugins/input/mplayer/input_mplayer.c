@@ -155,7 +155,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 
 	priv->mmap_area = mmap( 0, sizeof( mplayer_data_t ),
 			PROT_READ, MAP_SHARED, priv->fd, 0 );
-	visual_log_return_val_if_fail( (int)priv->mmap_area != -1, -1 );
+	visual_log_return_val_if_fail( priv->mmap_area != (void *)-1, -1 );
 
 	if ( priv->mmap_area->nch == 0 )
 	{
@@ -179,7 +179,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 	priv->mmap_area = mremap( priv->mmap_area, sizeof( mplayer_data_t ),
 			sizeof( mplayer_data_t ) + priv->mmap_area->bs,
 			0 );
-	if ( (int)priv->mmap_area == -1 )
+	if ( priv->mmap_area == (void *)-1 )
 	{
 		visual_log( VISUAL_LOG_CRITICAL, 
 				_("Could not mremap() area from file '%s' " \
