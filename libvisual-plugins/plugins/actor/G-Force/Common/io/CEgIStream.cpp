@@ -26,7 +26,7 @@ CEgIStream::CEgIStream( unsigned short int inBufSize ) {
 
 
 long CEgIStream::GetLong() {		
-	register unsigned long c, n = GetByte();
+	unsigned long c, n = GetByte();
 	
 	c = GetByte();
 	n = n | ( c << 8 );
@@ -49,7 +49,7 @@ float CEgIStream::GetFloat() {
 
 
 short int CEgIStream::GetShort() {
-	register unsigned long n = GetByte();
+	unsigned long n = GetByte();
 	
 	return (short int) ((GetByte() << 8) | n);
 }
@@ -59,7 +59,7 @@ short int CEgIStream::GetShort() {
 
 
 unsigned char CEgIStream::GetByte() {
-	register unsigned char c;
+	unsigned char c;
 	
 	if ( mIsTied ) {
 		if ( mPos != 0 ) {
@@ -83,7 +83,7 @@ unsigned char CEgIStream::GetByte() {
 
 
 unsigned char CEgIStream::PeekByte() {
-	register unsigned char c;
+	unsigned char c;
 	
 	if ( mIsTied ) {
 		if ( mPos != 0 )
