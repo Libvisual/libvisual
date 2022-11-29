@@ -165,6 +165,7 @@ dnl
 dnl Test program for basic POSIX threads functionality (taken from Glib)
 dnl
 m4_define([lv_thread_test],[
+#include <stdlib.h>
 #include <pthread.h> 
 int check_me = 0;
 void* func(void* data) {check_me = 42; return &check_me;}
