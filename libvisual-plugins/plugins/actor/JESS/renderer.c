@@ -282,7 +282,7 @@ void fade(float variable, uint8_t * dim)
 
 void render_deformation(JessPrivate *priv, int defmode)
 {
-	uint32_t bmax;
+	intptr_t bmax;
 	uint32_t *tab1 = NULL, *tab2, *tab3, *tab4, i;
 	uint8_t *pix = priv->pixel, *buf = priv->buffer, *aux;
 
@@ -294,7 +294,7 @@ void render_deformation(JessPrivate *priv, int defmode)
 		tab2 = priv->table2;
 		tab3 = priv->table3;
 		tab4 = priv->table4;
-		bmax = priv->resx * priv->resy + (uint32_t) priv->pixel;
+		bmax = priv->resx * priv->resy + (intptr_t) priv->pixel;
 
 		switch(defmode)
 		{
@@ -352,7 +352,7 @@ void render_deformation(JessPrivate *priv, int defmode)
 		}
 		for (i = 0; i < priv->resy * priv->resx; i++)
 		{
-			aux  =  (uint8_t *) ((*(tab1) << 2 ) + (uint32_t) priv->buffer);
+			aux  =  (uint8_t *) ((*(tab1) << 2 ) + (intptr_t) priv->buffer);
 			*(pix++) = *(aux++) ;
 			*(pix++) = *(aux++);  
 			*(pix++) = *(aux);  
@@ -373,7 +373,8 @@ void render_blur(JessPrivate *priv, int blur)
 	/* j'ai mis pixel par defaut... */
 
 	uint8_t *pix = priv->pixel;
-	uint32_t bmax,pitch_4;
+	intptr_t bmax;
+	uint32_t pitch_4;
 	
 	pix = priv->pixel;
 	if (priv->pixel == NULL)
@@ -387,7 +388,7 @@ void render_blur(JessPrivate *priv, int blur)
 	if (priv->video == 8)
 	{
 		if (visual_cpu_get_mmx ()) {
-			bmax = priv->resx * (priv->resy-1) + (uint32_t) priv->pixel;
+			bmax = priv->resx * (priv->resy-1) + (intptr_t) priv->pixel;
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
@@ -423,7 +424,7 @@ void render_blur(JessPrivate *priv, int blur)
 	else
 	{
 		pitch_4 = priv->pitch+4;
-		bmax = priv->pitch*(priv->resy-1) + (uint32_t) priv->pixel;
+		bmax = priv->pitch*(priv->resy-1) + (intptr_t) priv->pixel;
 
 		if (visual_cpu_get_mmx ()) {
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
