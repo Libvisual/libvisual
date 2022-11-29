@@ -183,7 +183,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 	{
 		visual_log( VISUAL_LOG_CRITICAL, 
 				_("Could not mremap() area from file '%s' " \
-					" (%p from %d to %d bytes): %s"),
+					" (%p from %zu to %zu bytes): %s"),
 				priv->sharedfile, 
 				priv->mmap_area, sizeof( mplayer_data_t ),
 				sizeof( mplayer_data_t ) + priv->mmap_area->bs,
