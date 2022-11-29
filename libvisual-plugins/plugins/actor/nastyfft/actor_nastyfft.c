@@ -80,7 +80,7 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL
 	}};
 
-	static const VisPluginInfo info[] = {{
+	static VisPluginInfo info[] = {{
 		.type = VISUAL_PLUGIN_TYPE_ACTOR,
 
 		.plugname = N_("nastyfft"),
