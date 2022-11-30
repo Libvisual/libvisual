@@ -1,1 +1,1 @@
-![](https://github.com/Libvisual/libvisual/workflows/Build%20and%20test/badge.svg)
+[![Build and test (Linux)](https://github.com/Libvisual/libvisual/actions/workflows/linux.yml/badge.svg)](https://github.com/Libvisual/libvisual/actions/workflows/linux.yml)
