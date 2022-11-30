@@ -69,7 +69,7 @@ UtilStr::~UtilStr() {
 fprintf(stderr, "~UtilStr()->(this = %.8X mBuf = %.8X)\n", this, mBuf);
 #endif
 	if ( mBuf ) 
-		delete mBuf;
+		delete[] mBuf;
 #if 0
 fprintf(stderr, "<-~UtilStr()\n");
 #endif
@@ -172,7 +172,7 @@ void UtilStr::Append( const void* inSrce, long numBytes ) {
 				if ( mStrLen > 0 )
 					Move( &mBuf[1], &oldBuf[1], mStrLen );
 			
-				delete oldBuf;
+				delete[] oldBuf;
 			}
 		}
 				

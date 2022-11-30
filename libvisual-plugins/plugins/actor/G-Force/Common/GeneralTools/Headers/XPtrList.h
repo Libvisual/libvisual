@@ -86,7 +86,7 @@ class XPtrList : protected UtilStr {
 		
 		//	Post:	Returns the number of items in this list.
 		//	Order:	O( 1 )
-		inline long				Count() const														{ return length() / 4;		}
+		inline long				Count() const														{ return length() / sizeof(void*);		}
 		
 		//	Post:	All ptrs in this list are randomly reordered.
 		void					Randomize();

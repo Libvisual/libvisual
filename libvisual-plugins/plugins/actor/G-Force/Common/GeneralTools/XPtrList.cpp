@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "XPtrList.h"
 #include "nodeClass.h"
 
@@ -21,12 +22,12 @@ void XPtrList::Assign( const XPtrList& inList ) {
 
 
 
-#define __ptr( idx )	*((void**) (base + idx * 4))
+#define __ptr( idx )	*((void**) (base + idx * sizeof(void*)))
 
 long XPtrList::FetchPredIndex( const void* inPtr ) const {
 	long M, L = 0, R = Count()-1;
 	char* base = getCStr();
-	long order = ( mOrdering == cSortHighToLow ) ? 0x80000000 : 0;
+	int order = ( mOrdering == cSortHighToLow ) ? INT_MIN : 0;
 
 	if ( R < 0 ) 
 		return 0;
@@ -74,7 +75,7 @@ long XPtrList::FindIndexOf( const void* inMatch ) const {
 
 	if ( mCompFcn ) {
 		i = FetchPredIndex( inMatch );
-		curPtr = getCStr() + 4 * i;
+		curPtr = getCStr() + sizeof(void*) * i;
 		endPtr = getCStr() + length();
 		while ( curPtr < endPtr ) {
 			i++;
@@ -85,7 +86,7 @@ long XPtrList::FindIndexOf( const void* inMatch ) const {
 			// Stop checking when we hit items that aren't equal to inMatch
 			else if ( mCompFcn( inMatch, ptr ) != 0 )
 				break;
-			curPtr += 4;
+			curPtr += sizeof(void*);
 		} }
 	else {
 		curPtr = getCStr();
@@ -96,7 +97,7 @@ long XPtrList::FindIndexOf( const void* inMatch ) const {
 			if ( *((void**) curPtr) == inMatch ) 
 				return i;
 			else
-				curPtr += 4;
+				curPtr += sizeof(void*);
 		}
 	}
 
@@ -111,10 +112,10 @@ long XPtrList::Add( const void* inPtrToAdd ) {
 	
 	if ( mCompFcn ) {
 		i = FetchPredIndex( inPtrToAdd );
-		Insert( i*4, (char*) &inPtrToAdd, 4 ); 
+		Insert( i*sizeof(void*), (char*) &inPtrToAdd, sizeof(void*) );
 		return i+1; }
 	else {
-		UtilStr::Append( (char*) &inPtrToAdd, 4 );
+		UtilStr::Append( (char*) &inPtrToAdd, sizeof(void*) );
 		return Count();
 	}
 }
@@ -131,7 +132,7 @@ void XPtrList::Add( const void* inPtrToAdd, long inN ) {
 	if ( inN > Count() )
 		inN = Count();
 	
-	Insert( inN * 4, (char*) &inPtrToAdd, 4 );
+	Insert( inN * sizeof(void*), (char*) &inPtrToAdd, sizeof(void*) );
 }
 
 
@@ -156,11 +157,11 @@ void*& XPtrList::operator[] ( const long inIndex ) {
 	
 	if ( inIndex >= 0 ) {
 		len = mStrLen;
-		if ( inIndex >= len >> 2 ) {
-			Insert( len, '\0', ( inIndex + 1 ) * 4 - len );
+		if ( inIndex >= len / sizeof(void*) ) {
+			Insert( len, '\0', ( inIndex + 1 ) * sizeof(void*) - len );
 		}
 			
-		return *( (void**) ( mBuf + inIndex * 4 + 1 ) ); }
+		return *( (void**) ( mBuf + inIndex * sizeof(void*) + 1 ) ); }
 	else
 		return sDummy;
 }
@@ -184,10 +185,10 @@ bool XPtrList::RemoveElement( long inIndex ) {
 		inIndex--;
 		if ( mOrdering == cOrderNotImportant ) {
 			s = getCStr();
-			*( (void**) (s + inIndex * 4) ) = *( (void**) (s + length() - 4 ) );
-			Trunc( 4 ); }
+			*( (void**) (s + inIndex * sizeof(void*)) ) = *( (void**) (s + length() - sizeof(void*) ) );
+			Trunc( sizeof(void*) ); }
 		else 
-			UtilStr::Remove( inIndex * 4 + 1, 4 );
+			UtilStr::Remove( inIndex * sizeof(void*) + 1, sizeof(void*) );
 		return true; }
 	else
 		return false;
@@ -199,7 +200,7 @@ bool XPtrList::RemoveElement( long inIndex ) {
 bool XPtrList::RemoveLast() {
 
 	if ( length() > 0 ) {
-		Trunc( 4 );
+		Trunc( sizeof(void*) );
 		return true; }
 	else
 		return false;
@@ -222,9 +223,9 @@ void XPtrList::MoveToHead( long inIndex ) {
 			inIndex--;
 			s = getCStr();
 			if ( mOrdering == cOrderNotImportant )
-				*( (void**) (s + inIndex * 4) ) = *( (void**) s);	
+				*( (void**) (s + inIndex * sizeof(void*)) ) = *( (void**) s);
 			else
-				UtilStr::Move( s+4, s, inIndex * 4 );
+				UtilStr::Move( s+sizeof(void*), s, inIndex * sizeof(void*) );
 			*( (void**) s) = p;
 		}
 	}
@@ -234,8 +235,8 @@ void XPtrList::MoveToHead( long inIndex ) {
 
 
 void* XPtrList::Fetch( long inIndex ) const {
-	if ( inIndex >= 1 && inIndex <= length() >> 2 )
-		return *( (void**) (getCStr() + ( inIndex - 1 ) * 4) );
+	if ( inIndex >= 1 && inIndex <= length() / sizeof(void*) )
+		return *( (void**) (getCStr() + ( inIndex - 1 ) * sizeof(void*)) );
 	else
 		return 0;
 }
@@ -244,8 +245,8 @@ void* XPtrList::Fetch( long inIndex ) const {
 bool XPtrList::Fetch( long inIndex, void** ioPtrDest ) const {
 	
 	if ( ioPtrDest ) {
-		if ( inIndex >= 1 && inIndex <= length() / 4 ) {
-			*ioPtrDest = *( (void**) (getCStr() + ( inIndex - 1 ) * 4) );
+		if ( inIndex >= 1 && inIndex <= length() / sizeof(void*) ) {
+			*ioPtrDest = *( (void**) (getCStr() + ( inIndex - 1 ) * sizeof(void*)) );
 			return true; }
 		else
 			*ioPtrDest = 0;

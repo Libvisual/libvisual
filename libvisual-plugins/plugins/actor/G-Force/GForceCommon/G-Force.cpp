@@ -1334,9 +1334,9 @@ void GForce::NewSong() {
 
 
 void GForce::CalcTrackTextPos() {
-	long height, width;
-	long x = mCurPort -> GetX();
-	long y = mCurPort -> GetY();
+	int32_t height, width;
+	int32_t x = mCurPort -> GetX();
+	int32_t y = mCurPort -> GetY();
 
 	mCurPort -> TextRect( mTrackText.getCStr(), width, height );
 	
@@ -1467,8 +1467,8 @@ void GForce::SetWinPort( WindowPtr inWin, const Rect* inRect ) {
 	if ( inRect )
 		r = *inRect;
 
-	long x = r.right - r.left;
-	long y = r.bottom - r.top;
+	int32_t x = r.right - r.left;
+	int32_t y = r.bottom - r.top;
 
 	SetPort( 0, r, false );
 
@@ -1480,8 +1480,8 @@ void GForce::SetWinPort( WindowPtr inWin, const Rect* inRect ) {
 	
 
 void GForce::SetPort( GrafPtr inPort, const Rect& inRect, bool inFullScreen ) {
-	long x = inRect.right - inRect.left;
-	long y = inRect.bottom - inRect.top;
+	int32_t x = inRect.right - inRect.left;
+	int32_t y = inRect.bottom - inRect.top;
 
 	mOutPort = inPort;
 	mAtFullScreen = inFullScreen;
