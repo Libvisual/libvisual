@@ -781,6 +781,7 @@ echo >>$outfile
    lv_alpha=$lv_alpha
    lv_sparc=$lv_sparc
    lv_ix86=$lv_ix86
+   lv_x86_64=$lv_x86_64
    lv_powerpc=$lv_powerpc
    lv_arch_unknown=$lv_arch_unknown
 
