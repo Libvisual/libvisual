@@ -124,7 +124,7 @@ namespace LV {
       value.i = 0x3f800000 | (t >> 9);
       return value.f - 1.0f;
   #else
-      return float (irnd) / Generator::max ();
+      return float (irnd) / float(Generator::max ());
   #endif
   }
 

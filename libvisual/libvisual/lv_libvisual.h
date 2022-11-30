@@ -41,6 +41,10 @@
 //! Libvisual namespace
 namespace LV {
 
+  class LV_API System;
+  template <>
+  LV_API System* Singleton<System>::m_instance;
+
   class LV_API System
       : public Singleton<System>
   {

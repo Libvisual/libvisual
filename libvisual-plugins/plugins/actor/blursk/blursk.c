@@ -338,10 +338,7 @@ static unsigned char *show_info(unsigned char *img, int height, int bpl)
                 case VISUAL_SONGINFO_TYPE_SIMPLE:
                     if(config.show_timestamp)
                     {
-                        if(lenstr != NULL)
-                            sprintf(buf, "{%s/%s} %s", posstr, lenstr, visual_songinfo_get_simple_name(songinfo));
-                        else
-                            sprintf(buf, "(%s) %s", posstr, visual_songinfo_get_simple_name(songinfo));
+                        sprintf(buf, "{%s/%s} %s", posstr, lenstr, visual_songinfo_get_simple_name(songinfo));
                         break;
                     }
                     else
