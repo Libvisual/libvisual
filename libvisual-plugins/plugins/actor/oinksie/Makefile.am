@@ -10,7 +10,7 @@ actor_oinksie_la_LDFLAGS = -module -avoid-version
 actor_oinksie_la_LIBADD = $(LIBVISUAL_LIBS)
 actor_oinksie_la_SOURCES = actor_oinksie.c\
 			   oinksie.c oinksie.h\
-			   config.c config.h\
+			   config.c oink-config.h\
 			   gfx-background.c gfx-background.h\
 			   gfx-misc.c gfx-misc.h\
 			   gfx-scope.c gfx-scope.h\
