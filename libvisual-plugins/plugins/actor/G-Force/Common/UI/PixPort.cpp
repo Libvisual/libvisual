@@ -38,7 +38,7 @@
 #endif
 
 
-long		PixPort::sTempSize			= 0;
+int32_t		PixPort::sTempSize			= 0;
 char*		PixPort::sTemp				= 0;
 
 	
@@ -175,7 +175,7 @@ void PixPort::SetClipRect( const Rect* inRect ) {
 }
 
 
-void PixPort::SetClipRect( long inSX, long inSY, long inEX, long inEY ) {
+void PixPort::SetClipRect( int32_t inSX, int32_t inSY, int32_t inEX, int32_t inEY ) {
 
 	Rect r;
 	
@@ -321,8 +321,8 @@ void PixPort::Init( int inWidth, int inHeight, int inDepth ) {
 	Rect r = inRect;					\
 	__clipPt( r.left, r.top )			\
 	__clipPt( r.right, r.bottom )		\
-	long width 	= r.right - r.left;		\
-	long height = r.bottom - r.top;
+	int32_t width   = r.right - r.left;             \
+	int32_t height = r.bottom - r.top;
 
 
 
@@ -333,10 +333,10 @@ void PixPort::Init( int inWidth, int inHeight, int inDepth ) {
 
 
 
-long PixPort::GetPortColor( long inR, long inG, long inB ) {
+int32_t PixPort::GetPortColor( int32_t inR, int32_t inG, int32_t inB ) {
 	int bitDepth  =mBytesPerPix << 3;
 	
-	long c;
+	int32_t c;
 	
 	if ( inR > 0xFFFF )	inR = 0xFFFF;
 	if ( inG > 0xFFFF )	inG = 0xFFFF;
@@ -359,7 +359,7 @@ long PixPort::GetPortColor( long inR, long inG, long inB ) {
 
 
 
-long PixPort::SetBackColor( const RGBColor& RGB ) {
+int32_t PixPort::SetBackColor( const RGBColor& RGB ) {
 
 	mBackColor = GetPortColor( RGB );
 	
@@ -367,7 +367,7 @@ long PixPort::SetBackColor( const RGBColor& RGB ) {
 }
 
 
-long PixPort::SetBackColor( long inR, long inG, long inB ) {
+int32_t PixPort::SetBackColor( int32_t inR, int32_t inG, int32_t inB ) {
 	mBackColor = GetPortColor( inR, inG, inB );
 
 	return mBackColor;
@@ -435,18 +435,18 @@ void PixPort::GaussBlur( int inBoxWidth, const Rect& inRect, void* inDestBits ) 
 	#endif
 
 	// 3 box convolutions, 3 colors per pixel, 4 bytes per color
-	long 	boxTempSize	= 36 * inBoxWidth;
+	int32_t	boxTempSize     = 36 * inBoxWidth;
 	char*	tempBits	= 0;
-	unsigned long*	boxTemp;
-	long	imgOffset	= mBytesPerPix * r.left + r.top * mBytesPerRow;
-	long	bytesNeeded	= mBytesPerRow * (mY + 2) + boxTempSize;
+	uint32_t*	boxTemp;
+	int32_t imgOffset	= mBytesPerPix * r.left + r.top * mBytesPerRow;
+	int32_t bytesNeeded	= mBytesPerRow * (mY + 2) + boxTempSize;
 	
 	
 	// Resort to app's heap for temp mem if failed temp mem attempt or in win32
 	tempBits = mBlurTemp.Dim( bytesNeeded );
 
 	// Have the box temp and the pixel temp rgns use the same handle
-	boxTemp = (unsigned long*) tempBits;
+	boxTemp = (uint32_t*) tempBits;
 	tempBits += boxTempSize;
 	
 	if ( ! inDestBits )
@@ -477,7 +477,7 @@ void PixPort::CrossBlur( const Rect& inRect ) {
 	#endif
 
 	// 3 box convolutions, 3 colors per pixel, 4 bytes per color
-	long	imgOffset	= mBytesPerPix * r.left + r.top * mBytesPerRow;
+	int32_t imgOffset       = mBytesPerPix * r.left + r.top * mBytesPerRow;
 	
 	unsigned char* tempBits = (unsigned char*) mBlurTemp.Dim( mX * 3 );
 
@@ -539,8 +539,7 @@ void PixPort::CopyBits( PixPort& inDestPort, const Rect* inSrce, const Rect* inD
 	}
 }
 
-
-void PixPort::Line( int sx, int sy, int ex, int ey, long inColor ) {
+void PixPort::Line( int sx, int sy, int ex, int ey, int32_t inColor ) {
 	
 	if ( mBytesPerPix == 2 ) 
 		Line16( sx, sy, ex, ey, inColor );
@@ -555,7 +554,7 @@ void PixPort::Line( int sx, int sy, int ex, int ey, long inColor ) {
 #define CLR_LINE_THR	520
 
 void PixPort::Line( int sx, int sy, int ex, int ey, const RGBColor& inS, const RGBColor& inE ) {
-	long R, G, B, dR, dG, dB;
+	int32_t R, G, B, dR, dG, dB;
 	
 	R = inS.red;
 	G = inS.green;
@@ -568,7 +567,7 @@ void PixPort::Line( int sx, int sy, int ex, int ey, const RGBColor& inS, const R
 	if (	dR > - CLR_LINE_THR && dR < CLR_LINE_THR &&
 			dG > - CLR_LINE_THR && dG < CLR_LINE_THR &&
 			dB > - CLR_LINE_THR && dB < CLR_LINE_THR ) {
-		long color;
+		int32_t color;
 
 		if ( mBytesPerPix == 2 ) {
 			color = __Clr16( R, G, B );
@@ -758,12 +757,12 @@ void PixPort::SetTextColor( PixPalEntry& inColor ) {
 
 	#ifdef UNIX_X
 	/* Palette index got stored */
-	mfl_SetTextColor(mWorld, *((long *)&inColor) >> 24);
+	mfl_SetTextColor(mWorld, *((int32_t *)&inColor) >> 24);
 	#endif
 }
 
-void PixPort::TextRect( const char* inStr, long& outWidth, long& outHeight ) {
-	long width, pos;
+void PixPort::TextRect( const char* inStr, int32_t& outWidth, int32_t& outHeight ) {
+	int32_t width, pos;
 	char c;
 	
 	outWidth  = 0;
@@ -810,9 +809,8 @@ void PixPort::TextRect( const char* inStr, long& outWidth, long& outHeight ) {
 }
 
 
-
-void PixPort::DrawText( long inX, long inY, const char* inStr ) {
-	long pos;
+void PixPort::DrawText( int32_t inX, int32_t inY, const char* inStr ) {
+	int32_t pos;
 	char c;
 	
 	__setupPort
@@ -849,8 +847,7 @@ void PixPort::DrawText( long inX, long inY, const char* inStr ) {
 	__restorePort
 }
 
-
-void PixPort::SetLineWidth( long inLineWidth ) {
+void PixPort::SetLineWidth( int32_t inLineWidth ) {
 	if ( inLineWidth <= 0 )
 		mLineWidth = 1;
 	else if ( inLineWidth > MAX_LINE_WIDTH )
@@ -894,8 +891,8 @@ void PixPort::EraseRect( const Rect* inRect ) {
 // Assembly note w/ branch prediction:  the first block is chosen to be more probable
 
 #include <stdio.h>
-void PixPort::Fade( const char* inSrce, char* inDest, long inBytesPerRow, long inX, long inY, unsigned long* grad ) {
-	unsigned long x, y, u, v, u1, v1, P1, P2, P3, P4, p;
+void PixPort::Fade( const char* inSrce, char* inDest, int32_t inBytesPerRow, int32_t inX, int32_t inY, uint32_t* grad ) {
+	uint32_t x, y, u, v, u1, v1, P1, P2, P3, P4, p;
 	const char* srceMap;
 	const char* srce;
 

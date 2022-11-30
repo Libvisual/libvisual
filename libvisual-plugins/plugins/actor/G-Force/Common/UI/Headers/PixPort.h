@@ -1,6 +1,8 @@
 #ifndef _PIXPORT_
 #define _PIXPORT_
 
+#include <stdint.h>
+
 #include "EgCommon.h"
 
 #include "UtilStr.h"
@@ -34,12 +36,12 @@ class DeltaFieldData {
 
 class PixTextStyle {
 	public:
-	long					mPointSize;
+	int32_t					mPointSize;
 	UtilStr					mFontName;
-	long					mStyle;
-	long					mDeviceLineHeight;
+	int32_t					mStyle;
+	int32_t					mDeviceLineHeight;
 	long					mOSFontID;
-	long					mOSStyle;	
+	int32_t					mOSStyle;
 };
 
 enum PixDrawMode {
@@ -49,7 +51,7 @@ enum PixDrawMode {
 };
 
 #define __Clr8(r,g,b)	( r >> 8 )
-#define __Clr16(r,g,b)	((( ((unsigned long) r) & 0xF800) >> 1) | ((((unsigned long) g) & 0xF800) >> 6) | (((unsigned long) b) >> 11))
+#define __Clr16(r,g,b) ((( ((uint32_t) r) & 0xF800) >> 1) | ((((uint32_t) g) & 0xF800) >> 6) | (((uint32_t) b) >> 11))
 #if EG_MAC != 0 || defined(UNIX_X)
 #define	__Clr32(r,g,b)	(((r & 0xFF00) << 8) | (g & 0xFF00) | (b >> 8))
 #elif EG_WIN
@@ -94,17 +96,17 @@ class PixPort {
 			
 
 		// Returns the current bit color depth from Init(). (8, 16, or 32)
-		long					GetDepth()											{ return mBytesPerPix * 8; 	}
+		int32_t					GetDepth()											{ return mBytesPerPix * 8; 	}
 	
 		// See how many bytes there are per row
-		long					GetRowSize() 										{	return mBytesPerRow;	}
+		int32_t					GetRowSize() 										{	return mBytesPerRow;	}
 		
 		
 		//	Sets the background colors (for erase rect and Blur() )
 		//  Returns the new pixel entry for the given color and this port
 		//  Note:  For 8 bit ports, the red 0-2^16 component maps directly to 0-255 pixel value
-		long					SetBackColor( const RGBColor& inColor );
-		long					SetBackColor( long inR, long inG, long inB );
+		int32_t					SetBackColor( const RGBColor& inColor );
+		int32_t					SetBackColor( int32_t inR, int32_t inG, int32_t inB );
 
 		//	Blurs the rect given in this image, with a given box filter of size (1=no blur)
 		//	If the dest is 0, the blur is applied to itself
@@ -114,18 +116,18 @@ class PixPort {
 		void					CrossBlur( const Rect& inRect );
 
 		// 	Sets the width of the pen
-		void					SetLineWidth( long inWidth );
+		void					SetLineWidth( int32_t inWidth );
 		
 		//	Draw a line.  Use GetPortColor() to get a device color for a RGB
-		void					Line( int sx, int sy, int ex, int ey, long inColor );
+		void					Line( int sx, int sy, int ex, int ey, int32_t inColor );
 		void					Line( int sx, int sy, int ex, int ey, const RGBColor& inS, const RGBColor& inE );
 
 		//	Sets the clip rgn for all drawing operations.  0 for the cliprect means to remove all clipping.
 		void					SetClipRect( const Rect* inRect = 0 );
-		void					SetClipRect( long inSX, long inSY, long inEX, long inEY );
+		void					SetClipRect( int32_t inSX, int32_t inSY, int32_t inEX, int32_t inEY );
 		
 		//  Note:  For 8 bit ports, the red 0-2^16 component maps directly to 0-255 pixel value
-		inline long				GetPortColor_inline( long inR, long inG, long inB ) {
+		inline int32_t			GetPortColor_inline( int32_t inR, int32_t inG, int32_t inB ) {
 			if ( mBytesPerPix == 2 )
 				return __Clr16( inR, inG, inB );
 			else if ( mBytesPerPix == 4 ) 
@@ -137,11 +139,11 @@ class PixPort {
 		void					SetTextMode( PixDrawMode inMode );
 		void					SetTextColor( PixPalEntry& inColor );
 		void					SetTextColor( RGBColor& inColor );
-		void					DrawText( long inX, long inY, UtilStr& inStr )									{ DrawText( inX, inY, inStr.getCStr() ); 	}
-		void					DrawText( long inX, long inY, const char* inStr );
+		void					DrawText( int32_t inX, int32_t inY, UtilStr& inStr )							{ DrawText( inX, inY, inStr.getCStr() ); 	}
+		void					DrawText( int32_t inX, int32_t inY, const char* inStr );
 
 		// See how big some text is going to be...
-		void					TextRect( const char* inStr, long& outWidth, long& outHeight );
+		void					TextRect( const char* inStr, int32_t& outWidth, int32_t& outHeight );
 		
 		//	Set the given rect to the current background color.  If no rect is specified, the entire port rect is cleared.
 		void					EraseRect( const Rect* inRect = 0 );
@@ -153,15 +155,15 @@ class PixPort {
 				
 		//	Gets a port/device color for a given RGB		
 		//  Note:  For 8 bit ports, the red 0-2^16 component maps directly to 0-255 pixel value
-		long					GetPortColor( long inR, long inG, long inB );
-		inline long				GetPortColor( const RGBColor& inColor )  		{ return GetPortColor( inColor.red, inColor.green, inColor.blue );  }
+		int32_t					GetPortColor( int32_t inR, int32_t inG, int32_t inB );
+		inline int32_t			GetPortColor( const RGBColor& inColor )  		{ return GetPortColor( inColor.red, inColor.green, inColor.blue );  }
 	
 		//	The guts for G-Force...  This PixPort must be in 8-bit mode to do anything.
 #if 0
 		void					Fade( DeltaFieldData* inGrad )									{ Fade( mBits, mBytesPerRow, mX, mY, inGrad ); } 
 
 #endif
-		void					Fade( PixPort& inDest, DeltaFieldData* inGrad )					{ Fade( mBits, inDest.mBits, mBytesPerRow, mX, mY, (unsigned long*) inGrad -> mField ); } 
+		void					Fade( PixPort& inDest, DeltaFieldData* inGrad )					{ Fade( mBits, inDest.mBits, mBytesPerRow, mX, mY, (uint32_t*) inGrad -> mField ); }
 		
 	
 		//	When this sprocket is set to 256 colors, you may change the palette it's using any time
@@ -184,12 +186,12 @@ class PixPort {
 		void					SelectFont( long inPixFontID );
 
 
-		long					GetX()			{ return mX; }
-		long					GetY()			{ return mY; }
+		int32_t					GetX()			{ return mX; }
+		int32_t					GetY()			{ return mY; }
 				
 		
 		static char*			sTemp;
-		static long				sTempSize;
+		static int32_t			sTempSize;
 
 
 		#if EG_MAC
@@ -203,11 +205,11 @@ class PixPort {
 
 	
 		Rect					mClipRect;
-		long					mBytesPerPix;
-		long					mBytesPerRow;
-		long					mX, mY;
-		long					mBackColor;
-		long					mLineWidth;
+		int32_t					mBytesPerPix;
+		int32_t					mBytesPerRow;
+		int32_t					mX, mY;
+		int32_t					mBackColor;
+		int32_t					mLineWidth;
 		
 		char*					mBits;
 		
@@ -218,7 +220,7 @@ class PixPort {
 		
 		XPtrList				mFonts;
 		long					mCurFontID;
-		long					mDeviceLineHeight;
+		int32_t					mDeviceLineHeight;
 					
 		#if EG_WIN
 		BITMAPINFO				mInfo;
@@ -230,26 +232,25 @@ class PixPort {
 		void					EraseRect16( const Rect* inRect );
 		void					EraseRect32( const Rect* inRect );
 
-
-		static void				BoxBlur8 ( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowSize, int inDestRowSize, unsigned long* temp, unsigned long inBackColor ); 
-		static void				BoxBlur16( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowSize, int inDestRowSize, unsigned long* temp, unsigned long inBackColor ); 
-		static void				BoxBlur32( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowSize, int inDestRowSize, unsigned long* temp, unsigned long inBackColor ); 
+		static void				BoxBlur8 ( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowSize, int inDestRowSize, uint32_t* temp, uint32_t inBackColor );
+		static void				BoxBlur16( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowSize, int inDestRowSize, uint32_t* temp, uint32_t inBackColor );
+		static void				BoxBlur32( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowSize, int inDestRowSize, uint32_t* temp, uint32_t inBackColor );
 
 		static void				CrossBlur8 ( char* inSrce, int inWidth, int inHeight, int inBytesPerRow, unsigned char* inRowBuf );
 		static void				CrossBlur16( char* inSrce, int inWidth, int inHeight, int inBytesPerRow, unsigned char* inRowBuf );
 		static void				CrossBlur32( char* inSrce, int inWidth, int inHeight, int inBytesPerRow, unsigned char* inRowBuf );
 
-		void					Line8 ( int sx, int sy, int ex, int ey, long inColor );
-		void					Line16( int sx, int sy, int ex, int ey, long inColor );
-		void					Line32( int sx, int sy, int ex, int ey, long inColor );
+		void					Line8 ( int sx, int sy, int ex, int ey, int32_t inColor );
+		void					Line16( int sx, int sy, int ex, int ey, int32_t inColor );
+		void					Line32( int sx, int sy, int ex, int ey, int32_t inColor );
 
 
-		void					Line8 ( int sx, int sy, int ex, int ey, long inR, long dR );
-		void					Line16( int sx, int sy, int ex, int ey, const RGBColor& inS, long dR, long dG, long dB );
-		void					Line32( int sx, int sy, int ex, int ey, const RGBColor& inS, long dR, long dG, long dB );
+		void					Line8 ( int sx, int sy, int ex, int ey, int32_t inR, int32_t dR );
+		void					Line16( int sx, int sy, int ex, int ey, const RGBColor& inS, int32_t dR, int32_t dG, int32_t dB );
+		void                                    Line32( int sx, int sy, int ex, int ey, const RGBColor& inS, int32_t dR, int32_t dG, int32_t dB );
 
-		static void				Fade( const char* inSrce, char* inDest, long inBytesPerRow, long inX, long inY, unsigned long* inGrad );
-		static void				Fade( char* ioPix, long inBytesPerRow, long inX, long inY, DeltaFieldData* inGrad );
+		static void				Fade( const char* inSrce, char* inDest, int32_t inBytesPerRow, int32_t inX, int32_t inY, uint32_t* inGrad );
+		static void				Fade( char* ioPix, int32_t inBytesPerRow, int32_t inX, int32_t inY, DeltaFieldData* inGrad );
 };
 
 #endif

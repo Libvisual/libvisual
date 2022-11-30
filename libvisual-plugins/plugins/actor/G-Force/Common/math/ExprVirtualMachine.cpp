@@ -21,7 +21,7 @@
 
 
 #define __addInst( opcode, data16 )		long op = (opcode) | (data16);	\
-										mProgram.Append( &op, 4 );
+										mProgram.Append( &op, sizeof(long) );
 					
 
 #define REG_IN_USE	0x1
@@ -184,7 +184,7 @@ void ExprVirtualMachine::Loadi( float inVal, int inReg ) {
 void ExprVirtualMachine::Loadi( float* inVal, int inReg ) {
 	
 	__addInst( OP_LOAD, inReg )
-	mProgram.Append( &inVal, 4 );
+	mProgram.Append( &inVal, sizeof(float*) );
 }	
 
 
@@ -193,7 +193,7 @@ void ExprVirtualMachine::UserFcnOp( int inReg, ExprUserFcn** inFcn ) {
 	
 	if ( inFcn ) {
 		__addInst( OP_USER_FCN, inReg )
-		mProgram.Append( &inFcn, 4 );  }
+		mProgram.Append( &inFcn, sizeof(void*) );  }
 	else
 		Loadi( 0.0, inReg );
 }
@@ -246,7 +246,7 @@ float ExprVirtualMachine::Execute/*_Inline*/() {
 	
 	while ( PC < end ) {
 		inst = *((long*) PC);	
-		PC += 4;
+		PC += sizeof(long);
 
 		opcode = inst & 0xFF000000;	
 		r1 = inst & 0xFF;
@@ -254,10 +254,10 @@ float ExprVirtualMachine::Execute/*_Inline*/() {
 		
 		if ( opcode == OP_LOADIMMED ) {
 			v1 = *((float*) PC);
-			PC += 4; }
+			PC += sizeof(float); }
 		else if ( opcode == OP_LOAD ) {				
 			v1 = **((float**) PC);
-			PC += 4; }
+			PC += sizeof(float*); }
 		else {
 
 			_fetch( r1, v1 )
@@ -290,7 +290,7 @@ float ExprVirtualMachine::Execute/*_Inline*/() {
 						v1 = fcn -> mFcn[ 0 ];
 					else
 						v1 = fcn -> mFcn[ size - 1 ];
-					PC += 4;
+					PC += sizeof(void*);
 					break;
 				  }	
 				case OP_WLINEAR:
@@ -299,10 +299,10 @@ float ExprVirtualMachine::Execute/*_Inline*/() {
 					float temp = **((float**) PC);
 					if ( opcode == OP_WEIGHT ) {
 						v1 = temp * v2 + ( 1.0 - temp ) * v1;
-						PC += 4; }
+						PC += sizeof(float*); }
 					else {
 						v1 = **((float**) PC) * v1 + **((float**) PC+4) * v2;
-						PC += 8;
+						PC += sizeof(float*) * 2;
 					}
 					break;
 		
@@ -331,11 +331,11 @@ void ExprVirtualMachine::Chain( ExprVirtualMachine& inVM, float* inC1, float* in
 	// Note that the output is moved to register 0
 	if ( inC2 ) {
 		__addInst( OP_WLINEAR, ( tempReg << 8 ) | 0 )
-		mProgram.Append( &inC1, 4 );
-		mProgram.Append( &inC2, 4 ); }
+		mProgram.Append( &inC1, sizeof(float*) );
+		mProgram.Append( &inC2, sizeof(float*) ); }
 	else {
 		__addInst( OP_WEIGHT, ( tempReg << 8 ) | 0 )
-		mProgram.Append( &inC1, 4 );	
+		mProgram.Append( &inC1, sizeof(float*) );
 	}
 	
 	// The reg coloring for this VM is the OR of the two's coloring

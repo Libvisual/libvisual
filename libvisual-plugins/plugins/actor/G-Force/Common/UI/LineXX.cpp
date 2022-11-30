@@ -4,33 +4,33 @@
 
 #if CLR_INTERP
 	#if P_SZ != 1
-	void PixPort::_Line( int sx, int sy, int ex, int ey, const RGBColor& inS, long dR, long dG, long dB ) {
+	void PixPort::_Line( int sx, int sy, int ex, int ey, const RGBColor& inS, int32_t dR, int32_t dG, int32_t dB ) {
 	#else
-	void PixPort::_Line( int sx, int sy, int ex, int ey, long R, long dR ) {
+	void PixPort::_Line( int sx, int sy, int ex, int ey, int32_t R, int32_t dR ) {
 	#endif
 #else
-	void PixPort::_Line( int sx, int sy, int ex, int ey, long color ) {
+	void PixPort::_Line( int sx, int sy, int ex, int ey, int32_t color ) {
 #endif
-	long xDirection, rowOffset, error_term;
+	int32_t xDirection, rowOffset, error_term;
 	char* basePtr, *center;
-	long xmov, ymov, dx, dy, t, j, lw;
-	long penExtents;
+	int32_t xmov, ymov, dx, dy, t, j, lw;
+	int32_t penExtents;
 
 	#if CLR_INTERP
-	long color;
+	int32_t color;
 	#if P_SZ != 1
-	long R = inS.red;
-	long G = inS.green;
-	long B = inS.blue;
+	int32_t R = inS.red;
+	int32_t G = inS.green;
+	int32_t B = inS.blue;
 	#endif
 	#endif
 
 	// Half the coordinte if it's large (we copy the sign bit in the 2^31 digit)
 	// To do: use float clipping
-	sx = ( ( (long) (sx & 0x80000000) ) >> 1 ) | ( sx & 0x3FFFFFFF );
-	ex = ( ( (long) (ex & 0x80000000) ) >> 1 ) | ( ex & 0x3FFFFFFF );
-	sy = ( ( (long) (sy & 0x80000000) ) >> 1 ) | ( sy & 0x3FFFFFFF );
-	ey = ( ( (long) (ey & 0x80000000) ) >> 1 ) | ( ey & 0x3FFFFFFF );
+	sx = ( ( (int32_t) (sx & 0x80000000) ) >> 1 ) | ( sx & 0x3FFFFFFF );
+	ex = ( ( (int32_t) (ex & 0x80000000) ) >> 1 ) | ( ex & 0x3FFFFFFF );
+	sy = ( ( (int32_t) (sy & 0x80000000) ) >> 1 ) | ( sy & 0x3FFFFFFF );
+	ey = ( ( (int32_t) (ey & 0x80000000) ) >> 1 ) | ( ey & 0x3FFFFFFF );
 
 	// Modify the line width so that the actual width matches mLineWidth
 	lw = mLineWidth;	
@@ -74,13 +74,13 @@
 
 		
 	#if CLR_INTERP && P_SZ != 1
-	long len = sqrt( static_cast<float>(dx * dx + dy * dy) ) + 1;
+	int32_t len = sqrt( static_cast<float>(dx * dx + dy * dy) ) + 1;
 	dR /= len;
 	dG /= len;
 	dB /= len;
 	color = __Clr( R, G, B );
 	#elif CLR_INTERP && P_SZ == 1
-	long len = sqrt( static_cast<float>(dx * dx + dy * dy) ) + 1;
+	int32_t len = sqrt( static_cast<float>(dx * dx + dy * dy) ) + 1;
 	dR /= len;
 	color = __Clr( R, G, B );
 	#endif
@@ -128,7 +128,7 @@
 	basePtr = mBits + sy * mBytesPerRow + sx * P_SZ;
 	error_term = 0;
 	
-	long halfW;
+	int32_t halfW;
 
 	if ( lw > 1 ) {
 	
@@ -136,14 +136,14 @@
 		
 		
 		// Make a circle for the pen
-		long c_x, tw = mLineWidth;
+		int32_t c_x, tw = mLineWidth;
 		halfW = ( tw ) >> 1;
 		
 		if ( tw < 12 ) {
 			char* c_shape;
 			__circ( tw, c_shape )
 			for ( j = 0; j < tw; j++ ) {
-				long tmp = j - halfW;
+				int32_t tmp = j - halfW;
 				c_x = c_shape[ j ];
 				center = basePtr + (j-halfW) * mBytesPerRow;
 				for ( int k = c_x; k < tw - c_x; k++ ){
@@ -153,8 +153,8 @@
 		else {		
 		
 			for ( j = 0; j < tw; j++ ) {
-				long tmp = j - halfW;
-				c_x = halfW - ( ( long ) sqrt( static_cast<float>(halfW * halfW - tmp * tmp) ) );
+				int32_t tmp = j - halfW;
+				c_x = halfW - ( ( int32_t ) sqrt( static_cast<float>(halfW * halfW - tmp * tmp) ) );
 				center = basePtr + (j-halfW) * mBytesPerRow;
 				for ( int k = c_x; k < tw - c_x; k++ ){
 					((PIXTYPE*) center)[k-halfW] = color;

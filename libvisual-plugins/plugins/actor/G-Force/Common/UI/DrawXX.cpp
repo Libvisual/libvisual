@@ -19,7 +19,7 @@
 	#define _EraseRect		EraseRect16
 	#define __Clr(r,g,b)	(((r & 0xF800) >> 1) | ((g & 0xF800) >> 6) | (b >> 11))
 #elif P_SZ == 4
-	#define PIXTYPE unsigned long
+	#define PIXTYPE uint32_t
 	#define REDSHIFT 16
 	#define GRNSHIFT 8
 	#define COLMASK 0xFF
@@ -304,7 +304,7 @@ void PixPort::_LineW( int sx, int sy, int ex, int ey, int inWidth, long inColor 
 
 
 void PixPort::_EraseRect( const Rect* inRect ) {
-	long width, height;
+	int32_t width, height;
 	int x, y;
 	char*	base;
 	Rect	r;
@@ -340,8 +340,8 @@ void PixPort::_EraseRect( const Rect* inRect ) {
 
 
 void PixPort::_CrossBlur( char* inSrce, int inWidth, int inHeight, int inBytesPerRow, unsigned char* inRowBuf ) {
-	long leftR, leftG, leftB, cenR, cenG, cenB, rightR, rightG, rightB;
-	long topR, topG, topB, val, botR, botG, botB, x;
+	int32_t leftR, leftG, leftB, cenR, cenG, cenB, rightR, rightG, rightB;
+	int32_t topR, topG, topB, val, botR, botG, botB, x;
 	unsigned char *rowPos;
 	
 	// Init inRowBuf[]
@@ -409,14 +409,14 @@ void PixPort::_CrossBlur( char* inSrce, int inWidth, int inHeight, int inBytesPe
 
 
 
-#define UL unsigned long
+#define UL uint32_t
 #define DENOM_SHIFT 14
 
 
-void PixPort::_BoxBlur( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowWidth, int inDestRowWidth, unsigned long* b, unsigned long inBackColor ) {
-	unsigned long* bEnd;
+void PixPort::_BoxBlur( char* inSrce, char* inDest, int inBoxWidth, int inWidth, int inHeight, int inSrceRowWidth, int inDestRowWidth, uint32_t* b, uint32_t inBackColor ) {
+	uint32_t* bEnd;
 	char *dest;
-	unsigned long b1R, b1G, b1B, b2R, b2G, b2B, b3R, b3G, b3B, val, box9W, i, numerator;
+	uint32_t b1R, b1G, b1B, b2R, b2G, b2B, b3R, b3G, b3B, val, box9W, i, numerator;
 	int x, half, useWidth;
 	
 	i = inBoxWidth * inBoxWidth * inBoxWidth;

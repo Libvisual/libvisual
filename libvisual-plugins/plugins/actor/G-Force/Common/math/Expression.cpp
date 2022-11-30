@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <gettext.h>
+#include <stdlib.h>
 
 #include "Expression.h"
 
@@ -124,7 +125,7 @@ doOp:				if ( pos > startPos && pos + 1 < inLen ) {
 			if ( firstParen > 0 ) {
 
 				// Translate the string of the fcn to a (one byte) sub op code number
-				fcnCall = *((long*) inStr);
+				fcnCall = *((int32_t*) inStr);
 				#if EG_WIN || (defined(UNIX_X) && !defined(WORDS_BIGENDIAN))
 				fcnCall = EgOSUtils::RevBytes( fcnCall );
 				#endif
