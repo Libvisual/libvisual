@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 --install
 
 SUBDIRS = plugins po
 
