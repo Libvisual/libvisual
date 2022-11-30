@@ -4,6 +4,8 @@
 #include <gettext.h>
 #include <stdlib.h>
 
+#include <stdint.h>
+
 #include "Expression.h"
 
 #include "ExpressionDict.h"
