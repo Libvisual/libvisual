@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libvisual 0.4.0-2.2\n"
-"Report-Msgid-Bugs-To: http://libvisual.sf.net\n"
+"Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
 "POT-Creation-Date: 2006-03-21 02:43+0800\n"
 "PO-Revision-Date: 2017-08-10 18:46+GMT\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
@@ -16,87 +16,87 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: libvisual/lv_libvisual.c:137
+#: libvisual/lv_libvisual.c:138
 msgid "Show info for"
 msgstr "Zeige Information über"
 
-#: libvisual/lv_libvisual.c:138
+#: libvisual/lv_libvisual.c:139
 msgid "seconds"
 msgstr "Sekunden"
 
-#: libvisual/lv_libvisual.c:139
+#: libvisual/lv_libvisual.c:140
 msgid "cover art width"
 msgstr "Breite des Covers"
 
-#: libvisual/lv_libvisual.c:140
+#: libvisual/lv_libvisual.c:141
 msgid "cover art height"
 msgstr "Höhe des Covers"
 
-#: libvisual/lv_libvisual.c:142
+#: libvisual/lv_libvisual.c:143
 msgid "Show song information"
 msgstr "Zeige Liedinformation"
 
-#: libvisual/lv_libvisual.c:146
+#: libvisual/lv_libvisual.c:147
 msgid "Show song information in plugins"
 msgstr "Zeige Liedinformation in den Erweiterungen"
 
-#: libvisual/lv_libvisual.c:286
+#: libvisual/lv_libvisual.c:287
 msgid "Over initialized"
 msgstr "Überinitialisiert"
 
-#: libvisual/lv_libvisual.c:292
+#: libvisual/lv_libvisual.c:293
 msgid "no progname"
 msgstr "kein Programmname"
 
-#: libvisual/lv_libvisual.c:296 libvisual/lv_libvisual.c:311
+#: libvisual/lv_libvisual.c:297 libvisual/lv_libvisual.c:312
 msgid "Could not set program name"
 msgstr "Programmname kann nicht gesetzt werden."
 
-#: libvisual/lv_libvisual.c:298
+#: libvisual/lv_libvisual.c:299
 msgid "Initialization failed, bad argv, argc"
 msgstr "Initialisierung fehlgeschlagen, falsche argv, argc"
 
-#: libvisual/lv_libvisual.c:408
+#: libvisual/lv_libvisual.c:409
 msgid "Never initialized"
 msgstr "Nicht initialisiert"
 
-#: libvisual/lv_libvisual.c:418
+#: libvisual/lv_libvisual.c:419
 #, c-format
 msgid "Plugins references list: destroy failed: %s"
 msgstr "Erweiterungs-Bezugsliste: Löschen fehlgeschlagen: %s"
 
-#: libvisual/lv_libvisual.c:422
+#: libvisual/lv_libvisual.c:423
 #, c-format
 msgid "Actor plugins list: destroy failed: %s"
 msgstr "Interpreten-Erweiterungsliste: Löschen fehlgeschlagen: %s"
 
-#: libvisual/lv_libvisual.c:426
+#: libvisual/lv_libvisual.c:427
 #, c-format
 msgid "Input plugins list: destroy failed: %s"
 msgstr "Eingabe-Erweiterungsliste: Löschen fehlgeschlagen: %s"
 
-#: libvisual/lv_libvisual.c:430
+#: libvisual/lv_libvisual.c:431
 #, c-format
 msgid "Morph plugins list: destroy failed: %s"
 msgstr "Verformungs-Erweiterungsliste: Löschen fehlgeschlagen: %s"
 
-#: libvisual/lv_libvisual.c:434
+#: libvisual/lv_libvisual.c:435
 #, c-format
 msgid "Transform plugins list: destroy failed: %s"
 msgstr "Verwandlungs-Erweiterungsliste: Löschen fehlgeschlagen: %s"
 
-#: libvisual/lv_libvisual.c:438
+#: libvisual/lv_libvisual.c:439
 #, c-format
 msgid "Global param container: destroy failed: %s"
 msgstr "Behälter für globale Kennwerte: Löschen fehlgeschlagen: %s"
 
-#: libvisual/lv_libvisual.c:442
+#: libvisual/lv_libvisual.c:443
 #, c-format
 msgid "Error during UI destroy: %s"
 msgstr "Fehler beim Löschen des UI: %s"
 
 #: libvisual/lv_actor.c:359 libvisual/lv_input.c:183 libvisual/lv_morph.c:183
-#: libvisual/lv_transform.c:182
+#: libvisual/lv_transform.c:184
 msgid "the plugin list is NULL"
 msgstr "die Erweiterungsliste ist NULL"
 
@@ -424,7 +424,8 @@ msgid "VisMorph it's plugin is NULL"
 msgstr "Erweiterung von VisMorph ist NULL"
 
 #: libvisual/lv_error.c:109
-msgid "The scheduler related call wasn't succesful."
+#, fuzzy
+msgid "The scheduler related call wasn't successful."
 msgstr "Der Aufruf des verwendeten Zeitplaners war nicht erfolgreich."
 
 #: libvisual/lv_error.c:110
@@ -740,7 +741,8 @@ msgid "Given coordinates are out of bounds"
 msgstr "Angegebene Koordinaten befinden sich außerhalb der Begrenzung"
 
 #: libvisual/lv_error.c:201
-msgid "Given VisVideos are not indentical"
+#, fuzzy
+msgid "Given VisVideos are not identical"
 msgstr "Angegebene VisVideos sind nicht gleich"
 
 #: libvisual/lv_error.c:202
@@ -758,10 +760,6 @@ msgstr "Neue VisEvent-Struktur kann nicht erzeugt werden"
 #: libvisual/lv_mem.c:134
 msgid "Cannot get %"
 msgstr "% kann nicht erlangt werden"
-
-#: libvisual/lv_mem.c:134
-msgid " bytes of memory"
-msgstr " Bytes des Speichers"
 
 #: libvisual/lv_morph.c:429 libvisual/lv_morph.c:468
 msgid "The given morph does not reference any plugin"
@@ -877,7 +875,7 @@ msgstr "Fehler bei Erzeugung des Threads"
 msgid "Error while joining thread"
 msgstr "Fehler beim Zusammenführen des Threads"
 
-#: libvisual/lv_transform.c:398 libvisual/lv_transform.c:434
+#: libvisual/lv_transform.c:400 libvisual/lv_transform.c:436
 msgid "The given transform does not reference any transform plugin"
 msgstr ""
 "Die gegebene Umformung bezieht sich nicht auf eine Umformungserweiterung"
@@ -901,3 +899,6 @@ msgstr ""
 #: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
 msgid "Invalid depth passed to the scaler"
 msgstr "Ungültige Tiefe an Scaler übergeben"
+
+#~ msgid " bytes of memory"
+#~ msgstr " Bytes des Speichers"
