@@ -39,3 +39,8 @@ MSGID_BUGS_ADDRESS =
 # This is the list of locale categories, beyond LC_MESSAGES, for which the
 # message catalogs shall be used.  It is usually empty.
 EXTRA_LOCALE_CATEGORIES =
+
+# This target is meant to simplify invokation of make, nothing more
+.PHONY: update-pot
+update-pot:
+	$(MAKE) $(DOMAIN).pot-update
