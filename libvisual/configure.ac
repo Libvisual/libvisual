@@ -818,7 +818,6 @@ esac
 ])
 				    
 AC_CONFIG_FILES([
-m4/Makefile
 po/Makevars
 po/Makefile.in
 Makefile
