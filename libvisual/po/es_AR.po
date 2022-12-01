@@ -6,97 +6,98 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual Library 0.4.0\n"
-"Report-Msgid-Bugs-To: http://libvisual.sf.net\n"
+"Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
 "POT-Creation-Date: 2006-03-21 02:43+0800\n"
 "PO-Revision-Date: 2005-03-20 17:09-0300\n"
 "Last-Translator:  <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish\n"
+"Language: es_AR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: libvisual/lv_libvisual.c:137
+#: libvisual/lv_libvisual.c:138
 msgid "Show info for"
 msgstr "Mostrar información para"
 
-#: libvisual/lv_libvisual.c:138
+#: libvisual/lv_libvisual.c:139
 msgid "seconds"
 msgstr "segundos"
 
-#: libvisual/lv_libvisual.c:139
+#: libvisual/lv_libvisual.c:140
 msgid "cover art width"
 msgstr ""
 
-#: libvisual/lv_libvisual.c:140
+#: libvisual/lv_libvisual.c:141
 msgid "cover art height"
 msgstr ""
 
-#: libvisual/lv_libvisual.c:142
+#: libvisual/lv_libvisual.c:143
 msgid "Show song information"
 msgstr "Mostrar información de canción"
 
-#: libvisual/lv_libvisual.c:146
+#: libvisual/lv_libvisual.c:147
 msgid "Show song information in plugins"
 msgstr "Mostrar información de canción en los plugins"
 
-#: libvisual/lv_libvisual.c:286
+#: libvisual/lv_libvisual.c:287
 msgid "Over initialized"
 msgstr "Sobreinicializado"
 
-#: libvisual/lv_libvisual.c:292
+#: libvisual/lv_libvisual.c:293
 msgid "no progname"
 msgstr "programa sin nombre"
 
-#: libvisual/lv_libvisual.c:296 libvisual/lv_libvisual.c:311
+#: libvisual/lv_libvisual.c:297 libvisual/lv_libvisual.c:312
 msgid "Could not set program name"
 msgstr "No se puede establecer nombre de programa"
 
-#: libvisual/lv_libvisual.c:298
+#: libvisual/lv_libvisual.c:299
 msgid "Initialization failed, bad argv, argc"
 msgstr "Inicialización fallida, argv o argc incorrectos"
 
-#: libvisual/lv_libvisual.c:408
+#: libvisual/lv_libvisual.c:409
 msgid "Never initialized"
 msgstr "Nunca fue inicializada"
 
-#: libvisual/lv_libvisual.c:418
+#: libvisual/lv_libvisual.c:419
 #, fuzzy, c-format
 msgid "Plugins references list: destroy failed: %s"
 msgstr "Lista de referencias de plugins: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:422
+#: libvisual/lv_libvisual.c:423
 #, fuzzy, c-format
 msgid "Actor plugins list: destroy failed: %s"
 msgstr "Lista de plugins actores: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:426
+#: libvisual/lv_libvisual.c:427
 #, fuzzy, c-format
 msgid "Input plugins list: destroy failed: %s"
 msgstr "Lista de plugins de captura: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:430
+#: libvisual/lv_libvisual.c:431
 #, fuzzy, c-format
 msgid "Morph plugins list: destroy failed: %s"
 msgstr "Lista de plugins de morphing: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:434
+#: libvisual/lv_libvisual.c:435
 #, fuzzy, c-format
 msgid "Transform plugins list: destroy failed: %s"
 msgstr "Lista de plugins de transformación: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:438
+#: libvisual/lv_libvisual.c:439
 #, fuzzy, c-format
 msgid "Global param container: destroy failed: %s"
 msgstr "Contenedor de parámetros global: destrucción fallida"
 
-#: libvisual/lv_libvisual.c:442
+#: libvisual/lv_libvisual.c:443
 #, fuzzy, c-format
 msgid "Error during UI destroy: %s"
 msgstr "Error al destruir Interfaz de Usuario:"
 
 #: libvisual/lv_actor.c:359 libvisual/lv_input.c:183 libvisual/lv_morph.c:183
-#: libvisual/lv_transform.c:182
+#: libvisual/lv_transform.c:184
 msgid "the plugin list is NULL"
 msgstr "La lista de plugins es NULL"
 
@@ -793,10 +794,6 @@ msgstr "No se puede crear una nueva estructura VisEvent"
 msgid "Cannot get %"
 msgstr "No se pueden obtener %"
 
-#: libvisual/lv_mem.c:134
-msgid " bytes of memory"
-msgstr " bytes de memoria"
-
 #: libvisual/lv_morph.c:429 libvisual/lv_morph.c:468
 msgid "The given morph does not reference any plugin"
 msgstr "El morph dado no referencia ningún plugin"
@@ -901,7 +898,7 @@ msgstr "Error al crear thread"
 msgid "Error while joining thread"
 msgstr "Error al hacer 'join' a un thread"
 
-#: libvisual/lv_transform.c:398 libvisual/lv_transform.c:434
+#: libvisual/lv_transform.c:400 libvisual/lv_transform.c:436
 msgid "The given transform does not reference any transform plugin"
 msgstr ""
 
@@ -920,6 +917,9 @@ msgstr ""
 #: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
 msgid "Invalid depth passed to the scaler"
 msgstr "Profundidad pasada al escalador inválida"
+
+#~ msgid " bytes of memory"
+#~ msgstr " bytes de memoria"
 
 #~ msgid "Only uncompressed bitmaps are supported"
 #~ msgstr "Sólo se soportan mapas de bits sin comprimir"
