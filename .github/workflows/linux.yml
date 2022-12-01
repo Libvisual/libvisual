@@ -87,17 +87,16 @@ jobs:
 
       - name: '[LV] Run "./configure" (from Git)'
         run: |-
-          mkdir dist_lv
-          cd dist_lv
-          ../libvisual/configure
+          cd libvisual
+          ./configure
 
       - name: '[LV] Run "make dist"'
         run: |-
-          make -C dist_lv dist
+          make -C libvisual dist
 
       - name: '[LV] Run "./configure" (from tarball)'
         run: |-
-          tar xf dist_lv/libvisual-0.*.tar.gz
+          tar xf libvisual/libvisual-0.*.tar.gz
           mkdir build_lv
           cd build_lv
           ../libvisual-0.*/configure \
@@ -118,20 +117,19 @@ jobs:
 
       - name: '[Plugins] Run "./configure" (from Git)'
         run: |-
-          mkdir dist_plugins
-          cd dist_plugins
+          cd libvisual-plugins
           PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
-            ../libvisual-plugins/configure \
+            ./configure \
               --disable-gstreamer-plugin \
 
       - name: '[Plugins] Run "make dist"'
         run: |-
-          make -C dist_plugins dist
+          make -C libvisual-plugins dist
 
       - name: '[Plugins] Run "./configure" (from tarball)'
         # TODO Make gstreamer plugin work with GStreamer 1.x (on master!)
         run: |-
-          tar xf dist_plugins/libvisual-plugins-0.*.tar.gz
+          tar xf libvisual-plugins/libvisual-plugins-0.*.tar.gz
           mkdir build_plugins
           cd build_plugins
           PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
