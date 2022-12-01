@@ -494,7 +494,7 @@ msgstr ""
 #, c-format
 msgid "Could not mremap() area from file '%s'  (%p from %d to %d bytes): %s"
 msgstr ""
-"No se puede mremap()-ear área desde el archivo '%s' (%p desde %d a %d "
+"No se puede mremap()-ear área desde el archivo '%s' (%p desde %zu a %zu "
 "bytes): %s"
 
 #: plugins/input/mplayer/input_mplayer.c:224
