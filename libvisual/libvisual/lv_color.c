@@ -260,7 +260,7 @@ uint32_t visual_color_to_uint32 (VisColor *color)
 
 	visual_log_return_val_if_fail (color != NULL, 0);
 
-	colors = (256 << 24) |
+	colors = (0xFF << 24) |
 		(color->r << 16) |
 		(color->g << 8) |
 		(color->b);
