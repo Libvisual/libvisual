@@ -1,6 +1,6 @@
 ## Process this file with automake to generate a Makefile.in
 
-SUBDIRS = libvisual po examples
+SUBDIRS = libvisual po examples tools/lv-tool
 
 PKG_CONFIG_FILE = libvisual-$(LIBVISUAL_VERSION_SUFFIX).pc
 
