@@ -374,6 +374,18 @@ AC_SUBST(VISUAL_LIBS)
 dnl ******************************
 dnl Arguments to specify certain features.
 dnl ******************************
+AC_ARG_ENABLE([lv-tool],
+            AC_HELP_STRING([--disable-lv-tool],
+                           [Do not build lv-tool @<:@default=enabled@:>@]),
+           [lv_tool_enabled=$enableval],
+           [lv_tool_enabled=yes])
+AC_MSG_CHECKING([wheter to build tool programs])
+if test x$lv_tool_enabled = xyes ; then
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
+fi
+
 AC_ARG_ENABLE([examples],
             AC_HELP_STRING([--disable-examples],
                            [Do not build example programs @<:@default=enabled@:>@]),
@@ -382,19 +394,27 @@ AC_ARG_ENABLE([examples],
 AC_MSG_CHECKING([wheter to build example programs])
 if test x$examples = xyes ; then
   AC_MSG_RESULT([yes])
-  # Find SDL to build the examples.
+else
+  AC_MSG_RESULT([no])
+fi
+
+if test  x$lv_tool_enabled = xyes -o x$examples = xyes ; then
+  # Find SDL 1.x.x
   AC_PATH_TOOL(SDL_CONFIG, [sdl-config])
   if test x$SDL_CONFIG = x ; then
        AC_MSG_ERROR([*** sdl-config not found.
                        If you have installed from binaries, probably you have not
-                       installed SDL development package.
-                       See http://www.libsdl.org])
+                       installed SDL 1.x.x development package.
+                       See https://www.libsdl.org/])
   fi
   # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
   AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
-  AC_SUBST([EXAMPLES], ['simplesdl morphsdl'])
-else
-  AC_MSG_RESULT([no])
+  if test x$examples = xyes ; then
+    AC_SUBST([EXAMPLES], ['simplesdl morphsdl'])
+  fi
+  if test x$lv_tool_enabled = xyes ; then
+    AC_SUBST([TOOLS_LV_TOOL], ['lv-tool'])
+  fi
 fi
 
 dnl ******************************
@@ -846,6 +866,7 @@ Makefile
 libvisual.pc
 libvisual/Makefile
 examples/Makefile
+tools/lv-tool/Makefile
 ])
 #
 # For now this are not included in the package
