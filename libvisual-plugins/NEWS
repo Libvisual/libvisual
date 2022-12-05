@@ -3,9 +3,11 @@ of Libvisual plugins.
 
 These are only visible changes, for more details look at the ChangeLog.
 
-New in 0.3.x: xxxx-xx-xx:
+New in 0.4.0: 2006-03-20:
+* ...
 * ESD won't block anylonger, solved with a select timeout. (Dennis)
 * NastyFFT: Adding new actor plugin. (yodor <yodor@developer.bg>)
+* ...
 
 New in 0.2.0: 2005-02-09:
 * Adding pseudotoad flower actor plugin, ported. (Dennis)
