@@ -209,7 +209,7 @@ int main (int argc, char *argv[])
 	int morph_to = 0;
 
 	/* Used to list all the plugins */
-	char *name = NULL;
+	const char *name = NULL;
 
 	SDL_Event event;
 	
@@ -230,7 +230,7 @@ else
 	have_opengl = 1;
 	/* Show a list of plugins */
 	if (argc < 4) {
-		printf ("usage: %s plug1 plug2 morph (targetdepth)\n", argv[0]);
+		printf ("usage: %s actor1 actor2 morph [targetdepth]\n", argv[0]);
 
 		printf ("\nValid actors:\n");
 		do {
@@ -413,10 +413,7 @@ out:
 			(int)frames, (int)(end - begin),
 			(end - begin) == 0 ? (int)frames : (int)(frames / (end - begin)));
 
-	/* Destroy the bin, this will also destroy everything within the bin, if you
-	 * only want to free the bin, use visual_bin_free */
-	visual_bin_destroy (bin);
-	visual_video_free (video);
+	visual_video_free_buffer (video);
 
 	visual_quit ();
 

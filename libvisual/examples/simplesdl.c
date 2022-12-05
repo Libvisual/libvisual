@@ -153,8 +153,8 @@ void sdl_size_request (int width, int height)
 	
 	if (gl_plug == 0) {
 		free (scrbuf);
-		scrbuf = malloc (video->size);
-		memset (scrbuf, 0, video->size);
+		scrbuf = malloc (visual_video_get_size (video));
+		memset (scrbuf, 0, visual_video_get_size (video));
 
 		visual_video_set_buffer (video, scrbuf);
 	}		
@@ -205,7 +205,7 @@ void sdl_draw_buf ()
 {
 	unsigned char *str = (unsigned char *) screen->pixels;
 	
-	memcpy (str, scrbuf, video->size);
+	memcpy (str, scrbuf, visual_video_get_size (video));
 
 	SDL_UpdateRect (screen, 0, 0, screen->w, screen->h);
 }
@@ -324,8 +324,8 @@ int main (int argc, char *argv[])
 		bpp = visual_video_bpp_from_depth (depth);
 
 		/* Now we know the size, allocate the buffer */
-		scrbuf = malloc (video->size);
-		memset (scrbuf, 0, video->size);
+		scrbuf = malloc (visual_video_get_size (video));
+		memset (scrbuf, 0, visual_video_get_size (video));
 
 		/* Link the buffer to the video context */
 		visual_video_set_buffer (video, scrbuf);
@@ -433,10 +433,7 @@ out:
 			(int)frames, (int)(end - begin),
 			(end - begin) == 0 ? (int)frames : (int)(frames / (end - begin)));
 
-	/* Destroy the bin, this will also destroy everything within the bin, if you
-	 * only want to free the bin, use visual_bin_free */
-	visual_bin_destroy (bin);
-	visual_video_free (video);
+	visual_video_free_buffer (video);
 
 	visual_quit ();
 
