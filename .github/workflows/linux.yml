@@ -152,3 +152,20 @@ jobs:
         run: |-
           make -C build_plugins install DESTDIR="${PWD}"/ROOT_PLUGINS
           find ROOT_PLUGINS/ | sort
+
+      - name: 'Prepare artifacts for upload'
+        if: "${{ strategy.job-index == 0 }}"
+        run: |-
+          set -x
+          dirname="commit-$(git log -1 --format='%H')"
+          mkdir "${dirname}"/
+          mv -v libvisual/libvisual-0.*.tar.* "${dirname}"/
+          mv -v libvisual-plugins/libvisual-plugins-0.*.tar.* "${dirname}"/
+
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v3.1.1
+        if: "${{ strategy.job-index == 0 }}"
+        with:
+          name: release-archives
+          path: commit-*/*
+          if-no-files-found: error
