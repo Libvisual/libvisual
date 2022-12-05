@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: libvisual-plugins 0.4.0\n"
+"Project-Id-Version: libvisual-plugins 0.4.1\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
 "POT-Creation-Date: 2006-03-21 02:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
