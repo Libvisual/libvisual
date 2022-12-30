@@ -52,9 +52,6 @@ The library is quite self containing and there is almost no depency
 at all to get it working. Libvisual it self does not depend on
 anything besides glibc ofcourse.
 
-ESD: To compile the esd input plugin esd and esd development packages
-	needs to be installed.
-
 Goom2: To compile the goom2 plugin goom2k4-devel-15 or higher needs
 	to be installed.
 

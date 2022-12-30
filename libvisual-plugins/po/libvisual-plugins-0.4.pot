@@ -334,23 +334,6 @@ msgstr ""
 msgid "This renders an awesome responsive flower"
 msgstr ""
 
-#: plugins/input/esd/input_esd.c:64
-msgid "ESOUND capture plugin"
-msgstr ""
-
-#: plugins/input/esd/input_esd.c:65
-msgid "Use this plugin to capture PCM data from the ESD daemon"
-msgstr ""
-
-#: plugins/input/esd/input_esd.c:145
-#, c-format
-msgid "ESD: Select error (%d, %s)"
-msgstr ""
-
-#: plugins/input/esd/input_esd.c:162
-msgid "ESD: Error while reading data"
-msgstr ""
-
 #: plugins/input/alsa/input_alsa.c:73
 msgid "ALSA capture plugin"
 msgstr ""

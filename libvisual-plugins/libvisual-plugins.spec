@@ -14,11 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libvisual-devel
 BuildRequires: xorg-x11-devel
 BuildRequires: alsa-lib-devel
-BuildRequires: esound-devel
 BuildRequires: pango-devel
 Requires: libvisual
 Requires: alsa-lib
-Requires: esound
 Requires: pango
 
 
