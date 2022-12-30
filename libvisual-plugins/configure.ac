@@ -268,7 +268,7 @@ AC_ARG_ENABLE([inputdebug],
   [ENABLE_INPUTDEBUG=$enableval],
   [ENABLE_INPUTDEBUG=yes])
 
-if test "$inputdebug" = "yes"; then
+if test "$ENABLE_INPUTDEBUG" = "yes"; then
   build_input_plugins="$build_input_plugins debug"
 fi
 
