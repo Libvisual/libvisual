@@ -95,23 +95,6 @@ build_input_plugins=""
 build_actor_plugins=""
 build_morph_plugins=""
 
-dnl EsounD
-AC_ARG_ENABLE([esd], AS_HELP_STRING([--disable-esd],
-	[Do not build esound input plugin @<:@default=enabled@:>@]),
-	[ENABLE_INPUT_ESD=$enableval],
-	[ENABLE_INPUT_ESD=yes])
-
-if test "$ENABLE_INPUT_ESD" = "yes"; then
-PKG_CHECK_MODULES([LIBESD], [esound >= esound_required_version],
-  [HAVE_ESD="yes"], [HAVE_ESD="no"])
-
-if test "$HAVE_ESD" = "yes"; then
-  build_input_plugins="$build_input_plugins esd"
-else
-  AC_MSG_WARN([*** EsounD not found or too old. The EsounD input plugin won't be built])
-fi
-fi
-
 dnl JACK
 AC_ARG_ENABLE([jack], AS_HELP_STRING([--disable-jack],
 	[Do not build jack input plugin @<:@default=enabled@:>@]),
@@ -596,7 +579,6 @@ AC_CONFIG_FILES([
 	plugins/actor/G-Force/GForceWaveShapes/Makefile
 	plugins/actor/G-Force/NotWorkingWaveShapes/Makefile
 	plugins/input/Makefile
-	plugins/input/esd/Makefile
 	plugins/input/alsa/Makefile
 	plugins/input/mplayer/Makefile
 	plugins/input/jack/Makefile
@@ -617,7 +599,6 @@ LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
 ================================================
 
 Packages found:
-libesd                   : $HAVE_ESD
 ALSA                     : $HAVE_ALSA
 OpenGL                   : $HAVE_OPENGL
 GTK+                     : $HAVE_GTK
