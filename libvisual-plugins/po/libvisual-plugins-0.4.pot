@@ -411,6 +411,14 @@ msgstr ""
 msgid "ALSA: Buffer Overrun"
 msgstr ""
 
+#: plugins/input/debug/input_debug.c:54
+msgid "debug input plugin"
+msgstr ""
+
+#: plugins/input/debug/input_debug.c:55
+msgid "this will generate random PCM data for debugging purposes"
+msgstr ""
+
 #: plugins/input/jack/input_jack.c:72
 msgid "Jackit capture plugin"
 msgstr ""
