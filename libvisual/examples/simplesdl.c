@@ -287,6 +287,8 @@ int main (int argc, char *argv[])
 				}
 
 			} while (i < VISUAL_VIDEO_DEPTH_GL);
+
+			depth = i;
 		}
 	
 	} else {
