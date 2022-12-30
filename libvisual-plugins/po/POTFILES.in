@@ -18,5 +18,6 @@ plugins/actor/oinksie/oinksie.c
 plugins/actor/pseudotoad_flower/actor_flower.c
 plugins/input/esd/input_esd.c
 plugins/input/alsa/input_alsa.c
+plugins/input/debug/input_debug.c
 plugins/input/jack/input_jack.c
 plugins/input/mplayer/input_mplayer.c
