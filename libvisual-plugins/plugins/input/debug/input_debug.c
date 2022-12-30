@@ -51,8 +51,8 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.name = "debug",
 		.author = "Vitaly V. Bursov <vitalyvb@urk.net>",
 		.version = "0.1",
-		.about = N_("ALSA capture plugin"),
-		.help = N_("Use this plugin to capture PCM data from the ALSA record device"),
+		.about = N_("debug input plugin"),
+		.help = N_("this will generate random PCM data for debugging purposes"),
 		.license = VISUAL_PLUGIN_LICENSE_LGPL,
 
 		.init = inp_debug_init,
