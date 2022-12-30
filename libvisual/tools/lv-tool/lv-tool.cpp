@@ -35,7 +35,8 @@
 #include <getopt.h>
 
 // Defaults
-#define DEFAULT_ACTOR   "lv_analyzer"
+#define DEFAULT_ACTOR_GL "lv_gltest"
+#define DEFAULT_ACTOR_NONGL "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_WIDTH   320
 #define DEFAULT_HEIGHT  200
@@ -52,12 +53,16 @@ namespace LV {
             visual_log_return_if_fail( m_bin != nullptr );
         }
 
+        bool actor_available(std::string const& actor_name) {
+            return visual_actor_valid_by_name(actor_name.c_str());
+        }
+
         bool connect (std::string const& actor_name, std::string const& input_name) {
             if (! visual_input_valid_by_name(input_name.c_str()))
                 return false;
 
-            if (! visual_actor_valid_by_name(actor_name.c_str()))
-                return false;
+            if (! actor_available(actor_name))
+                    return false;
 
             return visual_bin_connect_by_names(
                     m_bin,
@@ -132,7 +137,7 @@ namespace LV {
 
 namespace {
 
-  std::string actor_name = DEFAULT_ACTOR;
+  std::string actor_name = DEFAULT_ACTOR_NONGL;
   std::string input_name = DEFAULT_INPUT;
   std::string exclude_actors;
 
@@ -455,7 +460,7 @@ namespace {
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                   "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
-                  "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
+                  "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s/%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
                   "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
@@ -465,7 +470,8 @@ namespace {
                   name.c_str (),
                   width, height,
                   input_name.c_str (),
-                  actor_name.c_str (),
+                  DEFAULT_ACTOR_GL,
+                  DEFAULT_ACTOR_NONGL,
                   frame_rate);
   }
 
@@ -681,6 +687,11 @@ int main (int argc, char **argv)
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
+
+        // Upgrade to a more appealing OpenGL actor if available
+        if (bin.actor_available(DEFAULT_ACTOR_GL)) {
+            actor_name = DEFAULT_ACTOR_GL;
+        }
 
         // Let the bin manage plugins. There's a bug otherwise.
         if (!bin.connect(actor_name, input_name)) {
