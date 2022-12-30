@@ -279,8 +279,12 @@ int main (int argc, char *argv[])
 				if (i == j)
 					break;
 				
-				visual_log (VISUAL_LOG_INFO, "Support visual depth %d",
-						visual_video_depth_value_from_enum (i));
+				if (i == VISUAL_VIDEO_DEPTH_GL) {
+				    visual_log (VISUAL_LOG_INFO, "Support visual depth GL");
+				} else {
+				    visual_log (VISUAL_LOG_INFO, "Support visual depth %d",
+						    visual_video_depth_value_from_enum (i));
+				}
 
 			} while (i < VISUAL_VIDEO_DEPTH_GL);
 		}
