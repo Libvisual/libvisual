@@ -228,7 +228,6 @@ int main (int argc, char *argv[])
 {
 	int width = 480, height = 360;
 	int depth = VISUAL_VIDEO_DEPTH_8BIT;
-	int i, j;
 	int freeze = 0;
 	
 	int depthflag = 0;
@@ -267,6 +266,7 @@ int main (int argc, char *argv[])
 			visual_log (VISUAL_LOG_INFO, "However showing you a nice list of supported depths anyway");
 
 			/* Show a list of supported depths */
+			int i, j;
 			i = VISUAL_VIDEO_DEPTH_NONE;
 
 			if (visual_video_depth_is_supported (depthflag, i) == 1)
