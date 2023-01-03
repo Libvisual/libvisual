@@ -95,6 +95,21 @@ build_input_plugins=""
 build_actor_plugins=""
 build_morph_plugins=""
 
+dnl PulseAudio
+AC_ARG_ENABLE([pulseaudio], AS_HELP_STRING([--disable-pulseaudio],
+	[Do not build PulseAudio input plugin @<:@default=enabled@:>@]),
+        [ENABLE_INPUT_PULSEAUDIO=$enableval],
+	[ENABLE_INPUT_PULSEAUDIO=yes])
+if test "$ENABLE_INPUT_PULSEAUDIO" = "yes"; then
+    PKG_CHECK_MODULES([LIBPULSE], [libpulse], [HAVE_LIBPULSE="yes"], [HAVE_LIBPULSE="no"])
+    if test "$HAVE_LIBPULSE" = "yes"; then
+        build_input_plugins="$build_input_plugins pulseaudio"
+    else
+        AC_MSG_WARN([*** Could not find libpulse of PulseAudio.
+                        The PulseAudio input plugin won't be built.])
+    fi
+fi
+
 dnl JACK
 AC_ARG_ENABLE([jack], AS_HELP_STRING([--disable-jack],
 	[Do not build jack input plugin @<:@default=enabled@:>@]),
@@ -572,6 +587,7 @@ AC_CONFIG_FILES([
 	plugins/input/jack/Makefile
 	plugins/input/debug/Makefile
 	plugins/input/portaudio/Makefile
+	plugins/input/pulseaudio/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile
@@ -589,6 +605,7 @@ LIBVISUAL-PLUGINS, PLUGINS FOR LIBVISUAL $VERSION
 
 Packages found:
 ALSA                     : $HAVE_ALSA
+PulseAudio               : $HAVE_LIBPULSE
 OpenGL                   : $HAVE_OPENGL
 GTK+                     : $HAVE_GTK
 
