@@ -15,16 +15,12 @@
  */
 
 #include <libvisual/libvisual.h>
-#include "gettext.h"
-#include <stdlib.h>
-#include <string.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define SAMPLES 1024
-#define BUFFERS 2
 
 pa_sample_spec sample_spec = {
     .format = PA_SAMPLE_S16LE,
@@ -38,7 +34,7 @@ typedef struct {
 } pulseaudio_priv_t;
 
 static int  inp_pulseaudio_init    (VisPluginData *plugin);
-static void inp_pulseaudio_cleanup (VisPluginData *plugin);
+static int  inp_pulseaudio_cleanup (VisPluginData *plugin);
 static int  inp_pulseaudio_upload  (VisPluginData *plugin, VisAudio *audio);
 static int  inp_pulseaudio_events  (VisPluginData *plugin, VisEventQueue *events);
 
@@ -61,28 +57,22 @@ const VisPluginInfo *get_plugin_info( void ) {
         .init     = inp_pulseaudio_init,
         .cleanup  = inp_pulseaudio_cleanup,
         .events   = inp_pulseaudio_events,
-        .plugin   = &input
+        .plugin   = VISUAL_OBJECT (&input)
     };
 
     return &info;
 }
 
 static int inp_pulseaudio_init( VisPluginData *plugin ) {
-
-#if ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
-#endif
-
     pulseaudio_priv_t *priv = visual_mem_new0(pulseaudio_priv_t, 1);
-    visual_plugin_set_private(plugin, priv);
+    visual_object_set_private(VISUAL_OBJECT (plugin), priv);
 
-    VisParamList *params = visual_plugin_get_params (plugin);
-    visual_param_list_add_many (params,
-                                visual_param_new_string ("device",
-                                                         N_("Device name"),
-                                                         "",
-                                                         NULL),
-                                NULL);
+    static VisParamEntry params[] = {
+        VISUAL_PARAM_LIST_ENTRY_STRING("device", ""),
+        VISUAL_PARAM_LIST_END
+    };
+    VisParamContainer *paramcontainer = visual_plugin_get_params (plugin);
+    visual_param_container_add_many (paramcontainer, params);
 
     int error;
 
@@ -96,26 +86,28 @@ static int inp_pulseaudio_init( VisPluginData *plugin ) {
 
     if( priv->simple == NULL ) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
-        return FALSE;
+        return -1;
     }
 
-    return TRUE;
+    return 0;
 }
 
-static void inp_pulseaudio_cleanup( VisPluginData *plugin )
+static int inp_pulseaudio_cleanup( VisPluginData *plugin )
 {
-    pulseaudio_priv_t *priv = visual_plugin_get_private(plugin);
+    pulseaudio_priv_t *priv = visual_object_get_private(VISUAL_OBJECT (plugin));
 
     pa_simple_free(priv->simple);
 
     visual_mem_free (priv);
+
+    return 0;
 }
 
 static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 {
-    pulseaudio_priv_t *priv = visual_plugin_get_private (plugin);
+    pulseaudio_priv_t *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
     VisEvent ev;
-    VisParam *param;
+    VisParamEntry *param;
     const char *tmp;
     int error;
 
@@ -124,8 +116,8 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
             case VISUAL_EVENT_PARAM:
                 param = ev.event.param.param;
 
-                if (visual_param_has_name (param, "device")) {
-                    tmp = visual_param_get_value_string (param);
+                if (visual_param_entry_is (param, "device")) {
+                    tmp = visual_param_entry_get_string (param);
 
                     if(priv->simple != NULL)
                         pa_simple_free(priv->simple);
@@ -140,7 +132,7 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
 
                     if( priv->simple == NULL ) {
                         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_new() failed: %s", pa_strerror(error));
-                        return FALSE;
+                        return -1;
                     }
 
                 }
@@ -152,28 +144,25 @@ static int inp_pulseaudio_events (VisPluginData *plugin, VisEventQueue *events)
         }
     }
 
-    return TRUE;
+    return 0;
 }
 int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
 {
-    pulseaudio_priv_t *priv = visual_plugin_get_private(plugin);
+    pulseaudio_priv_t *priv = visual_object_get_private(VISUAL_OBJECT (plugin));
 
     int error;
 
     if (pa_simple_read(priv->simple, priv->pcm_data, sizeof(priv->pcm_data), &error) < 0) {
         visual_log(VISUAL_LOG_CRITICAL, "pa_simple_read() failed: %s", pa_strerror(error));
-        return FALSE;
+        return -1;
     }
 
-    VisBuffer *visbuffer = visual_buffer_new_wrap_data (priv->pcm_data, sizeof(priv->pcm_data), FALSE);
+    VisBuffer visbuffer;
+    visual_buffer_init (&visbuffer, priv->pcm_data, sizeof(priv->pcm_data), NULL);
 
-    visual_audio_input(audio, visbuffer,
-                       VISUAL_AUDIO_SAMPLE_RATE_44100,
-                       VISUAL_AUDIO_SAMPLE_FORMAT_S16,
-                       VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+    visual_audio_samplepool_input (audio->samplepool, &visbuffer, VISUAL_AUDIO_SAMPLE_RATE_44100,
+                                   VISUAL_AUDIO_SAMPLE_FORMAT_S16, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
 
-    visual_buffer_unref (visbuffer);
-
-    return TRUE;
+    return 0;
 }
 
