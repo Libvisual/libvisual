@@ -38,7 +38,6 @@
 // Defaults
 #define DEFAULT_ACTOR   "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
-#define DEFAULT_MORPH   "slide_left"
 #define DEFAULT_WIDTH   320
 #define DEFAULT_HEIGHT  200
 #define DEFAULT_FPS     30
@@ -54,7 +53,6 @@ namespace {
 
   std::string actor_name = DEFAULT_ACTOR;
   std::string input_name = DEFAULT_INPUT;
-  std::string morph_name = DEFAULT_MORPH;
   std::string driver_name = DEFAULT_DRIVER;
   std::string exclude_actors;
 
@@ -141,23 +139,6 @@ namespace {
           for (auto actor : actors)
               print_plugin_info(*actor.info);
       }
-
-
-      printf("===== MORPHS =====\n");
-      auto const& morphs =
-          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
-
-      // print morphs
-      if(morphs.empty())
-      {
-          std::cerr << "No morph plugins found\n";
-      }
-      else
-      {
-          for (auto morph : morphs)
-              print_plugin_info(*morph.info);
-      }
-
   }
 
   /** print commandline help */
@@ -173,7 +154,6 @@ namespace {
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
                   "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
-                  "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
                   "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
@@ -185,7 +165,6 @@ namespace {
                   driver_name.c_str (),
                   input_name.c_str (),
                   actor_name.c_str (),
-                  morph_name.c_str (),
                   frame_rate);
 
         printf("Available output drivers:\n");
@@ -213,7 +192,6 @@ namespace {
           {"driver",      required_argument, 0, 'd'},
           {"input",       required_argument, 0, 'i'},
           {"actor",       required_argument, 0, 'a'},
-          {"morph",       required_argument, 0, 'm'},
           {"fps",         required_argument, 0, 'f'},
           {"seed",        required_argument, 0, 's'},
           {"exclude",     required_argument, 0, 'x'},
@@ -225,7 +203,7 @@ namespace {
 
       int index, argument;
 
-      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:m:f:s:F:S:x:c:", loptions, &index)) >= 0) {
+      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:f:s:F:S:x:c:", loptions, &index)) >= 0) {
 
           switch(argument) {
               // --help
@@ -298,13 +276,6 @@ namespace {
               case 'a': {
                   // save name for later
                   actor_name = optarg;
-                  break;
-              }
-
-              // --morph
-              case 'm': {
-                  /* save filename for later */
-                  morph_name = optarg;
                   break;
               }
 
@@ -392,21 +363,6 @@ namespace {
       return new_name;
   }
 
-#if 0
-  std::string cycle_morph_name (std::string const& name, CycleDir dir)
-  {
-      auto cycler = (dir == CycleDir::NEXT) ? visual_morph_get_next_by_name
-                                            : visual_morph_get_prev_by_name;
-
-      auto new_name = cycler (name.c_str ());
-      if (!new_name) {
-          new_name = cycler (nullptr);
-      }
-
-      return new_name;
-  }
-#endif
-
 } // anonymous namespace
 
 
@@ -445,7 +401,6 @@ int main (int argc, char **argv)
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
-        bin.use_morph(false);
 
         // Let the bin manage plugins. There's a bug otherwise.
         if (!bin.connect(actor_name, input_name)) {
@@ -499,8 +454,6 @@ int main (int argc, char **argv)
         bin.realize();
         bin.sync(false);
         bin.depth_changed();
-
-        bin.set_morph(morph_name);
 
         // get a queue to handle events
         LV::EventQueue localqueue;
