@@ -373,7 +373,7 @@ int main (int argc, char **argv)
 
         // Set system-wide random seed
         if (have_seed) {
-            LV::System::instance()->set_rng_seed (seed);
+            visual_random_context_set_seed(&__lv_internal_random_context, seed);
         }
 
         // create new VisBin for video output
