@@ -655,7 +655,7 @@ int main (int argc, char **argv)
         uint64_t frames_drawn = 0;
 
         // frame rate control state
-        uint64_t const frame_period_us = frame_rate > 0 ? VISUAL_USECS_PER_SEC / frame_rate : 0;
+        uint64_t const frame_period_us = frame_rate > 0 ? VISUAL_USEC_PER_SEC / frame_rate : 0;
         LV::Time last_frame_time;
         bool draw_frame = true;
 
