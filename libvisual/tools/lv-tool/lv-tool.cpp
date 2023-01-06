@@ -211,15 +211,13 @@ namespace {
 
               // --verbose
               case 'v': {
-                  VisLogSeverity level = visual_log_get_verbosity ();
-                  level = VisLogSeverity (int (level) - 1);
-
-                  // 0 is maximum verbosity, don't go further
-                  if (int (level) <= 0) {
-                      visual_log_set_verbosity ((VisLogSeverity) 0);
+                  VisLogVerboseness level = visual_log_get_verboseness ();
+                  level = VisLogVerboseness (int (level) + 1);
+                  if (int (level) > VISUAL_LOG_VERBOSENESS_HIGH) {
+                      visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_HIGH);
                   }
                   else {
-                      visual_log_set_verbosity (level);
+                      visual_log_set_verboseness (level);
                   }
                   break;
               }
@@ -359,7 +357,7 @@ int main (int argc, char **argv)
         setup_signal_handlers ();
 
         // default loglevel
-        visual_log_set_verbosity (VISUAL_LOG_ERROR);
+        visual_log_set_verboseness (VISUAL_LOG_VERBOSENESS_LOW);
 
         // initialize LV
         Libvisual main {argc, argv};
