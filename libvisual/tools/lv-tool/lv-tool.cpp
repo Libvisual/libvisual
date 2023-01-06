@@ -43,17 +43,10 @@
 #define DEFAULT_FPS     30
 #define DEFAULT_COLOR_DEPTH 0
 
-#if HAVE_SDL
-# define DEFAULT_DRIVER "sdl"
-#else
-# define DEFAULT_DRIVER "null"
-#endif
-
 namespace {
 
   std::string actor_name = DEFAULT_ACTOR;
   std::string input_name = DEFAULT_INPUT;
-  std::string driver_name = DEFAULT_DRIVER;
   std::string exclude_actors;
 
   unsigned int width  = DEFAULT_WIDTH;
@@ -151,7 +144,6 @@ namespace {
                   "\t--verbose\t\t-v\t\tIncrease log verbosity (may be used multiple times)\n"
                   "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
                   "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
-                  "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
                   "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
@@ -162,17 +154,9 @@ namespace {
                   "\n",
                   name.c_str (),
                   width, height,
-                  driver_name.c_str (),
                   input_name.c_str (),
                   actor_name.c_str (),
                   frame_rate);
-
-        printf("Available output drivers:\n");
-        for(auto driver_name : DisplayDriverFactory::instance().get_driver_list())
-        {
-            printf("\t%s\n", driver_name.c_str());
-        }
-
   }
 
 
@@ -189,7 +173,6 @@ namespace {
           {"plugin-help", no_argument,       0, 'p'},
           {"verbose",     no_argument,       0, 'v'},
           {"dimensions",  required_argument, 0, 'D'},
-          {"driver",      required_argument, 0, 'd'},
           {"input",       required_argument, 0, 'i'},
           {"actor",       required_argument, 0, 'a'},
           {"fps",         required_argument, 0, 'f'},
@@ -203,7 +186,7 @@ namespace {
 
       int index, argument;
 
-      while ((argument = getopt_long(argc, argv, "hpvD:d:i:a:f:s:F:S:x:c:", loptions, &index)) >= 0) {
+      while ((argument = getopt_long(argc, argv, "hpvD:i:a:f:s:F:S:x:c:", loptions, &index)) >= 0) {
 
           switch(argument) {
               // --help
@@ -251,17 +234,6 @@ namespace {
                       std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;
                   }
-                  break;
-              }
-
-              // --driver
-              case 'd': {
-                  if (!DisplayDriverFactory::instance().has_driver (optarg)) {
-                      std::cerr << "Unsupported display driver: " << optarg << "\n";
-                      return -1;
-                  }
-
-                  driver_name = optarg;
                   break;
               }
 
@@ -438,7 +410,7 @@ int main (int argc, char **argv)
         auto vidoptions = actor->get_video_attribute_options ();
 
         // initialize display
-        Display display (driver_name);
+        Display display;
 
         // create display
         auto video = display.create(depth, vidoptions, width, height, true);
