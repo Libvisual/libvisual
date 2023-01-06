@@ -76,12 +76,12 @@ namespace {
 
       Libvisual (int& argc, char**& argv)
       {
-          LV::System::init (argc, argv);
+          visual_init (&argc, &argv);
       }
 
       ~Libvisual ()
       {
-          LV::System::destroy ();
+          visual_quit ();
       }
   };
 
