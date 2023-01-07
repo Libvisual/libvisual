@@ -105,6 +105,29 @@ namespace LV {
             visual_bin_switch_actor_by_name(m_bin, const_cast<char*>(actname.c_str()));
         }
     };
+
+    class Time {
+        Uint32 m_moment;
+
+        Time(Uint32 moment) : m_moment(moment) {
+        }
+
+    public:
+        Time() : m_moment(0) {
+        }
+
+        static Time now() {
+            return Time(SDL_GetTicks());
+        }
+
+        Time operator-(Time & other) const {
+            return Time(this->m_moment - other.m_moment);
+        }
+
+        uint64_t to_usecs() const {
+            return this->m_moment * 1000;
+        };
+    };
 }
 
 namespace {
