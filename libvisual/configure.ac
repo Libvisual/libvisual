@@ -8,7 +8,7 @@ m4_define([libvisual_version_micro], [1])
 
 m4_define([libvisual_version], [libvisual_version_major.libvisual_version_minor.libvisual_version_micro])
 
-AC_INIT([Libvisual Library], [libvisual_version], [synap@nerds-incorporated.org], [libvisual])
+AC_INIT([Libvisual Library], [libvisual_version], [https://github.com/Libvisual/libvisual/issues], [libvisual], [https://github.com/Libvisual/libvisual])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 dnl TODO: Add these into lv_config.h (or maybe lv_version.h)
