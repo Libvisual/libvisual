@@ -1,11 +1,13 @@
 // lv-tool - Libvisual commandline tool
 //
-// Copyright (C) 2012-2013 Libvisual team
+// Copyright (C) 2012-2023 Libvisual team
 //               2004-2006 Dennis Smit
 //
 // Authors: Daniel Hiepler <daniel@niftylight.de>
 //          Chong Kai Xiong <kaixiong@codeleft.sg>
 //          Dennis Smit <ds@nerds-incorporated.org>
+//          Scott Sibley <sisibley@gmail.com>
+//          Sebastian Pipping <sebastian@pipping.org>
 //
 // This file is part of lv-tool.
 //
