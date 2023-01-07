@@ -807,7 +807,8 @@ int main (int argc, char **argv)
                 }
             }
 
-            VisEvent ev;
+            // Note: The static is to avoid stack-use-after-scope
+            static VisEvent ev;
 
             // Handle all events
             display.drain_events(*localqueue);
