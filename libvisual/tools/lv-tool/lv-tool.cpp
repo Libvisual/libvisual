@@ -6,6 +6,7 @@
 // Authors: Daniel Hiepler <daniel@niftylight.de>
 //          Chong Kai Xiong <kaixiong@codeleft.sg>
 //          Dennis Smit <ds@nerds-incorporated.org>
+//          Scott Sibley <sisibley@gmail.com>
 //
 // This file is part of lv-tool.
 //
