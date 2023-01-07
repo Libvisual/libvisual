@@ -23,7 +23,6 @@
 // along with lv-tool.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config.h"
-#include "version.h"
 #include "display/display.hpp"
 #include "display/display_driver_factory.hpp"
 #include "gettext.h"
@@ -415,9 +414,9 @@ int main (int argc, char **argv)
 {
     try {
         // print warm welcome
-        std::cerr << visual_truncate_path (argv[0], 1) << " - "
-                  << PACKAGE_STRING
-                  << " (" << LV_REVISION << ") commandline tool - "
+        std::cerr << "lv-tool" << " - "
+                  << "Libvisual " << PACKAGE_VERSION
+                  << " commandline tool - "
                   << PACKAGE_URL << "\n";
 
         // setup signal handlers
