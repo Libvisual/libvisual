@@ -43,7 +43,7 @@
 #define DEFAULT_MORPH   "slide_left"
 #define DEFAULT_WIDTH   320
 #define DEFAULT_HEIGHT  200
-#define DEFAULT_FPS     30
+#define DEFAULT_FPS     60
 #define DEFAULT_COLOR_DEPTH 0
 
 #if HAVE_SDL
