@@ -24,6 +24,7 @@
 
 #include <config.h>
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -53,6 +54,7 @@ static int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio);
 static const int  inp_alsa_var_btmul      = sizeof (short);
 static const char *inp_alsa_var_cdevice   = "default";
 static const int  inp_alsa_var_samplerate = 44100;
+static const int  inp_alsa_var_frames_target = 256;
 static const int  inp_alsa_var_channels   = 2;
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
@@ -165,16 +167,14 @@ int inp_alsa_init (VisPluginData *plugin)
 		return(-1);
 	}
 
-       /* Setup a large buffer */
-
-	tmp = 1000000;
+	tmp = (int)ceil((1000.0 * 1000.0 * inp_alsa_var_frames_target) / inp_alsa_var_samplerate);  // in micro seconds
 	if (snd_pcm_hw_params_set_period_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
 		visual_log(VISUAL_LOG_CRITICAL, _("Error setting period time"));
 		snd_pcm_hw_params_free(hwparams);
 		return(-1);
 	}
 
-	tmp = 1000000*4;
+	tmp = (int)ceil((1000.0 * 1000.0 * inp_alsa_var_frames_target) / inp_alsa_var_samplerate);  // in micro seconds
 	if (snd_pcm_hw_params_set_buffer_time_near(priv->chandle, hwparams, &tmp, &dir) < 0){
 		visual_log(VISUAL_LOG_CRITICAL, _("Error setting buffer time"));
 		snd_pcm_hw_params_free(hwparams);
