@@ -89,12 +89,10 @@ namespace {
   void print_plugin_info(VisPluginInfo const& info)
   {
       printf("Plugin: \"%s\" (%s)\n"
-                  "\tURL: %s\n"
-                  "\tAuthor: %s\n\tVersion: %s\tLicense: %s\n"
+                  "\tAuthor: %s\n\tVersion: %s\t\n"
                   "\t%s - %s\n\n",
                   info.name, info.plugname,
-                  info.url ? info.url : "<n/a>",
-                  info.author, info.version, info.license,
+                  info.author, info.version,
                   info.about, info.help);
   }
 
@@ -102,35 +100,45 @@ namespace {
   /** print help for plugins */
   void print_plugin_help()
   {
+      VisList * const all_plugins = visual_plugin_get_registry();
+
+      VisListEntry *le = NULL;
+      VisPluginRef *ref = NULL;
+
       printf("===== INPUTS =====\n");
-      auto const& inputs =
-          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
+      VisList * const inputs = visual_plugin_registry_filter(all_plugins, "Libvisual:core:input");
+      ref = static_cast<VisPluginRef*>(visual_list_next (inputs, &le));
 
       // print inputs
-      if(inputs.empty())
+      if(! ref)
       {
           std::cerr << "No input plugins found\n";
       }
       else
       {
-          for (auto input : inputs)
-              print_plugin_info(*input.info);
+          do {
+              visual_plugin_load(ref);
+              print_plugin_info(*(ref->info));
+              ref = static_cast<VisPluginRef*>(visual_list_next (inputs, &le));
+          } while (ref != nullptr);
       }
 
-
       printf("===== ACTORS =====\n");
-      auto const& actors =
-          LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_ACTOR);
+      VisList * const actors = visual_plugin_registry_filter(all_plugins, "Libvisual:core:actor");
+      ref = static_cast<VisPluginRef*>(visual_list_next (actors, &le));
 
       // print actors
-      if(actors.empty())
+      if(! ref)
       {
           std::cerr << "No actor plugins found\n";
       }
       else
       {
-          for (auto actor : actors)
-              print_plugin_info(*actor.info);
+          do {
+              visual_plugin_load(ref);
+              print_plugin_info(*(ref->info));
+              ref = static_cast<VisPluginRef*>(visual_list_next (inputs, &le));
+          } while (ref != nullptr);
       }
   }
 
