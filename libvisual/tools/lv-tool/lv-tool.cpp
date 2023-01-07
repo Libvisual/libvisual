@@ -23,10 +23,9 @@
 // along with lv-tool.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config.h"
-#include "display/display.hpp"
-#include "display/display_driver_factory.hpp"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <SDL/SDL.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>
@@ -82,6 +81,221 @@ namespace {
       ~Libvisual ()
       {
           visual_quit ();
+      }
+  };
+
+  class Display
+  {
+      SDL_Surface * m_screen;
+      VisVideoDepth m_requested_depth;
+      VisVideo * m_screen_video;
+      bool m_resizable;
+
+      void destroy() {
+          if (m_screen_video) {
+              visual_object_unref(VISUAL_OBJECT(m_screen_video));
+              m_screen_video = nullptr;
+          }
+          if (m_screen) {
+              // NOTE: The surface returned by SDL_SetVideoMode is either
+              //       freed by the next call to SDL_SetVideoMode or
+              //       when calling SDL_QUIT.  So nothing to free here.
+              //       https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlsetvideomode.html
+          }
+      }
+
+  public:
+      Display() : m_screen(nullptr), m_requested_depth(VISUAL_VIDEO_DEPTH_NONE), m_screen_video(nullptr),
+                  m_resizable(false) {
+      }
+
+      ~Display() {
+          destroy();
+
+          if (SDL_WasInit (SDL_INIT_VIDEO)) {
+              SDL_Quit();
+          }
+      }
+
+      VisVideo * create (VisVideoDepth depth,
+                         VisVideoAttributeOptions const* vidoptions,
+                         unsigned int width,
+                         unsigned int height,
+                         bool resizable) {
+          int videoflags = 0;
+
+          if (resizable)
+              videoflags |= SDL_RESIZABLE;
+
+          if (!SDL_WasInit (SDL_INIT_VIDEO)) {
+              if (SDL_Init (SDL_INIT_VIDEO) == -1) {
+                  visual_log (VISUAL_LOG_ERROR, "Unable to init SDL VIDEO: %s", SDL_GetError ());
+                  return nullptr;
+              }
+          }
+
+          m_resizable = resizable;
+          m_requested_depth = depth;
+
+          destroy();
+
+          int bpp;
+
+          if (depth == VISUAL_VIDEO_DEPTH_GL) {
+              SDL_VideoInfo const* videoinfo = SDL_GetVideoInfo ();
+
+              if (!videoinfo) {
+                  return nullptr;
+              }
+
+              videoflags |= SDL_OPENGL;
+
+              if (videoinfo->hw_available)
+                  videoflags |= SDL_HWSURFACE;
+
+              // TODO apply vidoptions here
+
+              bpp = videoinfo->vfmt->BitsPerPixel;
+
+              SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+          }
+          else
+          {
+              bpp = 8 * visual_video_bpp_from_depth (depth);
+          }
+
+          // Create surface
+          m_screen = SDL_SetVideoMode (width, height, bpp, videoflags);
+          visual_log_return_val_if_fail( m_screen != nullptr, nullptr );
+
+          // Recreate video object
+          m_screen_video = visual_video_new();
+          visual_log_return_val_if_fail( m_screen_video != nullptr, nullptr );
+          visual_video_set_attributes(m_screen_video, m_screen->w, m_screen->h, m_screen->pitch, depth);
+          visual_video_allocate_buffer(m_screen_video);
+
+          SDL_EnableKeyRepeat (SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+
+          return m_screen_video;
+      }
+
+      void drain_events(VisEventQueue & eventqueue) {
+          // NOTE: SDL_VIDEORESIZE calls create(..) here as well
+          SDL_Event event;
+          while (SDL_PollEvent (&event)) {
+              switch (event.type) {
+                  case SDL_KEYUP:
+                      visual_event_queue_add_keyboard (&eventqueue,
+                                                       VisKey(event.key.keysym.sym),
+                                                       VisKeyMod(event.key.keysym.mod),
+                                                       VISUAL_KEY_UP);
+                      break;
+
+                  case SDL_KEYDOWN:
+                      visual_event_queue_add_keyboard (&eventqueue, VisKey(event.key.keysym.sym),
+                                                       VisKeyMod(event.key.keysym.mod),
+                                                       VISUAL_KEY_DOWN);
+                      break;
+
+                  case SDL_VIDEORESIZE:
+                      visual_event_queue_add_resize (&eventqueue, NULL, event.resize.w, event.resize.h);
+                      // TODO non-NULL vidoptions here?
+                      create (m_requested_depth, nullptr, event.resize.w, event.resize.h, m_resizable);
+                      break;
+
+                  case SDL_MOUSEMOTION:
+                      visual_event_queue_add_mousemotion (&eventqueue, event.motion.x,
+                                                          event.motion.y);
+                      break;
+
+                  case SDL_MOUSEBUTTONDOWN:
+                      visual_event_queue_add_mousebutton (&eventqueue, event.button.button,
+                                                          VISUAL_MOUSE_DOWN,
+                                                          event.button.x,
+                                                          event.button.y);
+                      break;
+
+                  case SDL_MOUSEBUTTONUP:
+                      visual_event_queue_add_mousebutton (&eventqueue, event.button.button,
+                                                          VISUAL_MOUSE_UP,
+                                                          event.button.x,
+                                                          event.button.y);
+                      break;
+
+                  case SDL_QUIT:
+                      visual_event_queue_add_quit (&eventqueue, 0);
+                      break;
+
+                  default:
+                      break;
+              }
+          }
+      }
+
+      VisVideo * get_video() const {
+          visual_log_return_val_if_fail( m_screen_video != nullptr, nullptr );
+          return m_screen_video;
+      }
+
+      static void set_title(std::string const& title) {
+          SDL_WM_SetCaption (title.c_str(), nullptr);
+      }
+
+      void update_all() {
+          visual_log_return_if_fail( m_screen != nullptr );
+
+          if (m_screen->format->BitsPerPixel == 8) {
+              visual_log_return_if_fail( m_screen_video != nullptr );
+              VisPalette * const pal = m_screen_video->pal;
+
+              if (pal != nullptr && pal->ncolors <= 256) {
+                  SDL_Color colors[256];
+
+                  for (int i = 0; i < 256; i++) {
+                      colors[i].r = pal->colors[i].r;
+                      colors[i].g = pal->colors[i].g;
+                      colors[i].b = pal->colors[i].b;
+                  }
+
+                  SDL_SetColors (m_screen, colors, 0, 256);
+              }
+          }
+
+          if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL) {
+              SDL_GL_SwapBuffers();
+          } else {
+              visual_mem_copy(m_screen->pixels,
+                              visual_video_get_pixels(m_screen_video),
+                              visual_video_get_size(m_screen_video));
+              SDL_Flip(m_screen);
+          }
+      }
+
+      void lock () {
+          visual_log_return_if_fail( m_screen != nullptr );
+          if (SDL_MUSTLOCK (m_screen))
+              SDL_LockSurface (m_screen);
+      }
+
+      void unlock () {
+          visual_log_return_if_fail( m_screen != nullptr );
+          if (SDL_MUSTLOCK (m_screen))
+              SDL_UnlockSurface (m_screen);
+      }
+  };
+
+  class DisplayLock
+  {
+      Display * m_display;
+
+  public:
+      DisplayLock(Display & display) : m_display(&display) {
+          visual_log_return_if_fail( m_display != nullptr );
+          m_display->lock();
+      }
+
+      ~DisplayLock() {
+          m_display->unlock();
       }
   };
 
@@ -434,7 +648,8 @@ int main (int argc, char **argv)
         bin.depth_changed();
 
         // get a queue to handle events
-        LV::EventQueue localqueue;
+        VisEventQueue * const localqueue = visual_event_queue_new();
+        visual_log_return_val_if_fail( localqueue != nullptr, EXIT_FAILURE );
 
         // rendering statistics
         uint64_t frames_drawn = 0;
@@ -493,17 +708,17 @@ int main (int argc, char **argv)
                 }
             }
 
-            LV::Event ev;
+            VisEvent ev;
 
             // Handle all events
-            display.drain_events(localqueue);
+            display.drain_events(*localqueue);
 
-            auto pluginqueue = visual_plugin_get_event_queue (bin.get_actor()->get_plugin ());
+            auto pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin(bin.get_actor()));
 
-            while (localqueue.poll(ev))
+            while (visual_event_queue_poll(localqueue, &ev))
             {
                 if(ev.type != VISUAL_EVENT_RESIZE)
-                    pluginqueue->add (ev);
+                    visual_event_queue_add(pluginqueue, &ev);
 
                 switch (ev.type)
                 {
