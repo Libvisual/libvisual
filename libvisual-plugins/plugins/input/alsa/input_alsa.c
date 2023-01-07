@@ -221,7 +221,8 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 {
 	int16_t data[PCM_BUF_SIZE];
 	alsaPrivate *priv = NULL;
-	int rcnt;
+	const snd_pcm_uframes_t frames_wanted = sizeof(data) / sizeof(data[0]) / inp_alsa_var_channels;
+	snd_pcm_sframes_t rcnt;
 	int i;
 
 	visual_log_return_val_if_fail(audio != NULL, -1);
@@ -247,7 +248,7 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	}
 #endif
 	do {
-		rcnt = snd_pcm_readi(priv->chandle, data, PCM_BUF_SIZE / 2);
+		rcnt = snd_pcm_readi(priv->chandle, data, frames_wanted);
 
 		if (rcnt > 0) {
 			VisBuffer buffer;
