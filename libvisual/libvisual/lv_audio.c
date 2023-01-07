@@ -1294,14 +1294,22 @@ static int sample_size_func (VisRingBuffer *ringbuffer, VisRingBufferEntry *entr
 /*  functions */
 #define STEREO_INTERLEAVED(x)											\
 		{												\
-			chan1 = visual_buffer_new_allocate (sizeof (x) * (visual_buffer_get_size (buffer) / 2),	\
+			int samples = visual_buffer_get_size (buffer) / sizeof(x);				\
+			/* Drop last sample if odd number */							\
+			if ( (samples & 1) == 1 ) {								\
+				samples--;									\
+			}											\
+			const visual_size_t bytes_needed_per_channel = sizeof(x) * samples / 2;			\
+			chan1 = visual_buffer_new_allocate (bytes_needed_per_channel,				\
 				visual_buffer_destroyer_free);							\
-			chan2 = visual_buffer_new_allocate (sizeof (x) * (visual_buffer_get_size (buffer) / 2),	\
+			visual_log_return_val_if_fail( chan1 != NULL, -1 );					\
+			chan2 = visual_buffer_new_allocate (bytes_needed_per_channel,				\
 					visual_buffer_destroyer_free);						\
+			visual_log_return_val_if_fail( chan2 != NULL, -1 );					\
 			x *pcm = visual_buffer_get_data (buffer);						\
 			x *chan1buf = visual_buffer_get_data (chan1);						\
 			x *chan2buf = visual_buffer_get_data (chan2);						\
-			for (i = 0; i < visual_buffer_get_size (buffer); i += 2) {				\
+			for (i = 0; i < samples; i += 2) {							\
 				chan1buf[i >> 1] = pcm[i];							\
 				chan2buf[i >> 1] = pcm[i + 1];							\
 			}											\
@@ -1335,12 +1343,6 @@ static int input_interleaved_stereo (VisAudioSamplePool *samplepool, VisBuffer *
 		STEREO_INTERLEAVED(float)
 	else
 		return -1;
-
-	visual_log_return_val_if_fail (chan1 != NULL, -1);
-	visual_log_return_val_if_fail (chan2 != NULL, -1);
-
-	visual_buffer_set_destroyer (chan1, visual_buffer_destroyer_free);
-	visual_buffer_set_destroyer (chan2, visual_buffer_destroyer_free);
 
 	sample = visual_audio_sample_new (chan1, &timestamp, format, rate);
 	visual_audio_samplepool_add (samplepool, sample, VISUAL_AUDIO_CHANNEL_LEFT);
