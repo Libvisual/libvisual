@@ -44,14 +44,19 @@ static int xranges[] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 
 
 typedef struct {
 	GLfloat y_angle;
-	GLfloat y_speed;
+	GLfloat y_initial_angle;
+	GLfloat y_speed;  // degrees per second
 	GLfloat x_angle;
-	GLfloat x_speed;
+	GLfloat x_initial_angle;
+	GLfloat x_speed;  // degrees per second
 	GLfloat z_angle;
-	GLfloat z_speed;
+	GLfloat z_initial_angle;
+	GLfloat z_speed;  // degrees per second
 	GLfloat heights[16][16];
 
 	int transparent;
+
+	VisTimer * started_at;
 } GLtestPrivate;
 
 int lv_gltest_init (VisPluginData *plugin);
@@ -161,12 +166,17 @@ int lv_gltest_init (VisPluginData *plugin)
 		}
 	}
 
-	priv->x_speed = 0.0;
-	priv->y_speed = 0.5;
-	priv->z_speed = 0.0;
-	priv->x_angle = 20.0;
-	priv->y_angle = 45.0;
-	priv->z_angle = 0.0;
+	priv->x_speed = 0.0f;
+	priv->y_speed = 360.0f / 13.0f;
+	priv->z_speed = 0.0f;
+	priv->x_initial_angle = 20.0f;
+	priv->y_initial_angle = 45.0f;
+	priv->z_initial_angle = 0.0f;
+
+	priv->started_at = visual_timer_new();
+	visual_log_return_val_if_fail( priv->started_at != NULL, -1 );
+
+	visual_timer_start(priv->started_at);
 
 	return 0;
 }
@@ -303,17 +313,11 @@ int lv_gltest_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		priv->heights[0][i] = ff * 10;
 	}
 
-	priv->x_angle += priv->x_speed;
-	if (priv->x_angle >= 360.0)
-		priv->x_angle -= 360.0;
+	const float seconds_elapsed = visual_timer_elapsed_msecs(priv->started_at) / 1000.0f;
 
-	priv->y_angle += priv->y_speed;
-	if (priv->y_angle >= 360.0)
-		priv->y_angle -= 360.0;
-
-	priv->z_angle += priv->z_speed;
-	if (priv->z_angle >= 360.0)
-		priv->z_angle -= 360.0;
+	priv->x_angle = fmodf(priv->x_initial_angle + priv->x_speed * seconds_elapsed, 360.0);
+	priv->y_angle = fmodf(priv->y_initial_angle + priv->y_speed * seconds_elapsed, 360.0);
+	priv->z_angle = fmodf(priv->z_initial_angle + priv->z_speed * seconds_elapsed, 360.0);
 
 	draw_bars (priv);
 
