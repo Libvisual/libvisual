@@ -38,7 +38,11 @@
 #include <getopt.h>
 
 // Defaults
-#define DEFAULT_ACTOR   "lv_analyzer"
+#ifdef HAVE_GL
+# define DEFAULT_ACTOR   "lv_gltest"
+#else
+# define DEFAULT_ACTOR   "lv_analyzer"
+#endif
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_MORPH   "slide_left"
 #define DEFAULT_WIDTH   320
