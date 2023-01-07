@@ -449,7 +449,7 @@ namespace {
               // --depth
               case 'c': {
                   if (std::sscanf (optarg, "%u", &color_depth) != 1 ||
-                      visual_video_depth_from_bpp(color_depth) == VISUAL_VIDEO_DEPTH_NONE)
+                      visual_video_depth_enum_from_value(color_depth) == VISUAL_VIDEO_DEPTH_ERROR)
                   {
                       std::cerr << "Invalid depth: '" << optarg << "'. Use integer value (e.g. 24)\n";
                       return -1;
@@ -616,7 +616,7 @@ int main (int argc, char **argv)
             // Pick user chosen colordepth
             else
             {
-                depth = visual_video_depth_from_bpp (color_depth);
+                depth = visual_video_depth_enum_from_value (color_depth);
             }
         }
         /* GL actor */
