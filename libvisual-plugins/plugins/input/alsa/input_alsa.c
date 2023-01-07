@@ -229,6 +229,10 @@ int inp_alsa_upload (VisPluginData *plugin, VisAudio *audio)
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail(priv != NULL, -1);
 
+	if (priv->chandle == NULL) {
+		return -1;
+	}
+
 #if 0
 	{	/* DEBUG STUFF, REMOVE IN RELEASE FIXME FIXME XXX TODO WHATEVER */
 		VisBuffer buffer;
