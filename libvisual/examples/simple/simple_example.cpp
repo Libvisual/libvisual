@@ -97,7 +97,7 @@ LV::VideoPtr SimpleExample::create_display (int width, int height, VisVideoDepth
     m_sdl_screen = nullptr;
 
     if (depth == VISUAL_VIDEO_DEPTH_GL) {
-        int flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_RESIZABLE;
+        int flags = SDL_OPENGL | SDL_RESIZABLE;
 
         SDL_GL_SetAttribute (SDL_GL_RED_SIZE, 8);
         SDL_GL_SetAttribute (SDL_GL_GREEN_SIZE, 8);
