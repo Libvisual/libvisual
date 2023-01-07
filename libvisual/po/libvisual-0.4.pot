@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual 0.4.1\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2006-03-21 02:43+0800\n"
+"POT-Creation-Date: 2023-01-15 01:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -869,4 +869,8 @@ msgstr ""
 
 #: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
 msgid "Invalid depth passed to the scaler"
+msgstr ""
+
+#: tools/lv-tool/lv-tool.cpp:743 tools/lv-tool/lv-tool.cpp:840
+msgid "lv-tool"
 msgstr ""
