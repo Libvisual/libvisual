@@ -18,3 +18,4 @@ libvisual/lv_plugin.c
 libvisual/lv_thread.c
 libvisual/lv_transform.c
 libvisual/lv_video.c
+tools/lv-tool/lv-tool.cpp
