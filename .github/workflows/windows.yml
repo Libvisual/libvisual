@@ -44,7 +44,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pacman -S --needed --ask=20 --noconfirm `
+          pacman -Sy --needed --ask=20 --noconfirm `
             mingw-w64-x86_64-dlfcn `
             mingw-w64-x86_64-orc `
             mingw-w64-x86_64-pkgconf `
