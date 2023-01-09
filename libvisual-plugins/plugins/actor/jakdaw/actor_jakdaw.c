@@ -163,7 +163,7 @@ int act_jakdaw_init (VisPluginData *plugin)
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup2), colorparamchoices);
 
 	popup3 = visual_ui_popup_new ();
-	visual_ui_widget_set_tooltip (popup3, _("The plotter it's shape"));
+	visual_ui_widget_set_tooltip (popup3, _("The plotter's shape"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (popup3), visual_param_container_get (paramcontainer, "plotter type"));
 	visual_ui_choice_add_many (VISUAL_UI_CHOICE (popup3), scopeparamchoices);
 

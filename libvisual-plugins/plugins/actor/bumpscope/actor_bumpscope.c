@@ -151,7 +151,7 @@ int act_bumpscope_init (VisPluginData *plugin)
 
 	check2 = visual_ui_checkbox_new (_("Moving light"), TRUE);
 	visual_ui_widget_set_tooltip (check2,
-			_("Automatic movement of the light, when disabled it's possible to select it" \
+			_("Automatic movement of the light, when disabled it's possible to select it " \
 			"using the mouse cursor"));
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (check2), visual_param_container_get (paramcontainer, "moving light"));
 
