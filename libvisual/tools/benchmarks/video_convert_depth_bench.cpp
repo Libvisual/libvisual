@@ -1,7 +1,7 @@
 #include "benchmark.hpp"
 #include <libvisual/libvisual.h>
-#include <libvisual/lv_util.hpp>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <cstdlib>
 
@@ -75,7 +75,7 @@ namespace {
           argc -= 2; argv += 2;
       }
 
-      return LV::make_unique<VideoConvertDepthBench> (width, height, src_depth, dst_depth);
+      return std::make_unique<VideoConvertDepthBench> (width, height, src_depth, dst_depth);
   }
 
 } // anonymous

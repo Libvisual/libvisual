@@ -43,14 +43,6 @@ FIND_PACKAGE(PkgConfig REQUIRED)
 
 INCLUDE(LVCheckTargetEnv)
 
-# Check for C++11 features
-INCLUDE(CheckCXX11Features)
-FOREACH(FEATURE AUTO NULLPTR LAMBDA STATIC_ASSERT RVALUE_REFERENCES VARIADIC_TEMPLATES DECLTYPE CSTDINT_H)
-  IF(NOT HAS_CXX11_${FEATURE})
-    MESSAGE(FATAL_ERROR "Required C++11 feature support not found (${FEATURE})\nRecommended C++ compilers: gcc >= 4.6, clang >= 3.1")
-  ENDIF()
-ENDFOREACH()
-
 # Check for Unix specific functions
 # TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(unistd.h    HAVE_UNISTD_H)

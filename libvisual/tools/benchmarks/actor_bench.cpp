@@ -1,7 +1,7 @@
 #include "benchmark.hpp"
 #include <libvisual/libvisual.h>
-#include <libvisual/lv_util.hpp>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <cstdlib>
 
@@ -91,7 +91,7 @@ namespace {
           argc--; argv++;
       }
 
-      return LV::make_unique<ActorBench> (actor_name, width, height, depth, forced_depth);
+      return std::make_unique<ActorBench> (actor_name, width, height, depth, forced_depth);
   }
 
 } // anonymous

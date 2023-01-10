@@ -1,7 +1,7 @@
 #include "benchmark.hpp"
 #include <libvisual/libvisual.h>
-#include <libvisual/lv_util.hpp>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <cstdlib>
 #include <cstring>
@@ -101,7 +101,7 @@ namespace {
           argc--; argv++;
       }
 
-      return LV::make_unique<VideoScaleBench> (src_width, src_height, dst_width, dst_height, depth, method);
+      return std::make_unique<VideoScaleBench> (src_width, src_height, dst_width, dst_height, depth, method);
   }
 
 } // anonymous

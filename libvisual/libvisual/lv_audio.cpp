@@ -29,8 +29,8 @@
 #include "lv_fourier.h"
 #include "lv_math.h"
 #include "lv_time.h"
-#include "lv_util.hpp"
 #include <cstdarg>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -91,7 +91,7 @@ namespace LV {
   void Audio::Impl::upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp)
   {
       if (!get_channel (name)) {
-          channels[name] = make_unique<AudioChannel> (name);
+          channels[name] = std::make_unique<AudioChannel> (name);
       }
 
       channels[name]->add_samples (samples, timestamp);

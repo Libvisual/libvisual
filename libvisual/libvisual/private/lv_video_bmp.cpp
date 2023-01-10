@@ -26,8 +26,8 @@
 #include "lv_video_bmp.hpp"
 #include "lv_common.h"
 #include "lv_bits.h"
-#include "lv_util.hpp"
 
+#include <memory>
 #include <istream>
 #include <cstring>
 
@@ -357,7 +357,7 @@ namespace LV {
 
           /* Always allocate 256 palette entries.
            * Depth transformation depends on this */
-          palette = make_unique<LV::Palette> (256);
+          palette = std::make_unique<LV::Palette> (256);
 
           if (bi_size == 12) {
               for (uint32_t i = 0; i < bi_clrused; i++) {
