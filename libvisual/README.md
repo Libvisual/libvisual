@@ -1,8 +1,6 @@
-Libvisual
-=========
+# Libvisual
 
-What's Libvisual?
-------------------
+## What's Libvisual?
 
 Libvisual is a library that acts as a middle layer between
 Applications that want audio visualisation, and audio visualisation
@@ -10,8 +8,7 @@ plugins. It is aimed at providing a common interface between
 application developers with a need for audio visualisation and
 developers who write visualisations.
 
-Why Libvisual?
---------------
+## Why Libvisual?
 
 As an application developer, Libvisual provides you an easy way to do
 audio visualisation. Using Libvisual gets you easy access to all the
@@ -21,8 +18,7 @@ As a plugin writer, Libvisual provides a nice host for your plugin.
 It runs analysis over the audio input usage and handles everything
 necessary for display in any Libvisual-using application.
 
-License
--------
+## License
 
 The Libvisual library that is in libvisual/ is licensed under the
 Lesser GNU General Public License (LGPL) v2.1
@@ -34,17 +30,15 @@ GNU Public License (GPL) v2
 
 The tools in tools/ are licensed under the GPLv2.
 
-Development
------------
+## Development
 
 If you would like to use Libvisual for your applications, write
 plugins or hack on the core, please read HACKING. It contains some
 very useful information regarding our coding policies and such.
 
-Software Requirements
----------------------
+### Software Requirements
 
-###C/C++ compiler###
+#### C/C++ compiler
 
 Libvisual uses several C99 and C++11 features for its modern API
 design and implementation, and as such, requires an up-to-date C/C++
@@ -55,7 +49,7 @@ Clang 3.1.
 is easily fixed with the one-line patch to libstdc++ found
 [here](http://clang.llvm.org/libstdc++4.7-clang11.patch).*
 
-###Libraries####
+#### Libraries
 
 The core library is fairly self-contained and requires almost very
 little dependencies other than the standard C99 and C++11 libraries.
@@ -71,10 +65,9 @@ The bundled examples, benchmarks and test programs mostly require
 
 Note: Gettext is integrated into glibc on Linux.
 
-Compiling and installing
-------------------------
+### Compiling and Installing
 
-####Configuration####
+#### Configuration
 
 Building Libvisual requires [CMake 2.8](http://www.cmake.org) or
 above. The command to configure the build is:
@@ -93,13 +86,13 @@ Alternatively, CMake has a neat GUI that can be run with:
 
     cmake-gui .
 
-####Building####
+#### Building
 
 Once configuration is complete, run Make to begin the compiling.
 
     make
 
-####Installing####
+#### Installing
 
 After compilation is finished, install the built library with:
 
