@@ -26,6 +26,7 @@
 
 #include <config.h>
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -59,6 +60,7 @@ typedef struct {
 	int fd;                    /**< file descriptor to mmaped area */
 	char *sharedfile;          /**< shared file name */
 	mplayer_data_t *mmap_area; /**< mmap()'ed area */
+	unsigned long long prev_count; /**< to detect duplicates */
 
 	int loaded;                /**< plugin state */
 } mplayer_priv_t;
@@ -192,6 +194,7 @@ int inp_mplayer_init( VisPluginData *plugin )
 				strerror( errno ) );
 		return -7;
 	}  
+	priv->prev_count = ULLONG_MAX;
 
 	priv->loaded = 1;
 	return 0;
@@ -270,6 +273,12 @@ int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 	priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	visual_log_return_val_if_fail( priv != NULL, -1 );
 	visual_log_return_val_if_fail( priv->mmap_area != NULL, -1 );
+
+	// NOTE: This avoids accounting for the same samples multiple times
+	if (priv->mmap_area->count == priv->prev_count) {
+	    return 0;
+	}
+	priv->prev_count = priv->mmap_area->count;
 
 	void * const data = ((void *)priv->mmap_area) + sizeof( mplayer_data_t );
 
