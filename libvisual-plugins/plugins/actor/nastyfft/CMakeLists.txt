@@ -1,5 +1,4 @@
 LV_BUILD_ACTOR_PLUGIN(nastyfft
   SOURCES      actor_nastyfft.c
-  INCLUDE_DIRS ${OPENGL_INCLUDE_DIR}
-  LINK_LIBS    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} m
+  LINK_LIBS    OpenGL::GL OpenGL::GLU m
 )
