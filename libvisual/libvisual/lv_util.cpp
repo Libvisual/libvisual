@@ -36,17 +36,22 @@ namespace LV {
   {
       std::set<fs::path> sorted_paths;
 
-      for (auto const& entry : fs::directory_iterator (dir_path)) {
-          sorted_paths.insert (entry.path());
-      }
-
-      for (auto const& entry : sorted_paths) {
-          if (filter (entry) and (!func (entry))) {
-              return false;
+      try {
+          for (auto const& entry : fs::directory_iterator (dir_path)) {
+              sorted_paths.insert (entry.path());
           }
-      }
 
-      return true;
+          for (auto const& entry : sorted_paths) {
+              if (filter (entry) and (!func (entry))) {
+                  return false;
+              }
+          }
+
+          return true;
+      }
+      catch (fs::filesystem_error& error) {
+          return false;
+      }
   }
 
 } // LV namespace
