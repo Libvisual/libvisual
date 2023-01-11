@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.1\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2006-03-21 02:50+0800\n"
+"POT-Creation-Date: 2023-01-12 01:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -434,46 +434,46 @@ msgstr ""
 msgid "The jack server seems to have shutdown"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:96
+#: plugins/input/mplayer/input_mplayer.c:98
 msgid "Use data exported from MPlayer"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:97
+#: plugins/input/mplayer/input_mplayer.c:99
 msgid "This plugin uses data exported from 'mplayer -af export'"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:153
+#: plugins/input/mplayer/input_mplayer.c:155
 #, c-format
 msgid "Could not open file '%s': %s"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:164
+#: plugins/input/mplayer/input_mplayer.c:166
 msgid "No audio channel available"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:172
+#: plugins/input/mplayer/input_mplayer.c:174
 #, c-format
 msgid ""
 "Data in wrong format. It should be 2 channels with 512 16bit samples. There "
 "are %d channels %d 16bit samples in it (buffer is %d bytes)"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:187
+#: plugins/input/mplayer/input_mplayer.c:189
 #, c-format
 msgid "Could not mremap() area from file '%s'  (%p from %zu to %zu bytes): %s"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:226
+#: plugins/input/mplayer/input_mplayer.c:229
 #, c-format
 msgid "Could not close file descriptor %d: %s"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:234
+#: plugins/input/mplayer/input_mplayer.c:237
 #, c-format
 msgid "Wrong file descriptor %d"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:242
+#: plugins/input/mplayer/input_mplayer.c:245
 #, c-format
 msgid "Could not munmap() area %p+%d. %s"
 msgstr ""
