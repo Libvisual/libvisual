@@ -40,19 +40,15 @@ very useful information regarding our coding policies and such.
 
 #### C/C++ compiler
 
-Libvisual uses several C99 and C++11 features for its modern API
+Libvisual uses several C99 and C++20 features for its modern API
 design and implementation, and as such, requires an up-to-date C/C++
-compiler to build. Compilers tested and known to work are GCC 4.6 and
-Clang 3.1.
-
-*There is a known problem using Clang 3.1 with libstdc++ 4.6/4.7. It
-is easily fixed with the one-line patch to libstdc++ found
-[here](http://clang.llvm.org/libstdc++4.7-clang11.patch).*
+compiler to build. Compilers tested and known to work are GCC 11+ and
+Clang 14+.
 
 #### Libraries
 
 The core library is fairly self-contained and requires almost very
-little dependencies other than the standard C99 and C++11 libraries.
+little dependencies other than the standard C99 and C++20 libraries.
 
 The [Oil Runtime Compiler](http://code.entropywave.com/orc) (ORC) is
 required for generating a portion of Libvisual's SIMD routines.
@@ -69,7 +65,7 @@ Note: Gettext is integrated into glibc on Linux.
 
 #### Configuration
 
-Building Libvisual requires [CMake 2.8](http://www.cmake.org) or
+Building Libvisual requires [CMake 3.20](http://www.cmake.org) or
 above. The command to configure the build is:
 
     cmake .

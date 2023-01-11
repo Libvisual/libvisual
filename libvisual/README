@@ -50,17 +50,12 @@ very useful information regarding our coding policies and such.
 Software Requirements
 ---------------------
 
-C/C++11 compiler
+C/C++20 compiler
 
-    Libvisual uses several C99 and C++11 features for its modern API
+    Libvisual uses several C99 and C++20 features for its modern API
     design and implementation, and as such, requires an up-to-date
     C/C++ compiler to build. Compilers tested and known to work are
-    GCC 4.6 and Clang 3.1.
-
-    ** There is a known problem using Clang 3.1 with libstdc++
-       4.6/4.7. It is easily fixed with the one-line patch to
-       libstdc++ found here
-       (http://clang.llvm.org/libstdc++4.7-clang11.patch).
+    GCC 11+ and Clang 14+.
 
 Libraries
 
@@ -83,7 +78,7 @@ Compiling and installing
 
 Configuration
 
-    Building Libvisual requires CMake 2.8 (http://www.cmake.org) or
+    Building Libvisual requires CMake 3.20 (http://www.cmake.org) or
     above. The command to configure the build is:
 
         cmake .
