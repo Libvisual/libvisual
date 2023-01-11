@@ -25,6 +25,7 @@
 #include "config.h"
 #include "gettext.h"
 
+#include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -52,6 +53,8 @@ typedef struct {
 	int fd;                    /**< file descriptor to mmaped area */
 	char *sharedfile;          /**< shared file name */
 	mplayer_data_t *mmap_area; /**< mmap()'ed area */
+	unsigned long long prev_count; /**< to detect duplicates */
+
 	int loaded;                /**< plugin state */
 } mplayer_priv_t;
 
@@ -157,6 +160,7 @@ static int inp_mplayer_init( VisPluginData *plugin )
 				strerror( errno ) );
 		return FALSE;
 	}
+	priv->prev_count = ULLONG_MAX;
 
 	priv->loaded = TRUE;
 
@@ -204,6 +208,12 @@ static void inp_mplayer_cleanup( VisPluginData *plugin )
 static int inp_mplayer_upload( VisPluginData *plugin, VisAudio *audio )
 {
 	mplayer_priv_t *priv = visual_plugin_get_private (plugin);
+
+	// NOTE: This avoids accounting for the same samples multiple times
+	if (priv->mmap_area->count == priv->prev_count) {
+	    return 0;
+	}
+	priv->prev_count = priv->mmap_area->count;
 
 	VisBuffer *buffer = visual_buffer_new_wrap_data ( (uint8_t *)priv->mmap_area + sizeof( mplayer_data_t ), 2048, FALSE );
 	visual_audio_input (audio, buffer,
