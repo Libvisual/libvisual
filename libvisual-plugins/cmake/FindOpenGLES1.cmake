@@ -1,5 +1,3 @@
-# NOTE: This cannot be used in conjunction with FindOpenGL.cmake as it sets the same OpenGL::GL and OpenGL::GLU targets.
-
 FIND_PATH(OPENGL_ES1_INCLUDE_DIR GLES/gl.h
   DOC "The OpenGL ES1 include directory")
 FIND_LIBRARY(OPENGL_ES1_LIBRARY NAMES GLESv1_CM
