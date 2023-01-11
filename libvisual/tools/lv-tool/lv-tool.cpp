@@ -28,6 +28,7 @@
 #include "display/display_driver_factory.hpp"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <atomic>
 #include <stdexcept>
 #include <iostream>
 #include <string>
@@ -71,7 +72,7 @@ namespace {
   bool have_seed = 0;
   uint32_t seed = 0;
 
-  volatile std::sig_atomic_t terminate_process = false;
+  std::atomic_bool terminate_process = false;
 
   enum class CycleDir
   {
