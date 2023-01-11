@@ -96,6 +96,7 @@ SET(libvisual_SOURCES
   lv_rectangle.cpp
   lv_songinfo.cpp
   lv_time.cpp
+  lv_util.cpp
   lv_video.cpp
 
   lv_actor_c.cpp
@@ -130,7 +131,6 @@ SET(libvisual_SOURCES
 
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_mem.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_module.cpp
-  ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_util.cpp
   ${PLATFORM_SPECIFIC_SOURCE_DIR}/lv_time_system.cpp
 
   ${CMAKE_CURRENT_BINARY_DIR}/lv_alpha_blend_orc.h

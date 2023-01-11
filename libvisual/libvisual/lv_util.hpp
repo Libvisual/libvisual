@@ -3,6 +3,7 @@
 
 #include <libvisual/lvconfig.h>
 #include <libvisual/lv_defines.h>
+#include <filesystem>
 #include <string>
 #include <memory>
 #include <functional>
@@ -26,9 +27,9 @@ namespace LV {
       }
   }
 
-  LV_API bool for_each_file_in_dir (std::string const&                       path,
-                                    std::function<bool (std::string const&)> filter,
-                                    std::function<bool (std::string const&)> func);
+  LV_API bool for_each_file_in_dir (std::filesystem::path const&                       path,
+                                    std::function<bool (std::filesystem::path const&)> filter,
+                                    std::function<bool (std::filesystem::path const&)> func);
 
   /**
    * Returns a null-terminated C string from a std::string, or nullptr if string is empty

@@ -9,6 +9,7 @@
 #include "lv_libvisual.h"
 #include "lv_module.hpp"
 
+#include <filesystem>
 #include <vector>
 #include <unordered_map>
 #include <cstdlib>
@@ -21,6 +22,8 @@ namespace LV {
     typedef const VisPluginInfo *(*PluginGetInfoFunc)();
   }
 
+  namespace fs = std::filesystem;
+
   class PluginRegistry::Impl
   {
   public:
@@ -29,14 +32,14 @@ namespace LV {
 
       PluginListMap plugin_list_map;
 
-      PluginList get_plugins_from_dir (std::string const& dir) const;
+      PluginList get_plugins_from_dir (fs::path const& dir) const;
   };
 
-  PluginRef* load_plugin_ref (std::string const& plugin_path)
+  PluginRef* load_plugin_ref (fs::path const& plugin_path)
   {
       // NOTE: This does not check if a plugin has already been loaded
 
-      auto module = Module::load (plugin_path);
+      auto module = Module::load (plugin_path.string ());
       if (!module) {
           visual_log (VISUAL_LOG_ERROR, "Cannot load plugin (%s)", plugin_path.c_str ());
           return nullptr;
@@ -162,16 +165,16 @@ namespace LV {
       return ref ? ref->info : nullptr;
   }
 
-  PluginList PluginRegistry::Impl::get_plugins_from_dir (std::string const& dir) const
+  PluginList PluginRegistry::Impl::get_plugins_from_dir (fs::path const& dir) const
   {
       PluginList list;
       list.reserve (30);
 
       for_each_file_in_dir (dir,
-                            [&] (std::string const& path) -> bool {
-                                return str_has_suffix (path, Module::path_suffix ());
+                            [&] (fs::path const& path) -> bool {
+                                return path.extension() == Module::path_suffix ();
                             },
-                            [&] (std::string const& path) -> bool {
+                            [&] (fs::path const& path) -> bool {
                                 auto ref = load_plugin_ref (path);
 
                                 if (ref) {

@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2023 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
@@ -21,43 +21,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define _DEFAULT_SOURCE
-
 #include "config.h"
 #include "lv_util.hpp"
-#include <cstdlib>
-#include <dirent.h>
+#include <filesystem>
+#include <set>
 
 namespace LV {
 
-  bool for_each_file_in_dir (std::string const&                       dir_path,
-                             std::function<bool (std::string const&)> filter,
-                             std::function<bool (std::string const&)> func)
+  namespace fs = std::filesystem;
+
+  bool for_each_file_in_dir (fs::path const&                       dir_path,
+                             std::function<bool (fs::path const&)> filter,
+                             std::function<bool (fs::path const&)> func)
   {
-      // NOTE: This typecast is needed for glibc versions that define
-      // alphasort() as taking const void * arguments
-      typedef int (*ScandirCompareFunc) (const struct dirent **, const struct dirent **);
+      std::set<fs::path> sorted_paths;
 
-      struct dirent **namelist;
-
-      auto n = scandir (dir_path.c_str (), &namelist, nullptr, ScandirCompareFunc (alphasort));
-      if (n < 0)
-          return {};
-
-      // First two entries are '.' and '..'
-      std::free (namelist[0]);
-      std::free (namelist[1]);
-
-      for (auto i = 2; i < n; i++) {
-          auto full_path = dir_path + "/" + namelist[i]->d_name;
-
-          if (filter (full_path) and (!func (full_path)))
-              return false;
-
-          std::free (namelist[i]);
+      for (auto const& entry : fs::directory_iterator (dir_path)) {
+          sorted_paths.insert (entry.path());
       }
 
-      std::free (namelist);
+      for (auto const& entry : sorted_paths) {
+          if (filter (entry) and (!func (entry))) {
+              return false;
+          }
+      }
 
       return true;
   }
