@@ -39,9 +39,12 @@ namespace LV {
   {
       // NOTE: This does not check if a plugin has already been loaded
 
-      auto module = Module::load (plugin_path.string ());
+      // FIXME: Does this work with Unicode paths?
+      auto plugin_path_string = plugin_path.string();
+
+      auto module = Module::load (plugin_path_string);
       if (!module) {
-          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin (%s)", plugin_path.c_str ());
+          visual_log (VISUAL_LOG_ERROR, "Cannot load plugin (%s)", plugin_path_string.c_str ());
           return nullptr;
       }
 
@@ -49,7 +52,7 @@ namespace LV {
 
       if (!plugin_version || *plugin_version != VISUAL_PLUGIN_API_VERSION) {
           visual_log (VISUAL_LOG_ERROR, "Plugin %s is not compatible with version %s of libvisual",
-                      plugin_path.c_str (), visual_get_version ());
+                      plugin_path_string.c_str (), visual_get_version ());
           return nullptr;
       }
 
