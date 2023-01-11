@@ -38,28 +38,28 @@ namespace {
   };
 
   template <typename T>
-  constexpr typename std::enable_if<std::is_signed<T>::value, T>::type
+  constexpr std::enable_if_t<std::is_signed<T>::value, T>
   half_range ()
   {
       return std::numeric_limits<T>::max ();
   }
 
   template <typename T>
-  constexpr typename std::enable_if<std::is_unsigned<T>::value, T>::type
+  constexpr std::enable_if_t<std::is_unsigned<T>::value, T>
   half_range ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
   }
 
   template <typename T>
-  constexpr typename std::enable_if<std::is_signed<T>::value, T>::type
+  constexpr std::enable_if_t<std::is_signed<T>::value, T>
   zero ()
   {
       return 0;
   }
 
   template <typename T>
-  constexpr typename std::enable_if<std::is_unsigned<T>::value, T>::type
+  constexpr std::enable_if_t<std::is_unsigned<T>::value, T>
   zero ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
@@ -83,7 +83,7 @@ namespace {
 
   // signed->unsigned int conversion (same width)
   template <typename D, typename S>
-  typename std::enable_if<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) == sizeof(S)>::type
+  std::enable_if_t<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) == sizeof(S)>
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<D> ();
@@ -99,7 +99,7 @@ namespace {
 
   // unsigned->signed int conversion (same width)
   template <typename D, typename S>
-  typename std::enable_if<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) == sizeof(S)>::type
+  std::enable_if_t<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) == sizeof(S)>
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<S> ();
@@ -115,7 +115,7 @@ namespace {
 
   // int->float conversions
   template <typename S>
-  typename std::enable_if<std::is_integral<S>::value>::type
+  std::enable_if_t<std::is_integral<S>::value>
   inline convert_sample_array (float* dst, S const* src, std::size_t count)
   {
       float a = 1.0 / float (half_range<S> ());
@@ -132,7 +132,7 @@ namespace {
 
   // float->int conversions
   template <typename D>
-  typename std::enable_if<std::is_integral<D>::value>::type
+  std::enable_if_t<std::is_integral<D>::value>
   inline convert_sample_array (D* dst, float const* src, std::size_t count)
   {
       float a = float (half_range<D> ());
@@ -149,7 +149,7 @@ namespace {
 
   // narrowing/widening int conversion (same signedness)
   template <typename D, typename S>
-  typename std::enable_if<same_signedness<D, S>::value && sizeof(D) != sizeof(S) >::type
+  std::enable_if_t<same_signedness<D, S>::value && sizeof(D) != sizeof(S)>
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       const int shift = shifter<D, S> ();
@@ -175,7 +175,7 @@ namespace {
 
   // narrowing/widening unsigned->signed int conversion
   template <typename D, typename S>
-  typename std::enable_if<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) != sizeof(S)>::type
+  std::enable_if_t<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) != sizeof(S)>
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<D>();
@@ -202,7 +202,7 @@ namespace {
 
   // narrowing/widening signed->unsigned int conversion
   template <typename D, typename S>
-  typename std::enable_if<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) != sizeof(S)>::type
+  std::enable_if_t<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) != sizeof(S)>
   inline convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       auto a = zero<D>();
