@@ -73,7 +73,7 @@ namespace LV {
 
       auto ref = new PluginRef;
       ref->info   = plugin_info;
-      ref->file   = plugin_path;
+      ref->file   = plugin_path_string;
       ref->module = module;
 
       return ref;
