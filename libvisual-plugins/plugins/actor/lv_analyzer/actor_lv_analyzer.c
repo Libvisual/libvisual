@@ -202,17 +202,21 @@ static void _change_bars(VisPluginData *plugin,
                          VisParam *p,
                          int (*validator)(VisPluginData *plugin, void *value))
 {
-	AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
+    AnalyzerPrivate *priv = visual_plugin_get_private (plugin);
 
-	int integer = visual_param_get_value_integer(p);
+    int integer = visual_param_get_value_integer(p);
 
-	if(!validator || validator(plugin, &integer))
+    if(!validator || validator(plugin, &integer))
     {
-		priv->bars = integer;
+        priv->bars = integer;
 
-		/* adapt buffer size */
-		visual_buffer_set_size(priv->pcm_buffer, priv->bars*2 * sizeof (float));
-		visual_buffer_set_size(priv->freq_buffer, priv->bars * sizeof (float));
+        /* resize buffers */
+
+        visual_buffer_unref(priv->pcm_buffer);
+        visual_buffer_unref(priv->freq_buffer);
+
+        priv->pcm_buffer = visual_buffer_new_allocate(priv->bars*2 * sizeof (float));
+        priv->freq_buffer = visual_buffer_new_allocate(priv->bars * sizeof (float));
         return;
     }
     /* reset to previous value */
