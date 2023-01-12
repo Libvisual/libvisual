@@ -27,8 +27,6 @@
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 typedef struct {
-	VisBuffer	*pcmbuf1;
-	VisBuffer	*pcmbuf2;
 	PluginInfo	*goominfo; /* The goom internal private struct */
 } GoomPrivate;
 
@@ -82,9 +80,6 @@ static int lv_goom_init (VisPluginData *plugin)
 
 	priv->goominfo = goom_init (128, 128);
 
-	priv->pcmbuf1 = visual_buffer_new ();
-	priv->pcmbuf2 = visual_buffer_new ();
-
 	return TRUE;
 }
 
@@ -94,9 +89,6 @@ static void lv_goom_cleanup (VisPluginData *plugin)
 
 	if (priv->goominfo != NULL)
 		goom_close (priv->goominfo);
-
-	visual_buffer_unref (priv->pcmbuf1);
-	visual_buffer_unref (priv->pcmbuf2);
 
 	visual_mem_free (priv);
 }
@@ -139,45 +131,52 @@ static VisPalette *lv_goom_palette (VisPluginData *plugin)
 static void lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	GoomPrivate *priv = visual_plugin_get_private (plugin);
-	VisSongInfo *songinfo;
+
+	const int showinfo = TRUE;
+
+	VisBuffer *pcmbuf1 = visual_buffer_new_allocate(sizeof (float) * 512);
+	visual_audio_get_sample (audio, pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+
+	VisBuffer *pcmbuf2 = visual_buffer_new_allocate(sizeof (float) * 512);
+	visual_audio_get_sample (audio, pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
+
+	float *buf1 = visual_buffer_get_data(pcmbuf1);
+	float *buf2 = visual_buffer_get_data(pcmbuf2);
+
 	short pcmdata[2][512];
-	float fpcmdata[2][512];
-	uint32_t *buf;
-	uint8_t *vidbuf = visual_video_get_pixels (video);
-	int showinfo = TRUE;
-	int i;
 
-	visual_buffer_set_data_pair (priv->pcmbuf1, fpcmdata[0], sizeof (float) * 512);
-	visual_audio_get_sample (audio, priv->pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
-
-	visual_buffer_set_data_pair (priv->pcmbuf2, fpcmdata[1], sizeof (float) * 512);
-	visual_audio_get_sample (audio, priv->pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
-
-	for (i = 0; i < 512; i++) {
-		pcmdata[0][i] = fpcmdata[0][i] * 32767;
-		pcmdata[1][i] = fpcmdata[1][i] * 32767;
+	for (int i = 0; i < 512; i++) {
+		pcmdata[0][i] = buf1[i] * 32767;
+		pcmdata[1][i] = buf2[i] * 32767;
 	}
 
+	visual_buffer_unref(pcmbuf1);
+	visual_buffer_unref(pcmbuf2);
+
 	/* Retrieve the songinfo */
-	songinfo = ((VisActorPlugin *) visual_plugin_get_specific (plugin))->songinfo;
+	VisSongInfo *songinfo = ((VisActorPlugin *) visual_plugin_get_specific (plugin))->songinfo;
+
+	uint32_t *buf;
 
 	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
 	if (songinfo != NULL && visual_songinfo_get_age (songinfo) <= 1 && showinfo == TRUE) {
-	    VisSongInfoType songinfo_type = visual_songinfo_get_type (songinfo);
+		VisSongInfoType songinfo_type = visual_songinfo_get_type (songinfo);
 
 		if (songinfo_type == VISUAL_SONGINFO_TYPE_SIMPLE)
-		    buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_simple_name (songinfo), NULL);
+			buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_simple_name (songinfo), NULL);
 		else if (songinfo_type == VISUAL_SONGINFO_TYPE_ADVANCED)
-		    buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_song (songinfo), NULL);
+			buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_song (songinfo), NULL);
 		else
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 	}
-	else
+	else {
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
+	}
+
+	uint8_t *vidbuf = visual_video_get_pixels (video);
 
 	visual_mem_copy_pitch (vidbuf, buf, visual_video_get_pitch (video),
-	                       visual_video_get_pitch (video),
-	                       visual_video_get_pitch (video),
-	                       visual_video_get_height (video));
+						   visual_video_get_pitch (video),
+						   visual_video_get_pitch (video),
+						   visual_video_get_height (video));
 }
-

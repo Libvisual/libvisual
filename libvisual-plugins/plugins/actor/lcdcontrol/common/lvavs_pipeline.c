@@ -222,48 +222,42 @@ int lvavs_pipeline_propagate_event (LVAVSPipeline *pipeline, VisEvent *event)
 
 int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audio)
 {
-    int i;
-    VisBuffer pcmbuf1;
-    VisBuffer pcmbuf2;
-    VisBuffer spmbuf1;
-    VisBuffer spmbuf2;
-    VisBuffer tmp;
-
     int size = BEAT_MAX_SIZE/2;
 
     float data[2][2][size];
 
-    visual_buffer_init_allocate(&tmp, sizeof(float) * size, visual_buffer_destroyer_free);
+    VisBuffer *tmp = visual_buffer_new_allocate (sizeof(float) * size);
 
     /* Left audio */
-    visual_buffer_set_data_pair(&pcmbuf1, data[0][0], sizeof(float) * size);
+    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT)) {
+        VisBuffer *pcmbuf1 = visual_buffer_new_wrap_data (data[0][0], sizeof(float) * size, 0);
+        visual_audio_sample_buffer_mix (pcmbuf1, tmp, TRUE, 1.0);
+        visual_buffer_unref(pcmbuf1);
+    }
 
-    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT) == VISUAL_OK)
-
-        visual_audio_sample_buffer_mix(&pcmbuf1, &tmp, TRUE, 1.0);
-
-    visual_buffer_set_data_pair(&spmbuf1, &data[1][0], sizeof(float) * size);
-
-    visual_audio_get_spectrum_for_sample (&spmbuf1, &tmp, TRUE);
+    VisBuffer *spmbuf1 = visual_buffer_new_wrap_data (data[1][0], sizeof(float) * size, 0);
+    visual_audio_get_spectrum_for_sample (spmbuf1, tmp, TRUE);
+    visual_buffer_unref (spmbuf1);
 
     /* Right audio */
-    visual_buffer_set_data_pair(&pcmbuf2, data[0][1], sizeof(float) * size);
 
-    if(visual_audio_get_sample(audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT) == VISUAL_OK)
+    if(visual_audio_get_sample (audio, &tmp, VISUAL_AUDIO_CHANNEL_LEFT)) {
+        VisBuffer *pcmbuf2 = visual_buffer_new_wrap_data (data[0][1], sizeof(float) * size, 0);
+        visual_audio_sample_buffer_mix (pcmbuf2, tmp, TRUE, 1.0);
+        visual_buffer_unref(pcmbuf2);
+    }
 
-        visual_audio_sample_buffer_mix(&pcmbuf2, &tmp, TRUE, 1.0);
+    VisBuffer *spmbuf2 = visual_buffer_new_wrap_data (data[1][1], sizeof(float) * size, 0);
+    visual_audio_get_spectrum_for_sample (spmbuf2, tmp, TRUE);
+    visual_buffer_unref(spmbuf2);
 
-    visual_buffer_set_data_pair(&spmbuf2, data[1][1], sizeof(float) * size);
-
-    visual_audio_get_spectrum_for_sample(&spmbuf2, &tmp, TRUE);
-
-    visual_object_unref(VISUAL_OBJECT(&tmp));
+    visual_buffer_unref(tmp);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(i)
 #endif
 
-    for(i = size - 1; i >= 0; i--) {
+    for(int i = size - 1; i >= 0; i--) {
         pipeline->audiodata[0][0][i] = (data[0][0][i] + 1) / 2.0;
         pipeline->audiodata[1][0][i] = (data[1][0][i] + 1) / 2.0;
         pipeline->audiodata[0][1][i] = (data[0][1][i] + 1) / 2.0;

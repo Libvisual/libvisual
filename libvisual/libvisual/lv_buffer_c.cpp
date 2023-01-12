@@ -2,16 +2,6 @@
 #include "lv_buffer.h"
 #include "lv_common.h"
 
-VisBuffer *visual_buffer_new (void)
-{
-    auto self = LV::Buffer::create ();
-    if (self) {
-        LV::intrusive_ptr_add_ref (self.get ());
-    }
-
-    return self.get ();
-}
-
 VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own)
 {
     auto self = LV::Buffer::wrap (data, size, own);
@@ -45,25 +35,6 @@ VisBuffer *visual_buffer_clone (VisBuffer *source)
     return self.get ();
 }
 
-void visual_buffer_free (VisBuffer *self)
-{
-    delete self;
-}
-
-void visual_buffer_set_data_pair (VisBuffer *self, void *data, visual_size_t size)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set (data, size);
-}
-
-void visual_buffer_set_data (VisBuffer *self, void *data)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_data (data);
-}
-
 void *visual_buffer_get_data (VisBuffer *self)
 {
     visual_return_val_if_fail (self != nullptr, nullptr);
@@ -78,13 +49,6 @@ void *visual_buffer_get_data_offset (VisBuffer *self, visual_size_t offset)
     return self->get_data (offset);
 }
 
-void visual_buffer_set_size (VisBuffer *self, visual_size_t size)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_size (size);
-}
-
 visual_size_t visual_buffer_get_size (VisBuffer *self)
 {
     visual_return_val_if_fail (self != nullptr, 0);
@@ -97,20 +61,6 @@ int visual_buffer_is_allocated (VisBuffer *self)
     visual_return_val_if_fail (self != nullptr, FALSE);
 
     return self->is_allocated ();
-}
-
-void visual_buffer_allocate (VisBuffer *self, visual_size_t size)
-{
-    visual_return_if_fail (self != nullptr);
-
-    return self->allocate (size);
-}
-
-void visual_buffer_destroy_content (VisBuffer *self)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->destroy_content ();
 }
 
 void visual_buffer_copy_to (VisBuffer *self, VisBuffer *dest)

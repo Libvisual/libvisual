@@ -57,6 +57,9 @@ namespace LV {
 
       /**
        * Constructs a new empty Buffer.
+       *
+       * @note This is *obsolete* and reserved for internal use.
+       * @todo Remove this.
        */
       static BufferPtr create ();
 
@@ -167,7 +170,7 @@ namespace LV {
        *
        * @param dest Buffer to copy to
        */
-      void copy_to (BufferPtr const& dest);
+      void copy_to (BufferPtr const& dest) const;
 
       /**
        * Copies all data to a given memory location.
@@ -175,7 +178,7 @@ namespace LV {
        * @param dest pointer to memory location
        * @param size number of bytes to copy
        */
-      void copy_to (void *dest, std::size_t size);
+      void copy_to (void *dest, std::size_t size) const;
 
       /**
        * Copies data from another Buffer.
@@ -247,22 +250,16 @@ struct _VisBuffer;
 
 LV_BEGIN_DECLS
 
-LV_API VisBuffer *visual_buffer_new (void);
 LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own);
 LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
 LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
 
-LV_API void  visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t size);
-LV_API void  visual_buffer_set_data (VisBuffer *buffer, void *data);
 LV_API void *visual_buffer_get_data (VisBuffer *buffer);
 LV_API void *visual_buffer_get_data_offset (VisBuffer *buffer, visual_size_t offset);
 
-LV_API void          visual_buffer_set_size (VisBuffer *buffer, visual_size_t size);
 LV_API visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
 LV_API int  visual_buffer_is_allocated    (VisBuffer *buffer);
-LV_API void visual_buffer_allocate        (VisBuffer *buffer, visual_size_t size);
-LV_API void visual_buffer_destroy_content (VisBuffer *buffer);
 
 LV_API void visual_buffer_copy_to (VisBuffer *src, VisBuffer *dest);
 LV_API void visual_buffer_copy_to_data (VisBuffer *src, void *dest, visual_size_t size);
