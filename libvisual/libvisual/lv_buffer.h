@@ -170,7 +170,7 @@ namespace LV {
        *
        * @param dest Buffer to copy to
        */
-      void copy_to (BufferPtr const& dest);
+      void copy_to (BufferPtr const& dest) const;
 
       /**
        * Copies all data to a given memory location.
@@ -178,7 +178,7 @@ namespace LV {
        * @param dest pointer to memory location
        * @param size number of bytes to copy
        */
-      void copy_to (void *dest, std::size_t size);
+      void copy_to (void *dest, std::size_t size) const;
 
       /**
        * Copies data from another Buffer.

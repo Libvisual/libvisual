@@ -165,14 +165,14 @@ namespace LV {
       visual_mem_copy (m_impl->data, src->m_impl->data, src->m_impl->size);
   }
 
-  void Buffer::copy_to (void* dest, std::size_t size)
+  void Buffer::copy_to (void* dest, std::size_t size) const
   {
       visual_return_if_fail (dest != nullptr);
 
       visual_mem_copy (dest, m_impl->data, std::min (size, m_impl->size));
   }
 
-  void Buffer::copy_to (BufferPtr const& dest)
+  void Buffer::copy_to (BufferPtr const& dest) const
   {
       copy_to (dest->get_data (), dest->get_size ());
   }
