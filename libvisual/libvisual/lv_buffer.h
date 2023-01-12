@@ -57,6 +57,9 @@ namespace LV {
 
       /**
        * Constructs a new empty Buffer.
+       *
+       * @note This is *obsolete* and reserved for internal use.
+       * @todo Remove this.
        */
       static BufferPtr create ();
 
@@ -247,17 +250,13 @@ struct _VisBuffer;
 
 LV_BEGIN_DECLS
 
-LV_API VisBuffer *visual_buffer_new (void);
 LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own);
 LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
 LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
 
-LV_API void  visual_buffer_set_data_pair (VisBuffer *buffer, void *data, visual_size_t size);
-LV_API void  visual_buffer_set_data (VisBuffer *buffer, void *data);
 LV_API void *visual_buffer_get_data (VisBuffer *buffer);
 LV_API void *visual_buffer_get_data_offset (VisBuffer *buffer, visual_size_t offset);
 
-LV_API void          visual_buffer_set_size (VisBuffer *buffer, visual_size_t size);
 LV_API visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
 LV_API int  visual_buffer_is_allocated    (VisBuffer *buffer);
