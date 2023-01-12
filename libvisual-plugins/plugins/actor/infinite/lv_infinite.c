@@ -175,11 +175,11 @@ static void act_infinite_render (VisPluginData *plugin, VisVideo *video, VisAudi
 
 	VisBuffer *pcm_left = visual_buffer_new_wrap_data(priv->pcm_data[0], sizeof (float) * 512, 0);
 	visual_audio_get_sample (audio, pcm_left, VISUAL_AUDIO_CHANNEL_LEFT);
-    visual_buffer_unref(pcm_left);
+	visual_buffer_unref(pcm_left);
 
 	VisBuffer *pcm_right = visual_buffer_new_wrap_data(priv->pcm_data[1], sizeof (float) * 512, 0);
 	visual_audio_get_sample (audio, pcm_right, VISUAL_AUDIO_CHANNEL_RIGHT);
-    visual_buffer_unref(pcm_right);
+	visual_buffer_unref(pcm_right);
 
 	_inf_renderer (priv);
 	_inf_display (priv, (uint8_t *) visual_video_get_pixels (video), visual_video_get_pitch (video));

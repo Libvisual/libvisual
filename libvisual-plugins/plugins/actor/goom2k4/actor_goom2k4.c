@@ -132,26 +132,26 @@ static void lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 {
 	GoomPrivate *priv = visual_plugin_get_private (plugin);
 
-    const int showinfo = TRUE;
+	const int showinfo = TRUE;
 
-    VisBuffer *pcmbuf1 = visual_buffer_new_allocate(sizeof (float) * 512);
-    visual_audio_get_sample (audio, pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
+	VisBuffer *pcmbuf1 = visual_buffer_new_allocate(sizeof (float) * 512);
+	visual_audio_get_sample (audio, pcmbuf1, VISUAL_AUDIO_CHANNEL_LEFT);
 
-    VisBuffer *pcmbuf2 = visual_buffer_new_allocate(sizeof (float) * 512);
+	VisBuffer *pcmbuf2 = visual_buffer_new_allocate(sizeof (float) * 512);
 	visual_audio_get_sample (audio, pcmbuf2, VISUAL_AUDIO_CHANNEL_RIGHT);
 
-    float *buf1 = visual_buffer_get_data(pcmbuf1);
-    float *buf2 = visual_buffer_get_data(pcmbuf2);
+	float *buf1 = visual_buffer_get_data(pcmbuf1);
+	float *buf2 = visual_buffer_get_data(pcmbuf2);
 
 	short pcmdata[2][512];
 
-    for (int i = 0; i < 512; i++) {
+	for (int i = 0; i < 512; i++) {
 		pcmdata[0][i] = buf1[i] * 32767;
 		pcmdata[1][i] = buf2[i] * 32767;
 	}
 
-    visual_buffer_unref(pcmbuf1);
-    visual_buffer_unref(pcmbuf2);
+	visual_buffer_unref(pcmbuf1);
+	visual_buffer_unref(pcmbuf2);
 
 	/* Retrieve the songinfo */
 	VisSongInfo *songinfo = ((VisActorPlugin *) visual_plugin_get_specific (plugin))->songinfo;
@@ -160,23 +160,23 @@ static void lv_goom_render (VisPluginData *plugin, VisVideo *video, VisAudio *au
 
 	/* FIXME goom should support setting a pointer, so we don't need that final visual_mem_copy */
 	if (songinfo != NULL && visual_songinfo_get_age (songinfo) <= 1 && showinfo == TRUE) {
-	    VisSongInfoType songinfo_type = visual_songinfo_get_type (songinfo);
+		VisSongInfoType songinfo_type = visual_songinfo_get_type (songinfo);
 
 		if (songinfo_type == VISUAL_SONGINFO_TYPE_SIMPLE)
-		    buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_simple_name (songinfo), NULL);
+			buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_simple_name (songinfo), NULL);
 		else if (songinfo_type == VISUAL_SONGINFO_TYPE_ADVANCED)
-		    buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_song (songinfo), NULL);
+			buf = goom_update (priv->goominfo, pcmdata, 0, 0, visual_songinfo_get_song (songinfo), NULL);
 		else
 			buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
 	}
 	else {
 		buf = goom_update (priv->goominfo, pcmdata, 0, 0, NULL, NULL);
-    }
+	}
 
 	uint8_t *vidbuf = visual_video_get_pixels (video);
 
 	visual_mem_copy_pitch (vidbuf, buf, visual_video_get_pitch (video),
-	                       visual_video_get_pitch (video),
-	                       visual_video_get_pitch (video),
-	                       visual_video_get_height (video));
+						   visual_video_get_pitch (video),
+						   visual_video_get_pitch (video),
+						   visual_video_get_height (video));
 }

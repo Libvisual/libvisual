@@ -213,7 +213,7 @@ static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	/* Activate the effect change timer */
 	if (!visual_timer_is_active (priv->t)) {
 		visual_timer_start (priv->t);
-    }
+	}
 
 	/* At 15 secs, do with new settings, reset timer */
 	if (visual_timer_is_past2 (priv->t, 15, 0)) {
@@ -226,15 +226,15 @@ static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	/* Activate global timer */
 	if (!visual_timer_is_active (priv->flower.timer)) {
 		visual_timer_start (priv->flower.timer);
-    }
+	}
 
-    float temp_bars[NOTCH_BANDS];
+	float temp_bars[NOTCH_BANDS];
 
 	for (int b=0; b<priv->nof_bands; b++) {
 		temp_bars[b]=0.0;
-    }
+	}
 
-    float *freqnorm = visual_buffer_get_data(freqbuf);
+	float *freqnorm = visual_buffer_get_data(freqbuf);
 
 	for (int i=0; i<256; i++) {
 		for (int b=0; b<priv->nof_bands; b++) {
@@ -244,7 +244,7 @@ static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 		}
 	}
 
-    visual_buffer_unref (freqbuf);
+	visual_buffer_unref (freqbuf);
 
 	/* Not part of the if !!! */
 	{
