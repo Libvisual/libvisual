@@ -199,30 +199,21 @@ static VisPalette *lv_flower_palette (VisPluginData *plugin)
 static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 {
 	FlowerPrivate *priv = visual_plugin_get_private (plugin);
-	VisBuffer *pcmbuf;
-	VisBuffer *freqbuf;
-	float pcm[512];
-	float freqnorm[256];
-	float temp_bars[NOTCH_BANDS];
-	float f;
-	int b;
-	int i;
 
-	pcmbuf = visual_buffer_new ();
-	freqbuf = visual_buffer_new ();
-
-	visual_buffer_set_data_pair (pcmbuf, pcm, sizeof (pcm));
-	visual_buffer_set_data_pair (freqbuf, freqnorm, sizeof (freqnorm));
-
+	VisBuffer *pcmbuf = visual_buffer_new_allocate (sizeof(float) * 512);
 	visual_audio_get_sample_mixed_simple (audio, pcmbuf, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
 			VISUAL_AUDIO_CHANNEL_RIGHT);
 
+	VisBuffer *freqbuf = visual_buffer_new_allocate (sizeof(float) * 256);
 	visual_audio_get_spectrum_for_sample (freqbuf, pcmbuf, TRUE);
 
+	visual_buffer_unref (pcmbuf);
+
 	/* Activate the effect change timer */
-	if (!visual_timer_is_active (priv->t))
+	if (!visual_timer_is_active (priv->t)) {
 		visual_timer_start (priv->t);
+    }
 
 	/* At 15 secs, do with new settings, reset timer */
 	if (visual_timer_is_past2 (priv->t, 15, 0)) {
@@ -233,20 +224,27 @@ static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	}
 
 	/* Activate global timer */
-	if (!visual_timer_is_active (priv->flower.timer))
+	if (!visual_timer_is_active (priv->flower.timer)) {
 		visual_timer_start (priv->flower.timer);
+    }
 
-	for (b=0; b<priv->nof_bands; b++)
+    float temp_bars[NOTCH_BANDS];
+
+	for (int b=0; b<priv->nof_bands; b++) {
 		temp_bars[b]=0.0;
+    }
 
-	for (i=0; i<256; i++) {
-		for (b=0; b<priv->nof_bands; b++) {
-			f=process_notch (priv->notch[b], freqnorm[i] * 15);
+    float *freqnorm = visual_buffer_get_data(freqbuf);
+
+	for (int i=0; i<256; i++) {
+		for (int b=0; b<priv->nof_bands; b++) {
+			float f=process_notch (priv->notch[b], freqnorm[i] * 15);
 			if (fabs(f)>temp_bars[b])
 				temp_bars[b]=fabs(f);
 		}
 	}
 
+    visual_buffer_unref (freqbuf);
 
 	/* Not part of the if !!! */
 	{
@@ -283,7 +281,4 @@ static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 	priv->flower.posz = +1;
 
 	render_flower_effect (&priv->flower);
-
-	visual_buffer_unref (pcmbuf);
-	visual_buffer_unref (freqbuf);
 }
