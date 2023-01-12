@@ -31,7 +31,7 @@ extern "C" {
       return new LV::SongInfo (LV::SongInfoType (type));
   }
 
-  VisSongInfo *visual_songinfo_clone (VisSongInfo *src)
+  VisSongInfo *visual_songinfo_clone (VisSongInfo const *src)
   {
       visual_return_val_if_fail (src != nullptr, nullptr);
 
@@ -50,7 +50,7 @@ extern "C" {
       self->set_type (LV::SongInfoType (type));
   }
 
-  VisSongInfoType visual_songinfo_get_type (VisSongInfo *self)
+  VisSongInfoType visual_songinfo_get_type (VisSongInfo const *self)
   {
       visual_return_val_if_fail (self != nullptr, VISUAL_SONGINFO_TYPE_NULL);
 
@@ -64,7 +64,7 @@ extern "C" {
       self->set_length (length);
   }
 
-  int visual_songinfo_get_length (VisSongInfo *self)
+  int visual_songinfo_get_length (VisSongInfo const *self)
   {
 	  visual_return_val_if_fail (self != nullptr, 0);
 
@@ -78,7 +78,7 @@ extern "C" {
       self->set_elapsed (elapsed);
   }
 
-  int visual_songinfo_get_elapsed (VisSongInfo *self)
+  int visual_songinfo_get_elapsed (VisSongInfo const *self)
   {
       return self->get_elapsed ();
   }
@@ -90,7 +90,7 @@ extern "C" {
       self->set_simple_name (name);
   }
 
-  const char *visual_songinfo_get_simple_name (VisSongInfo *self)
+  const char *visual_songinfo_get_simple_name (VisSongInfo const *self)
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
@@ -104,7 +104,7 @@ extern "C" {
       self->set_artist (artist);
   }
 
-  const char *visual_songinfo_get_artist (VisSongInfo *self)
+  const char *visual_songinfo_get_artist (VisSongInfo const *self)
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
@@ -118,7 +118,7 @@ extern "C" {
       self->set_album (album);
   }
 
-  const char *visual_songinfo_get_album (VisSongInfo *self)
+  const char *visual_songinfo_get_album (VisSongInfo const *self)
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
@@ -132,7 +132,7 @@ extern "C" {
       self->set_song (song);
   }
 
-  const char *visual_songinfo_get_song (VisSongInfo *self)
+  const char *visual_songinfo_get_song (VisSongInfo const *self)
   {
 	  visual_return_val_if_fail (self != nullptr, nullptr);
 

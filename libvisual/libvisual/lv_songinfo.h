@@ -219,35 +219,35 @@ struct _VisSongInfo;
 LV_BEGIN_DECLS
 
 LV_API VisSongInfo *visual_songinfo_new   (VisSongInfoType type);
-LV_API VisSongInfo *visual_songinfo_clone (VisSongInfo *src);
+LV_API VisSongInfo *visual_songinfo_clone (VisSongInfo const *src);
 LV_API void         visual_songinfo_free  (VisSongInfo *songinfo);
 
 LV_API void visual_songinfo_copy    (VisSongInfo *dest, VisSongInfo const *src);
 LV_API int  visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);
 
 LV_API void            visual_songinfo_set_type (VisSongInfo *songinfo, VisSongInfoType type);
-LV_API VisSongInfoType visual_songinfo_get_type (VisSongInfo *songinfo);
+LV_API VisSongInfoType visual_songinfo_get_type (VisSongInfo const *songinfo);
 
 LV_API void visual_songinfo_set_length (VisSongInfo *songinfo, int length);
-LV_API int  visual_songinfo_get_length (VisSongInfo *songinfo);
+LV_API int  visual_songinfo_get_length (VisSongInfo const *songinfo);
 
 LV_API void visual_songinfo_set_elapsed (VisSongInfo *songinfo, int elapsed);
-LV_API int  visual_songinfo_get_elapsed (VisSongInfo *songinfo);
+LV_API int  visual_songinfo_get_elapsed (VisSongInfo const *songinfo);
 
 LV_API void        visual_songinfo_set_simple_name (VisSongInfo *songinfo, const char *name);
-LV_API const char *visual_songinfo_get_simple_name (VisSongInfo *songinfo);
+LV_API const char *visual_songinfo_get_simple_name (VisSongInfo const *songinfo);
 
 LV_API void        visual_songinfo_set_artist (VisSongInfo *songinfo, const char *artist);
-LV_API const char *visual_songinfo_get_artist (VisSongInfo *songinfo);
+LV_API const char *visual_songinfo_get_artist (VisSongInfo const *songinfo);
 
 LV_API void        visual_songinfo_set_album (VisSongInfo *songinfo, const char *album);
-LV_API const char *visual_songinfo_get_album (VisSongInfo *songinfo);
+LV_API const char *visual_songinfo_get_album (VisSongInfo const *songinfo);
 
 LV_API void        visual_songinfo_set_song (VisSongInfo *songinfo, const char *song);
-LV_API const char *visual_songinfo_get_song (VisSongInfo *songinfo);
+LV_API const char *visual_songinfo_get_song (VisSongInfo const *songinfo);
 
 LV_API void        visual_songinfo_set_cover (VisSongInfo *songinfo, VisVideo *cover);
-LV_API VisVideo   *visual_songinfo_get_cover (VisSongInfo *songinfo);
+LV_API VisVideo   *visual_songinfo_get_cover (VisSongInfo const *songinfo);
 
 LV_API void visual_songinfo_mark (VisSongInfo *songinfo);
 
