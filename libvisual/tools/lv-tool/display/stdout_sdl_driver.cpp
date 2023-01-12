@@ -121,15 +121,10 @@ namespace {
                   return nullptr;
               }
 
-              videoflags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER;
+              videoflags |= SDL_OPENGL;
 
               if (videoinfo->hw_available)
                   videoflags |= SDL_HWSURFACE;
-              else
-                  videoflags |= SDL_SWSURFACE;
-
-              if (videoinfo->blit_hw)
-                  videoflags |= SDL_HWACCEL;
 
               if (vidoptions) {
                   for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
@@ -143,6 +138,8 @@ namespace {
                       SDL_GL_SetAttribute (sdl_attribute, vidoptions->gl_attrs[i].value);
                   }
               }
+
+              SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
               bpp = videoinfo->vfmt->BitsPerPixel;
 

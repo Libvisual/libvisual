@@ -6,6 +6,7 @@
 // Authors: Daniel Hiepler <daniel@niftylight.de>
 //          Chong Kai Xiong <kaixiong@codeleft.sg>
 //          Dennis Smit <ds@nerds-incorporated.org>
+//          Scott Sibley <sisibley@gmail.com>
 //
 // This file is part of lv-tool.
 //
@@ -38,12 +39,16 @@
 #include <getopt.h>
 
 // Defaults
-#define DEFAULT_ACTOR   "lv_analyzer"
+#ifdef HAVE_GL
+# define DEFAULT_ACTOR   "lv_gltest"
+#else
+# define DEFAULT_ACTOR   "lv_analyzer"
+#endif
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_MORPH   "slide_left"
 #define DEFAULT_WIDTH   320
 #define DEFAULT_HEIGHT  200
-#define DEFAULT_FPS     30
+#define DEFAULT_FPS     60
 #define DEFAULT_COLOR_DEPTH 0
 
 #if HAVE_SDL

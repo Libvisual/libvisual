@@ -432,6 +432,7 @@ static void print_cpu_info (void)
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 }
 
+__attribute__((no_sanitize("address")))
 void visual_cpu_initialize ()
 {
 	visual_mem_set (&cpu_caps, 0, sizeof (VisCPU));
