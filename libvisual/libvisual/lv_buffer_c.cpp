@@ -63,13 +63,6 @@ int visual_buffer_is_allocated (VisBuffer *self)
     return self->is_allocated ();
 }
 
-void visual_buffer_destroy_content (VisBuffer *self)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->destroy_content ();
-}
-
 void visual_buffer_copy_to (VisBuffer *self, VisBuffer *dest)
 {
    visual_return_if_fail (self != nullptr);

@@ -260,8 +260,6 @@ LV_API void *visual_buffer_get_data_offset (VisBuffer *buffer, visual_size_t off
 LV_API visual_size_t visual_buffer_get_size (VisBuffer *buffer);
 
 LV_API int  visual_buffer_is_allocated    (VisBuffer *buffer);
-LV_API void visual_buffer_allocate        (VisBuffer *buffer, visual_size_t size);
-LV_API void visual_buffer_destroy_content (VisBuffer *buffer);
 
 LV_API void visual_buffer_copy_to (VisBuffer *src, VisBuffer *dest);
 LV_API void visual_buffer_copy_to_data (VisBuffer *src, void *dest, visual_size_t size);
