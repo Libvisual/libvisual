@@ -45,11 +45,6 @@ VisBuffer *visual_buffer_clone (VisBuffer *source)
     return self.get ();
 }
 
-void visual_buffer_free (VisBuffer *self)
-{
-    delete self;
-}
-
 void visual_buffer_set_data_pair (VisBuffer *self, void *data, visual_size_t size)
 {
     visual_return_if_fail (self != nullptr);
