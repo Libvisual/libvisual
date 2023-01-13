@@ -34,6 +34,14 @@ SET(PULSE_REQUIRED_VERSION  1.0)
 SET(XMMS2_REQUIRED_VERSION  0.6)
 SET(LUAJIT_REQUIRED_VERSION 0.26)
 
+# Set C/C++ standards
+SET(CMAKE_C_STANDARD 99)
+SET(CMAKE_C_STANDARD_REQUIRED on)
+SET(CMAKE_C_EXTENSIONS off)
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED on)
+SET(CMAKE_CXX_EXTENSIONS off)
+
 # Check for libvisual early so that users get told they have the wrong
 # dependencies as early in the process as possible.
 FIND_PACKAGE(Libvisual 0.5 REQUIRED)
