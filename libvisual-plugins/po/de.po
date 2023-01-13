@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.0\n"
-"Report-Msgid-Bugs-To: libvisual-plugins@packages.debian.org\n"
-"POT-Creation-Date: 2006-03-21 02:50+0800\n"
+"Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
+"POT-Creation-Date: 2023-01-13 19:36+0100\n"
 "PO-Revision-Date: 2017-11-23 18:08:07+0200\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -28,8 +28,8 @@ msgstr ""
 "Original von Zinx Verituse <zinx@xmms.org>, Portierung durch Dennis Smit "
 "<ds@nerds-incorporated.org>"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:64
 # Bumpscope ist ein Visualisierungs-Plugin für XMMS
+#: plugins/actor/bumpscope/actor_bumpscope.c:64
 msgid "Bumpscope visual plugin"
 msgstr "visuelle Bumpscope-Erweiterung"
 
@@ -58,14 +58,14 @@ msgstr "automatisch Farben durchlaufen"
 msgid "Moving light"
 msgstr "bewegtes Licht"
 
-#: plugins/actor/bumpscope/actor_bumpscope.c:154
 # FIXME: s/itusing/it's using/
+#: plugins/actor/bumpscope/actor_bumpscope.c:154
 msgid ""
-"Automatic movement of the light, when disabled it's possible to select "
-"itusing the mouse cursor"
+"Automatic movement of the light, when disabled it's possible to select it "
+"using the mouse cursor"
 msgstr ""
-"automatisches Bewegen des Lichts, wenn es deaktiviert ist, ist es möglich, es "
-"mittels des Maus-Cursors auszuwählen"
+"automatisches Bewegen des Lichts, wenn es deaktiviert ist, ist es möglich, "
+"es mittels des Maus-Cursors auszuwählen"
 
 #: plugins/actor/bumpscope/actor_bumpscope.c:158
 msgid "Diamond"
@@ -79,11 +79,12 @@ msgstr "diamantförmiges Licht"
 msgid "Libvisual corona plugin"
 msgstr "Libvisual-Corona-Erweiterung"
 
-#: plugins/actor/corona/actor_corona.cpp:104
 # https://corona-renderer.com/resources/plugins-scripts
+#: plugins/actor/corona/actor_corona.cpp:104
 msgid "This plugin adds support for the neat corona plugin"
 msgstr ""
-"Diese Erweiterung fügt Unterstützung für die nette Erweiterung »Corona« hinzu."
+"Diese Erweiterung fügt Unterstützung für die nette Erweiterung »Corona« "
+"hinzu."
 
 #: plugins/actor/gdkpixbuf/actor_gdkpixbuf.c:86
 msgid "GdkPixbuf image loader for libvisual"
@@ -127,7 +128,6 @@ msgid "Particles OFF"
 msgstr "Partikel AUS"
 
 #: plugins/actor/G-Force/GForceCommon/G-Force.cpp:404
-#, fuzzy
 msgid "Number s steps: "
 msgstr "Anzahl s Schritte: "
 
@@ -196,8 +196,8 @@ msgid ""
 "This plugin is a port of the well known G-Force winamp plugin, based on an "
 "old unix port"
 msgstr ""
-"Diese Erweiterung ist eine Portierung der bekannten "
-"G-Force-Winamp-Erweiterung, die auf einer alten Unix-Portierung basiert."
+"Diese Erweiterung ist eine Portierung der bekannten G-Force-Winamp-"
+"Erweiterung, die auf einer alten Unix-Portierung basiert."
 
 #: plugins/actor/infinite/lv_infinite.c:60
 msgid ""
@@ -208,12 +208,10 @@ msgstr ""
 "Smit <ds@nerds-incorporated.org>"
 
 #: plugins/actor/infinite/lv_infinite.c:62
-#, fuzzy
 msgid "Infinite visual plugin"
 msgstr "unbegrenzte visuelle Erweiterung"
 
 #: plugins/actor/infinite/lv_infinite.c:63
-#, fuzzy
 msgid "This is the libvisual plugin for the infinite visual"
 msgstr "Dies ist die Libvisual-Erweiterung für die unbegrenzte Sicht."
 
@@ -253,9 +251,9 @@ msgstr "die Methode des Weichzeichnens"
 msgid "The color of the plotter"
 msgstr "die Farbe des Plotters"
 
-#: plugins/actor/jakdaw/actor_jakdaw.c:166
 # FIXME s/plotter it's/plotter's/
-msgid "The plotter it's shape"
+#: plugins/actor/jakdaw/actor_jakdaw.c:166
+msgid "The plotter's shape"
 msgstr "die Form des Plotters"
 
 #: plugins/actor/JESS/jess.c:72
@@ -263,8 +261,8 @@ msgid ""
 "Original by: Remi Arquier <arquier@crans.org>, Port by: Dennis Smit "
 "<ds@nerds-incorporated.org>"
 msgstr ""
-"Original von: Remi Arquier <arquier@crans.org>, Portierung durch: Dennis Smit "
-"<ds@nerds-incorporated.org>"
+"Original von: Remi Arquier <arquier@crans.org>, Portierung durch: Dennis "
+"Smit <ds@nerds-incorporated.org>"
 
 #: plugins/actor/JESS/jess.c:74
 msgid "Jess visual plugin"
@@ -309,11 +307,10 @@ msgstr "Libvisual-GL-Analysiererweiterung"
 
 #: plugins/actor/lv_gltest/actor_lv_gltest.c:90
 msgid "This plugin shows an openGL bar analyzer like the xmms one"
-msgstr ""
-"Diese Erweiterung zeigt ein OpenGL-Balkenanalyse wie die von XMMS."
+msgstr "Diese Erweiterung zeigt ein OpenGL-Balkenanalyse wie die von XMMS."
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:136
 # FIXME s/Transparant/Transparent/
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:136
 msgid "Transparant bars"
 msgstr "durchsichtige Balken"
 
@@ -366,25 +363,6 @@ msgstr "gelbe Rose von Texas-Portierung von Libvisual"
 #: plugins/actor/pseudotoad_flower/actor_flower.c:81
 msgid "This renders an awesome responsive flower"
 msgstr "Dies berechnet eine tolle ansprechende Blume"
-
-#: plugins/input/esd/input_esd.c:64
-msgid "ESOUND capture plugin"
-msgstr "ESOUND-Erfassungserweiterung"
-
-#: plugins/input/esd/input_esd.c:65
-# https://de.wikipedia.org/wiki/Puls-Code-Modulation
-msgid "Use this plugin to capture PCM data from the ESD daemon"
-msgstr ""
-"Benutzen Sie diese Erweiterung, um PCM-Daten vom ESD-Daemon zu erfassen."
-
-#: plugins/input/esd/input_esd.c:145
-#, c-format
-msgid "ESD: Select error (%d, %s)"
-msgstr "ESD: Auswahlfehler (%d, %s)"
-
-#: plugins/input/esd/input_esd.c:162
-msgid "ESD: Error while reading data"
-msgstr "ESD: Fehler beim Lesen der Daten"
 
 #: plugins/input/alsa/input_alsa.c:73
 msgid "ALSA capture plugin"
@@ -450,6 +428,14 @@ msgstr "Vorbereiten der Schnittstelle fehlgeschlagen"
 msgid "ALSA: Buffer Overrun"
 msgstr "ALSA: Pufferüberlauf"
 
+#: plugins/input/debug/input_debug.c:54
+msgid "debug input plugin"
+msgstr "Libvisual-Debug-Erfassung"
+
+#: plugins/input/debug/input_debug.c:55
+msgid "this will generate random PCM data for debugging purposes"
+msgstr ""
+
 #: plugins/input/jack/input_jack.c:72
 msgid "Jackit capture plugin"
 msgstr "Jackit-Erfassungserweiterung"
@@ -463,8 +449,8 @@ msgstr ""
 msgid "Libvisual jackit capture"
 msgstr "Libvisual-Jackit-Erfassung"
 
-#: plugins/input/jack/input_jack.c:103
 # https://packages.debian.org/sid/jack
+#: plugins/input/jack/input_jack.c:103
 msgid "jack server probably not running"
 msgstr "Möglicherweise läuft der Jack-Server nicht."
 
@@ -484,50 +470,52 @@ msgstr "Eingabeschnittstellen konnten nicht verbunden werden."
 msgid "The jack server seems to have shutdown"
 msgstr "Der Jack-Server scheint heruntergefahren zu sein."
 
-#: plugins/input/mplayer/input_mplayer.c:94
+#: plugins/input/mplayer/input_mplayer.c:98
 msgid "Use data exported from MPlayer"
 msgstr "Vom Mplayer exportierte Daten werden benutzt."
 
-#: plugins/input/mplayer/input_mplayer.c:95
+#: plugins/input/mplayer/input_mplayer.c:99
 msgid "This plugin uses data exported from 'mplayer -af export'"
-msgstr "Diese Erweiterung verwendet per »mplayer -af export« exportierte Daten."
+msgstr ""
+"Diese Erweiterung verwendet per »mplayer -af export« exportierte Daten."
 
-#: plugins/input/mplayer/input_mplayer.c:151
+#: plugins/input/mplayer/input_mplayer.c:155
 #, c-format
 msgid "Could not open file '%s': %s"
 msgstr "Datei »%s« kann nicht geöffnet werden: %s"
 
-#: plugins/input/mplayer/input_mplayer.c:162
+#: plugins/input/mplayer/input_mplayer.c:166
 msgid "No audio channel available"
 msgstr "kein Audiokanal verfügbar"
 
-#: plugins/input/mplayer/input_mplayer.c:170
-#, c-format
 # https://de.wikipedia.org/wiki/Sampling_(Musik)#Audiosample
+#: plugins/input/mplayer/input_mplayer.c:174
+#, c-format
 msgid ""
 "Data in wrong format. It should be 2 channels with 512 16bit samples. There "
 "are %d channels %d 16bit samples in it (buffer is %d bytes)"
 msgstr ""
-"Daten in falschem Format. Es sollten zwei Kanäle mit 512 16-Bit-Samples sein. "
-"Es sind %d Kanäle mit %d 16-Bit Samples darin (Puffer hat %d Byte)."
+"Daten in falschem Format. Es sollten zwei Kanäle mit 512 16-Bit-Samples "
+"sein. Es sind %d Kanäle mit %d 16-Bit Samples darin (Puffer hat %d Byte)."
 
-#: plugins/input/mplayer/input_mplayer.c:185
+#: plugins/input/mplayer/input_mplayer.c:189
 #, c-format
-msgid "Could not mremap() area from file '%s'  (%p from %d to %d bytes): %s"
+msgid "Could not mremap() area from file '%s'  (%p from %zu to %zu bytes): %s"
 msgstr ""
-"mremap()von Bereich von Datei »%s« nicht möglich (%p von %d bis %d Byte): %s"
+"mremap()von Bereich von Datei »%s« nicht möglich (%p von %zu bis %zu Byte): "
+"%s"
 
-#: plugins/input/mplayer/input_mplayer.c:224
+#: plugins/input/mplayer/input_mplayer.c:229
 #, c-format
 msgid "Could not close file descriptor %d: %s"
 msgstr "Dateideskriptor %d konnte nicht geschlossen werden: %s"
 
-#: plugins/input/mplayer/input_mplayer.c:232
+#: plugins/input/mplayer/input_mplayer.c:237
 #, c-format
 msgid "Wrong file descriptor %d"
 msgstr "falscher Dateideskriptor %d"
 
-#: plugins/input/mplayer/input_mplayer.c:240
+#: plugins/input/mplayer/input_mplayer.c:245
 #, c-format
 msgid "Could not munmap() area %p+%d. %s"
 msgstr "munmap() von Bereich %p+%d nicht möglich. %s"
