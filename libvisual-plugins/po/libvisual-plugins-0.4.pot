@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.1\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-12 01:53+0100\n"
+"POT-Creation-Date: 2023-01-13 19:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,8 +54,8 @@ msgstr ""
 
 #: plugins/actor/bumpscope/actor_bumpscope.c:154
 msgid ""
-"Automatic movement of the light, when disabled it's possible to select "
-"itusing the mouse cursor"
+"Automatic movement of the light, when disabled it's possible to select it "
+"using the mouse cursor"
 msgstr ""
 
 #: plugins/actor/bumpscope/actor_bumpscope.c:158
@@ -234,7 +234,7 @@ msgid "The color of the plotter"
 msgstr ""
 
 #: plugins/actor/jakdaw/actor_jakdaw.c:166
-msgid "The plotter it's shape"
+msgid "The plotter's shape"
 msgstr ""
 
 #: plugins/actor/JESS/jess.c:72
