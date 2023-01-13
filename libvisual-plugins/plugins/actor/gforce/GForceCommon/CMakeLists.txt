@@ -15,8 +15,6 @@ INCLUDE_DIRECTORIES(
 
 SET(DATADIR ${LV_PLUGIN_DATA_DIR}/actor/actor_gforce)
 
-ADD_DEFINITIONS(-DDATADIR="${DATADIR}")
-
 SET(gforce_common_SOURCES
   DeltaField.cpp
   G-Force.cpp
@@ -28,10 +26,14 @@ SET(gforce_common_SOURCES
 
 ADD_LIBRARY(gforce_common STATIC ${gforce_common_SOURCES})
 
-TARGET_LINK_LIBRARIES(gforce_common
-  Libvisual::Libvisual
+TARGET_COMPILE_DEFINITIONS(gforce_common
+  PRIVATE
+  ${GFORCE_COMPILE_DEFS}
+  DATADIR="${DATADIR}"
 )
 
-SET_TARGET_PROPERTIES(gforce_common
-  PROPERTIES COMPILE_FLAGS ${GFORCE_COMPILE_FLAGS}
+TARGET_COMPILE_OPTIONS(gforce_common PRIVATE ${GFORCE_COMPILE_OPTIONS})
+
+TARGET_LINK_LIBRARIES(gforce_common
+  Libvisual::Libvisual
 )

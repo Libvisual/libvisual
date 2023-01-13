@@ -1,10 +1,8 @@
 SET(GFORCE_SOURCE_DIR ${PROJECT_SOURCE_DIR}/plugins/actor/gforce)
 SET(GFORCE_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_gforce)
-SET(GFORCE_COMPILE_FLAGS "-DUNIX_X -D_REENTRANT -fno-strict-aliasing -Wno-unknown-warning-option -Wno-sometimes-uninitialized")
 
-IF(NOT MINGW)
-  SET(GFORCE_COMPILE_FLAGS "-fPIC ${GFORCE_COMPILE_FLAGS}")
-ENDIF()
+SET(GFORCE_COMPILE_DEFS UNIX_X _REENTRANT)
+SET(GFORCE_COMPILE_OPTIONS -fno-strict-aliasing -Wno-unknown-warning-option -Wno-sometimes-uninitialized)
 
 ADD_SUBDIRECTORY(Common)
 ADD_SUBDIRECTORY(GForceCommon)
