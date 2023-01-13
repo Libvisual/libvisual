@@ -109,7 +109,7 @@ ELSE()
     ADD_LIBRARY(OpenGL::GL ALIAS OpenGLES1::GL)
 
     # OpenGL ES does not have GLU. We use miniGLU in place to cover some basic functions.
-    ADD_DEFINITIONS(-DUSE_OPENGL_ES)
+    ADD_COMPILE_DEFINITIONS(USE_OPENGL_ES)
     ADD_SUBDIRECTORY(common/GL)
     ADD_LIBRARY(OpenGL::GLU ALIAS miniGLU)
     SET(HAVE_OPENGL_GLU yes)
@@ -289,41 +289,43 @@ OPTION(ENABLE_PROFILING "Enable profiling" no)
 OPTION(ENABLE_EXTRA_OPTIMIZATIONS "Enable extra optimizations" no)
 
 IF(ENABLE_EXTRA_OPTIMIZATIONS)
-  SET(OPT_C_FLAGS "-O3 -fexpensive-optimizations")
+  ADD_COMPILE_OPTIONS(-O3 -fexpensive-optimizations)
 ELSEIF(CMAKE_BUILD_TYPE STREQUAL Debug)
-  SET(OPT_C_FLAGS "-O0")
+  ADD_COMPILE_OPTIONS(-O0)
 ENDIF()
 
 IF(ENABLE_PROFILING)
-  SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg --coverage")
+  ADD_COMPILE_OPTIONS(-pg --coverage)
 ENDIF()
 
 # Fatal warnings
 OPTION(ENABLE_FATAL_WARNINGS "Compile with -Werror" no)
 IF(ENABLE_FATAL_WARNINGS)
-  SET(WERROR_C_FLAGS "-Werror")
+  ADD_COMPILE_OPTIONS(-Werror)
 ENDIF()
 
-SET(CMAKE_C_FLAGS   "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c99 -Wall -Wunused -Wmissing-prototypes ${WERROR_C_FLAGS} -fstrict-aliasing")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -fvisibility=hidden -std=c++0x -Wall -Wunused ${WERROR_C_FLAGS} -fstrict-aliasing")
+ADD_COMPILE_OPTIONS(
+  -fvisibility=hidden -Wall -Wunused -fstrict-aliasing
+  "$<$<COMPILE_LANGUAGE:C>:-Wmissing-prototypes>"
+)
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
+  ADD_COMPILE_OPTIONS(
+    "$<$<CONFIG:Debug>:-ggdb3>"
+  )
 ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  # Get rid of warnings about comparisons of unsigned integers being smaller than 0
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-tautological-compare")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-tautological-compare")
-
-  SET(CMAKE_C_FLAGS_DEBUG "-g")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+  ADD_COMPILE_OPTIONS(
+    # Get rid of warnings about comparisons of unsigned integers being smaller than 0
+    -Wno-tautological-compare
+    "$<$<CONFIG:Debug>:-g>"
+  )
 ENDIF()
 
 # Pedantic checks
 
 OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur" no)
 IF(ENABLE_PEDANTIC_CHECKS)
-  ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
+  ADD_COMPILE_DEFINITIONS(VISUAL_PEDANTIC_CHECKS)
 ENDIF()
 
 # Generate config header
