@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-13 19:36+0100\n"
+"POT-Creation-Date: 2023-01-13 23:31+0100\n"
 "PO-Revision-Date: 2017-11-23 18:08:07+0200\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -293,7 +293,7 @@ msgstr "Libvisual-Analyseerweiterung"
 msgid "A nice simple spectrum analyzer plugin."
 msgstr "eine schicke einfache Spektrumanalyseerweiterung"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:87
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:92
 msgid ""
 "Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front "
 "Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"
@@ -301,16 +301,16 @@ msgstr ""
 "Original von: Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson und 4Front "
 "Technologies, Portierung durch: Dennis Smit <ds@nerds-incorporated.org>"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:89
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:94
 msgid "Libvisual GL analyzer plugin"
 msgstr "Libvisual-GL-Analysiererweiterung"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:90
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:95
 msgid "This plugin shows an openGL bar analyzer like the xmms one"
 msgstr "Diese Erweiterung zeigt ein OpenGL-Balkenanalyse wie die von XMMS."
 
 # FIXME s/Transparant/Transparent/
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:136
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:141
 msgid "Transparant bars"
 msgstr "durchsichtige Balken"
 

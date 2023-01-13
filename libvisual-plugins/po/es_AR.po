@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-13 19:36+0100\n"
+"POT-Creation-Date: 2023-01-13 23:31+0100\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -287,21 +287,21 @@ msgstr ""
 msgid "A nice simple spectrum analyzer plugin."
 msgstr ""
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:87
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:92
 msgid ""
 "Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front "
 "Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"
 msgstr ""
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:89
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:94
 msgid "Libvisual GL analyzer plugin"
 msgstr "Plugin analizador GL para Libvisual"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:90
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:95
 msgid "This plugin shows an openGL bar analyzer like the xmms one"
 msgstr "Éste plugin muestra un analizador de barras OpenGL como el de xmms"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:136
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:141
 msgid "Transparant bars"
 msgstr "Barras transparentes"
 
