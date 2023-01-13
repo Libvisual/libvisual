@@ -3,7 +3,6 @@ FILE(GLOB gforce_math_HEADERS "Headers/*")
 INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_BINARY_DIR}
-  ${LIBVISUAL_INCLUDE_DIRS}
   ${GFORCE_SOURCE_DIR}/Common
   ${GFORCE_SOURCE_DIR}/Common/UI/Headers
   ${GFORCE_SOURCE_DIR}/Common/GeneralTools/Headers
@@ -11,10 +10,6 @@ INCLUDE_DIRECTORIES(
   ${GFORCE_SOURCE_DIR}/Common/io/Headers
   ${GFORCE_SOURCE_DIR}/unix/Headers
   ${GFORCE_SOURCE_DIR}/unix/libmfl
-)
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
 )
 
 SET(gforce_math_SOURCES
@@ -30,7 +25,7 @@ SET(gforce_math_SOURCES
 ADD_LIBRARY(gforce_math STATIC ${gforce_math_SOURCES})
 
 TARGET_LINK_LIBRARIES(gforce_math
-  ${LIBVISUAL_LIBRARIES}
+  Libvisual::Libvisual
 )
 
 SET_TARGET_PROPERTIES(gforce_math

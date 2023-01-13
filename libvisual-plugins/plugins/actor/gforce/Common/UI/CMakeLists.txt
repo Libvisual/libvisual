@@ -1,7 +1,6 @@
 FILE(GLOB gforce_ui_HEADERS "Headers/*")
 
 INCLUDE_DIRECTORIES(
-  ${LIBVISUAL_INCLUDE_DIRS}
   ${GFORCE_SOURCE_DIR}/Common
   ${GFORCE_SOURCE_DIR}/Common/GeneralTools/Headers
   ${GFORCE_SOURCE_DIR}/Common/UI/Headers
@@ -24,6 +23,10 @@ SET(gforce_ui_SOURCES
 #EXTRA_DIST = DrawXX.cpp LineXX.cpp
 
 ADD_LIBRARY(gforce_ui STATIC ${gforce_ui_SOURCES})
+
+TARGET_LINK_LIBRARIES(gforce_ui
+  Libvisual::Libvisual
+)
 
 SET_TARGET_PROPERTIES(gforce_ui
   PROPERTIES COMPILE_FLAGS ${GFORCE_COMPILE_FLAGS}

@@ -1,11 +1,3 @@
-INCLUDE_DIRECTORIES(
-  ${LIBVISUAL_INCLUDE_DIRS}
-)
-
-LINK_DIRECTORIES(
-  ${LIBVISUAL_LIBRARY_DIRS}
-)
-
 SET(gforce_unix_mfl_SOURCES
   mfl.c
 )
@@ -13,7 +5,7 @@ SET(gforce_unix_mfl_SOURCES
 ADD_LIBRARY(gforce_unix_mfl STATIC ${gforce_unix_mfl_SOURCES})
 
 TARGET_LINK_LIBRARIES(gforce_unix_mfl
-  ${LIBVISUAL_LIBRARIES}
+  Libvisual::Libvisual
 )
 
 SET_TARGET_PROPERTIES(gforce_unix_mfl
