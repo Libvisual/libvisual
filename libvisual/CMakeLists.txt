@@ -131,34 +131,32 @@ ENDIF()
 # Compiler optimizations
 OPTION(ENABLE_EXTRA_OPTIMIZATIONS "Enable extra optimizations" no)
 IF(ENABLE_EXTRA_OPTIMIZATIONS)
-  SET(OPT_C_FLAGS "-O3 -fexpensive-optimizations")
+  ADD_COMPILE_OPTIONS(-O3 -fexpensive-optimizations)
 ELSEIF(CMAKE_BUILD_TYPE STREQUAL Debug)
-  SET(OPT_C_FLAGS "-O0")
+  ADD_COMPILE_OPTIONS(-O0)
 ENDIF()
+
+# Turn on as many compiler warnings as we can that is usable for development.
+ADD_COMPILE_OPTIONS(-Wall -Wextra -Wunused -fstrict-aliasing)
 
 # Profiling
 OPTION(ENABLE_PROFILING "Enable profiling" no)
 IF(ENABLE_PROFILING)
-  SET(PROFILE_C_FLAGS "${EXTRA_CFLAGS} -pg")
+  ADD_COMPILE_OPTIONS(-pg)
 ENDIF()
 
 # Fatal warnings
 OPTION(ENABLE_FATAL_WARNINGS "Compile with -Werror" no)
 IF(ENABLE_FATAL_WARNINGS)
-  SET(WERROR_C_FLAGS "-Werror")
+  ADD_COMPILE_OPTIONS(-Werror)
 ENDIF()
 
-# Build profiles
-# Standard
-SET(CMAKE_C_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} -std=c99 -Wall -Wextra -Wunused ${WERROR_C_FLAGS} -fstrict-aliasing ${CMAKE_C_FLAGS} ")
-SET(CMAKE_CXX_FLAGS "${OPT_C_FLAGS} ${PROFILE_C_FLAGS} ${CXX11_FLAGS} -Wall -Wextra -Wunused ${WERROR_C_FLAGS} -fstrict-aliasing ${CMAKE_CXX_FLAGS} ")
+# Build type specific compiler options
 # Debug
 IF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_C_FLAGS_DEBUG "-ggdb3")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb3")
+  ADD_COMPILE_OPTIONS(-ggdb3)
 ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_C_FLAGS_DEBUG "-g")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-g")
+  ADD_COMPILE_OPTIONS(-g)
 ENDIF()
 
 # Miscellaneous optimizations
@@ -192,7 +190,7 @@ ENDIF()
 # Pedantic checks
 OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur)" no)
 IF(ENABLE_PEDANTIC_CHECKS)
-  ADD_DEFINITIONS(-DVISUAL_PEDANTIC_CHECKS)
+  ADD_COMPILE_DEFINITIONS(VISUAL_PEDANTIC_CHECKS)
 ENDIF()
 
 # Git revision
