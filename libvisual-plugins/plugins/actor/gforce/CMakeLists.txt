@@ -4,6 +4,11 @@ SET(GFORCE_DATA_DIR ${LV_PLUGIN_DATA_DIR}/actor/actor_gforce)
 SET(GFORCE_COMPILE_DEFS UNIX_X _REENTRANT)
 SET(GFORCE_COMPILE_OPTIONS -fno-strict-aliasing -Wno-unknown-warning-option -Wno-sometimes-uninitialized)
 
+# Required on GCC but not Clang for some reason.
+IF(NOT MINGW)
+  LIST(APPEND GFORCE_COMPILE_OPTIONS -fPIC)
+ENDIF()
+
 ADD_SUBDIRECTORY(Common)
 ADD_SUBDIRECTORY(GForceCommon)
 ADD_SUBDIRECTORY(GForceColorMaps)
