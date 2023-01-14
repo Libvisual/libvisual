@@ -48,7 +48,7 @@ LIST(APPEND SOURCES
 )
 
 LV_BUILD_ACTOR_PLUGIN(goom2k4
-  SOURCES       ${SOURCES}
-  COMPILE_FLAGS -Wno-missing-braces # Needed to kill massive warnings with *motif.h
-  LINK_LIBS     m
+  SOURCES         ${SOURCES}
+  COMPILE_OPTIONS -Wno-missing-braces # Needed to kill massive warnings with *motif.h
+  LINK_LIBS       m
 )

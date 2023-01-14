@@ -1,14 +1,5 @@
 FILE(GLOB gforce_io_HEADERS "Headers/*.h")
 
-INCLUDE_DIRECTORIES(
-  ${GFORCE_SOURCE_DIR}/Common
-  ${GFORCE_SOURCE_DIR}/Common/GeneralTools/Headers
-  ${GFORCE_SOURCE_DIR}/Common/io/Headers
-  ${GFORCE_SOURCE_DIR}/Common/UI/Headers
-  ${GFORCE_SOURCE_DIR}/unix/Headers
-  ${GFORCE_SOURCE_DIR}/unix/libmfl
-)
-
 SET(gforce_io_SOURCES
   CEgErr.cpp
   CEgFileSpec.cpp
@@ -22,6 +13,16 @@ SET(gforce_io_SOURCES
 
 ADD_LIBRARY(gforce_io STATIC ${gforce_io_SOURCES})
 
-SET_TARGET_PROPERTIES(gforce_io
-  PROPERTIES COMPILE_FLAGS ${GFORCE_COMPILE_FLAGS}
+TARGET_COMPILE_DEFINITIONS(gforce_io PRIVATE ${GFORCE_COMPILE_DEFS})
+
+TARGET_COMPILE_OPTIONS(gforce_io PRIVATE ${GFORCE_COMPILE_OPTIONS})
+
+TARGET_INCLUDE_DIRECTORIES(gforce_io
+  PRIVATE
+  ${GFORCE_SOURCE_DIR}/Common
+  ${GFORCE_SOURCE_DIR}/Common/GeneralTools/Headers
+  ${GFORCE_SOURCE_DIR}/Common/io/Headers
+  ${GFORCE_SOURCE_DIR}/Common/UI/Headers
+  ${GFORCE_SOURCE_DIR}/unix/Headers
+  ${GFORCE_SOURCE_DIR}/unix/libmfl
 )
