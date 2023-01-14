@@ -108,8 +108,7 @@ namespace LV {
         if (entry != m_cache.end ())
             return entry->second;
 
-        // FIXME: Use emplace() when libstdc++ supports it
-        m_cache[sample_count] = Entry (method, sample_count);
+        m_cache.emplace (sample_count, Entry {method, sample_count});
 
         return m_cache[sample_count];
     }
