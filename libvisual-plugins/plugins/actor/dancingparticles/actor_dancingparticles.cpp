@@ -25,6 +25,7 @@
 #include "gl.h"
 #include "fastmath.h"
 #include "etoile.h"
+#include "t1font.h"
 #include <cmath>
 
 #ifdef USE_OPENGL_ES
@@ -68,7 +69,7 @@ const VisPluginInfo *get_plugin_info ()
 	info.author   = N_("Original by: Pierre Tardy <tardyp@free.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>");
 	info.version  = "0.1";
 	info.about    = N_("Libvisual Dancing Particles plugin");
-	info.help     =  N_("This plugin shows dancing particles");
+	info.help     = N_("This plugin shows dancing particles");
 	info.license  = VISUAL_PLUGIN_LICENSE_GPL,
 
 	info.init     = lv_dancingparticles_init;
@@ -107,6 +108,8 @@ int lv_dancingparticles_init (VisPluginData *plugin)
 
     build_sqrt_table ();
 
+    initFontRasterizer();
+
     init_gl ();
 
     return true;
@@ -115,6 +118,8 @@ int lv_dancingparticles_init (VisPluginData *plugin)
 void lv_dancingparticles_cleanup (VisPluginData *plugin)
 {
 	auto priv = static_cast<DancingParticlesPrivate*> (visual_plugin_get_private (plugin));
+
+    destroyFontRasterizer();
 
 	visual_mem_free (priv);
 }
