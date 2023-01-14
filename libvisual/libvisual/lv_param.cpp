@@ -52,7 +52,7 @@ namespace LV
   {
   public:
 
-      typedef std::list<std::unique_ptr<Closure> > HandlerList;
+      typedef std::list<std::unique_ptr<Closure>> HandlerList;
 
       ParamList*     parent;
       std::string    name;
