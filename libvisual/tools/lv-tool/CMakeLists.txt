@@ -1,37 +1,31 @@
-SET(INCLUDE_DIRS
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-)
-
-SET(SOURCES
+ADD_EXECUTABLE(lv-tool
   lv-tool.cpp
   display/display.cpp
   display/display_driver_factory.cpp
   display/stdout_driver.cpp
 )
 
-SET(LINK_LIBS "")
-SET(LINK_DIRS "")
+TARGET_INCLUDE_DIRECTORIES(lv-tool
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+)
 
-# SDL driver
-IF(HAVE_SDL)
-  LIST(APPEND SOURCES display/sdl_driver.cpp display/stdout_sdl_driver.cpp)
-  LIST(APPEND LINK_LIBS SDL::SDL)
-ENDIF()
+TARGET_LINK_LIBRARIES(lv-tool PRIVATE libvisual)
 
 # OpenGL
 IF(HAVE_GL)
-  LIST(APPEND LINK_LIBS OpenGL::GL)
+  TARGET_LINK_LIBRARIES(lv-tool PRIVATE OpenGL::GL)
 ENDIF()
 
-INCLUDE_DIRECTORIES(${INCLUDE_DIRS})
-LINK_DIRECTORIES(${LINK_DIRS})
-
-ADD_EXECUTABLE(lv-tool ${SOURCES})
-
-TARGET_LINK_LIBRARIES(lv-tool
-  libvisual
-  ${LINK_LIBS}
-)
+# SDL driver
+IF(HAVE_SDL)
+  TARGET_SOURCES(lv-tool
+    PRIVATE
+    display/sdl_driver.cpp
+    display/stdout_sdl_driver.cpp
+  )
+  TARGET_LINK_LIBRARIES(lv-tool PRIVATE SDL::SDL)
+ENDIF()
 
 INSTALL(TARGETS lv-tool RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
