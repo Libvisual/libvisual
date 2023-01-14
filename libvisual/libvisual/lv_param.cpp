@@ -24,6 +24,7 @@
 #include "lv_common.h"
 #include "lv_util.hpp"
 #include <map>
+#include <memory>
 #include <list>
 #include <stdexcept>
 #include <cstdarg>
@@ -51,7 +52,7 @@ namespace LV
   {
   public:
 
-      typedef std::list<std::unique_ptr<Closure> > HandlerList;
+      typedef std::list<std::unique_ptr<Closure>> HandlerList;
 
       ParamList*     parent;
       std::string    name;
@@ -184,8 +185,7 @@ namespace LV
 
       param->parent = this;
 
-      // libstdc++ 4.6/4.7 still does not have std::map<T>::emplace()
-      m_impl->entries[param->name] = std::unique_ptr<Param> {param};
+      m_impl->entries.emplace (param->name, std::unique_ptr<Param> {param});
   }
 
   bool ParamList::remove (std::string const& name)
