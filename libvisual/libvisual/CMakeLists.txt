@@ -148,7 +148,7 @@ SET_TARGET_PROPERTIES(libvisual
   SOVERSION 0
   COMPILE_FLAGS -fvisibility=hidden
   LINK_FLAGS -Wl,--no-undefined
-  )
+)
 
 TARGET_INCLUDE_DIRECTORIES(libvisual
   PRIVATE
