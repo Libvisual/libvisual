@@ -42,6 +42,71 @@
 #define DEFAULT_FPS     30
 #define DEFAULT_COLOR_DEPTH 0
 
+// A thin C++ compatibility layer to reduce the diff to the master branch
+namespace LV {
+    class Bin {
+        VisBin * m_bin;
+
+    public:
+        Bin() : m_bin(visual_bin_new()) {
+            visual_log_return_if_fail( m_bin != nullptr );
+        }
+
+        bool connect (std::string const& actor_name, std::string const& input_name) {
+            if (! visual_input_valid_by_name(input_name.c_str()))
+                return false;
+
+            if (! visual_actor_valid_by_name(actor_name.c_str()))
+                return false;
+
+            return visual_bin_connect_by_names(
+                    m_bin,
+                    const_cast<char *>(actor_name.c_str()),
+                    const_cast<char *>(input_name.c_str())) >= 0;
+        }
+
+        VisActor * get_actor () const {
+            return visual_bin_get_actor(m_bin);
+        }
+
+        void set_supported_depth(VisVideoDepth depthflag) {
+            visual_bin_set_supported_depth(m_bin, depthflag);
+        };
+
+        int get_depth () const {
+            return visual_bin_get_depth(m_bin);
+        }
+
+        void set_depth (VisVideoDepth depth) {
+            visual_bin_set_depth(m_bin, depth);
+        }
+
+        void set_video(VisVideo * video) {
+            visual_bin_set_video(m_bin, video);
+        }
+
+        void realize() {
+            visual_bin_realize(m_bin);
+        }
+
+        void sync(bool noevent) {
+            visual_bin_sync(m_bin, noevent);
+        }
+
+        bool depth_changed() {
+            return visual_bin_depth_changed(m_bin) == TRUE;
+        }
+
+        void run() {
+            visual_bin_run(m_bin);
+        };
+
+        void switch_actor (std::string const& actname) {
+            visual_bin_switch_actor_by_name(m_bin, const_cast<char*>(actname.c_str()));
+        }
+    };
+}
+
 namespace {
 
   std::string actor_name = DEFAULT_ACTOR;
