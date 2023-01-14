@@ -253,7 +253,7 @@ void WidgetVisualization::DoParams() {
 
 WidgetVisualization::~WidgetVisualization() {
     delete []peak_buffer_;
-    visual_video_free_buffer(video_);
+    visual_video_unref(video_);
 }
 
 void  WidgetVisualization::Resize(int rows, int cols, int old_rows, int old_cols) {
@@ -266,7 +266,7 @@ void  WidgetVisualization::Resize(int rows, int cols, int old_rows, int old_cols
     row_ = round(rows * r);
     col_ = round(cols * c);
 
-    visual_video_free_buffer(video_);
+    visual_video_unref(video_);
 
     // Set depth
     int depthflag = visual_actor_get_supported_depths(actor_);
@@ -408,7 +408,7 @@ void WidgetVisualization::UpdatePCM()
 
         depth_ = visual_video_depth_get_highest_nogl(depthflag);
 
-        visual_video_free_buffer(video_);
+        visual_video_unref(video_);
 
         video_ = visual_video_new_with_buffer(cols_, rows_, depth_);
 
