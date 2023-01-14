@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-13 23:31+0100\n"
+"POT-Creation-Date: 2023-01-14 20:48+0100\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -351,38 +351,38 @@ msgstr ""
 msgid "This renders an awesome responsive flower"
 msgstr ""
 
-#: plugins/input/alsa/input_alsa.c:73
+#: plugins/input/alsa/input_alsa.c:75
 msgid "ALSA capture plugin"
 msgstr "Plugin de captura de audio ALSA"
 
-#: plugins/input/alsa/input_alsa.c:74
+#: plugins/input/alsa/input_alsa.c:76
 msgid "Use this plugin to capture PCM data from the ALSA record device"
 msgstr ""
 "Use este plugin para capturar datos PCM del dispositivo de grabación ALSA"
 
-#: plugins/input/alsa/input_alsa.c:112
+#: plugins/input/alsa/input_alsa.c:114
 #, c-format
 msgid "Record open error: %s"
 msgstr "Error al iniciar grabación: %s"
 
-#: plugins/input/alsa/input_alsa.c:121
+#: plugins/input/alsa/input_alsa.c:123
 #, fuzzy
 msgid "Cannot configure this PCM device"
 msgstr "No se puede configurar este dispositivo PCM"
 
-#: plugins/input/alsa/input_alsa.c:128
+#: plugins/input/alsa/input_alsa.c:130
 msgid "Error setting access"
 msgstr "Error al configurar el acceso"
 
-#: plugins/input/alsa/input_alsa.c:140
+#: plugins/input/alsa/input_alsa.c:142
 msgid "Error setting format"
 msgstr "Error al configurar el formato"
 
-#: plugins/input/alsa/input_alsa.c:149
+#: plugins/input/alsa/input_alsa.c:151
 msgid "Error setting rate"
 msgstr "Error al configurar la tasa"
 
-#: plugins/input/alsa/input_alsa.c:155
+#: plugins/input/alsa/input_alsa.c:157
 #, c-format
 msgid ""
 "The rate %d Hz is not supported by your hardware.\n"
@@ -391,7 +391,7 @@ msgstr ""
 "Una tasa de %d Hz no es soportada por su hardware.\n"
 "==> Se usarán %d Hz"
 
-#: plugins/input/alsa/input_alsa.c:163
+#: plugins/input/alsa/input_alsa.c:165
 msgid "Error setting channels"
 msgstr "Error al configurar los canales"
 
@@ -407,11 +407,11 @@ msgstr "Error al configurar el tiempo de buffer"
 msgid "Error setting HW params"
 msgstr "Error al configurar parámetros de hardware"
 
-#: plugins/input/alsa/input_alsa.c:192 plugins/input/alsa/input_alsa.c:263
+#: plugins/input/alsa/input_alsa.c:192 plugins/input/alsa/input_alsa.c:268
 msgid "Failed to prepare interface"
 msgstr "Fallo al preparar la interfaz"
 
-#: plugins/input/alsa/input_alsa.c:259
+#: plugins/input/alsa/input_alsa.c:264
 #, fuzzy
 msgid "ALSA: Buffer Overrun"
 msgstr "Buffer Overrun"
