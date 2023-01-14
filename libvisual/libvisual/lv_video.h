@@ -496,11 +496,7 @@ LV_API VisVideo *visual_video_load_from_file  (const char *path);
 LV_API void visual_video_ref   (VisVideo *video);
 LV_API void visual_video_unref (VisVideo *video);
 
-LV_API int  visual_video_allocate_buffer (VisVideo *video);
-LV_API void visual_video_free_buffer (VisVideo *video);
 LV_API int  visual_video_has_allocated_buffer (VisVideo *video);
-
-LV_API void visual_video_copy_attrs (VisVideo *dest, VisVideo *src);
 
 LV_API int visual_video_compare_attrs (VisVideo *src1, VisVideo *src2);
 LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *src2);
@@ -508,15 +504,11 @@ LV_API int visual_video_compare_attrs_ignore_pitch (VisVideo *src1, VisVideo *sr
 LV_API void        visual_video_set_palette (VisVideo *video, VisPalette *pal);
 LV_API VisPalette* visual_video_get_palette (VisVideo *video);
 
-LV_API void visual_video_set_attrs (VisVideo *video, int width, int height, int pitch, VisVideoDepth depth);
-
 LV_API int visual_video_get_width  (VisVideo *video);
 LV_API int visual_video_get_height (VisVideo *video);
 
-LV_API void visual_video_set_pitch (VisVideo *video, int pitch);
 LV_API int  visual_video_get_pitch (VisVideo *video);
 
-LV_API void          visual_video_set_depth (VisVideo *video, VisVideoDepth depth);
 LV_API VisVideoDepth visual_video_get_depth (VisVideo *video);
 
 LV_API int visual_video_get_bpp (VisVideo *video);

@@ -68,33 +68,11 @@ VisVideo *visual_video_load_from_file (const char *path)
     return self.get ();
 }
 
-void visual_video_free_buffer (VisVideo *self)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->free_buffer ();
-}
-
-int visual_video_allocate_buffer (VisVideo *self)
-{
-    visual_return_val_if_fail (self != nullptr, FALSE);
-
-    return self->allocate_buffer ();
-}
-
 int visual_video_has_allocated_buffer (VisVideo *self)
 {
     visual_return_val_if_fail (self != nullptr, FALSE);
 
     return self->has_allocated_buffer ();
-}
-
-void visual_video_copy_attrs (VisVideo *self, VisVideo *src)
-{
-    visual_return_if_fail (self != nullptr);
-    visual_return_if_fail (src  != nullptr);
-
-    self->copy_attrs (LV::VideoPtr (src));
 }
 
 int visual_video_compare_attrs (VisVideo *self, VisVideo *src)
@@ -150,25 +128,11 @@ int visual_video_get_height (VisVideo *self)
     return self->get_height ();
 }
 
-void visual_video_set_pitch (VisVideo *self, int pitch)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_pitch (pitch);
-}
-
 int visual_video_get_pitch (VisVideo *self)
 {
     visual_return_val_if_fail (self != nullptr, 0);
 
     return self->get_pitch ();
-}
-
-void visual_video_set_depth (VisVideo *self, VisVideoDepth depth)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_depth (depth);
 }
 
 VisVideoDepth visual_video_get_depth (VisVideo *self)
@@ -183,13 +147,6 @@ int visual_video_get_bpp (VisVideo *self)
     visual_return_val_if_fail (self != nullptr, 0);
 
     return self->get_bpp ();
-}
-
-void visual_video_set_attrs (VisVideo *self, int width, int height, int pitch, VisVideoDepth depth)
-{
-    visual_return_if_fail (self != nullptr);
-
-    self->set_attrs (width, height, pitch, depth);
 }
 
 visual_size_t visual_video_get_size (VisVideo *self)
