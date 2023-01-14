@@ -185,7 +185,7 @@ namespace LV
 
       param->parent = this;
 
-      m_impl->entries.emplace(param->name, std::unique_ptr<Param> {param});
+      m_impl->entries.emplace (param->name, std::unique_ptr<Param> {param});
   }
 
   bool ParamList::remove (std::string const& name)
