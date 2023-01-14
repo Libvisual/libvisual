@@ -59,7 +59,7 @@ CHECK_INCLUDE_FILE(dirent.h    HAVE_DIRENT_H)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 
 # Check threading implementation
-FIND_PACKAGE(Threads)
+FIND_PACKAGE(Threads REQUIRED)
 
 # Check for dynamic linking library
 CHECK_LIBRARY_EXISTS(dl dlsym "" HAVE_DLFCN)

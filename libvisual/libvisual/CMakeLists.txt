@@ -165,7 +165,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(libvisual
   PkgConfig::ORC
   PNG::PNG
-  ${CMAKE_THREAD_LIBS_INIT}
+  Threads::Threads
   ${PLATFORM_SPECIFIC_LIBS}
 )
 
