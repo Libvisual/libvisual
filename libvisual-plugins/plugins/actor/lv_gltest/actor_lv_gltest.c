@@ -190,6 +190,10 @@ int lv_gltest_cleanup (VisPluginData *plugin)
 	ui = visual_plugin_get_userinterface (plugin);
 	visual_object_unref (VISUAL_OBJECT (ui));
 
+	if (priv) {
+	    visual_object_unref (VISUAL_OBJECT (priv->started_at));
+	}
+
 	visual_mem_free (priv);
 
 	return 0;
