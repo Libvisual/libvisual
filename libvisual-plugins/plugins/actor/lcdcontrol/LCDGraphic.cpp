@@ -155,7 +155,7 @@ LCDGraphic::~LCDGraphic() {
     free(LayoutFB);
     free(TransitionFB);
     free(VideoFB);
-    visual_video_free_buffer(video_);
+    visual_video_unref(video_);
 }
 
 
