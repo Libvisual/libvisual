@@ -25,7 +25,7 @@
 #include "gl.h"
 #include "fastmath.h"
 #include "etoile.h"
-#include "t1font.h"
+#include "font.h"
 #include <cmath>
 
 #ifdef USE_OPENGL_ES

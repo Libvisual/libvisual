@@ -1,4 +1,4 @@
-#include "t1font.h"
+#include "font.h"
 #include "etoile.h"
 #include "libvisual/lv_log.h"
 #include "libvisual/lv_video.h"

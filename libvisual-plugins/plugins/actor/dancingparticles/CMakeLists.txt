@@ -7,7 +7,7 @@ SET(SOURCES
   gl.cpp
   parameters.cpp
   signal.cpp
-  t1font.cpp
+  font.cpp
 )
 
 LV_BUILD_ACTOR_PLUGIN(dancingparticles
