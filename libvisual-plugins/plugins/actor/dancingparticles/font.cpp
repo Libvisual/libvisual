@@ -51,7 +51,7 @@ void destroyFontRasterizer()
 void loadString(const char *str)
 {
   if(!ftLibrary || !ftFace)
-      return;
+    return;
 
   int length = std::strlen(str);
   if(length > (ptsNum/50))
@@ -106,7 +106,7 @@ VisVideo *rasteriseText(FT_Face face, const char *text)
   // Anything else would require a text shaping engine like Harfbuzz.
 
   if(!text)
-      return nullptr;
+    return nullptr;
 
   FT_Error error;
 
@@ -143,13 +143,13 @@ VisVideo *rasteriseText(FT_Face face, const char *text)
 
       error = FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT);
       if(error)
-          continue;
+        continue;
 
       glyphs.push_back(nullptr);
 
       error = FT_Get_Glyph(glyphSlot, &glyphs.back());
       if(error)
-          continue;
+        continue;
 
       penX += glyphSlot->advance.x >> 6;
 
@@ -187,7 +187,7 @@ VisVideo *rasteriseText(FT_Face face, const char *text)
     }
 
   if(textBbox.xMin > textBbox.xMax)
-      return nullptr;
+    return nullptr;
 
   // Rasterize text.
 
