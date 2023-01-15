@@ -7,8 +7,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace LV {
-  namespace Tests {
+namespace LV::Tests {
 
     // Floating point equality comparison functions
     //
@@ -81,7 +80,6 @@ namespace LV {
         return false;
     }
 
-  }
 } // LV::Tests namespace
 
 #endif // _LV_TESTS_MATH_UTIL_HPP
