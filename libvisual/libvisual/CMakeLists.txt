@@ -146,7 +146,7 @@ SET_TARGET_PROPERTIES(libvisual
   OUTPUT_NAME visual-${LV_VERSION_SUFFIX}
   VERSION 0.0.0
   SOVERSION 0
-  COMPILE_FLAGS -fvisibility=hidden
+  COMPILE_OPTIONS -fvisibility=hidden
   LINK_FLAGS -Wl,--no-undefined
 )
 
