@@ -119,7 +119,7 @@ void lv_dancingparticles_cleanup (VisPluginData *plugin)
 {
 	auto priv = static_cast<DancingParticlesPrivate*> (visual_plugin_get_private (plugin));
 
-    destroyFontRasterizer();
+	destroyFontRasterizer();
 
 	visual_mem_free (priv);
 }
