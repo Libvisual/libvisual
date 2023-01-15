@@ -166,30 +166,6 @@ SET(VISUAL_RANDOM_FAST_FP_RNG ${ENABLE_FAST_FP_RNG})
 # ORC
 FIND_PACKAGE(ORC REQUIRED)
 
-# API Documentation
-OPTION(ENABLE_DOCS "Enable the creation of API documentation" no)
-IF(ENABLE_DOCS)
-  FIND_PACKAGE(Doxygen)
-  IF(DOXYGEN_FOUND)
-    IF(DOXYGEN_VERSION VERSION_LESS 1.9.1)
-      MESSAGE(FATAL_ERROR "Doxygen 1.9.1 is required to build the API documentation")
-    ENDIF()
-    IF(NOT DOXYGEN_DOT_FOUND)
-      MESSAGE(WARNING "Graphviz Dot tool not found. API documentation will not have diagrams")
-    ENDIF()
-    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile)
-    # FIXME/TODO: Figure out how to generate the docs in the first make run
-    ADD_CUSTOM_TARGET(docs ALL
-      COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-      COMMENT "Generating API documentation.."
-      VERBATIM
-    )
-  ELSE()
-    MESSAGE(WARNING "Doxygen not found. No API documentation will be generated")
-    SET(ENABLE_DOCS no)
-  ENDIF()
-ENDIF()
-
 # Pedantic checks
 OPTION(ENABLE_PEDANTIC_CHECKS "Enable pedantic checks (program immediately aborts if errors occur)" no)
 IF(ENABLE_PEDANTIC_CHECKS)
@@ -256,6 +232,42 @@ ENDIF()
 OPTION(ENABLE_EXAMPLES "Build examples" yes)
 IF(ENABLE_EXAMPLES)
   ADD_SUBDIRECTORY(examples)
+ENDIF()
+
+# API Documentation via Doxygen
+OPTION(ENABLE_DOCS "Enable the creation of API documentation" no)
+IF(ENABLE_DOCS)
+  FIND_PACKAGE(Doxygen REQUIRED)
+  IF(NOT DOXYGEN_DOT_FOUND)
+    MESSAGE(WARNING "Graphviz Dot tool not found. API documentation will not have diagrams")
+  ENDIF()
+
+  SET(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+  SET(DOXYGEN_EXPAND_ONLY_PREDEF YES)
+  SET(DOXYGEN_EXTRACT_LOCAL_CLASSES NO)
+  SET(DOXYGEN_EXCLUDE libvisual/private)
+  SET(DOXYGEN_EXCLUDE_SYMBOLS Impl)
+  SET(DOXYGEN_FULL_PATH_NAMES NO)
+  SET(DOXYGEN_HIDE_FRIEND_COMPOUNDS YES)
+  SET(DOXYGEN_HTML_OUTPUT docs)
+  SET(DOXYGEN_IGNORE_PREFIX _Vis)
+  SET(DOXYGEN_MACRO_EXPANSION YES)
+  SET(DOXYGEN_PREDEFINED "LV_API=" "LV_BEGIN_DECLS=" "LV_END_DECLS=" "__cplusplus")
+  SET(DOXYGEN_REFERENCED_BY_RELATION YES)
+  SET(DOXYGEN_SOURCE_BROWSER YES)
+  SET(DOXYGEN_TEMPLATE_RELATIONS YES)
+  SET(DOXYGEN_TYPEDEF_HIDES_STRUCT YES)
+  SET(DOXYGEN_WARN_IF_UNDOCUMENTED NO)     # TODO: Get rid of this eventually
+  SET(DOXYGEN_WARN_NO_PARAMDOC YES)
+
+  IF(ENABLE_EXAMPLES)
+    SET(DOXYGEN_EXAMPLE_PATH examples)
+    SET(DOXYGEN_EXAMPLE_PATTERNS *.cpp *.hpp *.c *.h)
+  ENDIF()
+
+  DOXYGEN_ADD_DOCS(docs
+    libvisual
+    COMMENT "Generate API documentation.")
 ENDIF()
 
 # Generate pkg-config file
