@@ -50,7 +50,7 @@ FIND_PACKAGE(Libvisual 0.5 REQUIRED)
 FIND_PACKAGE(PkgConfig REQUIRED)
 
 # Check for threading implementation
-FIND_PACKAGE(Threads)
+FIND_PACKAGE(Threads REQUIRED)
 
 # Check for OpenMP support.
 FIND_PACKAGE(OpenMP)
