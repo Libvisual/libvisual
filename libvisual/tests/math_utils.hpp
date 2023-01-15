@@ -7,8 +7,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace LV {
-  namespace Tests {
+namespace LV::Tests {
 
     // Floating point equality comparison functions
     //
@@ -20,12 +19,12 @@ namespace LV {
 
     union Float_t
     {
-        Float_t (float num = 0.0f) : f (num) {}
+        constexpr Float_t (float num = 0.0f) : f (num) {}
 
         // Portable extraction of components.
-        bool    is_negative()  const { return (i >> 31) != 0; }
-        int32_t raw_mantissa() const { return i & ((1 << 23) - 1); }
-        int32_t raw_exponent() const { return (i >> 23) & 0xFF; }
+        constexpr bool    is_negative()  const { return (i >> 31) != 0; }
+        constexpr int32_t raw_mantissa() const { return i & ((1 << 23) - 1); }
+        constexpr int32_t raw_exponent() const { return (i >> 23) & 0xFF; }
 
         int32_t i;
         float f;
@@ -40,7 +39,7 @@ namespace LV {
         #endif
     };
 
-    bool almost_equal_ulps_and_abs (float a, float b, float max_diff, float max_ulps_diff)
+    constexpr inline bool almost_equal_ulps_and_abs (float a, float b, float max_diff, float max_ulps_diff)
     {
         // Check if the numbers are really close -- needed when
         // comparing numbers near zero.
@@ -63,7 +62,7 @@ namespace LV {
         return false;
     }
 
-    bool almost_equal_relative_and_abs (float a, float b, float max_diff, float max_rel_diff)
+    constexpr inline bool almost_equal_relative_and_abs (float a, float b, float max_diff, float max_rel_diff)
     {
         // Check if the numbers are really close -- needed when
         // comparing numbers near zero.
@@ -81,7 +80,6 @@ namespace LV {
         return false;
     }
 
-  }
 } // LV::Tests namespace
 
 #endif // _LV_TESTS_MATH_UTIL_HPP
