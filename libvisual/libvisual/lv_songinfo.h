@@ -82,8 +82,6 @@ namespace LV {
        * the SongInfo object.
        *
        * @param type Interface type that is set against the VisSongInfo.
-       *
-       * @return 0 on succes -1 on failure.
        */
       // FIXME: Type should only be set at creation time. Ideally we
       // should be able prevent accidental access to invalid fields.
@@ -172,8 +170,6 @@ namespace LV {
        * @note Advanced interface only
        *
        * @param cover VisVideo object containing the cover art.
-       *
-       * @return 0 on succes -1 on failure.
        */
       void set_cover (VideoPtr const& cover);
 

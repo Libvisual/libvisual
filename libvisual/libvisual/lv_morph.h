@@ -208,6 +208,7 @@ typedef void (*VisPluginMorphPaletteFunc) (VisPluginData *plugin,
  * @param plugin   Plugin object
  * @param progress Morph progress (must be in [0.0 and 1])
  * @param audio    Audio data
+ * @param dest     Destination video
  * @param src1     First source Video
  * @param src2     Second source Video
  */

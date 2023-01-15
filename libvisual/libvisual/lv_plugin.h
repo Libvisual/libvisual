@@ -211,8 +211,6 @@ LV_API VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin
  *
  * @param plugin Plugin object
  * @param priv   Data pointer
- *
- * @return Data pointer
  */
 LV_API void visual_plugin_set_private (VisPluginData *plugin, void *priv);
 
