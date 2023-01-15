@@ -162,7 +162,7 @@ VisVideo *rasteriseText(FT_Face face, const char *text)
   // for anti-aliasing. We don't really care because the text isn't rendered for
   // display.
 
-  FT_BBox textBbox =
+  FT_BBox textBBox =
     {
       std::numeric_limits<int>::max(),
       std::numeric_limits<int>::max(),
@@ -172,27 +172,27 @@ VisVideo *rasteriseText(FT_Face face, const char *text)
 
   for(std::size_t i = 0; i < glyphs.size(); i++)
     {
-      FT_BBox glyphBbox;
-      FT_Glyph_Get_CBox(glyphs[i], ft_glyph_bbox_pixels, &glyphBbox);
+      FT_BBox glyphBBox;
+      FT_Glyph_Get_CBox(glyphs[i], ft_glyph_bbox_pixels, &glyphBBox);
 
-      glyphBbox.xMin += glyphPos[i].x;
-      glyphBbox.yMin += glyphPos[i].y;
-      glyphBbox.xMax += glyphPos[i].x;
-      glyphBbox.yMax += glyphPos[i].y;
+      glyphBBox.xMin += glyphPos[i].x;
+      glyphBBox.yMin += glyphPos[i].y;
+      glyphBBox.xMax += glyphPos[i].x;
+      glyphBBox.yMax += glyphPos[i].y;
 
-      textBbox.xMin = std::min(textBbox.xMin, glyphBbox.xMin);
-      textBbox.yMin = std::min(textBbox.yMin, glyphBbox.yMin);
-      textBbox.xMax = std::max(textBbox.xMax, glyphBbox.xMax);
-      textBbox.yMax = std::max(textBbox.yMax, glyphBbox.yMax);
+      textBBox.xMin = std::min(textBBox.xMin, glyphBBox.xMin);
+      textBBox.yMin = std::min(textBBox.yMin, glyphBBox.yMin);
+      textBBox.xMax = std::max(textBBox.xMax, glyphBBox.xMax);
+      textBBox.yMax = std::max(textBBox.yMax, glyphBBox.yMax);
     }
 
-  if(textBbox.xMin > textBbox.xMax)
+  if(textBBox.xMin > textBBox.xMax)
     return nullptr;
 
   // Rasterize text.
 
-  int textWidth = textBbox.xMax - textBbox.xMin;
-  int textHeight = textBbox.yMax - textBbox.yMin;
+  int textWidth = textBBox.xMax - textBBox.xMin;
+  int textHeight = textBBox.yMax - textBBox.yMin;
 
   auto textBitmap = visual_video_new_with_buffer(textWidth, textHeight, VISUAL_VIDEO_DEPTH_8BIT);
 
