@@ -40,7 +40,7 @@ namespace LV {
         #endif
     };
 
-    bool almost_equal_ulps_and_abs (float a, float b, float max_diff, float max_ulps_diff)
+    inline bool almost_equal_ulps_and_abs (float a, float b, float max_diff, float max_ulps_diff)
     {
         // Check if the numbers are really close -- needed when
         // comparing numbers near zero.
@@ -63,7 +63,7 @@ namespace LV {
         return false;
     }
 
-    bool almost_equal_relative_and_abs (float a, float b, float max_diff, float max_rel_diff)
+    inline bool almost_equal_relative_and_abs (float a, float b, float max_diff, float max_rel_diff)
     {
         // Check if the numbers are really close -- needed when
         // comparing numbers near zero.
