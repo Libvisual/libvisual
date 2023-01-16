@@ -17,7 +17,7 @@ const int   fontSize = 25; // Does this match the T1lib size parameter?
 static FT_Library ftLibrary = nullptr;
 static FT_Face ftFace = nullptr;
 
-VisVideo *rasteriseText(FT_Face face, const char *text);
+VisVideo *rasteriseText(FT_Face face, const string &text);
 
 bool initFontRasterizer()
 {
@@ -53,11 +53,9 @@ void loadString(const char *str)
   if(!ftLibrary || !ftFace)
     return;
 
-  int length = std::strlen(str);
-  if(length > (ptsNum/50))
-	length = ptsNum/50;
+  int length = std::min(int(std::strlen(str)), ptsNum/50);
 
-  auto bitmap = rasteriseText(ftFace, str);
+  auto bitmap = rasteriseText(ftFace, std::string(str, length));
   auto pixels = static_cast<uint8_t const*>(visual_video_get_pixels(bitmap));
 
   int width = visual_video_get_width(bitmap);
@@ -100,19 +98,16 @@ void loadString(const char *str)
     }
 }
 
-VisVideo *rasteriseText(FT_Face face, const char *text)
+VisVideo *rasteriseText(FT_Face face, const std::string &text)
 {
   // This is a very simple FT2 text rasteriser that supports languages with a one-one character to glyph mapping.
   // Anything else would require a text shaping engine like Harfbuzz.
-
-  if(!text)
-    return nullptr;
 
   FT_Error error;
 
   bool useKerning = FT_HAS_KERNING(face);
 
-  std::size_t charCount = std::strlen(text);
+  std::size_t charCount = text.length();
 
   std::vector<FT_Vector> glyphPos;
   glyphPos.reserve(charCount);
