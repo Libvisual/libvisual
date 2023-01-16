@@ -17,6 +17,12 @@ const int   fontSize = 25; // Does this match the T1lib size parameter?
 static FT_Library ftLibrary = nullptr;
 static FT_Face ftFace = nullptr;
 
+struct Glyph
+{
+    FT_Vector pos;
+    FT_Glyph  ftGlyph;
+};
+
 VisVideo *rasteriseText(FT_Face face, const string &text);
 
 bool initFontRasterizer()
@@ -109,46 +115,43 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   std::size_t charCount = text.length();
 
-  std::vector<FT_Vector> glyphPos;
-  glyphPos.reserve(charCount);
-
-  std::vector<FT_Glyph> glyphs;
+  std::vector<Glyph> glyphs;
   glyphs.reserve(charCount);
 
-  auto glyphSlot = face->glyph;
+  auto ftGlyphSlot = face->glyph;
 
   // Convert text string into a series of glyphs.
 
   int penX = 0;
   int penY = 0;
-  FT_UInt prevGlyphIndex;
+  FT_UInt prevFtGlyphIndex = 0;
 
-  for(std::size_t i = 0; i < charCount; i++)
+  for(auto text_char : text)
     {
-      auto glyphIndex = FT_Get_Char_Index(face, text[i]);
+      auto ftGlyphIndex = FT_Get_Char_Index(face, text_char);
 
-      if(useKerning && prevGlyphIndex && glyphIndex)
+      error = FT_Load_Glyph(face, ftGlyphIndex, FT_LOAD_DEFAULT);
+      if(error)
+        continue;
+
+      FT_Glyph ftGlyph = nullptr;
+
+      error = FT_Get_Glyph(ftGlyphSlot, &ftGlyph);
+      if(error)
+        continue;
+
+      if(useKerning && prevFtGlyphIndex && ftGlyphIndex)
         {
           FT_Vector delta;
-          FT_Get_Kerning(face, prevGlyphIndex, glyphIndex, FT_KERNING_DEFAULT, &delta);
+          FT_Get_Kerning(face, prevFtGlyphIndex, ftGlyphIndex, FT_KERNING_DEFAULT, &delta);
           penX += delta.x >> 6;
         }
 
-      glyphPos.push_back({ penX, penY });
+      glyphs.push_back({ FT_Vector { penX, penY }, ftGlyph });
 
-      error = FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT);
-      if(error)
-        continue;
+      penX += ftGlyphSlot->advance.x >> 6;
 
-      glyphs.push_back(nullptr);
-
-      error = FT_Get_Glyph(glyphSlot, &glyphs.back());
-      if(error)
-        continue;
-
-      penX += glyphSlot->advance.x >> 6;
-
-      prevGlyphIndex = glyphIndex;
+      prevFtGlyphIndex = ftGlyphIndex;
     }
 
   // Calculate bounding box of text rasterization.
@@ -157,7 +160,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
   // for anti-aliasing. We don't really care because the text isn't rendered for
   // display.
 
-  FT_BBox textBBox =
+  FT_BBox textBBox
     {
       std::numeric_limits<int>::max(),
       std::numeric_limits<int>::max(),
@@ -165,15 +168,15 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
       std::numeric_limits<int>::min()
     };
 
-  for(std::size_t i = 0; i < glyphs.size(); i++)
+  for(auto const& glyph : glyphs)
     {
-      FT_BBox glyphBBox;
-      FT_Glyph_Get_CBox(glyphs[i], ft_glyph_bbox_pixels, &glyphBBox);
+      FT_BBox glyphBBox { 0, 0, 0, 0 };
+      FT_Glyph_Get_CBox(glyph.ftGlyph, ft_glyph_bbox_pixels, &glyphBBox);
 
-      glyphBBox.xMin += glyphPos[i].x;
-      glyphBBox.yMin += glyphPos[i].y;
-      glyphBBox.xMax += glyphPos[i].x;
-      glyphBBox.yMax += glyphPos[i].y;
+      glyphBBox.xMin += glyph.pos.x;
+      glyphBBox.yMin += glyph.pos.y;
+      glyphBBox.xMax += glyph.pos.x;
+      glyphBBox.yMax += glyph.pos.y;
 
       textBBox.xMin = std::min(textBBox.xMin, glyphBBox.xMin);
       textBBox.yMin = std::min(textBBox.yMin, glyphBBox.yMin);
@@ -191,15 +194,17 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   auto textBitmap = visual_video_new_with_buffer(textWidth, textHeight, VISUAL_VIDEO_DEPTH_8BIT);
 
-  for(std::size_t i = 0; i < glyphs.size(); i++)
+  for(auto const& glyph : glyphs)
     {
-      FT_Vector pen { glyphPos[i].x << 6, glyphPos[i].y << 6 };
+      FT_Vector pen { glyph.pos.x << 6, glyph.pos.y << 6 };
 
-      error = FT_Glyph_To_Bitmap(&glyphs[i], FT_RENDER_MODE_NORMAL, &pen, 0);
+      auto ftGlyph = glyph.ftGlyph;
+
+      error = FT_Glyph_To_Bitmap(&ftGlyph, FT_RENDER_MODE_NORMAL, &pen, 0);
       if(!error)
         {
-          auto bitmapGlyph = reinterpret_cast<FT_BitmapGlyph>(glyphs[i]);
-          auto bitmap = bitmapGlyph->bitmap;
+          auto bitmapFtGlyph = reinterpret_cast<FT_BitmapGlyph>(ftGlyph);
+          auto bitmap = bitmapFtGlyph->bitmap;
 
           auto source = visual_video_new_wrap_buffer(bitmap.buffer,
                                                      false,
@@ -208,13 +213,18 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
                                                      VISUAL_VIDEO_DEPTH_8BIT,
                                                      bitmap.pitch);
 
-          visual_video_blit(textBitmap, source, bitmapGlyph->left, textHeight - bitmapGlyph->top, 255);
+          visual_video_blit(textBitmap, source, bitmapFtGlyph->left, textHeight - bitmapFtGlyph->top, 255);
 
           visual_video_unref(source);
 
-          FT_Done_Glyph(glyphs[i]);
+          FT_Done_Glyph(ftGlyph);
         }
     }
 
+  // Free all glyphs
+  for(auto const& glyph : glyphs)
+    FT_Done_Glyph(glyph.ftGlyph);
+
   return textBitmap;
 }
+
