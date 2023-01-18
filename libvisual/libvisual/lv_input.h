@@ -49,6 +49,15 @@ namespace LV {
   public:
 
       /**
+       * Determines if an input plugin by the given name is available.
+       *
+       * @param name Name of input plugin to check for
+       *
+       * @return True if an input plugin by that name is available, else false
+       */
+      static bool available (std::string const& name);
+
+      /**
        * Creates a new Input with a plugin of a given name.
        *
        * @param name Name of plugin to load

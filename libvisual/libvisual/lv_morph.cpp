@@ -74,6 +74,10 @@ namespace LV {
       return m_impl->plugin;
   }
 
+  bool Morph::available(std::string const& name) {
+      return LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_MORPH, name);
+  }
+
   MorphPtr Morph::load (std::string const& name)
   {
       try {
@@ -90,7 +94,7 @@ namespace LV {
       : m_impl      (new Impl)
       , m_ref_count (1)
   {
-      if (!PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_MORPH, name)) {
+      if (!available (name)) {
           throw std::runtime_error {"Morph plugin not found"};
       }
 

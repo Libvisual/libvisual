@@ -60,6 +60,10 @@ namespace LV {
       return static_cast<VisInputPlugin*> (visual_plugin_get_info (plugin)->plugin);
   }
 
+  bool Input::available(std::string const& name) {
+      return LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_INPUT, name);
+  }
+
   InputPtr Input::load (std::string const& name)
   {
       try {
@@ -75,7 +79,7 @@ namespace LV {
       : m_impl      {new Impl}
       , m_ref_count {1}
   {
-      if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_INPUT, name)) {
+      if (!available (name)) {
           throw std::runtime_error {"Input plugin not found"};
       }
 
