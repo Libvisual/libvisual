@@ -74,6 +74,10 @@ namespace LV {
       return actor_plugin ? actor_plugin->vidoptions.depth : VISUAL_VIDEO_DEPTH_NONE;
   }
 
+  bool Actor::available(std::string const& name) {
+      return LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name);
+  }
+
   ActorPtr Actor::load (std::string const& name)
   {
       try {
@@ -89,7 +93,7 @@ namespace LV {
       : m_impl      {new Impl}
       , m_ref_count {1}
   {
-      if (!LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name)) {
+      if (!available (name)) {
           throw std::runtime_error {"Actor plugin not found"};
       }
 

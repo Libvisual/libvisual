@@ -53,6 +53,15 @@ namespace LV
   public:
 
       /**
+       * Determines if an actor plugin by the given name is available.
+       *
+       * @param name Name of actor plugin to check for
+       *
+       * @return True if an actor plugin by that name is available, else false
+       */
+      static bool available (std::string const& name);
+
+      /**
        * Creates a new Actor with a plugin of a given name.
        *
        * @see realize()
