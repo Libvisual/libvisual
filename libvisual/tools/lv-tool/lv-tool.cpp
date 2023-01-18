@@ -139,7 +139,7 @@ namespace LV {
 
 namespace {
 
-  std::string actor_name = DEFAULT_ACTOR_NONGL;
+  std::string actor_name;
   std::string input_name = DEFAULT_INPUT;
   std::string exclude_actors;
 
@@ -690,9 +690,14 @@ int main (int argc, char **argv)
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
 
-        // Upgrade to a more appealing OpenGL actor if available
-        if (bin.actor_available(DEFAULT_ACTOR_GL)) {
-            actor_name = DEFAULT_ACTOR_GL;
+        // Apply dynamic actor default, as needed
+        if (actor_name.empty()) {
+            actor_name = DEFAULT_ACTOR_NONGL;
+
+            // Upgrade default to a more appealing OpenGL actor if available
+            if (bin.actor_available(DEFAULT_ACTOR_GL)) {
+                actor_name = DEFAULT_ACTOR_GL;
+            }
         }
 
         // Let the bin manage plugins. There's a bug otherwise.
