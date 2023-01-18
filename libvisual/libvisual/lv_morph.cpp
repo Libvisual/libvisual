@@ -134,7 +134,7 @@ namespace LV {
 
   void Morph::set_progress (float progress)
   {
-      m_impl->progress = std::min (std::max (progress, 0.0f), 1.0f);
+      m_impl->progress = std::clamp (progress, 0.0f, 1.0f);
   }
 
   Palette const* Morph::get_palette ()
@@ -186,7 +186,7 @@ namespace LV {
       double usec_elapsed = m_impl->timer.elapsed ().to_usecs ();
       double usec_morph   = m_impl->morphtime.to_usecs ();
 
-      m_impl->progress = std::min (std::max (usec_elapsed / usec_morph, 0.0), 1.0);
+      m_impl->progress = std::clamp (usec_elapsed / usec_morph, 0.0, 1.0);
 
       return true;
   }
