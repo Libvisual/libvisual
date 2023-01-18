@@ -28,7 +28,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_SCHED_H
+#if defined(HAVE_SCHED_H) && ! defined(__APPLE__)
 # include <sched.h>
 # include <sys/types.h>
 # define HAVE_SCHED 1
