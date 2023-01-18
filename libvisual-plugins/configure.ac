@@ -18,7 +18,7 @@ AC_CONFIG_MACRO_DIR([m4])
 m4_define([libvisual_required_version], [lv_plugins_version])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
-m4_define([gtk_required_version], [2.0])
+m4_define([gtk_required_version], [3.0])
 m4_define([gst_required_version], [0.8])
 
 m4_define([libvisual_pkg], [libvisual-lv_plugins_version_suffix])
@@ -119,16 +119,16 @@ AC_ARG_ENABLE([gdkpixbuf-plugin],
   [ENABLE_PLUGIN_GDKPIXBUF=yes])
 
 if test "$ENABLE_PLUGIN_GDKPIXBUF" = "yes"; then
-  PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= gtk_required_version],
+  PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= gtk_required_version],
     [HAVE_GTK="yes"], [HAVE_GTK="no"])
 
   if test "$HAVE_GTK" = "yes"; then
     build_actor_plugins="$build_actor_plugins gdkpixbuf"
   else
     AC_MSG_WARN([*** GTK+ >= ${gtk_required_version} is not found.
-	  	The libvisual GdkPixbuf image loader plugin won't be build.
-		GdkPixbuf is included within gtk-2.0 and newer, which can be
-		downloaded at http://www.gtk.org/])
+	  	The libvisual GdkPixbuf image loader plugin won't be built.
+		GdkPixbuf is included within gtk+-3.0 and newer, which can be
+		downloaded at https://www.gtk.org/])
   fi
 fi
 
