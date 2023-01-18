@@ -39,11 +39,8 @@
 #include <getopt.h>
 
 // Defaults
-#ifdef HAVE_GL
-# define DEFAULT_ACTOR   "lv_gltest"
-#else
-# define DEFAULT_ACTOR   "lv_analyzer"
-#endif
+#define DEFAULT_ACTOR_GL "lv_gltest"
+#define DEFAULT_ACTOR_NONGL "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_MORPH   "slide_left"
 #define DEFAULT_WIDTH   320
@@ -59,7 +56,7 @@
 
 namespace {
 
-  std::string actor_name = DEFAULT_ACTOR;
+  std::string actor_name = DEFAULT_ACTOR_NONGL;
   std::string input_name = DEFAULT_INPUT;
   std::string morph_name = DEFAULT_MORPH;
   std::string driver_name = DEFAULT_DRIVER;
@@ -179,7 +176,7 @@ namespace {
                   "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
                   "\t--driver <driver>\t-d <driver>\tUse this output driver [%s]\n"
                   "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
-                  "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s]\n"
+                  "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s/%s]\n"
                   "\t--morph <morph>\t\t-m <morph>\tUse this morph plugin [%s]\n"
                   "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
                   "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
@@ -191,7 +188,8 @@ namespace {
                   width, height,
                   driver_name.c_str (),
                   input_name.c_str (),
-                  actor_name.c_str (),
+                  DEFAULT_ACTOR_GL,
+                  DEFAULT_ACTOR_NONGL,
                   morph_name.c_str (),
                   frame_rate);
 
@@ -453,6 +451,11 @@ int main (int argc, char **argv)
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
         bin.use_morph(false);
+
+        // Upgrade to a more appealing OpenGL actor if available
+        if (LV::Actor::available(DEFAULT_ACTOR_GL)) {
+            actor_name = DEFAULT_ACTOR_GL;
+        }
 
         // Let the bin manage plugins. There's a bug otherwise.
         if (!bin.connect(actor_name, input_name)) {
