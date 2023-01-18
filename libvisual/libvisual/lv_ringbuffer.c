@@ -260,6 +260,7 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 
 	visual_log_return_val_if_fail (ringbuffer != NULL, -VISUAL_ERROR_RINGBUFFER_NULL);
 	visual_log_return_val_if_fail (data != NULL, -VISUAL_ERROR_BUFFER_NULL);
+	visual_log_return_val_if_fail (offset >= 0, -VISUAL_ERROR_IMPOSSIBLE);
 
 	/* Fixate possible partial buffer */
 	if (offset > 0)
@@ -324,6 +325,15 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 			/* Filled without room for partial buffer addition */
 			if (curposition == nbytes)
 				return VISUAL_OK;
+		}
+
+		if (entry == NULL) {
+		    // Silence the remaining bytes that we could not fill with
+		    // actual audio
+		    const size_t bytes_to_silence = nbytes - curposition;
+		    void * const target = visual_buffer_get_data (data) + curposition;
+		    memset(target, 0, bytes_to_silence);
+		    return -VISUAL_ERROR_IMPOSSIBLE;
 		}
 
 		startat = 0;
