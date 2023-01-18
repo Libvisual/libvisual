@@ -433,6 +433,11 @@ int main (int argc, char **argv)
         // initialize LV
         Libvisual main {argc, argv};
 
+        // Upgrade default to a more appealing OpenGL actor if available
+        if (LV::Actor::available(DEFAULT_ACTOR_GL)) {
+            actor_name = DEFAULT_ACTOR_GL;
+        }
+
         // parse commandline arguments
         int parse_result = parse_args (argc, argv);
         if (parse_result < 0) {
@@ -451,11 +456,6 @@ int main (int argc, char **argv)
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
         bin.use_morph(false);
-
-        // Upgrade to a more appealing OpenGL actor if available
-        if (LV::Actor::available(DEFAULT_ACTOR_GL)) {
-            actor_name = DEFAULT_ACTOR_GL;
-        }
 
         // Let the bin manage plugins. There's a bug otherwise.
         if (!bin.connect(actor_name, input_name)) {
