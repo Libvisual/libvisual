@@ -27,7 +27,7 @@
 #include "config.h"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>
