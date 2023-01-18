@@ -46,7 +46,8 @@ static VisPalette *act_gstreamer_palette     (VisPluginData *plugin);
 static void        act_gstreamer_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
 static void handle_sink_data   (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate *data);
-static void handle_bus_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv);
+static void handle_bus_error_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv);
+static void handle_bus_eos_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv);
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -134,7 +135,8 @@ static int act_gstreamer_init (VisPluginData *plugin)
     }
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
-    g_signal_connect (bus, "message", G_CALLBACK (handle_bus_message), priv);
+    g_signal_connect (bus, "message::error", G_CALLBACK (handle_bus_error_message), priv);
+    g_signal_connect (bus, "message::eos", G_CALLBACK (handle_bus_eos_message), priv);
     gst_object_unref (bus);
 
     priv->glib_main_loop = g_main_loop_new (NULL, FALSE);
@@ -150,7 +152,8 @@ static void act_gstreamer_cleanup (VisPluginData *plugin)
         g_signal_handlers_disconnect_by_func (priv->sink, "handoff", handle_sink_data);
 
         GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
-        g_signal_handlers_disconnect_by_func (bus, handle_bus_message, priv);
+        g_signal_handlers_disconnect_by_func (bus, handle_bus_error_message, priv);
+        g_signal_handlers_disconnect_by_func (bus, handle_bus_eos_message, priv);
         gst_object_unref (bus);
 
         g_main_loop_unref (priv->glib_main_loop);
@@ -310,25 +313,17 @@ static void handle_sink_data (GstElement *sink, GstBuffer *buffer, GstPad *pad, 
     g_mutex_unlock (priv->mutex);
 }
 
-static void handle_bus_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv)
+static void handle_bus_error_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv)
 {
-    switch (GST_MESSAGE_TYPE (message)) {
-        case GST_MESSAGE_EOS:
-            visual_log (VISUAL_LOG_INFO, "End of stream!");
-            break;
+    GError *error = NULL;
+    char   *msg   = NULL;
+    gst_message_parse_error (message, &error, &msg);
+    visual_log (VISUAL_LOG_ERROR, "GStreamer error: %s", msg);
+    g_error_free (error);
+    g_free (msg);
+}
 
-        case GST_MESSAGE_ERROR: {
-            GError *error = NULL;
-            char   *msg   = NULL;
-            gst_message_parse_error (message, &error, &msg);
-            visual_log (VISUAL_LOG_ERROR, "GStreamer error: %s", msg);
-            g_error_free (error);
-            g_free (msg);
-            break;
-        }
-
-        default:
-            visual_log (VISUAL_LOG_INFO, "Got bus message of type %s", GST_MESSAGE_TYPE_NAME (message));
-            break;
-    }
+static void handle_bus_eos_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv)
+{
+    visual_log (VISUAL_LOG_INFO, "End of stream!");
 }
