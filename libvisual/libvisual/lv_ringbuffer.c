@@ -416,8 +416,13 @@ int visual_ringbuffer_get_data_from_end (VisRingBuffer *ringbuffer, VisBuffer *d
 	int totalsize = visual_ringbuffer_get_size (ringbuffer);
 	int offset = totalsize - nbytes;
 
-	if ((nbytes / totalsize) > 0)
+	if ((totalsize != 0) && (nbytes > totalsize)) {
 		offset = totalsize - (nbytes % totalsize);
+	}
+
+	if (offset < 0) {
+	    offset = 0;
+	}
 
 	return visual_ringbuffer_get_data_offset (ringbuffer, data, offset, nbytes);
 }
