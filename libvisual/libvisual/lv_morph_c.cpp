@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012-2013 ibvisual team
+ * Copyright (C) 2012-2013 Libvisual team
  *
  * Authors: Chong Kai Xiong <kaixiong@codeleft.sg>
  *
