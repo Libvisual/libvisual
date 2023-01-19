@@ -1,4 +1,4 @@
-name: Build and test (Linux)
+name: Build and test (Linux + macOS)
 
 on:
   pull_request:
@@ -6,43 +6,52 @@ on:
   schedule:
     - cron: '0 3 * * 5'  # Every Friday at 3am
 
-env:
-  LV_INSTALL_PREFIX: /home/runner/.local/
-
 jobs:
-  linux:
-    name: Build and test (Linux)
-    runs-on: ubuntu-latest
+  linux_and_macos:
+    name: Build and test (${{ matrix.runs-on }}, ${{ matrix.cc }})
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         include:
+        # Linux
           - cc: gcc-11
             cxx: g++-11
             clang_major_version: null
             clang_repo_suffix: null
+            runs-on: ubuntu-latest
           - cc: gcc-12
             cxx: g++-12
             clang_major_version: null
             clang_repo_suffix: null
+            runs-on: ubuntu-latest
           - cc: clang-15
             cxx: clang++-15
             clang_major_version: 15
             clang_repo_suffix: -15
+            runs-on: ubuntu-latest
           - cc: clang-16
             cxx: clang++-16
             clang_major_version: 16
             clang_repo_suffix:
+            runs-on: ubuntu-latest
+        # macOS
+          - cc: gcc-11
+            cxx: g++-11
+            clang_major_version: null
+            clang_repo_suffix: null
+            runs-on: macos-latest
     steps:
-      - name: Add Clang/LLVM repositories
-        if: "${{ contains(matrix.cxx, 'clang') }}"
+      - name: Add Clang/LLVM repositories (Linux)
+        if: "${{ runner.os == 'Linux' && contains(matrix.cxx, 'clang') }}"
         run: |-
           set -x
           source /etc/os-release
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}${{ matrix.clang_repo_suffix }} main"
 
-      - name: Install build dependencies
+      - name: Install build dependencies (Linux)
+        if: runner.os == 'Linux'
         run: |-
           sudo apt-get update
           # Note: This additional step's sole purpuse is to workaround symptom:
@@ -68,17 +77,48 @@ jobs:
             libgl1-mesa-dev \
             pkg-config
 
-      - name: Install build dependency Clang ${{ matrix.clang_major_version }}
-        if: "${{ contains(matrix.cxx, 'clang') }}"
+      - name: Install build dependency Clang ${{ matrix.clang_major_version }} (Linux)
+        if: "${{ runner.os == 'Linux' && contains(matrix.cxx, 'clang') }}"
         run: |-
           sudo apt-get install --yes --no-install-recommends -V \
               clang-${{ matrix.clang_major_version }}
+
+      - name: Install build dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |-
+          brew install \
+            automake \
+            bison \
+            doxygen \
+            flex \
+            gettext \
+            graphviz \
+            gstreamer \
+            gtk+3 \
+            jack \
+            libpng \
+            luajit \
+            mesa \
+            mesa-glu \
+            orc \
+            pkg-config \
+            sdl12-compat
+
+      - name: Setting dynamic environment variables
+        run: |-
+          set -x
+          echo "LV_INSTALL_PREFIX=${HOME}/.local" >> "${GITHUB_ENV}"
 
       - name: Checkout Git branch
         uses: actions/checkout@v3
 
       - name: '[LV] Run autoreconf'
         run: |-
+          if [[ "$(uname -s)" = Darwin ]]; then
+            # This provides a dummy substitute to alsa.m4 on macOS
+            echo 'AC_DEFUN([AM_PATH_ALSA], [HAVE_ALSA=no])' >> libvisual-plugins/acinclude.m4
+          fi
+
           for i in libvisual libvisual-plugins ; do
             pushd ${i}
               autoreconf --install --verbose --force
