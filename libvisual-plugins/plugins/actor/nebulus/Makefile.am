@@ -15,9 +15,9 @@ actor_plugin_LTLIBRARIES = actor_nebulus.la
 actor_nebulus_la_LDFLAGS = -module -avoid-version
 
 actor_nebulus_la_CFLAGS = \
-	-I$(top_srcdir) $(LIBVISUAL_CFLAGS) -DBITMAP_DIR=\"$(imagesdir)/\"
+	-I$(top_srcdir) $(LIBVISUAL_CFLAGS) -DBITMAP_DIR=\"$(imagesdir)/\" $(GL_CFLAGS) $(GLU_CFLAGS)
 
-actor_nebulus_la_LIBADD = $(LIBVISUAL_LIBS) $(X_LIBS) -lGL -lGLU
+actor_nebulus_la_LIBADD = $(LIBVISUAL_LIBS) $(GL_LIBS) $(GLU_LIBS)
 
 actor_nebulus_la_SOURCES =                   \
 	nebulus.c nebulus.h                  \

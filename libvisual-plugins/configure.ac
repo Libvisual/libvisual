@@ -152,48 +152,21 @@ if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
   fi
 fi
 
-dnl Xlib
-AC_PATH_XTRA
-AM_CONDITIONAL(HAVE_X, test "$have_x" = "yes")
+dnl OpenGL + GLX
+AC_ARG_ENABLE([opengl],
+  AS_HELP_STRING([--disable-opengl],
+    [Do not build actor plugins based using OpenGL/GLU @<:@default=enabled@:>@]),
+  [ENABLE_OPENGL_ACTORS=$enableval],
+  [ENABLE_OPENGL_ACTORS=yes])
 
-dnl OpenGL, GLX
-HAVE_OPENGL=no
-
-if test "$have_x" = "yes" ; then
-  CPPFLAGS_SAVE=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-
-  AC_CHECK_HEADERS([GL/gl.h GL/glx.h],
-    [AC_CHECK_LIB([GL], [glBegin], [HAVE_OPENGL=yes], [], [$X_LIBS])])
-
-  CPPFLAGS=$CPPFLAGS_SAVE
-fi
-
-AM_CONDITIONAL([HAVE_OPENGL], [test "$HAVE_OPENGL" = "yes"])
-
-dnl XF86VidMode
-HAVE_XF86VMODE=no
-XF86VMODE_LIB=
-
-CPPFLAGS_SAVE=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-
-AC_CHECK_HEADERS([X11/extensions/xf86vmode.h],
-  [AC_CHECK_LIB([Xxf86vm], [XF86VidModeSwitchToMode], 
-    [AC_DEFINE([HAVE_XF86VMODE], [], [XF86VidMode is available])
-     XF86VMODE_LIB=-lXxf86vm
-     HAVE_XF86VMODE=yes],
-    [],
-    [$X_LIBS])],
-  [],
-  [#include <X11/Xlib.h>
-  ]
-)
-
-CPPFLAGS=$CPPFLAGS_SAVE
-
-AC_SUBST([XF86VMODE_LIB])
-AM_CONDITIONAL([HAVE_XF86VMODE], [test "$HAVE_XF86VMODE" = "yes"])
+AS_IF([test "$ENABLE_OPENGL_ACTORS" = "yes"], [
+  PKG_CHECK_MODULES([GL], [gl], [HAVE_OPENGL="yes"], [HAVE_OPENGL="no"])
+  PKG_CHECK_MODULES([GLU], [glu], [HAVE_GLU="yes"], [HAVE_GLU="no"; HAVE_OPENGL="no"])
+  AS_IF([test "$HAVE_OPENGL" != "yes"], [
+    AC_MSG_WARN([*** OpenGL and/or GLU have not been found, see above.
+                        Actor plugins using OpenGL will not be built.])
+  ])
+])
 
 dnl ALSA
 LV_ALSA_MIN_VERSION=0.9.0
