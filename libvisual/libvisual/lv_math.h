@@ -34,11 +34,7 @@
 
 namespace LV {
 
-  template <typename T>
-  T clamp (T value, T lower, T upper)
-  {
-      return std::max (lower, std::min (upper, value));
-  }
+  // empty at the moment
 
 } // LV namespce
 

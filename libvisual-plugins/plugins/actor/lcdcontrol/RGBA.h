@@ -64,10 +64,10 @@ class RGBA {
     unsigned char B;
     unsigned char A;
 
-    bool operator==(const RGBA &rhv) {
+    bool operator==(const RGBA &rhv) const {
         return R == rhv.R && G == rhv.G && B == rhv.B && A == rhv.A;
     }
-    bool operator!=(const RGBA &rhv) {
+    bool operator!=(const RGBA &rhv) const {
         return R != rhv.R || G != rhv.G || B != rhv.B || A != rhv.A;
     }
 };

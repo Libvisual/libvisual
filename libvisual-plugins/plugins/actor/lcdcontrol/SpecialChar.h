@@ -42,8 +42,8 @@ class SpecialChar {
     std::vector<int> Vector() const;
     bool Compare(SpecialChar other);
     int &operator[](int i);
-    bool operator==(const SpecialChar &ch);
-    bool operator!=(const SpecialChar &ch);
+    bool operator==(const SpecialChar &ch) const;
+    bool operator!=(const SpecialChar &ch) const;
     SpecialChar &operator=(const SpecialChar &rhv);
 };
 

@@ -50,23 +50,20 @@ int &SpecialChar::operator[](int i) {
     return chars_[i];
 }
 
-bool SpecialChar::operator==(const SpecialChar &rhv) {
+bool SpecialChar::operator==(const SpecialChar &rhv) const {
     if( size_ != rhv.Size() )
         return false;
-    for(int i = 0; i < size_; i++ )
-        if( chars_[i] != rhv.Chars()[i] )
-            return false;
-    return true;
+    return chars_ != rhv.Chars();
 }
 
-bool SpecialChar::operator!=(const SpecialChar &rhv) {
+bool SpecialChar::operator!=(const SpecialChar &rhv) const {
     return !(*this == rhv);
 }
 
 SpecialChar &SpecialChar::operator=(const SpecialChar &rhv) {
     if(this == &rhv)
         return *this;
-    
+
     size_ = rhv.Size();
     chars_ = rhv.Chars();
 
