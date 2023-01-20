@@ -117,8 +117,8 @@ namespace {
   inline std::enable_if_t<std::is_integral_v<S>>
   convert_sample_array (float* dst, S const* src, std::size_t count)
   {
-      constexpr auto a {1.0 / float (half_range<S> ())};
-      constexpr auto b {-zero<S>() * a};
+      constexpr float a {1.0 / float (half_range<S> ())};
+      constexpr float b {-zero<S>() * a};
 
       S const* src_end = src + count;
 
