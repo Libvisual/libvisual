@@ -192,6 +192,11 @@ namespace {
               SDL_UnlockSurface (m_screen);
       }
 
+      virtual bool is_fullscreen () const
+      {
+          return m_screen->flags & SDL_FULLSCREEN;
+      }
+
       virtual void set_fullscreen (bool fullscreen, bool autoscale)
       {
           if (fullscreen) {

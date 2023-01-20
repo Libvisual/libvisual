@@ -62,6 +62,8 @@ public:
 
     void set_title(std::string const& title);
 
+    bool is_fullscreen () const;
+
     void set_fullscreen (bool fullscreen, bool autoscale);
 
     void drain_events (VisEventQueue& eventqueue);

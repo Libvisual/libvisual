@@ -108,6 +108,11 @@ void Display::update_rect (LV::Rect const& rect)
     m_impl->driver->update_rect (rect);
 }
 
+bool Display::is_fullscreen () const
+{
+    return m_impl->driver->is_fullscreen ();
+}
+
 void Display::set_fullscreen (bool fullscreen, bool autoscale)
 {
     m_impl->driver->set_fullscreen (fullscreen, autoscale);

@@ -45,6 +45,8 @@ public:
 
     virtual void unlock () = 0;
 
+    virtual bool is_fullscreen () const = 0;
+
     virtual void set_fullscreen (bool fullscreen, bool autoscale) = 0;
 
     virtual void update_rect (LV::Rect const& rect) = 0;
