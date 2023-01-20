@@ -91,6 +91,22 @@ static int act_gstreamer_init (VisPluginData *plugin)
 
     gst_init (NULL, NULL);
 
+    // Regarding the pipeline below:
+    // - Element "filesrc" reads a video file from disk.
+    // - Element "decodebin" auto-magically constructs a decoding pipeline
+    //   using available decoders and demuxers via auto-plugging.
+    // - Element "videoconvert" does conversion between video formats
+    //   from given to wanted.
+    // - Element "videoscale" does scaling from given to wanted resolution.
+    // - Element "capsfilter" limits the output to the width/height/format we want.
+    // - Element "fakesink" allows accessing the rendered raw pixels from C code.
+    // - "name=capsfilter" and "name=sink" are needed to access these elements
+    //   from within C code further down.
+    // - "signal-handoffs=true" makes fakesink let use know it started using
+    //   a different buffer.
+    // - "sync=true" makes fakesink respect the target framerate of the video
+    //   input to give the appearance of original playback speed
+    //   (in contrast to serving frames as fast as possible).
     char *launch_str = g_strdup_printf ("filesrc location=%s ! decodebin ! videoconvert ! "
                                         "videoscale ! capsfilter name=capsfilter ! "
                                         "fakesink name=sink signal-handoffs=true sync=true",
