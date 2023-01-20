@@ -161,7 +161,6 @@ jobs:
           cd libvisual-plugins
           PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
             ./configure \
-              --disable-gstreamer-plugin \
               || { cat config.log ; false ; }
 
       - name: '[Plugins] Run "make dist"'

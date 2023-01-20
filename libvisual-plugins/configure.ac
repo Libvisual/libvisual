@@ -19,7 +19,7 @@ m4_define([libvisual_required_version], [lv_plugins_version])
 m4_define([esound_required_version], [0.2.28])
 m4_define([jack_required_version], [0.98.0])
 m4_define([gtk_required_version], [3.0])
-m4_define([gst_required_version], [0.8])
+m4_define([gst_required_version], [1.0])
 
 m4_define([libvisual_pkg], [libvisual-lv_plugins_version_suffix])
 LIBVISUAL_PKG=libvisual_pkg
@@ -140,7 +140,7 @@ AC_ARG_ENABLE([gstreamer-plugin],
   [ENABLE_GSTREAMER_PLUGIN=yes])
 
 if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
-  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-0.8 >= gst_required_version],
+  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 >= gst_required_version],
     [HAVE_GSTREAMER="yes"], [HAVE_GSTREAMER="no"])
 
   if test "$HAVE_GSTREAMER" = "yes"; then
@@ -148,7 +148,7 @@ if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
   else
     AC_MSG_WARN([*** GStreamer >= ${gst_required_version} is not found.
 	  	The libvisual GStreamer viewer plugin won't be build.
-		GStreamer can be downloaded from http://www.gstreamer.org/])
+		GStreamer can be downloaded from https://gstreamer.freedesktop.org/])
   fi
 fi
 
