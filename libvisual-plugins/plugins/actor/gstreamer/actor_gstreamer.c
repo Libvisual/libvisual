@@ -45,7 +45,7 @@ static int         act_gstreamer_events      (VisPluginData *plugin, VisEventQue
 static VisPalette *act_gstreamer_palette     (VisPluginData *plugin);
 static void        act_gstreamer_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
 
-static void handle_sink_data   (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate *data);
+static void handle_sink_handoff (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate *data);
 static void handle_bus_error_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv);
 static void handle_bus_eos_message (GstBus *bus, GstMessage *message, GStreamerPrivate *priv);
 
@@ -124,7 +124,7 @@ static int act_gstreamer_init (VisPluginData *plugin)
 #endif
 
     priv->sink = gst_bin_get_by_name (GST_BIN (priv->pipeline), "sink");
-    g_signal_connect (priv->sink, "handoff", G_CALLBACK (handle_sink_data), priv);
+    g_signal_connect (priv->sink, "handoff", G_CALLBACK (handle_sink_handoff), priv);
 
     gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
 
@@ -149,7 +149,7 @@ static void act_gstreamer_cleanup (VisPluginData *plugin)
     GStreamerPrivate *priv = visual_plugin_get_private (plugin);
 
     if (priv->pipeline) {
-        g_signal_handlers_disconnect_by_func (priv->sink, "handoff", handle_sink_data);
+        g_signal_handlers_disconnect_by_func (priv->sink, "handoff", handle_sink_handoff);
 
         GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
         g_signal_handlers_disconnect_by_func (bus, handle_bus_error_message, priv);
@@ -298,7 +298,7 @@ static void act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAud
     g_mutex_unlock (priv->mutex);
 }
 
-static void handle_sink_data (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate* priv)
+static void handle_sink_handoff (GstElement *sink, GstBuffer *buffer, GstPad *pad, GStreamerPrivate* priv)
 {
     g_mutex_lock (priv->mutex);
 
