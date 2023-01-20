@@ -185,6 +185,8 @@ namespace {
       VisVideoDepth m_requested_depth;
       VisVideo * m_screen_video;
       bool m_resizable;
+      unsigned int m_last_width;
+      unsigned int m_last_height;
 
       void destroy() {
           if (m_screen_video) {
@@ -201,7 +203,7 @@ namespace {
 
   public:
       Display() : m_screen(nullptr), m_requested_depth(VISUAL_VIDEO_DEPTH_NONE), m_screen_video(nullptr),
-                  m_resizable(false) {
+                  m_resizable(false), m_last_width(0), m_last_height(0) {
       }
 
       ~Display() {
@@ -334,6 +336,62 @@ namespace {
 
       static void set_title(std::string const& title) {
           SDL_WM_SetCaption (title.c_str(), nullptr);
+      }
+
+      bool is_fullscreen () const {
+          return m_screen->flags & SDL_FULLSCREEN;
+      }
+
+      void set_fullscreen (bool fullscreen, bool autoscale) {
+          if (fullscreen) {
+              if (!is_fullscreen()) {
+                  if (autoscale) {
+                      unsigned int width  = m_screen->w;
+                      unsigned int height = m_screen->h;
+
+                      m_last_width  = width;
+                      m_last_height = height;
+                      get_nearest_resolution (width, height);
+
+                      // TODO non-NULL vidoptions here?
+                      create (m_requested_depth, nullptr, width, height, m_resizable);
+                  }
+
+                  SDL_ShowCursor (SDL_FALSE);
+                  SDL_WM_ToggleFullScreen (m_screen);
+              }
+          } else {
+              if (is_fullscreen()) {
+                  SDL_ShowCursor (SDL_TRUE);
+                  SDL_WM_ToggleFullScreen (m_screen);
+
+                  if (autoscale) {
+                      // TODO non-NULL vidoptions here?
+                      create (m_requested_depth, nullptr, m_last_width, m_last_height, m_resizable);
+                  }
+              }
+          }
+      }
+
+      void get_nearest_resolution (unsigned int& width, unsigned int& height) {
+          auto modelist = SDL_ListModes (nullptr, SDL_FULLSCREEN);
+          if (!modelist)
+              return;
+
+          // Window is bigger than highest resolution
+          if (modelist[0]->w <= width || modelist[0]->h <= height) {
+              width  = modelist[0]->w;
+              height = modelist[0]->h;
+              return;
+          }
+
+          for (unsigned int i = 0; modelist[i]; i++) {
+              if (modelist[i]->w >= width && modelist[i]->h >= height) {
+                  width = modelist[i]->w;
+                  height = modelist[i]->h;
+                  return;
+              }
+          }
       }
 
       void update_all() {
@@ -890,6 +948,17 @@ int main (int argc, char **argv)
 
                             case VKEY_TAB:
                             {
+                                break;
+                            }
+
+                            case VKEY_F11:
+                            {
+                                const bool currently_fullscreen = display.is_fullscreen();
+                                display.set_fullscreen (!currently_fullscreen, true);
+
+                                video = display.get_video();
+                                bin.set_video(video);
+                                bin.sync(false);
                                 break;
                             }
 
