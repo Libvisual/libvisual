@@ -648,6 +648,13 @@ int main (int argc, char **argv)
                                 break;
                             }
 
+                            case VKEY_F11:
+                            {
+                                const bool currently_fullscreen = display.is_fullscreen();
+                                display.set_fullscreen (!currently_fullscreen, true);
+                                break;
+                            }
+
                             default:
                                 break;
                         }

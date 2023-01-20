@@ -86,6 +86,11 @@ namespace {
           // nothing to do
       }
 
+      virtual bool is_fullscreen () const
+      {
+          return false;
+      }
+
       virtual void set_fullscreen (bool fullscreen, bool autoscale)
       {
           (void)fullscreen;
