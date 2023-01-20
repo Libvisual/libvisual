@@ -98,11 +98,11 @@ static int act_gstreamer_init (VisPluginData *plugin)
 
     GError *error = NULL;
     priv->pipeline = gst_parse_launch (launch_str, &error);
-    g_free (launch_str);
 
     if (!priv->pipeline) {
         visual_log (VISUAL_LOG_ERROR, "Failed to create pipeline: %s", error->message);
         g_error_free (error);
+        g_free (launch_str);
         return FALSE;
     }
 
@@ -130,9 +130,11 @@ static int act_gstreamer_init (VisPluginData *plugin)
 
     GstStateChangeReturn status = gst_element_get_state (priv->pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
     if (status != GST_STATE_CHANGE_SUCCESS) {
-        visual_log (VISUAL_LOG_ERROR, "Failed to ready pipeline");
+        visual_log (VISUAL_LOG_ERROR, "Failed to ready pipeline: %s", launch_str);
+        g_free (launch_str);
         return FALSE;
     }
+    g_free (launch_str);
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
     g_signal_connect (bus, "message::error", G_CALLBACK (handle_bus_error_message), priv);
