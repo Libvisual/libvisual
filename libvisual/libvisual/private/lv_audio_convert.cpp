@@ -23,6 +23,7 @@
 #include "lv_audio_convert.hpp"
 #include "lv_audio.h"
 #include "lv_mem.h"
+#include <array>
 #include <type_traits>
 #include <limits>
 
@@ -31,35 +32,33 @@ using namespace LV;
 namespace {
 
   template <typename D, typename S>
-  struct same_signedness
-  {
-      static const bool value = (std::is_signed<D>::value && std::is_signed<S>::value) ||
-                                (std::is_unsigned<D>::value && std::is_unsigned<S>::value);
-  };
+  constexpr bool is_same_signedness_v =
+      (std::is_signed_v<D> && std::is_signed_v<S>) ||
+      (std::is_unsigned_v<D> && std::is_unsigned_v<S>);
 
   template <typename T>
-  constexpr std::enable_if_t<std::is_signed<T>::value, T>
+  constexpr std::enable_if_t<std::is_signed_v<T>, T>
   half_range ()
   {
       return std::numeric_limits<T>::max ();
   }
 
   template <typename T>
-  constexpr std::enable_if_t<std::is_unsigned<T>::value, T>
+  constexpr std::enable_if_t<std::is_unsigned_v<T>, T>
   half_range ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
   }
 
   template <typename T>
-  constexpr std::enable_if_t<std::is_signed<T>::value, T>
+  constexpr std::enable_if_t<std::is_signed_v<T>, T>
   zero ()
   {
       return 0;
   }
 
   template <typename T>
-  constexpr std::enable_if_t<std::is_unsigned<T>::value, T>
+  constexpr std::enable_if_t<std::is_unsigned_v<T>, T>
   zero ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
@@ -68,10 +67,10 @@ namespace {
   template <typename D, typename S>
   constexpr int shifter()
   {
-      if (sizeof(S) > sizeof(D))
-          return int (sizeof(S) - sizeof(D)) << 3;
+      if constexpr (sizeof (S) > sizeof (D))
+          return int (sizeof (S) - sizeof (D)) << 3;
       else
-          return int (sizeof(D) - sizeof(S)) << 3;
+          return int (sizeof (D) - sizeof (S)) << 3;
   }
 
   // same format conversion
@@ -83,12 +82,12 @@ namespace {
 
   // signed->unsigned int conversion (same width)
   template <typename D, typename S>
-  std::enable_if_t<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) == sizeof(S)>
-  inline convert_sample_array (D* dst, S const* src, std::size_t count)
+  inline std::enable_if_t<std::is_unsigned_v<D> && std::is_signed_v<S> && sizeof(D) == sizeof(S)>
+  convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      auto a = zero<D> ();
+      constexpr auto a {zero<D> ()};
 
-      auto src_end = src + count;
+      auto src_end {src + count};
 
       while (src != src_end) {
           *dst = *src + a;
@@ -99,12 +98,12 @@ namespace {
 
   // unsigned->signed int conversion (same width)
   template <typename D, typename S>
-  std::enable_if_t<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) == sizeof(S)>
-  inline convert_sample_array (D* dst, S const* src, std::size_t count)
+  inline std::enable_if_t<std::is_signed_v<D> && std::is_unsigned_v<S> && sizeof(D) == sizeof(S)>
+  convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      auto a = zero<S> ();
+      constexpr auto a {zero<S> ()};
 
-      auto src_end = src + count;
+      auto src_end {src + count};
 
       while (src != src_end) {
           *dst = *src - a;
@@ -115,11 +114,11 @@ namespace {
 
   // int->float conversions
   template <typename S>
-  std::enable_if_t<std::is_integral<S>::value>
-  inline convert_sample_array (float* dst, S const* src, std::size_t count)
+  inline std::enable_if_t<std::is_integral_v<S>>
+  convert_sample_array (float* dst, S const* src, std::size_t count)
   {
-      float a = 1.0 / float (half_range<S> ());
-      float b = -zero<S>() * a;
+      constexpr auto a {1.0 / float (half_range<S> ())};
+      constexpr auto b {-zero<S>() * a};
 
       S const* src_end = src + count;
 
@@ -132,13 +131,13 @@ namespace {
 
   // float->int conversions
   template <typename D>
-  std::enable_if_t<std::is_integral<D>::value>
+  std::enable_if_t<std::is_integral_v<D>>
   inline convert_sample_array (D* dst, float const* src, std::size_t count)
   {
-      float a = float (half_range<D> ());
-      float b = zero<D> ();
+      constexpr auto a {float (half_range<D> ())};
+      constexpr auto b {zero<D> ()};
 
-      auto src_end = src + count;
+      auto src_end {src + count};
 
       while (src != src_end) {
           *dst = *src * a + b;
@@ -149,14 +148,14 @@ namespace {
 
   // narrowing/widening int conversion (same signedness)
   template <typename D, typename S>
-  std::enable_if_t<same_signedness<D, S>::value && sizeof(D) != sizeof(S)>
-  inline convert_sample_array (D* dst, S const* src, std::size_t count)
+  inline std::enable_if_t<is_same_signedness_v<D, S> && sizeof(D) != sizeof(S)>
+  convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      const int shift = shifter<D, S> ();
+      constexpr auto shift {shifter<D, S> ()};
 
-      auto src_end = src + count;
+      auto src_end {src + count};
 
-      if (sizeof(S) > sizeof(D)) {
+      if constexpr (sizeof(S) > sizeof(D)) {
           // narrowing
           while (src != src_end) {
               *dst = *src >> shift;
@@ -175,15 +174,15 @@ namespace {
 
   // narrowing/widening unsigned->signed int conversion
   template <typename D, typename S>
-  std::enable_if_t<std::is_signed<D>::value && std::is_unsigned<S>::value && sizeof(D) != sizeof(S)>
-  inline convert_sample_array (D* dst, S const* src, std::size_t count)
+  inline std::enable_if_t<std::is_signed_v<D> && std::is_unsigned_v<S> && sizeof(D) != sizeof(S)>
+  convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      auto a = zero<D>();
-      const int shift = shifter<D, S> ();
+      constexpr auto a {zero<D>()};
+      constexpr auto shift {shifter<D, S> ()};
 
-      auto src_end = src + count;
+      auto src_end {src + count};
 
-      if (sizeof(D) < sizeof(S)) {
+      if constexpr (sizeof(D) < sizeof(S)) {
           // narrowing
           while (src != src_end) {
               *dst = D(*src >> shift) - a;
@@ -202,15 +201,15 @@ namespace {
 
   // narrowing/widening signed->unsigned int conversion
   template <typename D, typename S>
-  std::enable_if_t<std::is_unsigned<D>::value && std::is_signed<S>::value && sizeof(D) != sizeof(S)>
-  inline convert_sample_array (D* dst, S const* src, std::size_t count)
+  inline std::enable_if_t<std::is_unsigned_v<D> && std::is_signed_v<S> && sizeof(D) != sizeof(S)>
+  convert_sample_array (D* dst, S const* src, std::size_t count)
   {
-      auto a = zero<D>();
-      const int shift = shifter<D, S> ();
+      constexpr auto a {zero<D>()};
+      constexpr auto shift {shifter<D, S> ()};
 
-      auto src_end = src + count;
+      auto src_end {src + count};
 
-      if (sizeof(D) < sizeof(S)) {
+      if constexpr (sizeof(D) < sizeof(S)) {
           // narrowing
           while (src != src_end) {
               *dst = D(*src >> shift) + a;
@@ -233,9 +232,9 @@ namespace {
       convert_sample_array (static_cast<D*> (dst), static_cast<S const*> (src), size / sizeof (S));
   }
 
-  typedef void (*ConvertFunc)(void*, void const*, std::size_t);
+  using ConvertFunc = void (*) (void*, void const*, std::size_t);
 
-  ConvertFunc const convert_func_table[7][7] = {
+  constexpr ConvertFunc convert_func_table[7][7] = {
       {
           convert<uint8_t, uint8_t>,
           convert<uint8_t, int8_t>,
@@ -310,10 +309,9 @@ namespace {
   template <typename T>
   inline void deinterleave_stereo_sample_array (T* dest1, T* dest2, T const* src, std::size_t count)
   {
-      auto src_end = src + count;
+      auto src_end {src + count};
 
-      while (src != src_end)
-      {
+      while (src != src_end) {
           *dest1 = src[0];
           *dest2 = src[1];
 
@@ -329,9 +327,7 @@ namespace {
       deinterleave_stereo_sample_array (static_cast<T*> (dest1), static_cast<T*> (dest2), static_cast<T const*> (src), size / sizeof(T));
   }
 
-  typedef void (*DeinterleaveStereoFunc)(void*, void*, void const*, std::size_t);
-
-  DeinterleaveStereoFunc const deinterleave_stereo_func_table[] = {
+  constexpr std::array deinterleave_stereo_func_table {
       deinterleave_stereo<uint8_t>,
       deinterleave_stereo<int8_t>,
       deinterleave_stereo<uint16_t>,
@@ -350,12 +346,12 @@ namespace LV {
                                       BufferConstPtr const&    src,
                                       VisAudioSampleFormatType src_format)
     {
-        auto dbuf = dest->get_data ();
-        auto sbuf = src->get_data ();
-        std::size_t size = src->get_size ();
+        auto dbuf {dest->get_data ()};
+        auto sbuf {src->get_data ()};
+        auto size {src->get_size ()};
 
-        int i = int (dest_format) - 1;
-        int j = int (src_format)  - 1;
+        const int i = int (dest_format) - 1;
+        const int j = int (src_format)  - 1;
 
         convert_func_table[i][j] (dbuf, sbuf, size);
     }
@@ -365,12 +361,12 @@ namespace LV {
                                                   BufferConstPtr const&    src,
                                                   VisAudioSampleFormatType format)
   {
-      auto dbuf1 = dest1->get_data ();
-      auto dbuf2 = dest2->get_data ();
-      auto sbuf = src->get_data ();
-      std::size_t size = src->get_size ();
+      auto dbuf1 {dest1->get_data ()};
+      auto dbuf2 {dest2->get_data ()};
+      auto sbuf  {src->get_data ()};
+      auto size  {src->get_size ()};
 
-      int i = int (format) - 1;
+      const int i = int (format) - 1;
 
       deinterleave_stereo_func_table[i] (dbuf1, dbuf2, sbuf, size);
   }
