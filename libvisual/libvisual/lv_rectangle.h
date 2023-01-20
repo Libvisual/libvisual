@@ -32,6 +32,7 @@
 #ifdef __cplusplus
 
 #include <libvisual/lv_math.h>
+#include <algorithm>
 
 namespace LV {
 
@@ -178,8 +179,8 @@ namespace LV {
        */
       void denormalize_point (float fx, float fy, int32_t& x_, int32_t& y_) const
       {
-          fx = clamp (fx, 0.0f, 1.0f);
-          fy = clamp (fx, 0.0f, 1.0f);
+          fx = std::clamp (fx, 0.0f, 1.0f);
+          fy = std::clamp (fx, 0.0f, 1.0f);
 
           x_ = x + fx * width;
           y_ = y + fy * height;
@@ -215,8 +216,8 @@ namespace LV {
        */
       void denormalize_point_neg (float fx, float fy, int32_t& x_, int32_t& y_) const
       {
-          fx = clamp (fx, -1.0f, 1.0f) * 0.5f + 0.5f;
-          fy = clamp (fy, -1.0f, 1.0f) * 0.5f + 0.5f;
+          fx = std::clamp (fx, -1.0f, 1.0f) * 0.5f + 0.5f;
+          fy = std::clamp (fy, -1.0f, 1.0f) * 0.5f + 0.5f;
 
           x_ = x + fx * width;
           y_ = y + fy * height;
