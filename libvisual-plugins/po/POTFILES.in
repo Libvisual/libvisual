@@ -28,6 +28,7 @@ plugins/input/alsa/input_alsa.c
 plugins/input/debug/input_debug.c
 plugins/input/jack/input_jack.cpp
 plugins/input/mplayer/input_mplayer.c
+plugins/input/portaudio/input_portaudio.c
 plugins/input/pulseaudio/input_pulseaudio.c
 plugins/input/wavein/input_wavein.cpp
 plugins/morph/alphablend/morph_alphablend.c
