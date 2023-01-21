@@ -22,11 +22,11 @@ necessary for display in any Libvisual-using application.
 
 The Libvisual library that is in libvisual/ is licensed under the
 Lesser GNU General Public License (LGPL) v2.1
-([full text](http://www.gnu.org/licenses/lgpl-2.1.html)).
+([full text](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)).
 
 The example applications in examples/ are licensed under the General
 GNU Public License (GPL) v2
-([full text](http://www.gnu.org/licenses/gpl-2.0.html)).
+([full text](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)).
 
 The tools in tools/ are licensed under the GPLv2.
 
@@ -40,7 +40,7 @@ very useful information regarding our coding policies and such.
 
 #### C/C++ compiler
 
-Libvisual uses several C99 and C++20 features for its modern API
+Libvisual uses several C11 and C++20 features for its modern API
 design and implementation, and as such, requires an up-to-date C/C++
 compiler to build. Compilers tested and known to work are GCC 11+ and
 Clang 14+.
@@ -50,14 +50,14 @@ Clang 14+.
 The core library is fairly self-contained and requires almost very
 little dependencies other than the standard C99 and C++20 libraries.
 
-The [Oil Runtime Compiler](http://code.entropywave.com/orc) (ORC) is
+The [Oil Runtime Compiler](https://gstreamer.freedesktop.org/projects/orc.html) (ORC) is
 required for generating a portion of Libvisual's SIMD routines.
 
 GNU Gettext is optionally required (see note) for
 internationalisation.
 
 The bundled examples, benchmarks and test programs mostly require
-[SDL 1.2](http://libsdl.org).
+[SDL 1.2](https://www.libsdl.org).
 
 Note: Gettext is integrated into glibc on Linux.
 
@@ -65,7 +65,7 @@ Note: Gettext is integrated into glibc on Linux.
 
 #### Configuration
 
-Building Libvisual requires [CMake 3.20](http://www.cmake.org) or
+Building Libvisual requires [CMake 3.20](https://www.cmake.org) or
 above. The command to configure the build is:
 
     cmake .
