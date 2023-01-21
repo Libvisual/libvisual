@@ -211,7 +211,7 @@ int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 			for (j = y_old; j < y; j++)
 				buf[(j * video->pitch) + i] = 255;
 		} else {
-			for (j = y; j < y_old; j++)
+			for (j = y; j <= y_old; j++)
 				buf[(j * video->pitch) + i] = 255;
 		}
 	}
