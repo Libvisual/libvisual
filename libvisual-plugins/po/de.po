@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-14 20:48+0100\n"
+"POT-Creation-Date: 2023-01-21 03:37+0100\n"
 "PO-Revision-Date: 2017-11-23 18:08:07+0200\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -519,3 +519,13 @@ msgstr "falscher Dateideskriptor %d"
 #, c-format
 msgid "Could not munmap() area %p+%d. %s"
 msgstr "munmap() von Bereich %p+%d nicht möglich. %s"
+
+#: plugins/input/portaudio/input_portaudio.c:62
+msgid "PortAudio capture plugin"
+msgstr "PortAudio-Erfassungserweiterung"
+
+#: plugins/input/portaudio/input_portaudio.c:63
+msgid "Use this plugin to capture PCM data from the PortAudio record device"
+msgstr ""
+"Benutzen Sie diese Erweiterung, um PCM-Daten vom PortAudio-Aufzeichungsgerät "
+"zu erfassen."

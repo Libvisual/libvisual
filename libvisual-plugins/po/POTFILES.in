@@ -20,3 +20,4 @@ plugins/input/alsa/input_alsa.c
 plugins/input/debug/input_debug.c
 plugins/input/jack/input_jack.c
 plugins/input/mplayer/input_mplayer.c
+plugins/input/portaudio/input_portaudio.c
