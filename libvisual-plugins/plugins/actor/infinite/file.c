@@ -79,20 +79,18 @@ void _inf_load_effects(InfinitePrivate *priv)
 {
 	int i;
 	int index = 0;
+	_inf_nb_effects = 0;
 
 	while (1) {
 		uint8_t* ptr_effect= (uint8_t*) &_inf_effects[_inf_nb_effects];
 
 		for (i = 0; i < sizeof (t_effect); i++) {
 			int b = _inf_shitloadofdata[index++];
-
-			if (_inf_nb_effects >= 29) {
-				_inf_nb_effects -= 1;
-
-				return;
-			}
-
 			ptr_effect[i]=(uint8_t)b;
+		}
+
+		if (index + sizeof (t_effect) > sizeof (_inf_shitloadofdata)) {
+			return;
 		}
 
 		_inf_nb_effects+=1;
