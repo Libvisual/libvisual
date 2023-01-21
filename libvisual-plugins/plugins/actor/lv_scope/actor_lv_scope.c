@@ -180,13 +180,10 @@ int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 	ScopePrivate *priv = visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisColor col;
 	float *pcmbuf;
-	int i, y, y_old;
 	uint8_t *buf;
 
 	if (video == NULL)
 		return -1;
-
-	y = video->height >> 1;
 
 	visual_audio_get_sample_mixed (audio, &priv->pcm, TRUE, 2,
 			VISUAL_AUDIO_CHANNEL_LEFT,
@@ -201,17 +198,20 @@ int lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 
 	buf = (uint8_t *) visual_video_get_pixels (video);
 
-	y_old = video->height / 2;
+	const int max_displacement = video->height / 4;
+	const int y_origin = video->height / 2;
+	int i;
+
 	for (i = 0; i < video->width; i++) {
 		int j;
 
-		y = (video->height / 2) + (pcmbuf[(i >> 1) % PCM_SIZE] * (video->height / 4));
+		const int y_tip = y_origin + (pcmbuf[(i >> 1) % PCM_SIZE] * max_displacement);
 
-		if (y > y_old) {
-			for (j = y_old; j < y; j++)
+		if (y_tip > y_origin) {
+			for (j = y_origin; j < y_tip; j++)
 				buf[(j * video->pitch) + i] = 255;
 		} else {
-			for (j = y; j <= y_old; j++)
+			for (j = y_tip; j <= y_origin; j++)
 				buf[(j * video->pitch) + i] = 255;
 		}
 	}
