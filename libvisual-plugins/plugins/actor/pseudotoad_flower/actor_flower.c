@@ -280,7 +280,7 @@ int lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
 		float y;
 		int i;
 		for (i=0; i<priv->nof_bands; i++) {
-			y=temp_bars[i * 8];
+			y=temp_bars[i];
 			y=y*(i*lk+l0);
 
 			y = ( log(y - x00) * scale + y00 ); /* Logarithmic amplitude */
