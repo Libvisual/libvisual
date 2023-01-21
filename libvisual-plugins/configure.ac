@@ -111,6 +111,21 @@ else
 fi
 fi
 
+dnl PortAudio
+AC_ARG_ENABLE([portaudio], AS_HELP_STRING([--disable-portaudio],
+	[Do not build PortAudio input plugin @<:@default=enabled@:>@]),
+        [ENABLE_INPUT_PORTAUDIO=$enableval],
+	[ENABLE_INPUT_PORTAUDIO=yes])
+AS_IF([test "$ENABLE_INPUT_PORTAUDIO" = yes], [
+    PKG_CHECK_MODULES([PORTAUDIO], [portaudio-2.0], [HAVE_PORTAUDIO="yes"], [HAVE_PORTAUDIO="no"])
+    AS_IF([test "$HAVE_PORTAUDIO" = yes], [
+        build_input_plugins="$build_input_plugins portaudio"
+    ], [
+        AC_MSG_WARN([*** Could not find PortAudio.
+                        The PortAudio input plugin won't be built.])
+    ])
+])
+
 dnl GdkPixbuf
 AC_ARG_ENABLE([gdkpixbuf-plugin],
   AS_HELP_STRING([--disable-gdkpixbuf-plugin],
@@ -556,6 +571,7 @@ AC_CONFIG_FILES([
 	plugins/input/mplayer/Makefile
 	plugins/input/jack/Makefile
 	plugins/input/debug/Makefile
+	plugins/input/portaudio/Makefile
 	plugins/morph/Makefile
 	plugins/morph/alphablend/Makefile
 	plugins/morph/tentacle/Makefile

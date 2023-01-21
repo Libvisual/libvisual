@@ -75,7 +75,8 @@ jobs:
             libasound2-dev \
             libsdl1.2-dev \
             libgl1-mesa-dev \
-            pkg-config
+            pkg-config \
+            portaudio19-dev
 
       - name: Install build dependency Clang ${{ matrix.clang_major_version }} (Linux)
         if: "${{ runner.os == 'Linux' && contains(matrix.cxx, 'clang') }}"
@@ -102,6 +103,7 @@ jobs:
             mesa-glu \
             orc \
             pkg-config \
+            portaudio \
             sdl12-compat
 
       - name: Setting dynamic environment variables
