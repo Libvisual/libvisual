@@ -70,7 +70,8 @@ jobs:
             libasound2-dev \
             libsdl1.2-dev \
             libgl1-mesa-dev \
-            pkg-config
+            pkg-config \
+            portaudio19-dev
 
       - name: Install build dependency Clang ${{ matrix.clang_major_version }}
         if: "${{ contains(matrix.cxx, 'clang') }}"
