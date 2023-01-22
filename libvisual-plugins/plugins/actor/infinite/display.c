@@ -162,7 +162,9 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 		for (j=0;j<priv->plugheight;j++) {
 			for (i=0;i<priv->plugwidth;i++) {
 				interpol = &vector_field[add_dest];
-				add_src = (interpol->coord & 0xffff) * priv->plugwidth + (interpol->coord >> 16);
+				const uint16_t y = interpol->coord & 0xffff;
+				const uint16_t x = interpol->coord >> 16;
+				add_src = y * priv->plugwidth + x;
 				ptr_pix = priv->surface1 + add_src;;
 
 				/* FIXME it does buffer overread here now and then */
