@@ -26,7 +26,6 @@ void _inf_init_renderer(InfinitePrivate *priv)
 
 	_inf_init_display(priv);
 	_inf_generate_colors(priv);
-	_inf_load_effects(priv);
 	_inf_load_random_effect(priv, &priv->current_effect);
 
 	priv->vector_field = (t_interpol*) visual_mem_malloc0(allocsize);
