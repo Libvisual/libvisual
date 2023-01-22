@@ -167,12 +167,22 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 				add_src = y * priv->plugwidth + x;
 				ptr_pix = priv->surface1 + add_src;;
 
-				/* FIXME it does buffer overread here now and then */
+				const uint8_t *ptr_pix_end = priv->surface1 + (priv->plugwidth * priv->plugheight);
 
-				color= (*(ptr_pix) *                       (interpol->weight >> 24)
-					+*(ptr_pix + 1) *                   ((interpol->weight & 0xFFFFFF) >> 16)
-					+*(ptr_pix + priv->plugwidth) *     ((interpol->weight & 0xFFFF) >> 8)
-					+*(ptr_pix + priv->plugwidth + 1) * (interpol->weight & 0xFF)) >> 8;
+				const uint8_t neighbor_right = (ptr_pix + 1 >= ptr_pix_end)
+						? 0
+						: *(ptr_pix + 1);
+				const uint8_t neighbor_below = (ptr_pix + priv->plugwidth >= ptr_pix_end)
+						? 0
+						: *(ptr_pix + priv->plugwidth);
+				const uint8_t neighbor_right_below = (ptr_pix + priv->plugwidth + 1 >= ptr_pix_end)
+						? 0
+						: *(ptr_pix + priv->plugwidth + 1);
+
+				color= (*(ptr_pix) * (interpol->weight >> 24)
+					+neighbor_right * ((interpol->weight & 0xFFFFFF) >> 16)
+					+neighbor_below * ((interpol->weight & 0xFFFF) >> 8)
+					+neighbor_right_below * (interpol->weight & 0xFF)) >> 8;
 /*
 				color= (*(ptr_pix) // *                       (interpol->weight >> 24)
 					+*(ptr_pix + 1) // *                   ((interpol->weight & 0xFFFFFF) >> 16)
@@ -431,9 +441,7 @@ void _inf_init_display(InfinitePrivate *priv)
 	priv->plugwidth = priv->plugwidth;
 	priv->plugheight = priv->plugheight;
 
-	/* Yes we alloc a bit more because there is some odd race buffer overrun which i (the porter)
-	 * am to lazy to debug */
-	allocsize = (priv->plugwidth * priv->plugheight) + (priv->plugwidth * 2);
+	allocsize = priv->plugwidth * priv->plugheight;
 
 	priv->surface1 = (uint8_t *) visual_mem_malloc0(allocsize);
 	priv->surface2 = (uint8_t *) visual_mem_malloc0(allocsize);
