@@ -164,25 +164,26 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 				interpol = &vector_field[add_dest];
 				const uint16_t y = interpol->coord & 0xffff;
 				const uint16_t x = interpol->coord >> 16;
-				add_src = y * priv->plugwidth + x;
-				ptr_pix = priv->surface1 + add_src;;
+				(void)add_src;
+				ptr_pix = priv->surface1 + y * priv->plugwidth + x;
 
 				const uint8_t *ptr_pix_end = priv->surface1 + (priv->plugwidth * priv->plugheight);
 
-				const uint8_t neighbor_right = (ptr_pix + 1 >= ptr_pix_end)
-						? 0
-						: *(ptr_pix + 1);
-				const uint8_t neighbor_below = (ptr_pix + priv->plugwidth >= ptr_pix_end)
-						? 0
-						: *(ptr_pix + priv->plugwidth);
-				const uint8_t neighbor_right_below = (ptr_pix + priv->plugwidth + 1 >= ptr_pix_end)
-						? 0
-						: *(ptr_pix + priv->plugwidth + 1);
+				color = ptr_pix[0] * (interpol->weight >> 24);
 
-				color= (*(ptr_pix) * (interpol->weight >> 24)
-					+neighbor_right * ((interpol->weight & 0xFFFFFF) >> 16)
-					+neighbor_below * ((interpol->weight & 0xFFFF) >> 8)
-					+neighbor_right_below * (interpol->weight & 0xFF)) >> 8;
+				// right neigbor
+				if (ptr_pix + 1 < ptr_pix_end)
+				    color += ptr_pix[1] * ((interpol->weight >> 16) & 0xFF);
+
+				// bottom neigbor
+				if (ptr_pix + priv->plugwidth < ptr_pix_end)
+				    color += ptr_pix[priv->plugwidth] * ((interpol->weight >> 8) & 0xFF);
+
+				// bottom right neigbor
+				if (ptr_pix + priv->plugwidth + 1 < ptr_pix_end)
+				    color += ptr_pix[priv->plugwidth + 1] * (interpol->weight & 0xFF);
+
+				color >>= 8;
 /*
 				color= (*(ptr_pix) // *                       (interpol->weight >> 24)
 					+*(ptr_pix + 1) // *                   ((interpol->weight & 0xFFFFFF) >> 16)
