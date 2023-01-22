@@ -642,6 +642,13 @@ namespace {
           new_name = cycler (nullptr);
       }
 
+      // Always skip actors that are of little interest to end users,
+      // while allowing explicit "--actor (gdkpixbuf|gstreamer)".
+      if (strcmp (new_name, "gdkpixbuf") == 0 \
+            || strcmp (new_name, "gstreamer") == 0) {
+          return cycle_actor_name (new_name, dir);
+      }
+
       // FIXME: this won't work if an actor's name is used as part of
       // another actor's name
       if (exclude_actors.find (new_name) != std::string::npos) {
