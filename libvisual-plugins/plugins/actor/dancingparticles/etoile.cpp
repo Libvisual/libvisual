@@ -77,6 +77,7 @@ void etoileLoop(void)
 	   //p.size=.2;
 	 }
   frames++;
+  titleHasChanged = 1;  // to provoke rendering of text
   if(titleHasChanged || (beatcnt >nextbeat  ) || frames > nextframes)
     {
       changep();

@@ -44,6 +44,24 @@ struct Glyph
 VisVideo *rasteriseText(FT_Face face, const string &text);
 void generateTextParticles(VisVideo* bitmap);
 
+void draw_bitmap(unsigned char * glyph_bits, int width, int height) {
+    printf("%dx%d\n", width, height);
+
+    // This prints rotated by 90° clockwise
+    for (int y = 0; y < width; y++) {
+        for (int x = height - 1; x >= 0; x--) {
+            const unsigned char pixel = glyph_bits[x * width + y];
+            if (pixel == 0) {
+                printf("__ ");
+            } else {
+                printf("%02x ", pixel);
+            }
+        }
+        printf("\n");
+    }
+    printf("%dx%d\n", width, height);
+}
+
 bool initFontRasterizer()
 {
   FT_Error error = FT_Init_FreeType(&ftLibrary);
@@ -130,6 +148,7 @@ void generateTextParticles(VisVideo* bitmap)
 
               for(int a = 0; a < allocCount; a++)
                 {
+printf("[%4d/%4d][%d] x=%5d, y=%5d\n", particleCount, numCenters, a, x*4-width*2, height*8-y*16+a*4);
                   Centers[particleCount] = FloatPoint {static_cast<float>(x*4-width*2), static_cast<float>(height*8-y*16+a*4), 0.0f};
                   particleCount++;
                 }
@@ -260,6 +279,8 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
           FT_Done_Glyph(ftGlyph);
         }
     }
+
+draw_bitmap((unsigned char *)visual_buffer_get_data(visual_video_get_buffer(textBitmap)), textWidth, textHeight);
 
   return textBitmap;
 }
