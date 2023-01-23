@@ -159,18 +159,31 @@ static void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field
 #endif /* #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 #endif /* #if 0 */
 	} else {
+		const uint8_t *ptr_pix_end = priv->surface1 + (priv->plugwidth * priv->plugheight);
+
 		for (j=0;j<priv->plugheight;j++) {
 			for (i=0;i<priv->plugwidth;i++) {
 				interpol = &vector_field[add_dest];
-				add_src = (interpol->coord & 0xffff) * priv->plugwidth + (interpol->coord >> 16);
-				ptr_pix = priv->surface1 + add_src;;
+				const uint16_t y = interpol->coord & 0xffff;
+				const uint16_t x = interpol->coord >> 16;
+				(void)add_src;
+				ptr_pix = priv->surface1 + y * priv->plugwidth + x;
 
-				/* FIXME it does buffer overread here now and then */
+				color = ptr_pix[0] * (interpol->weight >> 24);
 
-				color= (*(ptr_pix) *                       (interpol->weight >> 24)
-					+*(ptr_pix + 1) *                   ((interpol->weight & 0xFFFFFF) >> 16)
-					+*(ptr_pix + priv->plugwidth) *     ((interpol->weight & 0xFFFF) >> 8)
-					+*(ptr_pix + priv->plugwidth + 1) * (interpol->weight & 0xFF)) >> 8;
+				// right neigbor
+				if (ptr_pix + 1 < ptr_pix_end)
+				    color += ptr_pix[1] * ((interpol->weight >> 16) & 0xFF);
+
+				// bottom neigbor
+				if (ptr_pix + priv->plugwidth < ptr_pix_end)
+				    color += ptr_pix[priv->plugwidth] * ((interpol->weight >> 8) & 0xFF);
+
+				// bottom right neigbor
+				if (ptr_pix + priv->plugwidth + 1 < ptr_pix_end)
+				    color += ptr_pix[priv->plugwidth + 1] * (interpol->weight & 0xFF);
+
+				color >>= 8;
 /*
 				color= (*(ptr_pix) // *                       (interpol->weight >> 24)
 					+*(ptr_pix + 1) // *                   ((interpol->weight & 0xFFFFFF) >> 16)
@@ -429,9 +442,7 @@ void _inf_init_display(InfinitePrivate *priv)
 	priv->plugwidth = priv->plugwidth;
 	priv->plugheight = priv->plugheight;
 
-	/* Yes we alloc a bit more because there is some odd race buffer overrun which i (the porter)
-	 * am to lazy to debug */
-	allocsize = (priv->plugwidth * priv->plugheight) + (priv->plugwidth * 2);
+	allocsize = priv->plugwidth * priv->plugheight;
 
 	priv->surface1 = (uint8_t *) visual_mem_malloc0(allocsize);
 	priv->surface2 = (uint8_t *) visual_mem_malloc0(allocsize);
