@@ -268,7 +268,7 @@ static void lv_flower_render (VisPluginData *plugin, VisVideo *video, VisAudio *
 
 			y = ( (DIF-2.0)*y +
 					(i==0  ? 0 : temp_bars[i - 1]) +
-					(i==31 ? 0 : temp_bars[i + 1])) / DIF;
+					(i==(NOTCH_BANDS - 1) ? 0 : temp_bars[i + 1])) / DIF;
 
 			y=((1.0-TAU)*priv->flower.audio_bars[i]+TAU*y) * 1.00;
 			priv->flower.audio_bars[i]=y;
