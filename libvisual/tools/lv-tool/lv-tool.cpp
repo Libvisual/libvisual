@@ -282,7 +282,7 @@ namespace {
           return m_screen_video;
       }
 
-      void drain_events(VisEventQueue & eventqueue) {
+      void drain_events(VisEventQueue & eventqueue, VisVideo * video) {
           // NOTE: SDL_VIDEORESIZE calls create(..) here as well
           SDL_Event event;
           while (SDL_PollEvent (&event)) {
@@ -301,7 +301,7 @@ namespace {
                       break;
 
                   case SDL_VIDEORESIZE:
-                      visual_event_queue_add_resize (&eventqueue, NULL, event.resize.w, event.resize.h);
+                      visual_event_queue_add_resize (&eventqueue, video, event.resize.w, event.resize.h);
                       // TODO non-NULL vidoptions here?
                       create (m_requested_depth, nullptr, event.resize.w, event.resize.h, m_resizable);
                       break;
@@ -889,7 +889,7 @@ int main (int argc, char **argv)
             static VisEvent ev;
 
             // Handle all events
-            display.drain_events(*localqueue);
+            display.drain_events(*localqueue, video);
 
             auto pluginqueue = visual_plugin_get_eventqueue (visual_actor_get_plugin(bin.get_actor()));
 
