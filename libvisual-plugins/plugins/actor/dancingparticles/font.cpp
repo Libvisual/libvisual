@@ -51,6 +51,7 @@ void destroyFontRasterizer()
   if (ftLibrary)
     {
       FT_Done_FreeType(ftLibrary);
+      ftLibrary = nullptr;
     }
 }
 
