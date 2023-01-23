@@ -172,6 +172,7 @@ TARGET_LINK_LIBRARIES(libvisual
   PkgConfig::ORC
   PNG::PNG
   Threads::Threads
+  ZLIB::ZLIB
 )
 
 IF(WIN32)
