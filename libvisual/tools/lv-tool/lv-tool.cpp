@@ -283,7 +283,6 @@ namespace {
       }
 
       void drain_events(VisEventQueue & eventqueue, VisVideo * video) {
-          // NOTE: SDL_VIDEORESIZE calls create(..) here as well
           SDL_Event event;
           while (SDL_PollEvent (&event)) {
               switch (event.type) {
@@ -302,8 +301,6 @@ namespace {
 
                   case SDL_VIDEORESIZE:
                       visual_event_queue_add_resize (&eventqueue, video, event.resize.w, event.resize.h);
-                      // TODO non-NULL vidoptions here?
-                      create (m_requested_depth, nullptr, event.resize.w, event.resize.h, m_resizable);
                       break;
 
                   case SDL_MOUSEMOTION:
