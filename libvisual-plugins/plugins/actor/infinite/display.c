@@ -159,14 +159,14 @@ void _inf_compute_surface(InfinitePrivate *priv, t_interpol* vector_field)
 #endif /* #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 #endif /* #if 0 */
 	} else {
+		const uint8_t *ptr_pix_end = priv->surface1 + (priv->plugwidth * priv->plugheight);
+
 		for (j=0;j<priv->plugheight;j++) {
 			for (i=0;i<priv->plugwidth;i++) {
 				interpol = &vector_field[add_dest];
 				const uint16_t y = interpol->coord & 0xffff;
 				const uint16_t x = interpol->coord >> 16;
 				ptr_pix = priv->surface1 + y * priv->plugwidth + x;
-
-				const uint8_t *ptr_pix_end = priv->surface1 + (priv->plugwidth * priv->plugheight);
 
 				color = ptr_pix[0] * (interpol->weight >> 24);
 
