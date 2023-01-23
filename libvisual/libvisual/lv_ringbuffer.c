@@ -269,7 +269,7 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 	curposition = buffercorr;
 
 	/* Buffer fixated with partial segment, request the other segments */
-	while (curposition < nbytes) {
+	{
 		int lindex = 0;
 		le = NULL;
 
@@ -326,20 +326,16 @@ int visual_ringbuffer_get_data_offset (VisRingBuffer *ringbuffer, VisBuffer *dat
 			if (curposition == nbytes)
 				return VISUAL_OK;
 		}
-
-		if (entry == NULL) {
-		    // Silence the remaining bytes that we could not fill with
-		    // actual audio
-		    const size_t bytes_to_silence = nbytes - curposition;
-		    void * const target = visual_buffer_get_data (data) + curposition;
-		    memset(target, 0, bytes_to_silence);
-		    return -VISUAL_ERROR_IMPOSSIBLE;
-		}
-
-		startat = 0;
 	}
 
-	return VISUAL_OK;
+	assert (entry == NULL);
+
+	// Silence the remaining bytes that we could not fill with
+	// actual audio
+	const size_t bytes_to_silence = nbytes - curposition;
+	void * const target = visual_buffer_get_data (data) + curposition;
+	visual_mem_set (target, 0, bytes_to_silence);
+	return -VISUAL_ERROR_IMPOSSIBLE;
 }
 
 static int fixate_with_partial_data_request (VisRingBuffer *ringbuffer, VisBuffer *data, int offset, int nbytes,
