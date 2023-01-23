@@ -214,7 +214,7 @@ static void lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
     ScopePrivate *priv = visual_plugin_get_private (plugin);
     VisColor col;
     float *pcmbuf;
-    int i, y, y_old, x;
+    int y, x;
     int video_width, video_height, video_pitch;
     uint8_t *buf;
     int isBeat = 0;
@@ -287,18 +287,20 @@ static void lv_scope_render (VisPluginData *plugin, VisVideo *video, VisAudio *a
     }
 
     // Scope
+    const int max_displacement = video_height / 4;
+    const int y_origin = video_height / 2;
+    int i;
 
-    y_old = video_height / 2;
     for (i = 0; i < video_width; i++) {
         int j;
 
-        y = (video_height / 2) + (pcmbuf[(i >> 1) % PCM_SIZE] * (video_height / 4));
+        const int y_tip = y_origin + (pcmbuf[(i >> 1) % PCM_SIZE] * (max_displacement));
 
-        if (y > y_old) {
-            for (j = y_old; j < y; j++)
+        if (y_tip > y_origin) {
+            for (j = y_origin; j < y_tip; j++)
                 buf[(j * video_pitch) + i] = 255;
         } else {
-            for (j = y; j < y_old; j++)
+            for (j = y_tip; j <= y_origin; j++)
                 buf[(j * video_pitch) + i] = 255;
         }
     }
