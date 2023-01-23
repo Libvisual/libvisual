@@ -3,6 +3,26 @@
 #include <t1lib.h>
 #include <cstring>
 
+#include <stdio.h>
+
+void draw_bitmap(char * glyph_bits, int width, int height) {
+    printf("%dx%d\n", width, height);
+
+    // This prints rotated by 90° clockwise
+    for (int y = 0; y < width; y++) {
+        for (int x = height - 1; x >= 0; x--) {
+            const unsigned char pixel = glyph_bits[x * width + y];
+            if (pixel == 0) {
+                printf("__ ");
+            } else {
+                printf("%02x ", pixel);
+            }
+        }
+        printf("\n");
+    }
+    printf("%dx%d\n", width, height);
+}
+
 void loadString(const char *str)
 {
   static bool inited = false;
@@ -28,6 +48,7 @@ void loadString(const char *str)
 	{
 	  int height_c = glyph->metrics.ascent - glyph->metrics.descent;
 	  int width_c = glyph->metrics.rightSideBearing - glyph->metrics.leftSideBearing;
+draw_bitmap(glyph->bits, width_c, height_c);
 	  int maxscore = 0;
 	  for(int y = 0; y < height_c ; y++)
 		{
@@ -54,6 +75,7 @@ void loadString(const char *str)
 			  if(c!=0)
 				while(lastscore < scoreToGo  && curscore >= scoreToGo)
 				  {
+printf("[%4d/%4d][%d] x=%5d, y=%5d\n", numPart, numCenters, a / 4, x*4-width_c*2, height_c*8-y*16+a);
 					Centers[numPart++]=FloatPoint(x*4-width_c*2,height_c*8-y*16+a,0);
 					scoreToGo= (numPart*maxscore)/numCenters;
 					a+=4;
