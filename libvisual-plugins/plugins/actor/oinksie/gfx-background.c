@@ -101,6 +101,12 @@ void _oink_gfx_background_circles_filled (OinksiePrivate *priv,
 	}
 }
 
+// In C, `-8 % 5` yields -3 (and `-8 % 5u` yields +3) rather than 2. This wrapper corrects for it.
+static int mod(int a, int n) {
+	const int original = a % n;
+	return (original >= 0) ? original : (original + n);
+}
+
 void _oink_gfx_background_floaters (OinksiePrivate *priv,
 		uint8_t *buf, int color, int size, int number, int xturn, int yturn, int x, int badd1, int badd2)
 {
@@ -116,8 +122,8 @@ void _oink_gfx_background_floaters (OinksiePrivate *priv,
 	
 	for (i = 0; i < number; i++)
 	{
-		xi = (_oink_table_sin[(+xturn + add1) % OINK_TABLE_NORMAL_SIZE] * (float) (priv->screen_width / (number + 1)));
-		yi = (_oink_table_cos[(+yturn + add2) % OINK_TABLE_NORMAL_SIZE] * (float) (priv->screen_height / 5));
+		xi = (_oink_table_sin[mod(xturn + add1, OINK_TABLE_NORMAL_SIZE)] * (float) (priv->screen_width / (number + 1)));
+		yi = (_oink_table_cos[mod(yturn + add2, OINK_TABLE_NORMAL_SIZE)] * (float) (priv->screen_height / 5));
 
 		xb = xi + (i * mul) + 20;
 		yb = yi + x;
