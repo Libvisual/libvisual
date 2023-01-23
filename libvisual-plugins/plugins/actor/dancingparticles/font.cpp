@@ -156,9 +156,8 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   // Calculate bounding box of text rasterization.
   //
-  // NOTE: According to FT2 documentation, FT_Glyph_Get_CBox() does not account
-  // for anti-aliasing. We don't really care because the text isn't rendered for
-  // display.
+  // NOTE: According to the FT2 tutorial, FT_Glyph_Get_CBox() does not account for anti-aliasing.
+  // However, the returned bounds appear accurate for our purpose.
 
   FT_BBox textBBox
     {
@@ -196,7 +195,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   for(auto const& glyph : glyphs)
     {
-      FT_Vector pen { glyph.pos.x << 6, glyph.pos.y << 6 };
+      FT_Vector pen { (glyph.pos.x - textBBox.xMin) << 6, (glyph.pos.y - textBBox.yMin) << 6 };
 
       auto ftGlyph = glyph.ftGlyph;
 
@@ -227,4 +226,3 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   return textBitmap;
 }
-
