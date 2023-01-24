@@ -27,7 +27,7 @@
 #include "display_driver.hpp"
 #include <libvisual/libvisual.h>
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <array>
 
 namespace {

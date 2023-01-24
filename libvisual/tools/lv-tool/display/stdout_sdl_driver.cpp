@@ -28,7 +28,7 @@
 #include "gettext.h"
 #include <libvisual/libvisual.h>
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <GL/gl.h>
 #include <GL/glext.h> // For GL_BGR in systems where it's not defined in GL/gl.h
 #include <array>
