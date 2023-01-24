@@ -5,6 +5,7 @@
 #include <cstring>
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <vector>
 
 #include <ft2build.h>
@@ -20,15 +21,15 @@ static FT_Face ftFace = nullptr;
 struct Glyph
 {
     FT_Vector pos;
-    FT_Glyph  ftGlyph;
+    std::shared_ptr<FT_GlyphRec> ftGlyph;
+
+    Glyph(FT_Vector pos_, FT_Glyph ftGlyph_)
+        : pos     {pos_},
+          ftGlyph {ftGlyph_, FT_Done_Glyph}
+    {}
 
     ~Glyph()
-    {
-      if (ftGlyph)
-        {
-          FT_Done_Glyph(ftGlyph);
-        }
-    }
+    {}
 };
 
 VisVideo *rasteriseText(FT_Face face, const string &text);
@@ -161,7 +162,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
           penX += delta.x >> 6;
         }
 
-      glyphs.push_back({ FT_Vector { penX, penY }, ftGlyph });
+      glyphs.emplace_back(FT_Vector { penX, penY }, ftGlyph);
 
       penX += ftGlyphSlot->advance.x >> 6;
 
@@ -184,7 +185,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
   for(auto const& glyph : glyphs)
     {
       FT_BBox glyphBBox { 0, 0, 0, 0 };
-      FT_Glyph_Get_CBox(glyph.ftGlyph, ft_glyph_bbox_pixels, &glyphBBox);
+      FT_Glyph_Get_CBox(glyph.ftGlyph.get(), ft_glyph_bbox_pixels, &glyphBBox);
 
       glyphBBox.xMin += glyph.pos.x;
       glyphBBox.yMin += glyph.pos.y;
@@ -211,7 +212,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
     {
       const FT_Vector pen { (glyph.pos.x - textBBox.xMin) << 6, (glyph.pos.y - textBBox.yMin) << 6 };
 
-      auto ftGlyph = glyph.ftGlyph;
+      auto ftGlyph = glyph.ftGlyph.get();
 
       error = FT_Glyph_To_Bitmap(&ftGlyph, FT_RENDER_MODE_NORMAL, &pen, 0);
       if(!error)
