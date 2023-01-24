@@ -401,7 +401,7 @@ namespace {
               visual_log_return_if_fail( m_screen_video != nullptr );
               VisPalette * const pal = m_screen_video->pal;
 
-              if (pal != nullptr && pal->ncolors <= 256) {
+              if (pal != nullptr && pal->ncolors >= 256) {
                   SDL_Color colors[256];
 
                   for (int i = 0; i < 256; i++) {
