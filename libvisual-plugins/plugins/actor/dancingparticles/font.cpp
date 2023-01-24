@@ -12,7 +12,7 @@
 #include FT_GLYPH_H
 
 const char *fontPath = DATA_DIR "/font.pfb";
-const int   fontSize = 25; // Does this match the T1lib size parameter?
+const int   fontSizePixels = 25;
 
 static FT_Library ftLibrary = nullptr;
 static FT_Face ftFace = nullptr;
@@ -41,7 +41,12 @@ bool initFontRasterizer()
       return false;
     }
 
-  FT_Set_Pixel_Sizes(ftFace, 0, fontSize);
+  error = FT_Set_Pixel_Sizes(ftFace, 0, fontSizePixels);
+  if(error)
+    {
+      visual_log(VISUAL_LOG_WARNING, "Unable to load font at size (%d px).", fontSizePixels);
+      return false;
+    }
 
   return true;
 }
