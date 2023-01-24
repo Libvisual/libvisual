@@ -226,7 +226,7 @@ namespace {
           if (m_screen->format->BitsPerPixel == 8) {
               auto const& pal = m_display.get_video ()->get_palette ();
 
-              if (!pal.empty () && pal.size() <= 256) {
+              if (!pal.empty () && pal.size() >= 256) {
                   std::array<SDL_Color, 256> colors;
                   visual_mem_set (colors.data (), 0, sizeof (colors));
 
