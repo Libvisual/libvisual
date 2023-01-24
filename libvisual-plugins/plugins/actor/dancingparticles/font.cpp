@@ -194,14 +194,14 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   // Rasterize text.
 
-  int textWidth = textBBox.xMax - textBBox.xMin;
-  int textHeight = textBBox.yMax - textBBox.yMin;
+  const int textWidth = textBBox.xMax - textBBox.xMin;
+  const int textHeight = textBBox.yMax - textBBox.yMin;
 
   auto textBitmap = visual_video_new_with_buffer(textWidth, textHeight, VISUAL_VIDEO_DEPTH_8BIT);
 
   for(auto const& glyph : glyphs)
     {
-      FT_Vector pen { (glyph.pos.x - textBBox.xMin) << 6, (glyph.pos.y - textBBox.yMin) << 6 };
+      const FT_Vector pen { (glyph.pos.x - textBBox.xMin) << 6, (glyph.pos.y - textBBox.yMin) << 6 };
 
       auto ftGlyph = glyph.ftGlyph;
 
