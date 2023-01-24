@@ -693,6 +693,7 @@ int visual_bin_switch_finalize (VisBin *bin)
 	visual_log (VISUAL_LOG_DEBUG, "Entering...");
 	if (bin->managed == TRUE)
 		visual_object_unref (VISUAL_OBJECT (bin->actor));
+	visual_video_set_palette (bin->actvideo, NULL);
 
 	/* Copy over the depth to be sure, and for GL plugins */
 /*	bin->actvideo->depth = bin->actmorphvideo->depth;
