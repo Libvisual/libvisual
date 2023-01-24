@@ -21,6 +21,14 @@ struct Glyph
 {
     FT_Vector pos;
     FT_Glyph  ftGlyph;
+
+    ~Glyph()
+    {
+      if (ftGlyph)
+        {
+          FT_Done_Glyph(ftGlyph);
+        }
+    }
 };
 
 VisVideo *rasteriseText(FT_Face face, const string &text);
@@ -225,10 +233,6 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
           FT_Done_Glyph(ftGlyph);
         }
     }
-
-  // Free all glyphs
-  for(auto const& glyph : glyphs)
-    FT_Done_Glyph(glyph.ftGlyph);
 
   return textBitmap;
 }
