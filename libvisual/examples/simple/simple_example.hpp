@@ -24,7 +24,7 @@
 #define _LV_EXAMPLES_SIMPLE_EXAMPLE
 
 #include <libvisual.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 class SimpleExample
 {
