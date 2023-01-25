@@ -51,7 +51,10 @@ mfl_font mfl_LoadRawFont(const char *fname) {
 
   /* Open font file */
   ff = fopen(fname, "rb");
-  if (ff == NULL) goto lrf_open_fault;
+  if (ff == NULL) {
+    visual_log (VISUAL_LOG_WARNING, "Unable to open font file: %s", fname);
+    goto lrf_open_fault;
+  }
 
   /* Get length of font file */
   if (fseek(ff, 0, SEEK_END) != 0) goto lrf_fault;
@@ -70,6 +73,7 @@ mfl_font mfl_LoadRawFont(const char *fname) {
  
   /* Read font data */
   if (fread(f->data, 1, l, ff) != l) {
+    visual_log (VISUAL_LOG_WARNING, "Unable to fully read font file: %s", fname);
     free(f->data);
     free(f);
     f = NULL;
@@ -84,7 +88,9 @@ mfl_font mfl_LoadRawFont(const char *fname) {
 }
 
 void mfl_DestroyFont(mfl_font f) {
-  visual_log_return_if_fail(f != NULL);
+  if (f == NULL) {
+    return;
+  }
   free(f->data);
   free(f);
 }
