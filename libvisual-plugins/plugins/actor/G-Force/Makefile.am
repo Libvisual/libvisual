@@ -20,5 +20,6 @@ actor_gforce_la_LIBADD = \
 	unix/libmfl/libmfl.la \
 	unix/libvisual/libactor_gforce.la
 
-EXTRA_DIST = deffont
+fontdir = $(LIBVISUAL_PLUGINS_DATA_DIR)
+dist_font_DATA = deffont
 
