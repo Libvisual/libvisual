@@ -1,6 +1,6 @@
 FILE(GLOB gforce_ui_HEADERS "Headers/*")
 
-SET(DATADIR $(LV_PLUGIN_DATA_DIR))
+SET(DATADIR ${LV_PLUGIN_DATA_DIR}/actor/actor_gforce)
 
 # Missing DrawXX.cpp and LineXX.cpp
 SET(gforce_ui_SOURCES
