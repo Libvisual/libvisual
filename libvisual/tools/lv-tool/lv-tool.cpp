@@ -30,6 +30,7 @@
 #include <SDL.h>
 #include <stdexcept>
 #include <iostream>
+#include <unordered_set>
 #include <string>
 #include <cstdio>
 #include <cstdlib>
@@ -690,6 +691,11 @@ namespace {
       std::signal (SIGTERM, handle_termination_signal);
   }
 
+  const std::unordered_set<std::string> actors_to_skip {
+      "gdkpixbuf",
+      "gstreamer"
+  };
+
   std::string cycle_actor_name (std::string const& name, CycleDir dir)
   {
       auto cycler = (dir == CycleDir::NEXT) ? visual_actor_get_next_by_name
@@ -702,8 +708,8 @@ namespace {
 
       // Always skip actors that are of little interest to end users,
       // while allowing explicit "--actor (gdkpixbuf|gstreamer)".
-      if (strcmp (new_name, "gdkpixbuf") == 0 \
-            || strcmp (new_name, "gstreamer") == 0) {
+      const bool found = actors_to_skip.find (new_name) != actors_to_skip.end ();
+      if (found) {
           return cycle_actor_name (new_name, dir);
       }
 
