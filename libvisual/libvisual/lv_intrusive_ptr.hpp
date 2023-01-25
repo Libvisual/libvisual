@@ -3,6 +3,24 @@
 
 namespace LV
 {
+  namespace Impl
+  {
+    // Checks that the required overloads for LV::IntrusivePtr<> are met.
+    // NOTE: Only used for concept checking.
+    template <typename T>
+    void check_intrusive_ref_countable (T* a)
+    {
+        intrusive_ptr_add_ref (a);
+        intrusive_ptr_release (a);
+    }
+  }
+
+  //! Concept for reference countable types that can be used with LV::IntrusivePtr.
+  template <typename T>
+  concept IntrusiveRefCountable = requires (T* a)
+  {
+      Impl::check_intrusive_ref_countable (a);
+  };
 
   //! Intrusive smart pointer class template.
   //!
@@ -15,7 +33,7 @@ namespace LV
   //! * void intrusive_ptr_add_ref(T* object) -- _Called to add a reference_
   //! * void intrusive_ptr_release(T* object) -- _Called to remove a reference and destroy the object when not longer used_
   //!
-  template <typename T>
+  template <IntrusiveRefCountable T>
   class IntrusivePtr
   {
   public:
