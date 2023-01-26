@@ -30,6 +30,7 @@
 #include <gettext.h>
 
 #include "lvconfig.h"
+#include "lv_cpu.h"
 #include "lv_plugin.h"
 #include "lv_actor.h"
 #include "lv_input.h"

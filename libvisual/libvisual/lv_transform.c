@@ -35,6 +35,8 @@
 #include "lv_transform.h"
 #include "lv_mem.h"
 
+int visual_transform_init (VisTransform *transform, const char *transformname);
+
 extern VisList *__lv_plugins_transform;
 
 static int transform_dtor (VisObject *object);
