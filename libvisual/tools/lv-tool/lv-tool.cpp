@@ -32,6 +32,7 @@
 #include <atomic>
 #include <stdexcept>
 #include <iostream>
+#include <unordered_set>
 #include <string>
 #include <cstdio>
 #include <cstdlib>
@@ -55,6 +56,11 @@
 #endif
 
 namespace {
+
+  const std::unordered_set<std::string> actors_to_skip {
+      "gdkpixbuf",
+      "gstreamer"
+  };
 
   std::string actor_name;
   std::string input_name = DEFAULT_INPUT;
@@ -386,6 +392,12 @@ namespace {
       auto new_name = cycler (name.c_str ());
       if (!new_name) {
           new_name = cycler (nullptr);
+      }
+
+      // Always skip actors that are of little interest to end users,
+      // while allowing explicit "--actor (gdkpixbuf|gstreamer)".
+      if (actors_to_skip.contains (new_name)) {
+          return cycle_actor_name (new_name, dir);
       }
 
       // FIXME: this won't work if an actor's name is used as part of
