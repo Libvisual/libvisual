@@ -273,11 +273,11 @@ int act_gstreamer_render (VisPluginData *plugin, VisVideo *video, VisAudio *audi
 			case GST_STATE_CHANGE_ASYNC:
 				visual_log (VISUAL_LOG_INFO, "Waiting for pipeline to get ready (Current state: %s)",
 							gst_element_state_get_name (state));
-				return;
+				return 0;
 
 			case GST_STATE_CHANGE_FAILURE:
 				visual_log (VISUAL_LOG_INFO, "Failed to animate pipeline");
-				return;
+				return 0;
 
 			default: /* nothing */;
 		}
