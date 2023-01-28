@@ -100,9 +100,9 @@ void generateTextParticles(VisVideo* bitmap)
 
   unsigned int totalEnergy = 0;
 
-  for(unsigned int y = 0; y < height ; y++)
+  for(int y = 0; y < height ; y++)
     {
-      for(unsigned int x = 0; x < width ; x++)
+      for(int x = 0; x < width ; x++)
         {
           totalEnergy += pixels[y*pitch+x];
         }
@@ -133,7 +133,7 @@ void generateTextParticles(VisVideo* bitmap)
         }
     }
 
-    assert(particleCount == ptsNum);
+  assert(int(particleCount) == ptsNum);
 }
 
 VisVideo *rasteriseText(FT_Face face, const std::string &text)
