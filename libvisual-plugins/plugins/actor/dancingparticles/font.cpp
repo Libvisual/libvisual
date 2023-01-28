@@ -13,24 +13,32 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-const char *fontPath = DATA_DIR "/font.pfb";
-const int   fontSizePixels = 25;
+inline const char *fontPath = DATA_DIR "/font.pfb";
+inline const int   fontSizePixels = 25;
 
-static FT_Library ftLibrary = nullptr;
-static FT_Face ftFace = nullptr;
+inline FT_Library ftLibrary = nullptr;
+inline FT_Face ftFace = nullptr;
 
 struct Glyph
 {
     FT_Vector pos;
-    std::shared_ptr<FT_GlyphRec> ftGlyph;
+    FT_Glyph ftGlyph;
 
     Glyph(FT_Vector pos_, FT_Glyph ftGlyph_)
         : pos     {pos_},
-          ftGlyph {ftGlyph_, FT_Done_Glyph}
+          ftGlyph {ftGlyph_}
     {}
 
+    Glyph(Glyph const&) = delete;
+
+    Glyph& operator=(Glyph const&) = delete;
+
     ~Glyph()
-    {}
+    {
+        if (ftGlyph) {
+            FT_Done_Glyph(ftGlyph);
+        }
+    }
 };
 
 VisVideo *rasteriseText(FT_Face face, const string &text);
@@ -139,7 +147,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   std::size_t charCount = text.length();
 
-  std::vector<Glyph> glyphs;
+  std::vector<std::unique_ptr<Glyph>> glyphs;
   glyphs.reserve(charCount);
 
   auto ftGlyphSlot = face->glyph;
@@ -171,7 +179,8 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
           penX += delta.x >> 6;
         }
 
-      glyphs.emplace_back(FT_Vector { penX, penY }, ftGlyph);
+      auto glyph = std::make_unique<Glyph> (FT_Vector { penX, penY }, ftGlyph);
+      glyphs.push_back(std::move(glyph));
 
       penX += ftGlyphSlot->advance.x >> 6;
 
@@ -194,12 +203,12 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
   for(auto const& glyph : glyphs)
     {
       FT_BBox glyphBBox { 0, 0, 0, 0 };
-      FT_Glyph_Get_CBox(glyph.ftGlyph.get(), ft_glyph_bbox_pixels, &glyphBBox);
+      FT_Glyph_Get_CBox(glyph.get()->ftGlyph, ft_glyph_bbox_pixels, &glyphBBox);
 
-      glyphBBox.xMin += glyph.pos.x;
-      glyphBBox.yMin += glyph.pos.y;
-      glyphBBox.xMax += glyph.pos.x;
-      glyphBBox.yMax += glyph.pos.y;
+      glyphBBox.xMin += glyph.get()->pos.x;
+      glyphBBox.yMin += glyph.get()->pos.y;
+      glyphBBox.xMax += glyph.get()->pos.x;
+      glyphBBox.yMax += glyph.get()->pos.y;
 
       textBBox.xMin = std::min(textBBox.xMin, glyphBBox.xMin);
       textBBox.yMin = std::min(textBBox.yMin, glyphBBox.yMin);
@@ -219,9 +228,13 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   for(auto const& glyph : glyphs)
     {
-      const FT_Vector pen { (glyph.pos.x - textBBox.xMin) << 6, (glyph.pos.y - textBBox.yMin) << 6 };
+      const FT_Vector pen
+        {
+          (glyph.get()->pos.x - textBBox.xMin) << 6,
+          (glyph.get()->pos.y - textBBox.yMin) << 6
+        };
 
-      auto ftGlyph = glyph.ftGlyph.get();
+      auto ftGlyph = glyph.get()->ftGlyph;
 
       error = FT_Glyph_To_Bitmap(&ftGlyph, FT_RENDER_MODE_NORMAL, &pen, 0);
       if(!error)
