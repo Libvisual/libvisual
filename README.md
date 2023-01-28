@@ -7,19 +7,19 @@
 # Branches of Interest
 
 - [`0.4.x`](https://github.com/Libvisual/libvisual/tree/0.4.x) —
-  targetting version `0.4.x`,
+  targetting version 0.4.x,
   maintenance,
   bugfixes only
 
 - [`master`](https://github.com/Libvisual/libvisual/tree/master) —
-  targetting version `0.5.x` and beyond,
+  targetting version 0.5.x and beyond,
   development
 
 
 # Building Libvisual
 
-- [Building Libvisual `0.4.x` on Ubuntu/Debian](https://github.com/Libvisual/libvisual/blob/0.4.x/.github/workflows/linux.yml) using GNU Autotools
-- [Building Libvisual `0.5.x` on Ubuntu/Debian](https://github.com/Libvisual/libvisual/blob/master/.github/workflows/linux.yml) using CMake
+- [Building Libvisual 0.4.x on Ubuntu/Debian](https://github.com/Libvisual/libvisual/blob/0.4.x/.github/workflows/linux.yml) using GNU Autotools
+- [Building Libvisual 0.5.x on Ubuntu/Debian](https://github.com/Libvisual/libvisual/blob/master/.github/workflows/linux.yml) using CMake
 
 
 # Documentation
