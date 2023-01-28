@@ -852,6 +852,8 @@ int visual_bin_run (VisBin *bin)
 
 			visual_bin_switch_finalize (bin);
 
+			visual_video_set_palette (bin->actvideo, visual_actor_get_palette (bin->actor));
+
 			/* We can't start drawing yet, the client needs to catch up with
 			 * the depth change */
 			return 0;
