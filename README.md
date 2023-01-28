@@ -8,11 +8,13 @@
 
 - [`0.4.x`](https://github.com/Libvisual/libvisual/tree/0.4.x) —
   targetting version 0.4.x,
+  uses C99 and C++11,
   maintenance,
   bugfixes only
 
 - [`master`](https://github.com/Libvisual/libvisual/tree/master) —
   targetting version 0.5.x and beyond,
+  uses C11 and C++20,
   development
 
 
