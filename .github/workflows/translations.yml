@@ -71,8 +71,7 @@ jobs:
         run: |-
           cd libvisual-plugins
           PKG_CONFIG_PATH=${LV_INSTALL_PREFIX}/lib/pkgconfig/ \
-            ./configure \
-              --disable-gstreamer-plugin \
+            ./configure
 
       - name: 'Enforce that .po/.pot files are in sync with the code'
         run: |-

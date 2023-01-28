@@ -180,7 +180,6 @@ jobs:
               CC=${{ matrix.cc }} \
               CXX=${{ matrix.cxx }} \
               --prefix ${LV_INSTALL_PREFIX} \
-              --disable-gstreamer-plugin \
               || { cat config.log ; false ; }
 
       - name: '[Plugins] Run "make"'
