@@ -2,6 +2,7 @@
 #include "etoile.h"
 #include "libvisual/lv_log.h"
 #include "libvisual/lv_video.h"
+#include <cassert>
 #include <cstring>
 #include <algorithm>
 #include <limits>
@@ -33,6 +34,7 @@ struct Glyph
 };
 
 VisVideo *rasteriseText(FT_Face face, const string &text);
+void generateTextParticles(VisVideo* bitmap);
 
 bool initFontRasterizer()
 {
@@ -77,46 +79,53 @@ void loadString(const char *str)
   int length = std::min(int(std::strlen(str)), ptsNum/50);
 
   auto bitmap = rasteriseText(ftFace, std::string(str, length));
+  generateTextParticles(bitmap);
+}
+
+void generateTextParticles(VisVideo* bitmap)
+{
   auto pixels = static_cast<uint8_t const*>(visual_video_get_pixels(bitmap));
 
   int width = visual_video_get_width(bitmap);
   int height = visual_video_get_height(bitmap);
   int pitch = visual_video_get_pitch(bitmap);
 
-  int maxscore = 0;
-  for(int y = 0; y < height ; y++)
+  unsigned int totalEnergy = 0;
+
+  for(unsigned int y = 0; y < height ; y++)
     {
-      for(int x = 0; x < width ; x++)
+      for(unsigned int x = 0; x < width ; x++)
         {
-          unsigned char c = pixels[y*pitch+x];
-          maxscore +=c;
+          totalEnergy += pixels[y*pitch+x];
         }
     }
 
   numCenters = numCenters2 = ptsNum;
-  int curscore = 0;
-  int lastscore = 0;
-  int numPart = 0;
-  int scoreToGo = 1;
+
+  unsigned int particleCount = 0;
+  unsigned int energySoFar = 0;
+
   for(int y = 0; y < height ; y++)
     {
       for(int x = 0; x < width ; x++)
         {
           unsigned char c = pixels[y*pitch+x];
-          int a = 0;
-          lastscore = curscore;
-          curscore +=c;
-          if(c!=0)
+
+          if(c != 0)
             {
-              while(lastscore < scoreToGo  && curscore >= scoreToGo)
+              energySoFar += c;
+              int allocCount = (energySoFar*numCenters)/totalEnergy - particleCount;
+
+              for(int a = 0; a < allocCount; a++)
                 {
-                  Centers[numPart++]=FloatPoint(x*4-width*2,height*8-y*16+a,0);
-                  scoreToGo= (numPart*maxscore)/(numCenters-1);
-                  a+=4;
+                  Centers[particleCount] = FloatPoint {float(x*4-width*2), float(height*8-y*16+a*4), 0.0};
+                  particleCount++;
                 }
             }
         }
     }
+
+    assert(particleCount == ptsNum);
 }
 
 VisVideo *rasteriseText(FT_Face face, const std::string &text)
