@@ -140,6 +140,11 @@ namespace LV {
 
 namespace {
 
+  const std::unordered_set<std::string> actors_to_skip {
+      "gdkpixbuf",
+      "gstreamer"
+  };
+
   std::string actor_name;
   std::string input_name = DEFAULT_INPUT;
   std::string exclude_actors;
@@ -690,11 +695,6 @@ namespace {
       std::signal (SIGINT, handle_termination_signal);
       std::signal (SIGTERM, handle_termination_signal);
   }
-
-  const std::unordered_set<std::string> actors_to_skip {
-      "gdkpixbuf",
-      "gstreamer"
-  };
 
   std::string cycle_actor_name (std::string const& name, CycleDir dir)
   {
