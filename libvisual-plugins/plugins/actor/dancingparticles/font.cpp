@@ -111,7 +111,7 @@ void loadString(const char *str)
               while(lastscore < scoreToGo  && curscore >= scoreToGo)
                 {
                   Centers[numPart++]=FloatPoint(x*4-width*2,height*8-y*16+a,0);
-                  scoreToGo= (numPart*maxscore)/numCenters;
+                  scoreToGo= (numPart*maxscore)/(numCenters-1);
                   a+=4;
                 }
             }
