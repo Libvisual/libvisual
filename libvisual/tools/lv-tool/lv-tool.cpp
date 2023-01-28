@@ -28,6 +28,8 @@
 #include "gettext.h"
 #include <libvisual/libvisual.h>
 #include <SDL.h>
+#include <algorithm>
+#include <array>
 #include <stdexcept>
 #include <iostream>
 #include <unordered_set>
@@ -412,21 +414,29 @@ namespace {
       void update_all() {
           visual_log_return_if_fail( m_screen != nullptr );
 
+          static VisPalette * prev_pal = nullptr;
           if (m_screen->format->BitsPerPixel == 8) {
               visual_log_return_if_fail( m_screen_video != nullptr );
               VisPalette * const pal = m_screen_video->pal;
 
-              if (pal != nullptr && pal->ncolors >= 256) {
-                  SDL_Color colors[256];
+              if (pal != prev_pal) {
+                  std::array<SDL_Color, 256> colors {};
 
-                  for (int i = 0; i < 256; i++) {
-                      colors[i].r = pal->colors[i].r;
-                      colors[i].g = pal->colors[i].g;
-                      colors[i].b = pal->colors[i].b;
+                  if (pal) {
+                      const std::size_t source_color_count = std::min(colors.size(),
+                                                                      static_cast<visual_size_t>(pal->ncolors));
+                      for (std::size_t i = 0; i < source_color_count; i++) {
+                          colors[i].r = pal->colors[i].r;
+                          colors[i].g = pal->colors[i].g;
+                          colors[i].b = pal->colors[i].b;
+                      }
                   }
 
-                  SDL_SetColors (m_screen, colors, 0, 256);
+                  SDL_SetColors (m_screen, colors.data(), 0, colors.size());
+                  prev_pal = pal;
               }
+          } else {
+              prev_pal = nullptr;
           }
 
           if (m_requested_depth == VISUAL_VIDEO_DEPTH_GL) {
