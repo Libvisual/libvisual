@@ -92,11 +92,11 @@ void loadString(const char *str)
 
 void generateTextParticles(VisVideo* bitmap)
 {
-  auto pixels = static_cast<uint8_t const*>(visual_video_get_pixels(bitmap));
+  const auto pixels = static_cast<uint8_t const*>(visual_video_get_pixels(bitmap));
 
-  int width = visual_video_get_width(bitmap);
-  int height = visual_video_get_height(bitmap);
-  int pitch = visual_video_get_pitch(bitmap);
+  const int width = visual_video_get_width(bitmap);
+  const int height = visual_video_get_height(bitmap);
+  const int pitch = visual_video_get_pitch(bitmap);
 
   unsigned int totalEnergy = 0;
 
@@ -117,23 +117,24 @@ void generateTextParticles(VisVideo* bitmap)
     {
       for(int x = 0; x < width ; x++)
         {
-          unsigned char c = pixels[y*pitch+x];
+          unsigned char const c = pixels[y*pitch+x];
 
           if(c != 0)
             {
               energySoFar += c;
-              int allocCount = (energySoFar*numCenters)/totalEnergy - particleCount;
+              const int countToReach = static_cast<int>(static_cast<float>(energySoFar)/totalEnergy * numCenters);
+              const int allocCount = countToReach - particleCount;
 
               for(int a = 0; a < allocCount; a++)
                 {
-                  Centers[particleCount] = FloatPoint {float(x*4-width*2), float(height*8-y*16+a*4), 0.0};
+                  Centers[particleCount] = FloatPoint {static_cast<float>(x*4-width*2), static_cast<float>(height*8-y*16+a*4), 0.0f};
                   particleCount++;
                 }
             }
         }
     }
 
-  assert(int(particleCount) == ptsNum);
+  assert(static_cast<int>(particleCount) == ptsNum);
 }
 
 VisVideo *rasteriseText(FT_Face face, const std::string &text)
@@ -143,7 +144,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   FT_Error error;
 
-  bool useKerning = FT_HAS_KERNING(face);
+  const bool useKerning = FT_HAS_KERNING(face);
 
   std::size_t charCount = text.length();
 
@@ -160,7 +161,7 @@ VisVideo *rasteriseText(FT_Face face, const std::string &text)
 
   for(auto text_char : text)
     {
-      auto ftGlyphIndex = FT_Get_Char_Index(face, text_char);
+      const auto ftGlyphIndex = FT_Get_Char_Index(face, text_char);
 
       error = FT_Load_Glyph(face, ftGlyphIndex, FT_LOAD_DEFAULT);
       if(error)
