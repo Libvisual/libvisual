@@ -304,12 +304,12 @@ namespace LV {
       }
 
       if (m_impl->height <= 0) {
-          visual_log (VISUAL_LOG_ERROR, "Video has a zero of negative height (%d).", m_impl->height);
+          visual_log (VISUAL_LOG_ERROR, "Video has a zero or negative height (%d).", m_impl->height);
           return false;
       }
 
       if (m_impl->pitch <= 0) {
-          visual_log (VISUAL_LOG_ERROR, "Video has a zero of negative pitch (%d).", m_impl->pitch);
+          visual_log (VISUAL_LOG_ERROR, "Video has a zero or negative pitch (%d).", m_impl->pitch);
           return false;
       }
 
@@ -384,8 +384,8 @@ namespace LV {
 
       // Videos must have the same colours at every pixel.
 
-      // Determine the block size in bytes in each row to compare. This must exclude padding. It must also exclude
-      // pixels outside of a subvideo's extents.
+      // Determine the size (in bytes) of the blocks in each row to compare. This must exclude padding.
+      // It must also exclude pixels outside of a subvideo's extents.
       std::size_t const content_bytes_per_row = m_impl->width * m_impl->bpp;
 
       for (int y = 0; y < m_impl->height; y++) {
