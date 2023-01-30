@@ -116,14 +116,9 @@ jobs:
 
       - name: '[LV] Run autoreconf'
         run: |-
-          if [[ "$(uname -s)" = Darwin ]]; then
-            # This provides a dummy substitute to alsa.m4 on macOS
-            echo 'AC_DEFUN([AM_PATH_ALSA], [HAVE_ALSA=no])' >> libvisual-plugins/acinclude.m4
-          fi
-
           for i in libvisual libvisual-plugins ; do
             pushd ${i}
-              autoreconf --install --verbose --force
+              NOCONFIGURE=please ./autogen.sh
             popd
           done
 
