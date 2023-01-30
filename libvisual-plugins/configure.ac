@@ -68,7 +68,7 @@ m4_defun([AC_PROG_F77],[])
 LT_INIT
 
 dnl Lex/Yacc
-AM_PROG_LEX
+AC_PROG_LEX([noyywrap])
 AC_CHECK_PROGS([YACC], ['bison -y' byacc yacc])
 if test -z "$YACC"; then
    AC_MSG_ERROR([Bison or Yacc not found])
