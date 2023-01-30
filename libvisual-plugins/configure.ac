@@ -12,7 +12,7 @@ AC_INIT([Libvisual plugins], [lv_plugins_version], [https://github.com/Libvisual
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
 AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 m4_define([libvisual_required_version], [lv_plugins_version])
