@@ -210,17 +210,15 @@ if test "$ENABLE_ALSA" = "yes"; then
 
   if test "$HAVE_ALSA" = "yes"; then
     build_input_plugins="$build_input_plugins alsa"
-    AC_TRY_COMPILE([#include <stdlib.h>
-		    #include <alsa/asoundlib.h>
-                   ],
-		   [#if(SND_LIB_MAJOR == 0)
-		    exit(0);
-                    #else
-		    #error ALSA library version 1.x
-		    #endif
-                   ],
-		   [ AC_DEFINE([HAVE_0_9_X_ALSA], [1], [ALSA Library is from 0.9 series]) ],
-		   [ AC_DEFINE([HAVE_1_X_X_ALSA], [1], [ALSA Library is from 1 series]) ])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <stdlib.h>
+                                         #include <alsa/asoundlib.h>],
+                                       [#if(SND_LIB_MAJOR == 0)
+                                          exit(0);
+                                        #else
+                                        # error ALSA library version 1.x
+                                        #endif])],
+                      [AC_DEFINE([HAVE_0_9_X_ALSA], [1], [ALSA Library is from 0.9 series])],
+                      [AC_DEFINE([HAVE_1_X_X_ALSA], [1], [ALSA Library is from 1 series])])
   else
     AC_MSG_WARN([*** Alsa input plugin cannot be built.
 		 May be you have an ALSA library older than $LV_ALSA_MIN_VERSION.
