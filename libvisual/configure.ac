@@ -193,7 +193,7 @@ AIX_COMPILE_INFO="AIX's C compiler needs to be called by a different name, when
 		to the compiler name."
 
 AC_ARG_ENABLE([threads],
-  AC_HELP_STRING([--enable-threads],
+  AS_HELP_STRING([--enable-threads],
 		[Turn on basic thread support @<:@default=enabled@:>@]),
 		[enable_threads=$enableval],
 		[enable_threads=yes])
@@ -375,7 +375,7 @@ dnl ******************************
 dnl Arguments to specify certain features.
 dnl ******************************
 AC_ARG_ENABLE([lv-tool],
-            AC_HELP_STRING([--disable-lv-tool],
+            AS_HELP_STRING([--disable-lv-tool],
                            [Do not build lv-tool @<:@default=enabled@:>@]),
            [lv_tool_enabled=$enableval],
            [lv_tool_enabled=yes])
@@ -387,7 +387,7 @@ else
 fi
 
 AC_ARG_ENABLE([examples],
-            AC_HELP_STRING([--disable-examples],
+            AS_HELP_STRING([--disable-examples],
                            [Do not build example programs @<:@default=enabled@:>@]),
            [examples=$enableval],
            [examples=yes])
@@ -422,7 +422,7 @@ dnl Debugging stuff
 dnl ******************************
 DEBUG_CFLAGS=""
 AC_ARG_ENABLE([profiling],
-  AC_HELP_STRING([--enable-profiling],
+  AS_HELP_STRING([--enable-profiling],
 		[Enable emision of profile data to be used by gprof @<:@default=disabled@:>@]),
 		[profiling=$enableval],
 		[profiling=no])
@@ -439,7 +439,7 @@ else
 fi
 
 AC_ARG_ENABLE([debug],
-            AC_HELP_STRING([--enable-debug],
+            AS_HELP_STRING([--enable-debug],
                            [Enable debug @<:@default=disabled@:>@]),
 	    [debug=$enableval],
 	    [debug=no])
@@ -471,7 +471,7 @@ fi
 AC_SUBST(DEBUG_CFLAGS)
 
 AC_ARG_ENABLE([extra-optimization],
-           AC_HELP_STRING([--enable-extra-optimization],
+           AS_HELP_STRING([--enable-extra-optimization],
                           [Enable extra optimizations @<:@default=disabled@:>@]),
            [extra_opt=$enableval],
            [extra_opt=no])
@@ -493,7 +493,7 @@ else
 fi
 
 AC_ARG_ENABLE([fast-fp-rng],
-           AC_HELP_STRING([--enable-fast-fp-rng],
+           AS_HELP_STRING([--enable-fast-fp-rng],
                           [Enable faster random floating point generator (enabled by default if --enable-extra-optimization is passed) ]),
            [fastfprng=$enableval],
            [fastfprng=maybe])
