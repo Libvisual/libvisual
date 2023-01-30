@@ -4,7 +4,7 @@ morph_plugin_LTLIBRARIES = morph_slide.la
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)
 
 morph_slide_la_LDFLAGS = -module -avoid-version 
 morph_slide_la_LIBADD = $(LIBVISUAL_LIBS)

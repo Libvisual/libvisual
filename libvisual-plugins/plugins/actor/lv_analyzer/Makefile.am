@@ -4,7 +4,7 @@ actor_plugin_LTLIBRARIES = actor_lv_analyzer.la
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) \
+AM_CPPFLAGS = $(all_includes) \
 	-I$(top_srcdir) 
 
 actor_lv_analyzer_la_LDFLAGS = -module -avoid-version 

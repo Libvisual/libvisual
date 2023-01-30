@@ -4,7 +4,7 @@ actor_plugin_LTLIBRARIES = actor_gstreamer.la
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS) $(GSTREAMER_CFLAGS)
 
-INCLUDES = $(all_includes) \
+AM_CPPFLAGS = $(all_includes) \
 	-I$(top_srcdir) 
 
 actor_gstreamer_la_LDFLAGS = -module -avoid-version 

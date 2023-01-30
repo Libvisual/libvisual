@@ -4,7 +4,7 @@ input_plugin_LTLIBRARIES = input_mplayer.la
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)
 
 input_mplayer_la_LDFLAGS = -module -avoid-version 
 input_mplayer_la_LIBADD = $(LIBVISUAL_LIBS)

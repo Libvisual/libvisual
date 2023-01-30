@@ -4,7 +4,7 @@ SUBDIRS = Common GForceCommon unix GForceColorMaps \
 
 actor_plugin_LTLIBRARIES = actor_gforce.la
 
-INCLUDES = $(all_includes) -I$(top_srcdir)
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)
 
 actor_gforce_la_LDFLAGS = -module -avoid-version
 
