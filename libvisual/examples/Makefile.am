@@ -2,7 +2,7 @@
 
 DEFS = @DEFS@
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/examples -I$(top_builddir)
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/examples -I$(top_builddir)
 
 AM_CFLAGS = $(SDL_CFLAGS) $(VISUAL_CFLAGS)
 

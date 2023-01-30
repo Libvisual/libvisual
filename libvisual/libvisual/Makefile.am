@@ -26,8 +26,8 @@ PLUGPATH = $(libdir)/libvisual
 AM_CFLAGS = -DPLUGPATH="\"$(LIBVISUAL_PLUGINS_BASE_DIR)\"" \
 	$(LV_THREAD_CFLAGS)
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libvisual \
-	   -I$(top_builddir) -I$(top_builddir)/libvisual
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libvisual \
+	-I$(top_builddir) -I$(top_builddir)/libvisual
 
 libvisual_@LIBVISUAL_VERSION_SUFFIX@_la_LDFLAGS = -export-dynamic -no-undefined
 
