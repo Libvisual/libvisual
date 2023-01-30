@@ -66,7 +66,7 @@ AC_DISABLE_STATIC
 
 m4_undefine([AC_PROG_F77])
 m4_defun([AC_PROG_F77],[])
-AC_PROG_LIBTOOL
+LT_INIT
 
 dnl Lex/Yacc
 AM_PROG_LEX
