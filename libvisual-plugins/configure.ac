@@ -48,7 +48,6 @@ AC_C_CONST
 AC_C_INLINE
 
 dnl 'Standard' header files.
-AC_HEADER_TIME
 AC_CHECK_HEADERS([fcntl.h unistd.h stdlib.h string.h sys/time.h])
 
 dnl Library functions.
