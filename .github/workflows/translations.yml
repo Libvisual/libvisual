@@ -48,7 +48,7 @@ jobs:
         run: |-
           for i in libvisual libvisual-plugins ; do
             pushd ${i}
-              autoreconf --install --verbose --force
+              NOCONFIGURE=please ./autogen.sh
             popd
           done
 
