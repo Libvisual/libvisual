@@ -6,7 +6,7 @@ LIBS += $(LIBVISUAL_LIBS)
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) \
+AM_CPPFLAGS = $(all_includes) \
 	-I$(top_srcdir) 
 
 actor_finespectrum_la_LDFLAGS = -module -avoid-version 

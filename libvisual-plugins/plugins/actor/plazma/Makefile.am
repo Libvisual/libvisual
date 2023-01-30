@@ -6,7 +6,7 @@ LIBS += $(LIBVISUAL_LIBS)
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)
 
 actor_plazma_la_LDFLAGS = -module -avoid-version 
 

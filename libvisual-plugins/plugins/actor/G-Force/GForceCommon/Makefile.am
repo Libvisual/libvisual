@@ -3,7 +3,7 @@ SUBDIRS = Headers
 
 GFORCE_TOP_SRCDIR = $(top_srcdir)/plugins/actor/G-Force
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(GFORCE_TOP_SRCDIR)/unix/Headers \
 	-I$(GFORCE_TOP_SRCDIR)/GForceCommon/Headers \
 	-I$(GFORCE_TOP_SRCDIR)/Common/math/Headers \

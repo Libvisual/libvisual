@@ -4,7 +4,7 @@ actor_plugin_LTLIBRARIES = actor_gdkpixbuf.la
 
 AM_CFLAGS = $(LIBVISUAL_CFLAGS) $(GTK_CFLAGS)
 
-INCLUDES = $(all_includes) -I$(top_srcdir) 
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)
 
 actor_gdkpixbuf_la_LDFLAGS = -module -avoid-version 
 actor_gdkpixbuf_la_LIBADD = $(LIBVISUAL_LIBS) $(GTK_LIBS)

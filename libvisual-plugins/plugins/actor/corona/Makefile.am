@@ -4,7 +4,7 @@ actor_plugin_LTLIBRARIES = actor_corona.la
 
 AM_CXXFLAGS = $(LIBVISUAL_CFLAGS)
 
-INCLUDES = $(all_includes) -I$(top_srcdir)
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)
 
 actor_corona_la_LDFLAGS = -module -avoid-version
 actor_corona_la_LIBADD = $(LIBVISUAL_LIBS)
