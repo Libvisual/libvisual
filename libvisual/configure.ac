@@ -121,19 +121,19 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 
 AC_MSG_CHECKING(for ISO C99 varargs macros in C)
-AC_TRY_COMPILE([],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [
 		int a(int p1, int p2, int p3);
 		#define call_a(...) a(1,__VA_ARGS__)
 		call_a(2,3);
-		],lv_have_iso_c_varargs=yes,lv_have_iso_c_varargs=no)
+		])],[lv_have_iso_c_varargs=yes],[lv_have_iso_c_varargs=no])
 AC_MSG_RESULT($lv_have_iso_c_varargs)
 
 AC_MSG_CHECKING(for GNUC varargs macros)
-AC_TRY_COMPILE([],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [
 		int a(int p1, int p2, int p3);
 		#define call_a(params...) a(1,params)
 		call_a(2,3);
-		],lv_have_gnuc_varargs=yes,lv_have_gnuc_varargs=no)
+		])],[lv_have_gnuc_varargs=yes],[lv_have_gnuc_varargs=no])
 AC_MSG_RESULT($lv_have_gnuc_varargs)
 
 AC_C_BIGENDIAN(bigendian=yes, bigendian=no, )
@@ -210,15 +210,15 @@ if test x$enable_threads = xyes; then
 		;;
 	esac
   if test "x$have_threads" = xnone; then
-    AC_TRY_COMPILE([#include <pthread.h>],
-		[pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;],
-		have_threads=posix)
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <pthread.h>],
+                                       [pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;])],
+                      [have_threads=posix],[])
   fi
   if test "x$have_threads" = xnone; then
-    AC_TRY_COMPILE([#include <pthread.h>],
-		[pthread_mutex_t m; 
-		pthread_mutex_init (&m, pthread_mutexattr_default);],
-		have_threads=dce)
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <pthread.h>],
+                                       [pthread_mutex_t m;
+                                        pthread_mutex_init (&m, pthread_mutexattr_default);])],
+                      [have_threads=dce],[])
   fi
   if test "x$have_threads" = xnone; then
     PKG_CHECK_MODULES(GTHREAD2, gthread-2.0 >= 2.2.0, [have_gthread2="yes"], [have_gthread2="no"])
@@ -453,10 +453,10 @@ if test x$debug = xyes; then
     lv_save_CFLAGS=$CFLAGS
     CFLAGS="$CFLAGS -Wno-unused-variable"
     AC_MSG_CHECKING([whether gcc version is greater than 2.95])
-    AC_TRY_COMPILE([#include <stdlib.h>],
-		   [exit(0);],
-		   [lv_gcc_gt_2_95=yes],
-		   [lv_gcc_gt_2_95=no])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <stdlib.h>],
+                                       [exit(0);])],
+                      [lv_gcc_gt_2_95=yes],
+                      [lv_gcc_gt_2_95=no])
     CFLAGS=$lv_save_CFLAGS
     if test x$lv_gcc_gt_2_95 = xyes ; then
       AC_MSG_RESULT([yes])
