@@ -274,12 +274,12 @@ else
 		LIBS="$add_thread_lib $lv_save_LIBS"
 		
 		AC_MSG_CHECKING(for pthread_create/pthread_join$IN)
-		AC_TRY_RUN(lv_thread_test($defattr),
-                                  lv_result=yes,
-                                  lv_result=no,
-                                  [AC_LINK_IFELSE(lv_thread_test($defattr),
-                                                  lv_result=yes,
-                                                  lv_result=no)])
+		AC_RUN_IFELSE([AC_LANG_SOURCE([lv_thread_test($defattr)])],
+		              [lv_result=yes],
+		              [lv_result=no],
+		              [AC_LINK_IFELSE([AC_LANG_SOURCE([lv_thread_test($defattr)])],
+		                              [lv_result=yes],
+		                              [lv_result=no])])
                 AC_MSG_RESULT($lv_result)
 			
               	if test "$lv_result" = "yes" ; then
