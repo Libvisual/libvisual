@@ -2,9 +2,9 @@
 
 bin_PROGRAMS = $(TOOLS_LV_TOOL)
 
-EXTRA_PROGRAMS = lv-tool
+EXTRA_PROGRAMS = lv-tool-0.4
 
-lv_tool_SOURCES = lv-tool.cpp
-lv_tool_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libvisual
-lv_tool_CXXFLAGS = $(SDL_CFLAGS)
-lv_tool_LDADD = $(SDL_LIBS) ../../libvisual/libvisual-@LIBVISUAL_VERSION_SUFFIX@.la
+lv_tool_0_4_SOURCES = lv-tool.cpp
+lv_tool_0_4_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libvisual
+lv_tool_0_4_CXXFLAGS = $(SDL_CFLAGS)
+lv_tool_0_4_LDADD = $(SDL_LIBS) ../../libvisual/libvisual-@LIBVISUAL_VERSION_SUFFIX@.la
