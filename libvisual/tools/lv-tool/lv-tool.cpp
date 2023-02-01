@@ -515,20 +515,21 @@ namespace {
   /** print commandline help */
   void print_help(std::string const& name)
   {
-      printf("Usage: %s [options]\n\n"
+      printf("Usage: %s [options]\n"
+                  "\n"
                   "Valid options:\n"
-                  "\t--help\t\t\t-h\t\tThis help text\n"
-                  "\t--plugin-help\t\t-p\t\tList of installed plugins + information\n"
-                  "\t--verbose\t\t-v\t\tIncrease log verbosity (may be used multiple times)\n"
-                  "\t--dimensions <wxh>\t-D <wxh>\tRequest dimensions from display driver (no guarantee) [%dx%d]\n"
-                  "\t--depth <depth> \t-c <depth>\tSet output colour depth (automatic by default)\n"
-                  "\t--input <input>\t\t-i <input>\tUse this input plugin [%s]\n"
-                  "\t--actor <actor>\t\t-a <actor>\tUse this actor plugin [%s/%s]\n"
-                  "\t--seed <seed>\t\t-s <seed>\tSet random seed\n"
-                  "\t--fps <n>\t\t-f <n>\t\tLimit output to n frames per second (if display driver supports it) [%d]\n"
-                  "\t--framecount <n>\t-F <n>\t\tOutput n frames, then exit.\n"
-                  "\t--switch <n>\t\t-S <n>\t\tSwitch actor after n frames.\n"
-                  "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
+                  "  --help, -h                       This help text\n"
+                  "  --plugin-help, -p                List of installed plugins + information\n"
+                  "  --verbose, -v                    Increase log verbosity (may be used multiple times)\n"
+                  "  --dimensions <wxh>, -D <wxh>     Request dimensions from display driver (no guarantee) [%dx%d]\n"
+                  "  --depth <depth>, -c <depth>      Set output colour depth (automatic by default)\n"
+                  "  --input <input>, -i <input>      Use this input plugin [%s]\n"
+                  "  --actor <actor>, -a <actor>      Use this actor plugin [%s/%s]\n"
+                  "  --seed <seed>, -s <seed>         Set random seed\n"
+                  "  --fps <n>, -f <n>                Limit output to n frames per second (if display driver supports it) [%d]\n"
+                  "  --framecount <n>, -F <n>         Output n frames, then exit.\n"
+                  "  --switch <n>, -S <n>             Switch actor after n frames.\n"
+                  "  --exclude <actors>, -x <actors>  Provide a list of actors to exclude.\n"
                   "\n",
                   name.c_str (),
                   width, height,
