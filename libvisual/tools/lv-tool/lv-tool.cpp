@@ -512,6 +512,12 @@ namespace {
       }
   }
 
+  /** print commandline version */
+  void print_version(std::string const& name)
+  {
+      printf("%s %s\n", name.c_str (), PACKAGE_VERSION);
+  }
+
   /** print commandline help */
   void print_help(std::string const& name)
   {
@@ -520,6 +526,7 @@ namespace {
                   "Valid options:\n"
                   "  --help, -h                       This help text\n"
                   "  --plugin-help, -p                List of installed plugins + information\n"
+                  "  --version, -V                    Print version and exit\n"
                   "  --verbose, -v                    Increase log verbosity (may be used multiple times)\n"
                   "  --dimensions <wxh>, -D <wxh>     Request dimensions from display driver (no guarantee) [%dx%d]\n"
                   "  --depth <depth>, -c <depth>      Set output colour depth (automatic by default)\n"
@@ -551,6 +558,7 @@ namespace {
       static struct option loptions[] = {
           {"help",        no_argument,       0, 'h'},
           {"plugin-help", no_argument,       0, 'p'},
+          {"version",     no_argument,       0, 'V'},
           {"verbose",     no_argument,       0, 'v'},
           {"dimensions",  required_argument, 0, 'D'},
           {"input",       required_argument, 0, 'i'},
@@ -578,6 +586,12 @@ namespace {
               // --plugin-help
               case 'p': {
                   print_plugin_help();
+                  return 1;
+              }
+
+              // --version
+              case 'V': {
+                  print_version(argv[0]);
                   return 1;
               }
 
