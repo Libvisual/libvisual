@@ -1,0 +1,57 @@
+# Libvisual - The audio visualisation framework.
+#
+# Copyright (C) 2023 Libvisual team
+#
+# Authors: Sebastian Pipping <sebastian@pipping.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 2.1
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+name: Enforce that copies of --help output are in sync
+
+on:
+- pull_request
+- push
+
+jobs:
+  help_output_in_sync:
+    name: Check if copies of --help output are in sync
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3.2.0
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            autopoint \
+            gettext \
+            help2man \
+            libsdl1.2-dev
+
+      - name: Build lv-tool
+        run: |-
+          set -x
+          cd libvisual
+          ./autogen.sh
+          make -j
+
+      - name: Check if the man page is in sync with --help output
+        run: |-
+          set -x -o pipefail
+          cd libvisual/tools/lv-tool
+          rm lv-tool-0.4.1  # to enforce a diff for the generator to remove
+          PATH="${PWD}:${PATH}" ./sync-manpage-with-help-output.sh
+          COLUMNS=99 man ./lv-tool-0.4.1 | cat
+          git diff --exit-code -- lv-tool-0.4.1
