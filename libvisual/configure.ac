@@ -409,7 +409,7 @@ if test  x$lv_tool_enabled = xyes -o x$examples = xyes ; then
     AC_SUBST([EXAMPLES], ['simplesdl morphsdl'])
   fi
   if test x$lv_tool_enabled = xyes ; then
-    AC_SUBST([TOOLS_LV_TOOL], ['lv-tool'])
+    AC_SUBST([TOOLS_LV_TOOL], ['lv-tool-0.4'])
   fi
 fi
 
