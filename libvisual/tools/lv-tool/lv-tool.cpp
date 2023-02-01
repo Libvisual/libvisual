@@ -546,6 +546,14 @@ namespace {
                   frame_rate);
   }
 
+  void print_welcome()
+  {
+      // print warm welcome
+      std::cerr << "lv-tool" << " - "
+                << "Libvisual " << PACKAGE_VERSION
+                << " commandline tool - "
+                << PACKAGE_URL << "\n";
+  }
 
   /**
    * parse commandline arguments
@@ -579,12 +587,14 @@ namespace {
           switch(argument) {
               // --help
               case 'h': {
+                  print_welcome();
                   print_help(argv[0]);
                   return 1;
               }
 
               // --plugin-help
               case 'p': {
+                  print_welcome();
                   print_plugin_help();
                   return 1;
               }
@@ -740,12 +750,6 @@ namespace {
 int main (int argc, char **argv)
 {
     try {
-        // print warm welcome
-        std::cerr << "lv-tool" << " - "
-                  << "Libvisual " << PACKAGE_VERSION
-                  << " commandline tool - "
-                  << PACKAGE_URL << "\n";
-
         // setup signal handlers
         setup_signal_handlers ();
 
@@ -763,6 +767,8 @@ int main (int argc, char **argv)
         if (parse_result > 0) {
             return EXIT_SUCCESS;
         }
+
+        print_welcome();
 
         // Set system-wide random seed
         if (have_seed) {
