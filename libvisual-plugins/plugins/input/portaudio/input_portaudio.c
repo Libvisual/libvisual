@@ -103,6 +103,7 @@ int inp_portaudio_init (VisPluginData *plugin)
 	const PaError open_error =
 			Pa_OpenStream (&priv->stream, &input_parameters, NULL,
 						   SAMPLE_RATE, FRAMES, paClipOff, NULL, NULL);
+	visual_log_return_val_if_fail (open_error != paNoError, -3);
 
 	// Allocate buffer
 	const visual_size_t buffer_size_bytes = FRAMES * CHANNELS * (SAMPLE_FORMAT_BITS / 8);
@@ -111,7 +112,7 @@ int inp_portaudio_init (VisPluginData *plugin)
 
 	// Start stream
 	const PaError input_start_error = Pa_StartStream (priv->stream);
-	visual_log_return_val_if_fail (input_start_error == paNoError, -4);
+	visual_log_return_val_if_fail (input_start_error == paNoError, -5);
 
 	return 0;
 }
