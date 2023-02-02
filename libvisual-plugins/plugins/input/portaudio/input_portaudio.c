@@ -103,7 +103,7 @@ int inp_portaudio_init (VisPluginData *plugin)
 	const PaError open_error =
 			Pa_OpenStream (&priv->stream, &input_parameters, NULL,
 						   SAMPLE_RATE, FRAMES, paClipOff, NULL, NULL);
-	visual_log_return_val_if_fail (open_error != paNoError, -3);
+	visual_log_return_val_if_fail (open_error == paNoError, -3);
 
 	// Allocate buffer
 	const visual_size_t buffer_size_bytes = FRAMES * CHANNELS * (SAMPLE_FORMAT_BITS / 8);
