@@ -33,24 +33,24 @@
 namespace {
 
   SDL_GLattr const sdl_gl_attribute_map[] = {
-      SDL_GLattr (-1),         // VISUAL_GL_ATTRIBUTE_NONE
-      SDL_GL_BUFFER_SIZE,      // VISUAL_GL_ATTRIBUTE_BUFFER_SIZE
-      SDL_GLattr (-1),         // VISUAL_GL_ATTRIBUTE_LEVEL
-      SDL_GLattr (-1),         // VISUAL_GL_ATTRIBUTE_RGBA
-      SDL_GL_DOUBLEBUFFER,     // VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER
-      SDL_GL_STEREO,           // VISUAL_GL_ATTRIBUTE_STEREO
-      SDL_GLattr (-1),         // VISUAL_GL_ATTRIBUTE_AUX_BUFFERS
-      SDL_GL_RED_SIZE,         // VISUAL_GL_ATTRIBUTE_RED_SIZE
-      SDL_GL_GREEN_SIZE,       // VISUAL_GL_ATTRIBUTE_GREEN_SIZE
-      SDL_GL_BLUE_SIZE,        // VISUAL_GL_ATTRIBUTE_BLUE_SIZE
-      SDL_GL_ALPHA_SIZE,       // VISUAL_GL_ATTRIBUTE_ALPHA_SIZE
-      SDL_GL_DEPTH_SIZE,       // VISUAL_GL_ATTRIBUTE_DEPTH_SIZE
-      SDL_GL_STENCIL_SIZE,     // VISUAL_GL_ATTRIBUTE_STENCIL_SIZE
-      SDL_GL_ACCUM_RED_SIZE,   // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
-      SDL_GL_ACCUM_GREEN_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
-      SDL_GL_ACCUM_BLUE_SIZE,  // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
-      SDL_GL_ACCUM_ALPHA_SIZE, // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
-      SDL_GLattr (-1)          // VISUAL_GL_ATTRIBUTE_LAST
+      static_cast<SDL_GLattr> (-1),  // VISUAL_GL_ATTRIBUTE_NONE
+      SDL_GL_BUFFER_SIZE,            // VISUAL_GL_ATTRIBUTE_BUFFER_SIZE
+      static_cast<SDL_GLattr> (-1),  // VISUAL_GL_ATTRIBUTE_LEVEL
+      static_cast<SDL_GLattr> (-1),  // VISUAL_GL_ATTRIBUTE_RGBA
+      SDL_GL_DOUBLEBUFFER,           // VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER
+      SDL_GL_STEREO,                 // VISUAL_GL_ATTRIBUTE_STEREO
+      static_cast<SDL_GLattr> (-1),  // VISUAL_GL_ATTRIBUTE_AUX_BUFFERS
+      SDL_GL_RED_SIZE,               // VISUAL_GL_ATTRIBUTE_RED_SIZE
+      SDL_GL_GREEN_SIZE,             // VISUAL_GL_ATTRIBUTE_GREEN_SIZE
+      SDL_GL_BLUE_SIZE,              // VISUAL_GL_ATTRIBUTE_BLUE_SIZE
+      SDL_GL_ALPHA_SIZE,             // VISUAL_GL_ATTRIBUTE_ALPHA_SIZE
+      SDL_GL_DEPTH_SIZE,             // VISUAL_GL_ATTRIBUTE_DEPTH_SIZE
+      SDL_GL_STENCIL_SIZE,           // VISUAL_GL_ATTRIBUTE_STENCIL_SIZE
+      SDL_GL_ACCUM_RED_SIZE,         // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+      SDL_GL_ACCUM_GREEN_SIZE,       // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+      SDL_GL_ACCUM_BLUE_SIZE,        // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+      SDL_GL_ACCUM_ALPHA_SIZE,       // VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE
+      static_cast<SDL_GLattr> (-1)   // VISUAL_GL_ATTRIBUTE_LAST
   };
 
   void get_nearest_resolution (int& width, int& height);
@@ -117,7 +117,7 @@ namespace {
                   for (unsigned int i = VISUAL_GL_ATTRIBUTE_NONE; i < VISUAL_GL_ATTRIBUTE_LAST; i++) {
                       SDL_GLattr sdl_attribute = sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
-                      if (sdl_attribute < 0) {
+                      if (sdl_attribute == static_cast<SDL_GLattr> (-1)) {
                           continue;
                       }
 
