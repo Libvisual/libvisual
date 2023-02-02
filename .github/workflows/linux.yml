@@ -33,7 +33,7 @@ jobs:
           - cc: clang-16
             cxx: clang++-16
             clang_major_version: 16
-            clang_repo_suffix:
+            clang_repo_suffix: -16
     steps:
       - name: Add Clang/LLVM repositories
         if: "${{ contains(matrix.cxx, 'clang') }}"
