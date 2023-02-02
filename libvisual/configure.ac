@@ -135,8 +135,6 @@ AC_MSG_RESULT($lv_have_gnuc_varargs)
 AC_C_BIGENDIAN(bigendian=yes, bigendian=no, )
 
 # Checks for library functions.
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup sysconf])
 
