@@ -396,15 +396,10 @@ fi
 
 if test  x$lv_tool_enabled = xyes -o x$examples = xyes ; then
   # Find SDL 1.x.x
-  AC_PATH_TOOL(SDL_CONFIG, [sdl-config])
-  if test x$SDL_CONFIG = x ; then
-       AC_MSG_ERROR([*** sdl-config not found.
-                       If you have installed from binaries, probably you have not
-                       installed SDL 1.x.x development package.
-                       See https://www.libsdl.org/])
-  fi
   # On success, this will set and substitute SDL_CFLAGS and SDL_LIBS
-  AM_PATH_SDL(1.2.0,,AC_MSG_ERROR([*** SDL >= 1.2.0 not installed - please install first]))
+  PKG_CHECK_MODULES([SDL], [sdl >= 1.2.0], [], [
+    AC_MSG_ERROR([*** SDL 1.2.x not installed - please install first])
+  ])
   if test x$examples = xyes ; then
     AC_SUBST([EXAMPLES], ['simplesdl morphsdl'])
   fi
