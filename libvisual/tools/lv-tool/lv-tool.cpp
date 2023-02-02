@@ -41,8 +41,8 @@
 #define DEFAULT_ACTOR_GL "lv_gltest"
 #define DEFAULT_ACTOR_NONGL "lv_analyzer"
 #define DEFAULT_INPUT   "debug"
-#define DEFAULT_WIDTH   320
-#define DEFAULT_HEIGHT  200
+#define DEFAULT_WIDTH   640
+#define DEFAULT_HEIGHT  480
 #define DEFAULT_FPS     60
 #define DEFAULT_COLOR_DEPTH 0
 
@@ -597,7 +597,7 @@ namespace {
               case 'D': {
                   if (std::sscanf (optarg, "%ux%u", &width, &height) != 2)
                   {
-                      std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 320x200)\n";
+                      std::cerr << "Invalid dimensions: '" << optarg << "'. Use <width>x<height> (e.g. 640x480)\n";
                       return -1;
                   }
                   break;
