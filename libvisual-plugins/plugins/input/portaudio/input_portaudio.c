@@ -43,16 +43,16 @@ typedef struct {
 } PortAudioPrivate;
 
 static int inp_portaudio_init (VisPluginData *plugin);
-static int inp_portaudio_cleanup (VisPluginData *plugin);
+static void inp_portaudio_cleanup (VisPluginData *plugin);
 static int inp_portaudio_upload (VisPluginData *plugin, VisAudio *audio);
 
-const VisPluginInfo *get_plugin_info (int *count)
+const VisPluginInfo *get_plugin_info (void)
 {
-	static VisInputPlugin input[] = {{
+	static VisInputPlugin input = {
 		.upload = inp_portaudio_upload
-	}};
+	};
 
-	static VisPluginInfo info[] = {{
+	static VisPluginInfo info = {
 		.type = VISUAL_PLUGIN_TYPE_INPUT,
 
 		.plugname = "portaudio",
@@ -66,12 +66,10 @@ const VisPluginInfo *get_plugin_info (int *count)
 		.init = inp_portaudio_init,
 		.cleanup = inp_portaudio_cleanup,
 
-		.plugin = VISUAL_OBJECT (&input[0])
-	}};
+		.plugin = &input
+	};
 
-	*count = sizeof (info) / sizeof (*info);
-
-	return info;
+	return &info;
 }
 
 int inp_portaudio_init (VisPluginData *plugin)
@@ -81,16 +79,16 @@ int inp_portaudio_init (VisPluginData *plugin)
 #endif
 
 	PortAudioPrivate * const priv = visual_mem_new0 (PortAudioPrivate, 1);
-	visual_log_return_val_if_fail(priv != NULL, -1);
-	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
+	visual_return_val_if_fail (priv != NULL, FALSE);
+	visual_plugin_set_private (plugin, priv);
 
 	// Init PortAudio
 	const PaError init_error = Pa_Initialize();
-	visual_log_return_val_if_fail (init_error == paNoError, -2);
+	visual_return_val_if_fail (init_error == paNoError, FALSE);
 
 	// Select input device
 	const PaDeviceIndex input_device = Pa_GetDefaultInputDevice ();
-	visual_log_return_val_if_fail (input_device != paNoDevice, -3);
+	visual_return_val_if_fail (input_device != paNoDevice, FALSE);
 
 	// Open stream
 	const double latency_seconds = 1.0 / SAMPLE_RATE * FRAMES;
@@ -103,25 +101,26 @@ int inp_portaudio_init (VisPluginData *plugin)
 	const PaError open_error =
 			Pa_OpenStream (&priv->stream, &input_parameters, NULL,
 						   SAMPLE_RATE, FRAMES, paClipOff, NULL, NULL);
+	visual_return_val_if_fail (open_error == paNoError, FALSE);
 
 	// Allocate buffer
 	const visual_size_t buffer_size_bytes = FRAMES * CHANNELS * (SAMPLE_FORMAT_BITS / 8);
 	priv->buffer = malloc (buffer_size_bytes);
-	visual_log_return_val_if_fail (priv->buffer != NULL, -4);
+	visual_return_val_if_fail (priv->buffer != NULL, FALSE);
 
 	// Start stream
 	const PaError input_start_error = Pa_StartStream (priv->stream);
-	visual_log_return_val_if_fail (input_start_error == paNoError, -4);
+	visual_return_val_if_fail (input_start_error == paNoError, FALSE);
 
-	return 0;
+	return TRUE;
 }
 
-int inp_portaudio_cleanup (VisPluginData *plugin)
+void inp_portaudio_cleanup (VisPluginData *plugin)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -1);
+	visual_return_if_fail (plugin != NULL);
 
-	PortAudioPrivate * const priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail (priv != NULL, -2);
+	PortAudioPrivate * const priv = visual_plugin_get_private (plugin);
+	visual_return_if_fail (priv != NULL);
 
 	free (priv->buffer);
 	priv->buffer = NULL;
@@ -133,23 +132,21 @@ int inp_portaudio_cleanup (VisPluginData *plugin)
 	Pa_Terminate ();
 
 	visual_mem_free (priv);
-
-	return 0;
 }
 
 int inp_portaudio_upload (VisPluginData *plugin, VisAudio *audio)
 {
-	visual_log_return_val_if_fail (plugin != NULL, -1);
-	visual_log_return_val_if_fail (audio != NULL, -2);
+	visual_return_val_if_fail (plugin != NULL, FALSE);
+	visual_return_val_if_fail (audio != NULL, FALSE);
 
-	PortAudioPrivate * const priv = visual_object_get_private (VISUAL_OBJECT (plugin));
-	visual_log_return_val_if_fail (priv != NULL, -3);
-	visual_log_return_val_if_fail (priv->stream != NULL, -4);
+	PortAudioPrivate * const priv = visual_plugin_get_private (plugin);
+	visual_return_val_if_fail (priv != NULL, FALSE);
+	visual_return_val_if_fail (priv->stream != NULL, FALSE);
 
 	for (;;) {
 		long frames_to_read = Pa_GetStreamReadAvailable (priv->stream);
 		if (frames_to_read < 1) {
-			return 0;
+			return TRUE;
 		}
 		if (frames_to_read > FRAMES) {
 			frames_to_read = FRAMES;  // because that's all that priv->buffer has space for
@@ -157,16 +154,17 @@ int inp_portaudio_upload (VisPluginData *plugin, VisAudio *audio)
 
 		const PaError read_error = Pa_ReadStream(priv->stream, priv->buffer, frames_to_read);
 		if (read_error != paNoError) {
-			return 0;
+			return TRUE;
 		}
 
 		const visual_size_t bytes_to_write = frames_to_read * CHANNELS * (SAMPLE_FORMAT_BITS / 8);
 
-		VisBuffer buffer;
-		visual_buffer_init(&buffer, priv->buffer, bytes_to_write, NULL);
+		VisBuffer * const buffer = visual_buffer_new_wrap_data (priv->buffer, bytes_to_write, FALSE);
+		visual_return_val_if_fail (priv != NULL, FALSE);
 
-		visual_audio_samplepool_input(audio->samplepool, &buffer, SAMPLE_RATE_TYPE_LV,
-									  SAMPLE_FORMAT_LV, CHANNELS_TYPE);
+		visual_audio_input(audio, buffer, SAMPLE_RATE_TYPE_LV, SAMPLE_FORMAT_LV, CHANNELS_TYPE);
+
+		visual_buffer_unref (buffer);
 	}
 
 	// we never get here
