@@ -131,7 +131,7 @@ namespace {
                       SDL_GLattr sdl_attribute =
                           sdl_gl_attribute_map[vidoptions->gl_attrs[i].attribute];
 
-                      if (sdl_attribute < 0) {
+                      if (sdl_attribute == static_cast<SDL_GLattr> (-1)) {
                           continue;
                       }
 
