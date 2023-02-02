@@ -5,6 +5,8 @@ ADD_EXECUTABLE(lv-tool
   display/stdout_driver.cpp
 )
 
+SET_TARGET_PROPERTIES(lv-tool PROPERTIES OUTPUT_NAME lv-tool-0.5)
+
 TARGET_INCLUDE_DIRECTORIES(lv-tool
   PRIVATE
   ${PROJECT_SOURCE_DIR}
