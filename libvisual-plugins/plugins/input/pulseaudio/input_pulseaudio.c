@@ -19,6 +19,7 @@
 #include <pulse/stream.h>
 #include <pulse/thread-mainloop.h>
 #include <assert.h>
+#include <stdatomic.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -34,13 +35,6 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 #define CHUNK_SIZE_BYTES (FRAMES * CHANNELS * sizeof(SAMPLE_TYPE))
 #define CHUNKS (2 * SAMPLE_RATE / FRAMES + 1)  // i.e. 2+ seconds of audio
 
-#if defined(__clang__) || defined(__GNUC__)
-# define ATOMIC_CONSUMER_LOAD_64(source, target)  __atomic_load(&source, &target, __ATOMIC_ACQUIRE)
-# define ATOMIC_PRODUCER_STORE_64(target, source)  __atomic_store(&target, &source, __ATOMIC_RELEASE)
-#else
-# error We need GCC or Clang for __atomic_load and __atomic_store
-#endif
-
 pa_sample_spec sample_spec = {
     .format = SAMPLE_FORMAT_PA,
     .rate = SAMPLE_RATE,
@@ -53,7 +47,7 @@ typedef struct {
     pa_stream * input_stream;
 
     SAMPLE_TYPE pcm_data[CHUNKS][FRAMES * CHANNELS];  // ringbuffer of chunks
-    uint64_t chunks_written;
+    atomic_uint_fast64_t chunks_written;
     uint64_t chunk_write_offset_bytes;
     uint64_t chunks_read;
 } pulseaudio_priv_t;
@@ -157,8 +151,7 @@ static int inp_pulseaudio_upload( VisPluginData *plugin, VisAudio *audio )
     // so we make a snapshot to work with a single consistent value below.
     // Also, plain reads to 64bit are not atomic on 32bit platforms, so we add protection.
     // This is attomic `priv->chunks_written = frozen_chunks_written`.
-    uint64_t frozen_chunks_written;
-    ATOMIC_CONSUMER_LOAD_64(priv->chunks_written, frozen_chunks_written);
+    uint64_t frozen_chunks_written = atomic_load_explicit(&priv->chunks_written, memory_order_acquire);
 
     assert(priv->chunks_read <= frozen_chunks_written);
     if (priv->chunks_read == frozen_chunks_written) {
@@ -228,7 +221,7 @@ static void on_input_stream_data(pa_stream *p, size_t nbytes, void *userdata) {
 
             // This is atomic `priv->chunks_written++`
             uint64_t new_chunks_written = priv->chunks_written + 1;
-            ATOMIC_PRODUCER_STORE_64(priv->chunks_written, new_chunks_written);
+            atomic_store_explicit(&priv->chunks_written, new_chunks_written, memory_order_release);
         }
 
         nbytes -= round_nbytes;
