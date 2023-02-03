@@ -51,7 +51,7 @@ dnl 'Standard' header files.
 AC_CHECK_HEADERS([fcntl.h unistd.h stdlib.h string.h sys/time.h])
 
 dnl Library functions.
-AC_CHECK_FUNCS([floor gettimeofday memmove memset pow sqrt])
+AC_CHECK_FUNCS([gettimeofday])
 AC_CHECK_FUNC([munmap], lv_have_munmap=yes, lv_have_munmap=no)
 AC_FUNC_MMAP
 
