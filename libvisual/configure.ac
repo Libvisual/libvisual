@@ -136,7 +136,7 @@ AC_C_BIGENDIAN(bigendian=yes, bigendian=no, )
 
 # Checks for library functions.
 AC_FUNC_SELECT_ARGTYPES
-AC_CHECK_FUNCS([gettimeofday usleep nanosleep select memset sqrt strdup strndup sysconf])
+AC_CHECK_FUNCS([gettimeofday usleep nanosleep select strdup strndup sysconf])
 
 AC_CHECK_LIB([dl], [dlsym], [LIBS="-ldl $LIBS"],
 	     AC_MSG_WARN([*** You need dlsym() to make use of Libvisual.]))
