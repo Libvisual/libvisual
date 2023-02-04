@@ -330,7 +330,7 @@ namespace LV {
       // Validate parent-child relations.
 
       if (m_impl->parent) {
-          auto parent_impl = m_impl->parent->m_impl.get ();
+          auto const parent_impl = m_impl->parent->m_impl.get ();
           if (!parent_impl->extents.contains (m_impl->extents)) {
               visual_log (VISUAL_LOG_ERROR, "Sub-video is not fully contained by parent.");
               return false;
@@ -348,15 +348,13 @@ namespace LV {
 
           // Validate pixel row table
 
-          auto pixel_row_ptr = static_cast<uint8_t const*> (get_pixels ());
-
           for (int y = 0; y < m_impl->height; y++) {
+              auto const pixel_row_ptr = static_cast<uint8_t const*> (get_pixels ()) + y * m_impl->pitch;
+
               if (m_impl->pixel_rows[y] != pixel_row_ptr) {
                   visual_log (VISUAL_LOG_ERROR, "Pixel row pointer table is wrong at y=%d.", y);
                   return false;
               }
-
-              pixel_row_ptr += m_impl->pitch;
           }
       }
 
