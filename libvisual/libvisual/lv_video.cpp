@@ -338,7 +338,7 @@ namespace LV {
       }
 
       if (m_impl->depth != VISUAL_VIDEO_DEPTH_GL) {
-          // Validate depth and bytes per pixel consisteency.
+          // Validate depth and bytes per pixel consistency.
 
           if (m_impl->bpp != visual_video_depth_bpp (m_impl->depth) / 8) {
               visual_log (VISUAL_LOG_ERROR, "Depth (%s) is not consistent with BPP (%d).",
