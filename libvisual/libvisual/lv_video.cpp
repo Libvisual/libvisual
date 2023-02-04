@@ -36,6 +36,7 @@
 #include "private/lv_video_transform.hpp"
 #include "private/lv_video_bmp.hpp"
 #include "private/lv_video_png.hpp"
+#include <cstring>
 #include <fstream>
 
 namespace LV {
@@ -289,6 +290,108 @@ namespace LV {
           return false;
 
       /* We made it to the end, the Videos are likewise in depth, pitch, dimensions */
+      return true;
+  }
+
+#ifdef _LV_BUILD_PRIVATE_TEST_FUNCS
+  bool Video::validate() const
+  {
+      // Validate dimensions.
+
+      if (m_impl->width <= 0) {
+          visual_log (VISUAL_LOG_ERROR, "Video has a zero or negative width (%d).", m_impl->width);
+          return false;
+      }
+
+      if (m_impl->height <= 0) {
+          visual_log (VISUAL_LOG_ERROR, "Video has a zero or negative height (%d).", m_impl->height);
+          return false;
+      }
+
+      if (m_impl->pitch <= 0) {
+          visual_log (VISUAL_LOG_ERROR, "Video has a zero or negative pitch (%d).", m_impl->pitch);
+          return false;
+      }
+
+      // Validate extents.
+
+      if (m_impl->width != m_impl->extents.width) {
+          visual_log (VISUAL_LOG_ERROR, "Width (%d) and width of extents (%d) do not agree.",
+                      m_impl->width, m_impl->extents.width);
+          return false;
+      }
+
+      if (m_impl->height != m_impl->extents.height) {
+          visual_log (VISUAL_LOG_ERROR, "Height (%d) and height of extents (%d) do not agree.",
+                      m_impl->height, m_impl->extents.height);
+          return false;
+      }
+
+      // Validate parent-child relations.
+
+      if (m_impl->parent) {
+          auto const parent_impl = m_impl->parent->m_impl.get ();
+          if (!parent_impl->extents.contains (m_impl->extents)) {
+              visual_log (VISUAL_LOG_ERROR, "Sub-video is not fully contained by parent.");
+              return false;
+          }
+      }
+
+      if (m_impl->depth != VISUAL_VIDEO_DEPTH_GL) {
+          // Validate depth and bytes per pixel consistency.
+
+          if (m_impl->bpp != visual_video_depth_bpp (m_impl->depth) / 8) {
+              visual_log (VISUAL_LOG_ERROR, "Depth (%s) is not consistent with BPP (%d).",
+                          visual_video_depth_name (m_impl->depth), m_impl->bpp);
+              return false;
+          }
+
+          // Validate pixel row table
+
+          for (int y = 0; y < m_impl->height; y++) {
+              auto const pixel_row_ptr = static_cast<uint8_t const*> (get_pixels ()) + y * m_impl->pitch;
+
+              if (m_impl->pixel_rows[y] != pixel_row_ptr) {
+                  visual_log (VISUAL_LOG_ERROR, "Pixel row pointer table is wrong at y=%d.", y);
+                  return false;
+              }
+          }
+      }
+
+      return true;
+  }
+#endif // defined(_LV_BUILD_PRIVATE_TEST_FUNCS)
+
+  bool Video::has_same_content (VideoConstPtr const& video) const
+  {
+      // Comparison of GL LV::Video is not supported.
+      if (m_impl->depth == VISUAL_VIDEO_DEPTH_GL || video->m_impl->depth == VISUAL_VIDEO_DEPTH_GL) {
+          return false;
+      }
+
+      // Videos must have the same dimensions and pixel format.
+
+      if (m_impl->width != video->m_impl->width)
+          return false;
+
+      if (m_impl->height != video->m_impl->height)
+          return false;
+
+      if (m_impl->depth != video->m_impl->depth)
+          return false;
+
+      // Videos must have the same colours at every pixel.
+
+      // Determine the size (in bytes) of the blocks in each row to compare. This must exclude padding.
+      // It must also exclude pixels outside of a subvideo's extents.
+      std::size_t const content_bytes_per_row = m_impl->width * m_impl->bpp;
+
+      for (int y = 0; y < m_impl->height; y++) {
+          if (std::memcmp (m_impl->pixel_rows[y], video->m_impl->pixel_rows[y], content_bytes_per_row)) {
+              return false;
+          }
+      }
+
       return true;
   }
 
