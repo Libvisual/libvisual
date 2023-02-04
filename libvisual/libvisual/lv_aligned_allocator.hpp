@@ -1,104 +1,59 @@
 #ifndef _LV_ALIGNED_ALLOCATOR_HPP
 #define _LV_ALIGNED_ALLOCATOR_HPP
 
-#include <cstddef>
-#include <cstdlib>
-#include <new>
 #include <libvisual/lv_mem.h>
+#include <cstdlib>
+#include <limits>
+#include <memory>
+#include <stdexcept>
 
-namespace LV {
-
-  template <typename T, std::size_t alignment>
-  struct AlignedAllocator;
-
-  template <std::size_t alignment>
-  struct AlignedAllocator<void, alignment>
-  {
-      typedef void        value_type;
-      typedef void*       pointer;
-      typedef void const* const_pointer;
-
-      template <typename U>
-      struct rebind { typedef AlignedAllocator<U, alignment> other; };
-  };
-
+namespace LV
+{
   //! Aligned memory allocator.
   //!
-  //! @tparam T         type of object to allocate
   //! @tparam alignment alignment boundary
+  //! @tparam T         type of object to allocate
   //!
   //! AlignedAllocator is an implementation of the C++ Allocator concept for use with standard library containers.
   //!
-  template <typename T, std::size_t alignment>
+  template <std::size_t alignment, typename T = std::byte>
   struct AlignedAllocator
   {
-      typedef T*             pointer;
-      typedef T&             reference;
-      typedef T const*       const_pointer;
-      typedef T const&       const_reference;
-      typedef T              value_type;
-      typedef std::size_t    size_type;
-      typedef std::ptrdiff_t difference_type;
+      using value_type = T;
+
+      AlignedAllocator () = default;
 
       template <typename U>
-      struct rebind { typedef AlignedAllocator<U, alignment> other; };
-
-      AlignedAllocator ()
+      constexpr AlignedAllocator (AlignedAllocator<alignment, U> const&) noexcept
       {}
 
-      template <typename U>
-      AlignedAllocator (AlignedAllocator<U, alignment>&)
-      {}
-
-      pointer address (reference x) const
+      [[nodiscard]] T* allocate (std::size_t n)
       {
-          return &x;
-      }
+          if (n > std::numeric_limits<std::size_t>::max () / sizeof (T))
+              throw std::bad_array_new_length {};
 
-      const_pointer address (const_reference x) const
-      {
-          return &x;
-      }
-
-      pointer allocate (size_type n, typename AlignedAllocator<void, alignment>::pointer = nullptr)
-      {
-          void* ptr = visual_mem_malloc_aligned (n * sizeof (T), alignment);
+          auto ptr = visual_mem_malloc_aligned (n * sizeof (T), alignment);
 
           if (!ptr)
-              throw std::bad_alloc ();
+              throw std::bad_alloc {};
 
-          return pointer (ptr);
+          return ptr;
       }
 
-      void deallocate (pointer ptr, size_type) noexcept
+      void deallocate (T* ptr, std::size_t) noexcept
       {
           visual_mem_free_aligned (ptr);
-      }
-
-      size_type max_size () const
-      {
-          return size_type (-1) / sizeof (T);
-      }
-
-      void construct (pointer p, const_reference x)
-      {
-          new (p) T (x);
-      }
-
-      void destroy (pointer p)
-      {
-          p->~T ();
       }
   };
 
   template <typename T, typename U, std::size_t alignment>
-  bool operator== (AlignedAllocator<T, alignment> const&, AlignedAllocator<U, alignment> const&)
+  bool operator== (AlignedAllocator<alignment, T> const&, AlignedAllocator<alignment, U> const&)
   {
       return true;
   }
 
   template <typename T, typename U, std::size_t alignment>
-  bool operator!= (AlignedAllocator<T, alignment> const&, AlignedAllocator<U, alignment> const&)
+  bool operator!= (AlignedAllocator<alignment, T> const&, AlignedAllocator<alignment, U> const&)
   {
       return false;
   }
