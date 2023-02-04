@@ -128,8 +128,8 @@ namespace LV {
             return Time(SDL_GetTicks());
         }
 
-        Time operator-(Time & other) const {
-            return Time(this->m_moment - other.m_moment);
+        friend Time operator-(Time const& lhs, Time const& rhs) {
+            return Time(lhs.m_moment - rhs.m_moment);
         }
 
         uint64_t to_usecs() const {
