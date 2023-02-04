@@ -293,7 +293,7 @@ namespace LV {
       return true;
   }
 
-  #ifdef LV_ENABLE_TESTS
+#ifdef _LV_BUILD_PRIVATE_TEST_FUNCS
   bool Video::validate() const
   {
       // Validate dimensions.
@@ -360,7 +360,7 @@ namespace LV {
 
       return true;
   }
-  #endif // defined(LV_ENABLE_TESTS)
+#endif // defined(_LV_BUILD_PRIVATE_TEST_FUNCS)
 
   bool Video::has_same_content (VideoConstPtr const& video) const
   {

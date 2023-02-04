@@ -294,7 +294,7 @@ namespace LV {
        */
       bool compare_attrs_ignore_pitch (VideoConstPtr const& src) const;
 
-#ifdef LV_ENABLE_TESTS
+#ifdef _LV_BUILD_PRIVATE_TEST_FUNCS
       /**
        * Validates the state of this Video.
        *
@@ -303,7 +303,7 @@ namespace LV {
        * @return true if video has consistent state, false otherwise.
        */
       bool validate() const;
-#endif // defined(LV_ENABLE_TESTS)
+#endif // defined(_LV_BUILD_PRIVATE_TEST_FUNCS)
 
       /**
        * Checks if this Video has the same (pixel) content as another Video.
