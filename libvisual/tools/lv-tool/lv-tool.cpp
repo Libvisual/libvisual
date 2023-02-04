@@ -105,6 +105,45 @@ namespace {
       }
   };
 
+  class ResizeRequest
+  {
+  public:
+      ResizeRequest()
+          : m_width {0}
+          , m_height {0}
+      {}
+
+      unsigned int get_width() const { return m_width; }
+      unsigned int get_height() const { return m_height; }
+
+      bool is_due() const
+      {
+          if (m_applied_at >= m_received_at) {
+              return false;
+          }
+          const double seconds_passed = (LV::Time::now() - m_received_at).to_secs();
+          return seconds_passed >= 0.2; // >=300ms is known to feel slow to humans
+      }
+
+      void store(unsigned int width, unsigned int height)
+      {
+          m_width = width;
+          m_height = height;
+          m_received_at = LV::Time::now();
+      }
+
+      void mark_as_applied()
+      {
+          m_applied_at = LV::Time::now();
+      }
+
+  private:
+      unsigned int m_width;
+      unsigned int m_height;
+      LV::Time m_received_at;
+      LV::Time m_applied_at;
+  };
+
   /** print info about libvisual plugin */
   void print_plugin_info(VisPluginInfo const& info)
   {
@@ -543,6 +582,7 @@ int main (int argc, char **argv)
 
         // main loop
         bool running = true;
+        ResizeRequest resize_request;
         //bool visible = true;
 
         while (running)
@@ -611,17 +651,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_RESIZE:
                     {
-                        DisplayLock lock {display};
-
-                        width = ev.event.resize.width;
-                        height = ev.event.resize.height;
-
-                        video = display.create(depth, vidoptions, width, height, true);
-                        display.set_title(_("lv-tool"));
-
-                        bin.set_video (video);
-                        bin.sync(false);
-
+                        resize_request.store(ev.event.resize.width, ev.event.resize.height);
                         break;
                     }
 
@@ -697,6 +727,21 @@ int main (int argc, char **argv)
                         break;
                     }
                 }
+            }
+
+            if (resize_request.is_due ()) {
+                DisplayLock lock {display};
+
+                width = resize_request.get_width();
+                height = resize_request.get_height();
+
+                video = display.create(depth, vidoptions, width, height, true);
+                display.set_title(_("lv-tool"));
+
+                bin.set_video (video);
+                bin.sync(false);
+
+                resize_request.mark_as_applied();
             }
 
             if (bin.depth_changed())
