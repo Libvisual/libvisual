@@ -23,7 +23,7 @@
 #ifndef _LV_EXAMPLES_SIMPLE_EXAMPLE
 #define _LV_EXAMPLES_SIMPLE_EXAMPLE
 
-#include <libvisual.h>
+#include <libvisual/libvisual.h>
 #include <SDL.h>
 
 class SimpleExample
