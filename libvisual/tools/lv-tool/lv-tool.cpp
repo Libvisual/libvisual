@@ -132,6 +132,17 @@ namespace LV {
             return Time(lhs.m_moment - rhs.m_moment);
         }
 
+        friend bool operator>=(Time const& lhs, Time const& rhs) {
+            return lhs.m_moment >= rhs.m_moment;
+        }
+
+        //! Converts the time to seconds
+        double to_secs() const
+        {
+            return this->m_moment / 1000.0;
+        }
+
+        //! Converts the time to microseconds
         uint64_t to_usecs() const {
             return this->m_moment * 1000;
         };
@@ -452,6 +463,39 @@ namespace {
 
       ~DisplayLock() {
           m_display->unlock();
+      }
+  };
+
+  class ResizeRequest
+  {
+      unsigned int m_width;
+      unsigned int m_height;
+      LV::Time m_received_at;
+      LV::Time m_applied_at;
+
+  public:
+      ResizeRequest() : m_width(0), m_height(0) {
+      }
+
+      unsigned int width() const { return m_width; }
+      unsigned int height() const { return m_height; }
+
+      bool is_due() const {
+          if (m_applied_at >= m_received_at) {
+              return false;
+          }
+          const double seconds_passed = (LV::Time::now() - m_received_at).to_secs();
+          return seconds_passed >= 0.2; // >=300ms is known to feel slow to humans
+      }
+
+      void store(unsigned int width, unsigned int height) {
+          m_width = width;
+          m_height = height;
+          m_received_at = LV::Time::now();
+      }
+
+      void mark_as_applied() {
+          m_applied_at = LV::Time::now();
       }
   };
 
@@ -856,6 +900,7 @@ int main (int argc, char **argv)
 
         // main loop
         bool running = true;
+        ResizeRequest resize_request;
         //bool visible = true;
 
         while (running)
@@ -925,17 +970,7 @@ int main (int argc, char **argv)
 
                     case VISUAL_EVENT_RESIZE:
                     {
-                        DisplayLock lock {display};
-
-                        width = ev.event.resize.width;
-                        height = ev.event.resize.height;
-
-                        video = display.create(depth, vidoptions, width, height, true);
-                        display.set_title(_("lv-tool"));
-
-                        bin.set_video (video);
-                        bin.sync(false);
-
+                        resize_request.store(ev.event.resize.width, ev.event.resize.height);
                         break;
                     }
 
@@ -1015,6 +1050,21 @@ int main (int argc, char **argv)
                         break;
                     }
                 }
+            }
+
+            if (resize_request.is_due ()) {
+                DisplayLock lock {display};
+
+                width = resize_request.width();
+                height = resize_request.height();
+
+                video = display.create(depth, vidoptions, width, height, true);
+                display.set_title(_("lv-tool"));
+
+                bin.set_video (video);
+                bin.sync(false);
+
+                resize_request.mark_as_applied();
             }
 
             if (bin.depth_changed())
