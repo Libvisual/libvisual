@@ -45,7 +45,7 @@ namespace LV {
               // See the pure C implementation in blit_overlay_alphsrc() for the calculation involved.
 
               // Load source alpha as a 16-bit int.
-              uint16_t const src_alpha = *reinterpret_cast<uint8_t const*> (src_pixel);
+              uint16_t const src_alpha = reinterpret_cast<uint8_t const*> (src_pixel)[3];
 
               // Load source and target pixel values into MMX registers, each channel zero-extended into 16 bits.
               auto src = _mm_cvtsi32_si64 (*src_pixel);
