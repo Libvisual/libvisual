@@ -46,6 +46,7 @@ AC_PROG_CXX
 dnl Check for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
+AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
 
 dnl 'Standard' header files.
 AC_CHECK_HEADERS([fcntl.h unistd.h stdlib.h string.h sys/time.h])
