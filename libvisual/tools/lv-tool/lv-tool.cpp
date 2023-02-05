@@ -39,7 +39,7 @@
 
 // Defaults
 #define DEFAULT_ACTOR_GL "lv_gltest"
-#define DEFAULT_ACTOR_NONGL "lv_analyzer"
+#define DEFAULT_ACTOR_NONGL "lv_scope"
 #define DEFAULT_INPUT   "debug"
 #define DEFAULT_WIDTH   640
 #define DEFAULT_HEIGHT  480
