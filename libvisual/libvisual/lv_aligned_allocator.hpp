@@ -37,7 +37,7 @@ namespace LV
           if (!ptr)
               throw std::bad_alloc {};
 
-          return ptr;
+          return static_cast<T*> (ptr);
       }
 
       void deallocate (T* ptr, std::size_t) noexcept
