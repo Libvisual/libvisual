@@ -65,6 +65,7 @@ jobs:
           #       >                             is to be installed
           sudo apt-get install --yes --no-install-recommends libunwind-dev
           sudo apt-get install --yes --no-install-recommends \
+            autoconf-archive \
             autopoint \
             bison \
             doxygen \
@@ -93,6 +94,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |-
           brew install \
+            autoconf-archive \
             automake \
             bison \
             doxygen \
