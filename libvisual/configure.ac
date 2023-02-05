@@ -112,6 +112,7 @@ AC_HEADER_DIRENT
 AC_CHECK_HEADERS([fcntl.h sys/types.h stdlib.h string.h sys/time.h unistd.h sched.h sys/sched.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T

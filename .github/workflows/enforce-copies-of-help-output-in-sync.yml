@@ -35,6 +35,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends \
+            autoconf-archive \
             autopoint \
             gettext \
             help2man \
