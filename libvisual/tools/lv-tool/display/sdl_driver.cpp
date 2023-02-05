@@ -285,8 +285,6 @@ namespace {
                   visual_event_queue_add (&eventqueue,
                                           visual_event_new_resize (event.resize.w,
                                                                    event.resize.h));
-
-                  create (m_display.get_video ()->get_depth (), nullptr, event.resize.w, event.resize.h, m_resizable);
                   break;
 
               case SDL_MOUSEMOTION:
