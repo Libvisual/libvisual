@@ -153,7 +153,8 @@ namespace {
 
   const std::unordered_set<std::string> actors_to_skip {
       "gdkpixbuf",
-      "gstreamer"
+      "gstreamer",
+      "lv_analyzer"
   };
 
   std::string actor_name;
