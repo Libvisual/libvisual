@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual 0.4.0-2.2\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-02-04 23:12+0100\n"
+"POT-Creation-Date: 2023-02-05 06:13+0100\n"
 "PO-Revision-Date: 2017-08-10 18:46+GMT\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -900,7 +900,7 @@ msgstr ""
 msgid "Invalid depth passed to the scaler"
 msgstr "Ungültige Tiefe an Scaler übergeben"
 
-#: tools/lv-tool/lv-tool.cpp:881 tools/lv-tool/lv-tool.cpp:1062
+#: tools/lv-tool/lv-tool.cpp:882 tools/lv-tool/lv-tool.cpp:1063
 msgid "lv-tool"
 msgstr ""
 
