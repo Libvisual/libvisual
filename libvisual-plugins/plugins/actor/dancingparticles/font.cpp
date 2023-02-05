@@ -98,20 +98,20 @@ void generateTextParticles(VisVideo* bitmap)
   const int height = visual_video_get_height(bitmap);
   const int pitch = visual_video_get_pitch(bitmap);
 
-  unsigned int totalEnergy = 0;
+  unsigned int totalC = 0;
 
   for(int y = 0; y < height ; y++)
     {
       for(int x = 0; x < width ; x++)
         {
-          totalEnergy += pixels[y*pitch+x];
+          totalC += pixels[y*pitch+x];
         }
     }
 
   numCenters = numCenters2 = ptsNum;
 
   unsigned int particleCount = 0;
-  unsigned int energySoFar = 0;
+  unsigned int accumulatedC = 0;
 
   for(int y = 0; y < height ; y++)
     {
@@ -121,8 +121,8 @@ void generateTextParticles(VisVideo* bitmap)
 
           if(c != 0)
             {
-              energySoFar += c;
-              const int countToReach = static_cast<int>(static_cast<float>(energySoFar)/totalEnergy * numCenters);
+              accumulatedC += c;
+              const int countToReach = static_cast<int>(static_cast<float>(accumulatedC)/totalC * numCenters);
               const int allocCount = countToReach - particleCount;
 
               for(int a = 0; a < allocCount; a++)
