@@ -1386,7 +1386,7 @@ void GForce::SpawnNewParticle() {
 
 	
 
-void GForce::Print( char* inStr ) {
+void GForce::Print( const char* inStr ) {
 	long num = mConsoleLines.Count();
 	UtilStr* lastLine = mConsoleLines.Fetch( num );
 	
@@ -1406,7 +1406,7 @@ void GForce::Print( char* inStr ) {
 }
 
 
-void GForce::Println( char* inStr ) {
+void GForce::Println( const char* inStr ) {
 	Print( inStr );
 	
 	mConsoleLines.Add( "" );
