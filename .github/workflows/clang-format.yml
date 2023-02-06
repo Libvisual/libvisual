@@ -1,0 +1,39 @@
+name: Enforce clang-format
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 3 * * 5'  # Every Friday at 3am
+
+jobs:
+  clang-format:
+    name: Enforce clang-format
+    runs-on: ubuntu-22.04
+    env:
+      CLANG_MAJOR_VERSION: 15
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Add Clang/LLVM repositories
+      run: |-
+        set -x
+        source /etc/os-release
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo add-apt-repository "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${CLANG_MAJOR_VERSION} main"
+
+    - name: Install clang-format
+      run: |-
+        set -x
+        sudo apt-get update
+        sudo apt-get install --yes --no-install-recommends -V \
+            clang-format-${CLANG_MAJOR_VERSION}
+
+    - name: Enforce clang-format
+      run: |-
+        set -x -o pipefail
+        clang-format-${CLANG_MAJOR_VERSION} --version
+        git ls-files \*.{c,cpp,h,hpp} \
+          |xargs clang-format-${CLANG_MAJOR_VERSION} --style=file -i
+        git diff --exit-code  # i.e. reject non-empty diff
