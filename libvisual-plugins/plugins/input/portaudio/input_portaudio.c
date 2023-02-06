@@ -29,8 +29,6 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 #define SAMPLE_RATE 44100
 #define SAMPLE_RATE_TYPE_LV VISUAL_AUDIO_SAMPLE_RATE_44100
-#define CHANNELS 2
-#define CHANNELS_TYPE VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO
 #define SAMPLE_FORMAT_BITS 16
 #define SAMPLE_FORMAT_PA paInt16
 #define SAMPLE_FORMAT_LV VISUAL_AUDIO_SAMPLE_FORMAT_S16
@@ -39,6 +37,7 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 typedef struct {
 	PaStream *stream;
+	unsigned int channel_count;  // 0 (unknown), 1 (mono) or 2 (stereo)
 	void * buffer;
 } PortAudioPrivate;
 
@@ -93,25 +92,46 @@ int inp_portaudio_init (VisPluginData *plugin)
 	visual_log_return_val_if_fail (input_device != paNoDevice, -3);
 
 	// Open stream
+	// Try stereo first, fall back to mono as needed
+	priv->channel_count = 2;  // i.e. stereo
 	const double latency_seconds = 1.0 / SAMPLE_RATE * FRAMES;
-	const PaStreamParameters input_parameters = {
+	PaStreamParameters input_parameters = {
 			.device = input_device,
-			.channelCount = CHANNELS,
+			.channelCount = priv->channel_count,
 			.sampleFormat = SAMPLE_FORMAT_PA,
 			.suggestedLatency = latency_seconds,
 			.hostApiSpecificStreamInfo = NULL};
-	const PaError open_error =
+	const PaError stereo_open_error =
 			Pa_OpenStream (&priv->stream, &input_parameters, NULL,
 						   SAMPLE_RATE, FRAMES, paClipOff, NULL, NULL);
-	if (open_error != paNoError) {
-		visual_log (VISUAL_LOG_CRITICAL,
-				"PortAudio: Could not open input stream, error %d \"%s\".",
-				open_error, Pa_GetErrorText (open_error));
-		return -3;
+	if (stereo_open_error != paNoError) {
+		if (stereo_open_error != paInvalidChannelCount) {
+			visual_log (VISUAL_LOG_CRITICAL,
+					"PortAudio: Could not open stereo input stream, error %d \"%s\".",
+					stereo_open_error, Pa_GetErrorText (stereo_open_error));
+			return -3;
+		}
+
+		// Try again with mono
+		assert(stereo_open_error == paInvalidChannelCount);
+		visual_log (VISUAL_LOG_INFO, "PortAudio: Could not open stereo input stream, trying again with mono.");
+		priv->channel_count = 1;  // i.e. mono
+		input_parameters.channelCount = priv->channel_count;
+
+		const PaError mono_open_error =
+				Pa_OpenStream (&priv->stream, &input_parameters, NULL,
+							SAMPLE_RATE, FRAMES, paClipOff, NULL, NULL);
+		if (mono_open_error != paNoError) {
+			visual_log (VISUAL_LOG_CRITICAL,
+					"PortAudio: Could not open mono input stream, error %d \"%s\".",
+					mono_open_error, Pa_GetErrorText (mono_open_error));
+			return -3;
+		}
 	}
+	visual_log (VISUAL_LOG_INFO, "PortAudio: Input stream opened with %d channel(s).", priv->channel_count);
 
 	// Allocate buffer
-	const visual_size_t buffer_size_bytes = FRAMES * CHANNELS * (SAMPLE_FORMAT_BITS / 8);
+	const visual_size_t buffer_size_bytes = FRAMES * priv->channel_count * (SAMPLE_FORMAT_BITS / 8);
 	priv->buffer = malloc (buffer_size_bytes);
 	visual_log_return_val_if_fail (priv->buffer != NULL, -4);
 
@@ -166,13 +186,31 @@ int inp_portaudio_upload (VisPluginData *plugin, VisAudio *audio)
 			return 0;
 		}
 
-		const visual_size_t bytes_to_write = frames_to_read * CHANNELS * (SAMPLE_FORMAT_BITS / 8);
+		const visual_size_t bytes_to_write = frames_to_read * priv->channel_count * (SAMPLE_FORMAT_BITS / 8);
 
 		VisBuffer buffer;
 		visual_buffer_init(&buffer, priv->buffer, bytes_to_write, NULL);
 
-		visual_audio_samplepool_input(audio->samplepool, &buffer, SAMPLE_RATE_TYPE_LV,
-									  SAMPLE_FORMAT_LV, CHANNELS_TYPE);
+		if (priv->channel_count == 2) {
+		    visual_audio_samplepool_input(audio->samplepool, &buffer, SAMPLE_RATE_TYPE_LV,
+					SAMPLE_FORMAT_LV, VISUAL_AUDIO_SAMPLE_CHANNEL_STEREO);
+		} else {
+			assert(priv->channel_count == 1);
+
+			// Let's feed the same mono input to both the left and right channel.
+			// This helps actors plugins that call
+			// "visual_audio_get_sample ([..], [..], VISUAL_AUDIO_CHANNEL_RIGHT)"
+			// explicitly without checking return values.
+			const char * const channels[] = {
+				VISUAL_AUDIO_CHANNEL_LEFT,
+				VISUAL_AUDIO_CHANNEL_RIGHT
+			};
+
+			for (size_t i = 0; i < sizeof(channels) / sizeof(channels[0]); i++) {
+				visual_audio_samplepool_input_channel(audio->samplepool, &buffer, SAMPLE_RATE_TYPE_LV,
+						SAMPLE_FORMAT_LV, channels[i]);
+			}
+		}
 	}
 
 	// we never get here
