@@ -61,8 +61,6 @@ int main (int argc, char* argv[])
 {
     LV::System::init (argc, argv);
 
-    auto video = LV::Video::create (640, 480, VISUAL_VIDEO_DEPTH_16BIT);
-
     test_png_load ();
 
     LV::System::destroy ();
