@@ -9,6 +9,7 @@ if [[ "$(uname -s)" == Darwin ]]; then
     echo 'AC_DEFUN([AM_PATH_ALSA], [HAVE_ALSA=no])' > acinclude.m4
 fi
 
+autoreconf --install --verbose --force || \
 autoreconf --install --verbose --force
 
 if [[ -z "${NOCONFIGURE:-}" ]]; then
