@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual 0.4.0-2.2\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-02-05 06:13+0100\n"
+"POT-Creation-Date: 2023-02-06 03:03+0100\n"
 "PO-Revision-Date: 2017-08-10 18:46+GMT\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -188,11 +188,11 @@ msgstr ""
 msgid "depth of the main actor: %d"
 msgstr "Tiefe des Hauptdarstellers: %d"
 
-#: libvisual/lv_bin.c:739
+#: libvisual/lv_bin.c:740
 msgid "negotiate without event"
 msgstr "handeln ohne Ereignis"
 
-#: libvisual/lv_bin.c:741
+#: libvisual/lv_bin.c:742
 msgid "end negotiate without event"
 msgstr "handeln ohne Ereignis beenden"
 
@@ -900,7 +900,7 @@ msgstr ""
 msgid "Invalid depth passed to the scaler"
 msgstr "Ungültige Tiefe an Scaler übergeben"
 
-#: tools/lv-tool/lv-tool.cpp:882 tools/lv-tool/lv-tool.cpp:1063
+#: tools/lv-tool/lv-tool.cpp:892 tools/lv-tool/lv-tool.cpp:1073
 msgid "lv-tool"
 msgstr ""
 
