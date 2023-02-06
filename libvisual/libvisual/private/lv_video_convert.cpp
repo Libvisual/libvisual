@@ -504,8 +504,8 @@ namespace LV {
               src_pixel += 4;
           }
 
-          dst_pixel += dst.m_impl->pitch;
-          src_pixel += src.m_impl->pitch;
+          dst_pixel_row += dst.m_impl->pitch;
+          src_pixel_row += src.m_impl->pitch;
       }
   }
 
