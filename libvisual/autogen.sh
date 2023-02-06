@@ -4,6 +4,7 @@
 
 set -e -u
 
+autoreconf --install --verbose --force || \
 autoreconf --install --verbose --force
 
 if [[ -z "${NOCONFIGURE:-}" ]]; then
