@@ -22,8 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define _GNU_SOURCE  /* for function mremap */
-
 #include <config.h>
 
 #include <limits.h>
@@ -180,9 +178,11 @@ int inp_mplayer_init( VisPluginData *plugin )
 		return -6;
 	}
 
-	priv->mmap_area = mremap( priv->mmap_area, sizeof( mplayer_data_t ),
-			sizeof( mplayer_data_t ) + priv->mmap_area->bs,
-			0 );
+	const int buffer_size = priv->mmap_area->bs;
+	munmap( priv->mmap_area, sizeof( mplayer_data_t ) );
+
+	priv->mmap_area = mmap( 0, sizeof( mplayer_data_t ) + buffer_size,
+			PROT_READ, MAP_SHARED, priv->fd, 0 );
 	if ( priv->mmap_area == (void *)-1 )
 	{
 		visual_log( VISUAL_LOG_CRITICAL, 
