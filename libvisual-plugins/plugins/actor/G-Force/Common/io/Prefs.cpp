@@ -35,7 +35,7 @@ Prefs::Prefs( const char* inPrefsName, bool inSysStored ) {
 		theDirID	= ( (FSSpec*) EgOSUtils::sAppSpec.OSSpec() ) -> parID;
 	}	
 	::FSMakeFSSpec( theVRef, theDirID, mPrefName.getPasStr(), &prefSpec );
-	mFileSpec.Assign( &prefSpec, 'TEXT' );
+	mFileSpec.Assign( &prefSpec, *reinterpret_cast<const int32_t*>("TEXT"); );
 	#endif
 	
 	#ifdef EG_WIN
@@ -80,9 +80,9 @@ CEgErr Prefs::Store() {
 	if ( mDirty ) {
 		long origType = CEgIOFile::sCreatorType;
 		#if EG_MAC
-		CEgIOFile::sCreatorType = 'ttxt';
+		CEgIOFile::sCreatorType = *reinterpret_cast<const int32_t*>("ttxt");
 		#elif EG_WIN
-		CEgIOFile::sCreatorType = '????';
+		CEgIOFile::sCreatorType = *reinterpret_cast<const int32_t*>("????");
 		#endif
 
 		oFile.open( &mFileSpec );
