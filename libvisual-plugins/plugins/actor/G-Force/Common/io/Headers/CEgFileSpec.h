@@ -2,6 +2,8 @@
 #define _CEGFILESPEC_
 
 
+#include <cstdint>
+
 #include "UtilStr.h"
 #include "CEgErr.h"
 
@@ -15,7 +17,7 @@ class CEgFileSpec {
 		
 	public:
 								CEgFileSpec();
-								CEgFileSpec( const char* inPathName, long inType = 'TEXT'  );
+								CEgFileSpec( const char* inPathName, long inType = *reinterpret_cast<const int32_t*>("TEXT") );
 								CEgFileSpec( const CEgFileSpec& inSpec );
 								
 								
@@ -28,7 +30,7 @@ class CEgFileSpec {
 		
 		void					Assign( const CEgFileSpec& inSpec );
 		void					AssignPathName( const char* inPathName );
-		void					Assign( const void* inOSSpecPtr, long inType = 'TEXT' );
+		void					Assign( const void* inOSSpecPtr, long inType = *reinterpret_cast<const int32_t*>("TEXT") );
 		
 		CEgErr					Duplicate( const CEgFileSpec& inDestSpec ) const;
 		void					SaveAs( const CEgFileSpec& inDestSpec ) const;

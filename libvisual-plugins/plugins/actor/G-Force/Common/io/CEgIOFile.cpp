@@ -1,10 +1,12 @@
+#include <cstdint>
+
 #include "CEgIOFile.h"
 
 
 #include "CEgFileSpec.h"
 
 
-long CEgIOFile::sCreatorType = '????';
+long CEgIOFile::sCreatorType = *reinterpret_cast<const int32_t*>("????");
 
 
 CEgIOFile::CEgIOFile( int inDoTrunc, long inOBufSize ) :
