@@ -122,7 +122,7 @@ void generateTextParticles(VisVideo* bitmap)
           if(c != 0)
             {
               accumulatedC += c;
-              const int countToReach = static_cast<int>(static_cast<float>(accumulatedC)/totalC * numCenters);
+              const int countToReach = static_cast<int>(static_cast<double>(accumulatedC)/totalC * numCenters);
               const int allocCount = countToReach - particleCount;
 
               for(int a = 0; a < allocCount; a++)
