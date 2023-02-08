@@ -24,7 +24,7 @@
 #ifndef _LV_TIME_H
 #define _LV_TIME_H
 
-#include "lv_defines.h"
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_types.h>
 #include <time.h>
 
