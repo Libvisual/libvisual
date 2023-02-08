@@ -251,15 +251,15 @@ struct _VisRectangle;
 
 LV_BEGIN_DECLS
 
-LV_API VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
-LV_API VisRectangle *visual_rectangle_new_empty (void);
+LV_API LV_NODISCARD VisRectangle *visual_rectangle_new (int x, int y, int width, int height);
+LV_API LV_NODISCARD VisRectangle *visual_rectangle_new_empty (void);
 
 LV_API void visual_rectangle_free (VisRectangle *rect);
 
 LV_API void visual_rectangle_set  (VisRectangle *rect, int x, int y, int width, int height);
 LV_API void visual_rectangle_copy (VisRectangle *dest, VisRectangle *src);
 
-LV_API VisRectangle *visual_rectangle_clone (VisRectangle *rect);
+LV_API LV_NODISCARD VisRectangle *visual_rectangle_clone (VisRectangle *rect);
 
 LV_API void visual_rectangle_set_x      (VisRectangle *rect, int x);
 LV_API int  visual_rectangle_get_x      (VisRectangle *rect);

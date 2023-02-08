@@ -98,7 +98,7 @@ LV_BEGIN_DECLS
  *
  * @return Pointer to newly allocated memory block, or NULL on failure
  */
-LV_API void *visual_mem_malloc (visual_size_t size) LV_ATTR_MALLOC;
+LV_API LV_NODISCARD void *visual_mem_malloc (visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Allocates a block of memory with its content zeroed.
@@ -108,7 +108,7 @@ LV_API void *visual_mem_malloc (visual_size_t size) LV_ATTR_MALLOC;
  * @return Pointer to newly allocated memory block with its contents
  * zeroed, or NULL on failure
  */
-LV_API void *visual_mem_malloc0 (visual_size_t size) LV_ATTR_MALLOC;
+LV_API LV_NODISCARD void *visual_mem_malloc0 (visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Reallocates memory, can be used to grow a buffer.
@@ -118,7 +118,7 @@ LV_API void *visual_mem_malloc0 (visual_size_t size) LV_ATTR_MALLOC;
  *
  * @return pointer to the reallocated memory block, or NULL on failure
  */
-LV_API void *visual_mem_realloc (void *ptr, visual_size_t size) LV_ATTR_MALLOC;
+LV_API LV_NODISCARD void *visual_mem_realloc (void *ptr, visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Frees a memory block allocated by visual_mem_malloc() and visual_mem_realloc().
@@ -139,7 +139,7 @@ LV_API void visual_mem_free (void *ptr);
  *
  * @note Memory allocated by this function must be fred by visual_mem_free_aligned().
  */
-LV_API void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignment);
+LV_API LV_NODISCARD void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignment);
 
 /**
  * Frees a memory block allocated by visual_mem_alloc_aligned().

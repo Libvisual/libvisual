@@ -214,9 +214,10 @@ struct _VisSongInfo;
 
 LV_BEGIN_DECLS
 
-LV_API VisSongInfo *visual_songinfo_new   (VisSongInfoType type);
-LV_API VisSongInfo *visual_songinfo_clone (VisSongInfo const *src);
-LV_API void         visual_songinfo_free  (VisSongInfo *songinfo);
+LV_API LV_NODISCARD VisSongInfo *visual_songinfo_new   (VisSongInfoType type);
+LV_API LV_NODISCARD VisSongInfo *visual_songinfo_clone (VisSongInfo const *src);
+
+LV_API void visual_songinfo_free (VisSongInfo *songinfo);
 
 LV_API void visual_songinfo_copy    (VisSongInfo *dest, VisSongInfo const *src);
 LV_API int  visual_songinfo_compare (VisSongInfo const *s1, VisSongInfo const *s2);

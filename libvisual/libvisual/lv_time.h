@@ -24,6 +24,7 @@
 #ifndef _LV_TIME_H
 #define _LV_TIME_H
 
+#include "lv_defines.h"
 #include <libvisual/lv_types.h>
 #include <time.h>
 
@@ -227,11 +228,12 @@ struct _VisTimer;
 
 LV_BEGIN_DECLS
 
-LV_API VisTime *visual_time_new             (void);
-LV_API VisTime *visual_time_new_now         (void);
-LV_API VisTime *visual_time_new_with_values (long sec, long nsec);
-LV_API VisTime *visual_time_clone           (VisTime *src);
-LV_API void     visual_time_free            (VisTime *time_);
+LV_API LV_NODISCARD VisTime *visual_time_new             (void);
+LV_API LV_NODISCARD VisTime *visual_time_new_now         (void);
+LV_API LV_NODISCARD VisTime *visual_time_new_with_values (long sec, long nsec);
+LV_API LV_NODISCARD VisTime *visual_time_clone           (VisTime *src);
+
+LV_API void visual_time_free (VisTime *time_);
 
 LV_API void visual_time_set     (VisTime *time_, long sec, long usec);
 LV_API void visual_time_copy    (VisTime *dest, VisTime *src);

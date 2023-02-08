@@ -115,8 +115,17 @@
 #define LV_PLUGIN_EXPORT LV_DLL_EXPORT
 
 /* Utility macros */
+
 #ifdef _MSC_VER
   #define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
+
+#ifdef _MSC_VER
+  #define LV_NODISCARD _Check_return_
+#elif defined(__GNUC__)
+  #define LV_NODISCARD  __attribute__ ((warn_unused_result))
+#else
+  #define LV_NODISCARD
 #endif
 
 #endif /* _LV_DEFINES_H */
