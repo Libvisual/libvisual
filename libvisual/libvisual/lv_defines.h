@@ -120,7 +120,9 @@
   #define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
-#ifdef _MSC_VER
+#ifdef __cplusplus
+  #define LV_NODISCARD [[nodiscard]]
+#elif defined(_MSC_VER)
   #define LV_NODISCARD _Check_return_
 #elif defined(__GNUC__)
   #define LV_NODISCARD  __attribute__ ((warn_unused_result))

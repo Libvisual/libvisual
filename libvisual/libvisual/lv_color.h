@@ -147,8 +147,8 @@ struct _VisColor
 };
 #endif
 
-LV_API LV_NODISCARD VisColor *visual_color_new   (void);
-LV_API LV_NODISCARD VisColor *visual_color_clone (VisColor *color);
+LV_NODISCARD LV_API VisColor *visual_color_new   (void);
+LV_NODISCARD LV_API VisColor *visual_color_clone (VisColor *color);
 
 LV_API void visual_color_free (VisColor *color);
 

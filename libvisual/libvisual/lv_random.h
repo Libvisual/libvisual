@@ -139,7 +139,7 @@ typedef ::LV::RandomSeed    VisRandomSeed;
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisRandomContext *visual_random_context_new  (VisRandomSeed seed);
+LV_NODISCARD LV_API VisRandomContext *visual_random_context_new  (VisRandomSeed seed);
 
 LV_API void visual_random_context_free (VisRandomContext *rcontext);
 

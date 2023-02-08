@@ -262,7 +262,7 @@ LV_API const char *visual_morph_get_next_by_name (const char *name);
  */
 LV_API const char *visual_morph_get_prev_by_name (const char *name);
 
-LV_API LV_NODISCARD VisMorph *visual_morph_new (const char *name);
+LV_NODISCARD LV_API VisMorph *visual_morph_new (const char *name);
 
 LV_API void visual_morph_ref   (VisMorph *morph);
 LV_API void visual_morph_unref (VisMorph *morph);

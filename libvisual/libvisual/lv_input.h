@@ -179,7 +179,7 @@ struct _VisInputPlugin {
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisInput *visual_input_new (const char *name);
+LV_NODISCARD LV_API VisInput *visual_input_new (const char *name);
 
 LV_API void visual_input_ref     (VisInput *input);
 LV_API void visual_input_unref   (VisInput *input);

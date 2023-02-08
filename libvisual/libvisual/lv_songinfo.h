@@ -214,8 +214,8 @@ struct _VisSongInfo;
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisSongInfo *visual_songinfo_new   (VisSongInfoType type);
-LV_API LV_NODISCARD VisSongInfo *visual_songinfo_clone (VisSongInfo const *src);
+LV_NODISCARD LV_API VisSongInfo *visual_songinfo_new   (VisSongInfoType type);
+LV_NODISCARD LV_API VisSongInfo *visual_songinfo_clone (VisSongInfo const *src);
 
 LV_API void visual_songinfo_free (VisSongInfo *songinfo);
 

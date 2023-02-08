@@ -508,10 +508,10 @@ namespace LV {
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisVideo *visual_video_new (void);
-LV_API LV_NODISCARD VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
-LV_API LV_NODISCARD VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth, int pitch);
-LV_API LV_NODISCARD VisVideo *visual_video_load_from_file  (const char *path);
+LV_NODISCARD LV_API VisVideo *visual_video_new (void);
+LV_NODISCARD LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
+LV_NODISCARD LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth, int pitch);
+LV_NODISCARD LV_API VisVideo *visual_video_load_from_file  (const char *path);
 
 LV_API void visual_video_ref   (VisVideo *video);
 LV_API void visual_video_unref (VisVideo *video);
@@ -540,12 +540,12 @@ LV_API void *visual_video_get_pixel_ptr (VisVideo *video, int x, int y);
 
 LV_API VisBuffer *visual_video_get_buffer (VisVideo *video);
 
-LV_API LV_NODISCARD VisRectangle *visual_video_get_extents (VisVideo *video);
+LV_NODISCARD LV_API VisRectangle *visual_video_get_extents (VisVideo *video);
 
-LV_API LV_NODISCARD VisVideo *visual_video_new_sub (VisVideo *src, VisRectangle *area);
-LV_API LV_NODISCARD VisVideo *visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width, int height);
-LV_API LV_NODISCARD VisVideo *visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src, VisRectangle *srect);
-LV_API LV_NODISCARD VisVideo *visual_video_new_sub_all (VisVideo *src);
+LV_NODISCARD LV_API VisVideo *visual_video_new_sub (VisVideo *src, VisRectangle *area);
+LV_NODISCARD LV_API VisVideo *visual_video_new_sub_by_values (VisVideo *src, int x, int y, int width, int height);
+LV_NODISCARD LV_API VisVideo *visual_video_new_sub_with_boundary (VisRectangle *drect, VisVideo *src, VisRectangle *srect);
+LV_NODISCARD LV_API VisVideo *visual_video_new_sub_all (VisVideo *src);
 
 LV_API void visual_video_set_compose_type     (VisVideo *video, VisVideoComposeType type);
 LV_API void visual_video_set_compose_colorkey (VisVideo *video, VisColor *color);
@@ -576,7 +576,7 @@ LV_API void visual_video_scale  (VisVideo *dest, VisVideo *src, VisVideoScaleMet
 
 LV_API void visual_video_scale_depth (VisVideo *dest, VisVideo *src, VisVideoScaleMethod scale_method);
 
-LV_API LV_NODISCARD VisVideo *visual_video_scale_depth_new (VisVideo*           src,
+LV_NODISCARD LV_API VisVideo *visual_video_scale_depth_new (VisVideo*           src,
                                                             int                 width,
                                                             int                 height,
                                                             VisVideoDepth       depth,

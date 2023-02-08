@@ -218,7 +218,7 @@ struct _VisAudio;
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisAudio *visual_audio_new (void);
+LV_NODISCARD LV_API VisAudio *visual_audio_new (void);
 
 LV_API void visual_audio_free (VisAudio *audio);
 

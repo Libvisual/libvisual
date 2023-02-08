@@ -127,7 +127,7 @@ struct _VisPalette;
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisPalette *visual_palette_new (unsigned int ncolors);
+LV_NODISCARD LV_API VisPalette *visual_palette_new (unsigned int ncolors);
 
 LV_API void visual_palette_free (VisPalette *palette);
 

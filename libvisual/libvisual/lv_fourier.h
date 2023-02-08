@@ -133,7 +133,7 @@ struct _VisDFT;
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
+LV_NODISCARD LV_API VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
 
 LV_API void visual_dft_free (VisDFT *dft);
 

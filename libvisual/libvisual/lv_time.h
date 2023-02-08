@@ -228,10 +228,10 @@ struct _VisTimer;
 
 LV_BEGIN_DECLS
 
-LV_API LV_NODISCARD VisTime *visual_time_new             (void);
-LV_API LV_NODISCARD VisTime *visual_time_new_now         (void);
-LV_API LV_NODISCARD VisTime *visual_time_new_with_values (long sec, long nsec);
-LV_API LV_NODISCARD VisTime *visual_time_clone           (VisTime *src);
+LV_NODISCARD LV_API VisTime *visual_time_new             (void);
+LV_NODISCARD LV_API VisTime *visual_time_new_now         (void);
+LV_NODISCARD LV_API VisTime *visual_time_new_with_values (long sec, long nsec);
+LV_NODISCARD LV_API VisTime *visual_time_clone           (VisTime *src);
 
 LV_API void visual_time_free (VisTime *time_);
 

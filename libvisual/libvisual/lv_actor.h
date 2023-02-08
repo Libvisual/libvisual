@@ -248,7 +248,7 @@ LV_API const char *visual_actor_get_next_by_name_nogl (const char *name);
 LV_API const char *visual_actor_get_prev_by_name      (const char *name);
 LV_API const char *visual_actor_get_next_by_name      (const char *name);
 
-LV_API LV_NODISCARD VisActor *visual_actor_new (const char *name);
+LV_NODISCARD LV_API VisActor *visual_actor_new (const char *name);
 LV_API int  visual_actor_realize (VisActor *actor);
 LV_API void visual_actor_run     (VisActor *actor, VisAudio *audio);
 LV_API void visual_actor_ref     (VisActor *actor);

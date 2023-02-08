@@ -237,7 +237,7 @@ LV_BEGIN_DECLS
  * @param keymod Key modifier used
  * @param state  State of key i.e. pressed or released
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_keyboard (VisKey keysym, VisKeyMod keymod, VisKeyState state);
+LV_NODISCARD LV_API VisEvent *visual_event_new_keyboard (VisKey keysym, VisKeyMod keymod, VisKeyState state);
 
 /**
  * Creates a new mouse movement event.
@@ -247,7 +247,7 @@ LV_API LV_NODISCARD VisEvent *visual_event_new_keyboard (VisKey keysym, VisKeyMo
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_mousemotion (int dx, int dy);
+LV_NODISCARD LV_API VisEvent *visual_event_new_mousemotion (int dx, int dy);
 
 /**
  * Creates a new mouse button event
@@ -259,7 +259,7 @@ LV_API LV_NODISCARD VisEvent *visual_event_new_mousemotion (int dx, int dy);
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
+LV_NODISCARD LV_API VisEvent *visual_event_new_mousebutton (int button, VisMouseState state, int x, int y);
 
 /**
  * Creates a resize event.
@@ -269,7 +269,7 @@ LV_API LV_NODISCARD VisEvent *visual_event_new_mousebutton (int button, VisMouse
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_resize (int width, int height);
+LV_NODISCARD LV_API VisEvent *visual_event_new_resize (int width, int height);
 
 /**
  * Creates a new song change event.
@@ -278,7 +278,7 @@ LV_API LV_NODISCARD VisEvent *visual_event_new_resize (int width, int height);
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
+LV_NODISCARD LV_API VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
 
 /**
  * Creates a new parameter change event.
@@ -287,14 +287,14 @@ LV_API LV_NODISCARD VisEvent *visual_event_new_newsong (VisSongInfo *songinfo);
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_param (void *param);
+LV_NODISCARD LV_API VisEvent *visual_event_new_param (void *param);
 
 /**
  * Creates a quit event
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_quit (void);
+LV_NODISCARD LV_API VisEvent *visual_event_new_quit (void);
 
 /**
  * Creates a new visibility event.
@@ -303,7 +303,7 @@ LV_API LV_NODISCARD VisEvent *visual_event_new_quit (void);
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_visibility (int is_visible);
+LV_NODISCARD LV_API VisEvent *visual_event_new_visibility (int is_visible);
 
 /**
  * Copies a VisEvent.
@@ -329,9 +329,9 @@ LV_API void visual_event_free (VisEvent* event);
  *
  * @return New event object
  */
-LV_API LV_NODISCARD VisEvent *visual_event_new_custom (int eid, int param_int, void *param_ptr);
+LV_NODISCARD LV_API VisEvent *visual_event_new_custom (int eid, int param_int, void *param_ptr);
 
-LV_API LV_NODISCARD VisEventQueue *visual_event_queue_new  (void);
+LV_NODISCARD LV_API VisEventQueue *visual_event_queue_new  (void);
 
 LV_API void visual_event_queue_free (VisEventQueue *eventqueue);
 
