@@ -122,9 +122,9 @@
 
 #ifdef __cplusplus
   #define LV_NODISCARD [[nodiscard]]
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && _MSC_VER >= 1700
   #define LV_NODISCARD _Check_return_
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && __GNUC__ >= 4
   #define LV_NODISCARD  __attribute__ ((warn_unused_result))
 #else
   #define LV_NODISCARD
