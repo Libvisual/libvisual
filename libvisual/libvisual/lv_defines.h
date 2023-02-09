@@ -120,7 +120,7 @@
   #define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
-#ifdef __cplusplus
+#if __cplusplus >= 201703L
   #define LV_NODISCARD [[nodiscard]]
 #elif defined(_MSC_VER) && _MSC_VER >= 1700
   #define LV_NODISCARD _Check_return_
