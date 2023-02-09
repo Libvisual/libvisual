@@ -34,43 +34,41 @@ class LCDCore;
 
 class PluginLCD {
 
-    LCDCore *visitor_;
-    int type_;
+  LCDCore *visitor_;
+  int type_;
 
-    void Setup();
+  void Setup();
 
-    public:
-    PluginLCD(LCDCore *visitor);
-    ~PluginLCD();
+public:
+  PluginLCD(LCDCore *visitor);
+  ~PluginLCD();
 
-    public :
-    void Transition(int i);
-    void SelectLayout(string layout);
-    int RemoveWidget(string widget);
-    string AddWidget(string layout, int row, int col, 
-        int layer, string object);
-    int MoveWidget(string widget, int rows, int cols);
-    int ResizeLCD(int rows, int cols);
-    void SendData(int row, int col, int layer, 
-        string data);
-    void SetSpecialChar(int ch, SpecialChar matrix);
-    void AddSpecialChar(SpecialChar matrix);
-    void Clear();
-    void ClearChars();
-    string GetCurrentLayout();
-    int GetRows();
-    int GetCols();
-    int GetXres();
-    int GetYres();
-    string GetType();
+public:
+  void Transition(int i);
+  void SelectLayout(string layout);
+  int RemoveWidget(string widget);
+  string AddWidget(string layout, int row, int col, int layer, string object);
+  int MoveWidget(string widget, int rows, int cols);
+  int ResizeLCD(int rows, int cols);
+  void SendData(int row, int col, int layer, string data);
+  void SetSpecialChar(int ch, SpecialChar matrix);
+  void AddSpecialChar(SpecialChar matrix);
+  void Clear();
+  void ClearChars();
+  string GetCurrentLayout();
+  int GetRows();
+  int GetCols();
+  int GetXres();
+  int GetYres();
+  string GetType();
 
-    void TickUpdate();
-    void SetTimeout(int val);
+  void TickUpdate();
+  void SetTimeout(int val);
 
-    void _TickUpdate();
-    void _KeypadEvent(const int);
+  void _TickUpdate();
+  void _KeypadEvent(const int);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

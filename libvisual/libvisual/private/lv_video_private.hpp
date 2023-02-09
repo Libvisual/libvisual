@@ -32,36 +32,34 @@
 
 namespace LV {
 
-  class Video::Impl
-  {
-  public:
+class Video::Impl {
+public:
+  int width;
+  int height;
+  VisVideoDepth depth;
+  int bpp;
+  int pitch;
 
-      int                width;
-      int                height;
-      VisVideoDepth      depth;
-      int                bpp;
-      int                pitch;
+  BufferPtr buffer;
+  std::vector<void *> pixel_rows;
+  Palette palette;
 
-      BufferPtr          buffer;
-      std::vector<void*> pixel_rows;
-      Palette            palette;
+  VideoConstPtr parent;
+  Rect extents;
 
-      VideoConstPtr      parent;
-      Rect               extents;
+  VisVideoComposeType compose_type;
+  VisVideoComposeFunc compose_func;
+  Color *colorkey;
+  uint8_t alpha;
 
-      VisVideoComposeType compose_type;
-      VisVideoComposeFunc compose_func;
-      Color*              colorkey;
-      uint8_t             alpha;
+  Impl();
 
-      Impl ();
+  ~Impl();
 
-      ~Impl ();
+  void set_buffer(void *ptr);
+  void precompute_row_table();
+};
 
-      void set_buffer (void* ptr);
-      void precompute_row_table ();
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif // _LV_VIDEO_PRIVATE_HPP

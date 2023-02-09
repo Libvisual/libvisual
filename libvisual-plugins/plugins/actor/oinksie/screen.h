@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -26,7 +27,7 @@
 
 #include "oinksie.h"
 
-void _oink_screen_init (OinksiePrivate *priv, int width, int height);
-void _oink_screen_size_set (OinksiePrivate *priv, int width, int height);
+void _oink_screen_init(OinksiePrivate *priv, int width, int height);
+void _oink_screen_size_set(OinksiePrivate *priv, int width, int height);
 
 #endif /* _OINK_SCREEN_H */

@@ -5,39 +5,30 @@
 #include "nodeClass.h"
 #include "ExprVirtualMachine.h"
 
-
 class FcnEntry : public nodeClass {
 
-	public:
-		UtilStr					mName;
-		long					mSize;
-		float**					mFcn;
-
+public:
+  UtilStr mName;
+  long mSize;
+  float **mFcn;
 };
-
-
 
 class ExpressionDict {
 
+public:
+  ExpressionDict();
 
-	public:
-								ExpressionDict();
+  void AddVar(UtilStr &inKey, float *inPtr) { AddVar(inKey.getCStr(), inPtr); }
+  void AddVar(const char *inKey, float *inPtr);
 
+  void AddFcn(const char *inKey, ExprUserFcn **inFcn);
 
-		void					AddVar( UtilStr& inKey, float* inPtr )				{ AddVar( inKey.getCStr(), inPtr );	}
-		void					AddVar( const char* inKey, float* inPtr );
+  float *LookupVar(const UtilStr &inName);
+  ExprUserFcn **LookupFunc(const UtilStr &inName);
 
-		void					AddFcn( const char* inKey, ExprUserFcn** inFcn );
-
-
-		float*					LookupVar( const UtilStr& inName );
-		ExprUserFcn**			LookupFunc( const UtilStr& inName );
-
-	protected:
-		Hashtable				mVarDict;
-		nodeClass				mFcnEntries;
-
+protected:
+  Hashtable mVarDict;
+  nodeClass mFcnEntries;
 };
-
 
 #endif

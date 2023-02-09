@@ -27,27 +27,32 @@
 // idea borrowed from: "coroutines in C" Simon Tatham,
 // http://www.chiark.greenend.org.uk/~sgtatham/coroutines.html
 
-struct _generator
-{
+struct _generator {
   int _line;
-  _generator():_line(0) {}
+  _generator() : _line(0) {}
 };
-
 
 #define test2 2
 
 #define _generator(NAME) struct NAME : public _generator
 
-#define _emit(T) bool operator()(T &_rv1, T &_rv2) { \
-                    switch(_line) { case 0:;
+#define _emit(T)                                                               \
+  bool operator()(T &_rv1, T &_rv2) {                                          \
+    switch (_line) {                                                           \
+    case 0:;
 
-#define _stop  } _line = 0; return false; }
+#define _stop                                                                  \
+  }                                                                            \
+  _line = 0;                                                                   \
+  return false;                                                                \
+  }
 
-#define _yield(V)     \
-        do {\
-            _line=__LINE__;\
-            _rv2 = _rv1;\
-            _rv1 = (V); return true; case __LINE__:;\
-        } while (0)
+#define _yield(V)                                                              \
+  do {                                                                         \
+    _line = __LINE__;                                                          \
+    _rv2 = _rv1;                                                               \
+    _rv1 = (V);                                                                \
+    return true;                                                               \
+  case __LINE__:;                                                              \
+  } while (0)
 #endif
-

@@ -26,21 +26,19 @@
 
 namespace LV {
 
-  class AudioConvert
-  {
-  public:
+class AudioConvert {
+public:
+  static void convert_samples(BufferPtr const &dest,
+                              VisAudioSampleFormatType dest_format,
+                              BufferConstPtr const &src,
+                              VisAudioSampleFormatType src_format);
 
-      static void convert_samples (BufferPtr const&         dest,
-                                   VisAudioSampleFormatType dest_format,
-                                   BufferConstPtr const&    src,
-                                   VisAudioSampleFormatType src_format);
+  static void deinterleave_stereo_samples(BufferPtr const &dest1,
+                                          BufferPtr const &dest2,
+                                          BufferConstPtr const &src,
+                                          VisAudioSampleFormatType format);
+};
 
-      static void deinterleave_stereo_samples (BufferPtr const&         dest1,
-                                               BufferPtr const&         dest2,
-                                               BufferConstPtr const&    src,
-                                               VisAudioSampleFormatType format);
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif // LV_AUDIO_CONVERT_HPP

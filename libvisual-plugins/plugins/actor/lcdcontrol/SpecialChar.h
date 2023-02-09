@@ -28,25 +28,25 @@
 namespace LCD {
 
 class SpecialChar {
-    std::map<int, int> chars_;
-    int size_;
+  std::map<int, int> chars_;
+  int size_;
 
-    public:
-    SpecialChar();
-    SpecialChar(int *ch, int size);
-    SpecialChar(int size);
-    int Size() const { return size_; };
-    std::map<int, int> Chars() const { return chars_; };
-    void AddChar(int ch);
-    void Data(int *data);
-    std::vector<int> Vector() const;
-    bool Compare(SpecialChar other);
-    int &operator[](int i);
-    bool operator==(const SpecialChar &ch) const;
-    bool operator!=(const SpecialChar &ch) const;
-    SpecialChar &operator=(const SpecialChar &rhv);
+public:
+  SpecialChar();
+  SpecialChar(int *ch, int size);
+  SpecialChar(int size);
+  int Size() const { return size_; };
+  std::map<int, int> Chars() const { return chars_; };
+  void AddChar(int ch);
+  void Data(int *data);
+  std::vector<int> Vector() const;
+  bool Compare(SpecialChar other);
+  int &operator[](int i);
+  bool operator==(const SpecialChar &ch) const;
+  bool operator!=(const SpecialChar &ch) const;
+  SpecialChar &operator=(const SpecialChar &rhv);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

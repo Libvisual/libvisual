@@ -29,26 +29,28 @@
 namespace LCD {
 
 class CFG : public virtual Evaluator {
-    Json::Reader reader_;
-    Json::Value *root_;
-    bool main_root_;
-    protected:
-    std::string key_;
-    public:
-    CFG();
-    CFG(Json::Value *config);
-    virtual ~CFG();
-    std::string CFG_Source();
-    bool CFG_Init( std::string path);
-    Json::Value *CFG_Fetch_Raw(Json::Value *section, std::string key, 
-        Json::Value *defval = NULL);
-    Json::Value *CFG_Fetch(Json::Value *section, std::string key, 
-        Json::Value *defval = NULL);
-    virtual std::string CFG_Key() { return key_;};
-    virtual Json::Value *CFG_Get_Root() { return root_; }
-    virtual void CFG_Set_Root(Json::Value *r) { root_ = r; }
+  Json::Reader reader_;
+  Json::Value *root_;
+  bool main_root_;
+
+protected:
+  std::string key_;
+
+public:
+  CFG();
+  CFG(Json::Value *config);
+  virtual ~CFG();
+  std::string CFG_Source();
+  bool CFG_Init(std::string path);
+  Json::Value *CFG_Fetch_Raw(Json::Value *section, std::string key,
+                             Json::Value *defval = NULL);
+  Json::Value *CFG_Fetch(Json::Value *section, std::string key,
+                         Json::Value *defval = NULL);
+  virtual std::string CFG_Key() { return key_; };
+  virtual Json::Value *CFG_Get_Root() { return root_; }
+  virtual void CFG_Set_Root(Json::Value *r) { root_ = r; }
 };
 
-};
+}; // namespace LCD
 
 #endif

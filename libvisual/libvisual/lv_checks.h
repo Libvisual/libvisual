@@ -16,18 +16,18 @@
 
 #include <libvisual/lv_error.h>
 
-#define visual_return_if_fail(expr) \
-	if (!(expr)) {                                                        \
-		visual_log (VISUAL_LOG_CRITICAL, "Assertion '%s' failed", #expr); \
-		visual_error_raise (VISUAL_ERROR_FAILED_CHECK);                   \
-	}
+#define visual_return_if_fail(expr)                                            \
+  if (!(expr)) {                                                               \
+    visual_log(VISUAL_LOG_CRITICAL, "Assertion '%s' failed", #expr);           \
+    visual_error_raise(VISUAL_ERROR_FAILED_CHECK);                             \
+  }
 
-#define visual_return_val_if_fail(expr, val) \
-	if (!(expr)) {                                                        \
-		visual_log (VISUAL_LOG_CRITICAL, "Assertion '%s' failed", #expr); \
-		visual_error_raise (VISUAL_ERROR_FAILED_CHECK);                   \
-		return (val);                                                     \
-	}
+#define visual_return_val_if_fail(expr, val)                                   \
+  if (!(expr)) {                                                               \
+    visual_log(VISUAL_LOG_CRITICAL, "Assertion '%s' failed", #expr);           \
+    visual_error_raise(VISUAL_ERROR_FAILED_CHECK);                             \
+    return (val);                                                              \
+  }
 
 #else /* VISUAL_PEDANTIC_CHECKS */
 
@@ -35,23 +35,21 @@
  * Return if @a expr is FALSE, showing a critical message with
  * useful information.
  */
-#define visual_return_if_fail(expr)	\
-	if (!(expr)) {                              \
-		visual_log (VISUAL_LOG_WARNING,         \
-			"Assertion `%s' failed", #expr);    \
-		return;                                 \
-	}
+#define visual_return_if_fail(expr)                                            \
+  if (!(expr)) {                                                               \
+    visual_log(VISUAL_LOG_WARNING, "Assertion `%s' failed", #expr);            \
+    return;                                                                    \
+  }
 
 /**
  * Return if @a val if @a expr is FALSE, showing a critical message
  * with useful information.
  */
-#define visual_return_val_if_fail(expr, val) \
-	if (!(expr)) {                                  \
-		visual_log (VISUAL_LOG_WARNING,             \
-			"Assertion `%s' failed", #expr);        \
-		return (val);                               \
-	}
+#define visual_return_val_if_fail(expr, val)                                   \
+  if (!(expr)) {                                                               \
+    visual_log(VISUAL_LOG_WARNING, "Assertion `%s' failed", #expr);            \
+    return (val);                                                              \
+  }
 
 #endif /* VISUAL_PEDANTIC_CHECKS */
 

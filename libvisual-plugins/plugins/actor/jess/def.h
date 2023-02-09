@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Remi Arquier <arquier@crans.org>
  *
  * Authors: Remi Arquier <arquier@crans.org>
@@ -27,16 +27,18 @@
 
 #define PI 3.1416
 #define RESX 640 /* start resolution */
-#define RESY 300 
+#define RESY 300
 #define RESX_D 640 /* rerence resolution */
-#define RESY_D 300 
+#define RESY_D 300
 
-#define SCREENFLAG SDL_HWSURFACE|SDL_HWPALETTE|SDL_DOUBLEBUF|SDL_ASYNCBLIT|SDL_HWACCEL|SDL_RLEACCEL
+#define SCREENFLAG                                                             \
+  SDL_HWSURFACE | SDL_HWPALETTE | SDL_DOUBLEBUF | SDL_ASYNCBLIT |              \
+      SDL_HWACCEL | SDL_RLEACCEL
 
-#define RESFACTX(par1) ( (int) ( (float) resx*(par1)/RESX_D ))
-#define RESFACTY(par1) ( (int) ( (float) resy*(par1)/RESY_D ))
-#define RESFACTXF(par1) ( (float) resx*(par1)/RESX_D )
-#define RESFACTYF(par1) ( (float) resy*(par1)/RESY_D )
+#define RESFACTX(par1) ((int)((float)resx * (par1) / RESX_D))
+#define RESFACTY(par1) ((int)((float)resy * (par1) / RESY_D))
+#define RESFACTXF(par1) ((float)resx * (par1) / RESX_D)
+#define RESFACTYF(par1) ((float)resy * (par1) / RESY_D)
 
 #define FUSEE_MAX 10
 #define FUSEE_VIE 5

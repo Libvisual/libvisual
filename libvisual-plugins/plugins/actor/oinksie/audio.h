@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -26,6 +27,6 @@
 
 #include "oinksie.h"
 
-void _oink_audio_analyse (OinksiePrivate *priv);
+void _oink_audio_analyse(OinksiePrivate *priv);
 
 #endif /* _OINK_AUDIO_H */

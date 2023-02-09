@@ -28,20 +28,21 @@
 namespace LCD {
 
 class BufferedReader {
-    std::vector<unsigned char> buffer_;
-    bool locked_;
-    int current_;
-    public:
-    BufferedReader();
-    int Peek(unsigned char *data, int bytes = 1);
-    int Read(unsigned char *data, int bytes = 1);
-    void AddData(unsigned char *data, int len);
-    void SetCurrent(int c);
-    int GetCurrent();
-    void SetLocked(bool locked);
-    bool GetLocked();
+  std::vector<unsigned char> buffer_;
+  bool locked_;
+  int current_;
+
+public:
+  BufferedReader();
+  int Peek(unsigned char *data, int bytes = 1);
+  int Read(unsigned char *data, int bytes = 1);
+  void AddData(unsigned char *data, int len);
+  void SetCurrent(int c);
+  int GetCurrent();
+  void SetLocked(bool locked);
+  bool GetLocked();
 };
 
-}
+} // namespace LCD
 
 #endif

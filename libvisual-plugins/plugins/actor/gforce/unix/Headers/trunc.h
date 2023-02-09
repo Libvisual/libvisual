@@ -25,4 +25,3 @@ double trunc(double);
 #endif
 
 #endif
-

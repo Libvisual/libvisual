@@ -2,26 +2,17 @@
 
 #include "TempMem.h"
 
-TempMem::TempMem() {
+TempMem::TempMem() { mDimSize = 0; }
 
-	mDimSize = 0;
+TempMem::~TempMem() {}
+
+char *TempMem::Dim(long inBytes) {
+
+  if (inBytes > mDimSize) {
+    mDimSize = 0;
+
+    mDimSize = inBytes;
+  }
+
+  return mTemp.Dim(inBytes);
 }
-
-
-TempMem::~TempMem() {
-
-}
-
-
-char* TempMem::Dim( long inBytes ) {
-
-	if ( inBytes > mDimSize ) {
-		mDimSize = 0;
-
-		mDimSize = inBytes;
-	}
-
-	return mTemp.Dim( inBytes );
-}
-
-

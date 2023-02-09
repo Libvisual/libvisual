@@ -39,82 +39,74 @@
 
 namespace LV {
 
-  //! Colour palette class for indexed colour modes
-  //!
-  //! @note This is currently only used for 8-bit images
-  //!
-  struct LV_API Palette
-  {
-      std::vector<Color> colors;
+//! Colour palette class for indexed colour modes
+//!
+//! @note This is currently only used for 8-bit images
+//!
+struct LV_API Palette {
+  std::vector<Color> colors;
 
-      /**
-       * Creates a new Palette object
-       */
-      Palette () = default;
+  /**
+   * Creates a new Palette object
+   */
+  Palette() = default;
 
-      explicit Palette (unsigned int ncolors);
+  explicit Palette(unsigned int ncolors);
 
-      Palette (Palette const&) = default;
+  Palette(Palette const &) = default;
 
-      Palette (Palette&& palette)
-          : colors (std::move (palette.colors))
-      {}
+  Palette(Palette &&palette) : colors(std::move(palette.colors)) {}
 
-      ~Palette ();
+  ~Palette();
 
-      Palette& operator= (Palette const& rhs) = default;
+  Palette &operator=(Palette const &rhs) = default;
 
-      Palette& operator= (Palette&& rhs)
-      {
-          colors.swap (rhs.colors);
-          return *this;
-      }
+  Palette &operator=(Palette &&rhs) {
+    colors.swap(rhs.colors);
+    return *this;
+  }
 
-      bool empty () const
-      {
-          return colors.empty ();
-      }
+  bool empty() const { return colors.empty(); }
 
-      unsigned int size () const
-      {
-          return colors.size ();
-      }
+  unsigned int size() const { return colors.size(); }
 
-      /**
-       * This function is capable of morphing from one palette to another.
-       *
-       * @param src1 Pointer to a VisPalette that acts as the first source for the morph.
-       * @param src2 Pointer to a VisPalette that acts as the second source for the morph.
-       * @param rate Value that sets the rate of the morph, which is valid between 0 and 1.
-       */
-      void blend (Palette const& src1, Palette const& src2, float rate);
+  /**
+   * This function is capable of morphing from one palette to another.
+   *
+   * @param src1 Pointer to a VisPalette that acts as the first source for the
+   * morph.
+   * @param src2 Pointer to a VisPalette that acts as the second source for the
+   * morph.
+   * @param rate Value that sets the rate of the morph, which is valid between 0
+   * and 1.
+   */
+  void blend(Palette const &src1, Palette const &src2, float rate);
 
+  /**
+   * Allocate an amount of colors for a VisPalette.
+   *
+   * @param size Number of colors to allocate
+   */
+  void allocate_colors(unsigned int size);
 
-      /**
-       * Allocate an amount of colors for a VisPalette.
-       *
-       * @param size Number of colors to allocate
-       */
-      void allocate_colors (unsigned int size);
+  /**
+   * Can be used to cycle through the colors of a VisPalette and
+   * blend between elements. The rate is from 0.0 to number of
+   * VisColors in the VisPalette. The VisColor is newly allocated
+   * so you have to unref it. The last VisColor in the VisPalette
+   * is morphed with the first.
+   *
+   * @param rate Selection of the VisColor from the VisPalette, goes from 0.0 to
+   * number of VisColors in the VisPalette and morphs between colors if needed.
+   *
+   * @return A new Color, possibly a morph between two Colors
+   */
+  Color color_cycle(float rate);
 
-      /**
-       * Can be used to cycle through the colors of a VisPalette and
-       * blend between elements. The rate is from 0.0 to number of
-       * VisColors in the VisPalette. The VisColor is newly allocated
-       * so you have to unref it. The last VisColor in the VisPalette
-       * is morphed with the first.
-       *
-       * @param rate Selection of the VisColor from the VisPalette, goes from 0.0 to number of VisColors in the VisPalette
-       *    and morphs between colors if needed.
-       *
-       * @return A new Color, possibly a morph between two Colors
-       */
-      Color color_cycle (float rate);
+  int find_color(Color const &color) const;
+};
 
-      int find_color (Color const& color) const;
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif // __cplusplus
 
@@ -127,24 +119,24 @@ struct _VisPalette;
 
 LV_BEGIN_DECLS
 
-LV_API VisPalette *visual_palette_new (unsigned int ncolors);
+LV_API VisPalette *visual_palette_new(unsigned int ncolors);
 
-LV_API void visual_palette_free (VisPalette *palette);
+LV_API void visual_palette_free(VisPalette *palette);
 
-LV_API VisPalette *visual_palette_clone (VisPalette *self);
+LV_API VisPalette *visual_palette_clone(VisPalette *self);
 
-LV_API void visual_palette_copy (VisPalette *dest, VisPalette *src);
+LV_API void visual_palette_copy(VisPalette *dest, VisPalette *src);
 
-LV_API VisColor *visual_palette_get_colors (VisPalette *pal);
+LV_API VisColor *visual_palette_get_colors(VisPalette *pal);
 
-LV_API VisColor *visual_palette_get_color (VisPalette *pal, int index);
+LV_API VisColor *visual_palette_get_color(VisPalette *pal, int index);
 
-LV_API unsigned int visual_palette_get_size (VisPalette *pal);
+LV_API unsigned int visual_palette_get_size(VisPalette *pal);
 
-LV_API void visual_palette_blend (VisPalette *dest, VisPalette *src1, VisPalette *src2, float rate);
+LV_API void visual_palette_blend(VisPalette *dest, VisPalette *src1,
+                                 VisPalette *src2, float rate);
 
-LV_API int visual_palette_find_color (VisPalette *pal, VisColor *color);
-
+LV_API int visual_palette_find_color(VisPalette *pal, VisColor *color);
 
 LV_END_DECLS
 

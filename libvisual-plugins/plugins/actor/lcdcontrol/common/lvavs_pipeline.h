@@ -1,5 +1,5 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
- * 
+ *
  * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -34,10 +34,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define LVAVS_PIPELINE(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSPipeline))
-#define LVAVS_PIPELINE_RENDERSTATE(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPipelineRenderState))
-#define LVAVS_PIPELINE_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPipelineElement))
-#define LVAVS_PIPELINE_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPipelineContainer))
+#define LVAVS_PIPELINE(obj) (VISUAL_CHECK_CAST((obj), LVAVSPipeline))
+#define LVAVS_PIPELINE_RENDERSTATE(obj)                                        \
+  (VISUAL_CHECK_CAST((obj), LVAVSPipelineRenderState))
+#define LVAVS_PIPELINE_ELEMENT(obj)                                            \
+  (VISUAL_CHECK_CAST((obj), LVAVSPipelineElement))
+#define LVAVS_PIPELINE_CONTAINER(obj)                                          \
+  (VISUAL_CHECK_CAST((obj), LVAVSPipelineContainer))
 
 #define LVAVS_MAX_BUFFERS 16
 
@@ -46,126 +49,127 @@ typedef struct _LVAVSPipelineRenderState LVAVSPipelineRenderState;
 typedef struct _LVAVSPipelineElement LVAVSPipelineElement;
 typedef struct _LVAVSPipelineContainer LVAVSPipelineContainer;
 
-
 typedef enum {
-	LVAVS_PIPELINE_ELEMENT_TYPE_NULL,
-	LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR,
-	LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM,
-	LVAVS_PIPELINE_ELEMENT_TYPE_MORPH,
-	LVAVS_PIPELINE_ELEMENT_TYPE_RENDERSTATE,
-	LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER
+  LVAVS_PIPELINE_ELEMENT_TYPE_NULL,
+  LVAVS_PIPELINE_ELEMENT_TYPE_ACTOR,
+  LVAVS_PIPELINE_ELEMENT_TYPE_TRANSFORM,
+  LVAVS_PIPELINE_ELEMENT_TYPE_MORPH,
+  LVAVS_PIPELINE_ELEMENT_TYPE_RENDERSTATE,
+  LVAVS_PIPELINE_ELEMENT_TYPE_CONTAINER
 } LVAVSPipelineElementType;
 
 typedef enum {
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_REPLACE,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_ADDITIVE,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_MAXIMUM,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_5050,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_SUBSTRACT1,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_SUBSTRACT2,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_MULTIPLY,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_ADJUSTABLE,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_XOR,
-	LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_MINIMUM
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_REPLACE,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_ADDITIVE,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_MAXIMUM,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_5050,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_SUBSTRACT1,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_SUBSTRACT2,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_MULTIPLY,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_ADJUSTABLE,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_XOR,
+  LVAVS_PIPELINE_RENDER_STATE_BLEND_TYPE_MINIMUM
 } LVAVSPipelineRenderStateBlendMode;
 
 /* The AVS data structure */
 struct _LVAVSPipeline {
-	VisObject			 object;
+  VisObject object;
 
-	int				 clearframe;
+  int clearframe;
 
-	LVAVSPipelineRenderState	*renderstate;
+  LVAVSPipelineRenderState *renderstate;
 
-	VisVideo			*target;
+  VisVideo *target;
 
-	VisVideo			*buffers[LVAVS_MAX_BUFFERS];
+  VisVideo *buffers[LVAVS_MAX_BUFFERS];
 
-	VisVideo *dummy_vid;
-        VisVideo *last_vid;
+  VisVideo *dummy_vid;
+  VisVideo *last_vid;
 
-	float audiodata[2][2][1024];
+  float audiodata[2][2][1024];
 
-	unsigned char blendtable[256][256];
+  unsigned char blendtable[256][256];
 
-	int enabled;
+  int enabled;
 
-	unsigned char blendadjust;
+  unsigned char blendadjust;
 
-	LVAVSPipelineRenderStateBlendMode	blendmode;
+  LVAVSPipelineRenderStateBlendMode blendmode;
 
-	int linewidth;
+  int linewidth;
 
-	int *fbout;
+  int *fbout;
 
-	int *framebuffer;
+  int *framebuffer;
 
-	int swap; // whether to swap buffers -- fbout<->framebuffer
+  int swap; // whether to swap buffers -- fbout<->framebuffer
 
-	int isBeat;
+  int isBeat;
 
-        int mode;
-        int inblendval;
-	int outblendval;
-	int bufferin;
-	int bufferout;
-	int ininvert;
-	int outinvert;
-	int beat_render;
-	int beat_render_frames;
-        int use_inblendval;
+  int mode;
+  int inblendval;
+  int outblendval;
+  int bufferin;
+  int bufferout;
+  int ininvert;
+  int outinvert;
+  int beat_render;
+  int beat_render_frames;
+  int use_inblendval;
 
-	LVAVSPipelineContainer		*container;
+  LVAVSPipelineContainer *container;
 };
 
-// For removal. I don't see any reason to separatet these fields from the VisPipeline. Maybe there's a reason to exhcange RenderStates between pipelines? Leaving this here for now.
+// For removal. I don't see any reason to separatet these fields from the
+// VisPipeline. Maybe there's a reason to exhcange RenderStates between
+// pipelines? Leaving this here for now.
 struct _LVAVSPipelineRenderState {
-	VisObject				object;
+  VisObject object;
 
-	int					enabled;
+  int enabled;
 
-	unsigned char				blendadjust;
+  unsigned char blendadjust;
 
-	LVAVSPipelineRenderStateBlendMode	blendmode;
+  LVAVSPipelineRenderStateBlendMode blendmode;
 
-	int					linewidth;
+  int linewidth;
 };
 
 struct _LVAVSPipelineElement {
-	VisObject			 object;
+  VisObject object;
 
-	LVAVSPipelineElementType	 type;
+  LVAVSPipelineElementType type;
 
-	LVAVSPipeline			*pipeline;
+  LVAVSPipeline *pipeline;
 
-	VisParamContainer		*params;
+  VisParamContainer *params;
 
-	union {
-		VisActor			*actor;
-		VisMorph			*morph;
-		VisTransform			*transform;
-		LVAVSPipelineRenderState	*renderstate;
-		LVAVSPipelineContainer		*container;
-	} data;
+  union {
+    VisActor *actor;
+    VisMorph *morph;
+    VisTransform *transform;
+    LVAVSPipelineRenderState *renderstate;
+    LVAVSPipelineContainer *container;
+  } data;
 };
 
 struct _LVAVSPipelineContainer {
-	LVAVSPipelineElement		 element;
+  LVAVSPipelineElement element;
 
-	VisList				*members;
+  VisList *members;
 };
 
-
 /* Prototypes */
-LVAVSPipeline *lvavs_pipeline_new (void);
-LVAVSPipelineElement *lvavs_pipeline_element_new (LVAVSPipelineElementType type);
-LVAVSPipelineContainer *lvavs_pipeline_container_new (void);
+LVAVSPipeline *lvavs_pipeline_new(void);
+LVAVSPipelineElement *lvavs_pipeline_element_new(LVAVSPipelineElementType type);
+LVAVSPipelineContainer *lvavs_pipeline_container_new(void);
 
-LVAVSPipeline *lvavs_pipeline_new_from_preset (LVAVSPreset *preset);
-int lvavs_pipeline_realize (LVAVSPipeline *pipeline);
-int lvavs_pipeline_negotiate (LVAVSPipeline *pipeline, VisVideo *video);
-int lvavs_pipeline_propagate_event (LVAVSPipeline *pipeline, VisEvent *event);
-int lvavs_pipeline_run (LVAVSPipeline *pipeline, VisVideo *video, VisAudio *audio);
+LVAVSPipeline *lvavs_pipeline_new_from_preset(LVAVSPreset *preset);
+int lvavs_pipeline_realize(LVAVSPipeline *pipeline);
+int lvavs_pipeline_negotiate(LVAVSPipeline *pipeline, VisVideo *video);
+int lvavs_pipeline_propagate_event(LVAVSPipeline *pipeline, VisEvent *event);
+int lvavs_pipeline_run(LVAVSPipeline *pipeline, VisVideo *video,
+                       VisAudio *audio);
 
 #ifdef __cplusplus
 }

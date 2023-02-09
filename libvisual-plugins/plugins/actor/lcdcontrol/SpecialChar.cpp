@@ -25,80 +25,77 @@
 using namespace LCD;
 
 SpecialChar::SpecialChar(int *ch, int size) {
-    for(int i = 0; i < size; i++) {
-        chars_[i] = ch[i];
-    }
-    size_ = size;
+  for (int i = 0; i < size; i++) {
+    chars_[i] = ch[i];
+  }
+  size_ = size;
 }
 
 SpecialChar::SpecialChar(int size) {
-    for(int i = 0; i < size; i++) {
-        chars_[i] = 0;
-    }
-    size_ = size;
+  for (int i = 0; i < size; i++) {
+    chars_[i] = 0;
+  }
+  size_ = size;
 }
 
-SpecialChar::SpecialChar() {
-    size_ = 0;
-}
+SpecialChar::SpecialChar() { size_ = 0; }
 
 int &SpecialChar::operator[](int i) {
-    if(i >= size_) {
-        LCDError("SpecialChar: index out of range <%d,%d>", i, size_);
-        return chars_[0];
-    }
-    return chars_[i];
+  if (i >= size_) {
+    LCDError("SpecialChar: index out of range <%d,%d>", i, size_);
+    return chars_[0];
+  }
+  return chars_[i];
 }
 
 bool SpecialChar::operator==(const SpecialChar &rhv) const {
-    if( size_ != rhv.Size() )
-        return false;
-    return chars_ != rhv.Chars();
+  if (size_ != rhv.Size())
+    return false;
+  return chars_ != rhv.Chars();
 }
 
 bool SpecialChar::operator!=(const SpecialChar &rhv) const {
-    return !(*this == rhv);
+  return !(*this == rhv);
 }
 
 SpecialChar &SpecialChar::operator=(const SpecialChar &rhv) {
-    if(this == &rhv)
-        return *this;
-
-    size_ = rhv.Size();
-    chars_ = rhv.Chars();
-
+  if (this == &rhv)
     return *this;
+
+  size_ = rhv.Size();
+  chars_ = rhv.Chars();
+
+  return *this;
 }
 
-void SpecialChar::AddChar(int ch) {
-    chars_[size_++] = ch;
-}
+void SpecialChar::AddChar(int ch) { chars_[size_++] = ch; }
 
 // Programmer must insure data is allocated
 void SpecialChar::Data(int *data) {
-    for(unsigned int i = 0; i < chars_.size(); i++ ) {
-        data[i] = chars_[i];
-    }
-    size_ = chars_.size();
+  for (unsigned int i = 0; i < chars_.size(); i++) {
+    data[i] = chars_[i];
+  }
+  size_ = chars_.size();
 }
 
 std::vector<int> SpecialChar::Vector() const {
-    std::vector<int> data;
-    std::map<int, int> chars = chars_;
-    for(unsigned int i = 0; i < chars.size(); i++ ) {
-        data.push_back(chars[i]);
-    }
-    return data;
+  std::vector<int> data;
+  std::map<int, int> chars = chars_;
+  for (unsigned int i = 0; i < chars.size(); i++) {
+    data.push_back(chars[i]);
+  }
+  return data;
 }
 
 bool SpecialChar::Compare(SpecialChar other) {
-    bool flag = true;
-    if(Size() != other.Size()) flag = false;
-    else {
-        for(int i = 0; i < Size(); i++) {
-            if(other[i] != chars_[i])
-                flag = false;
-        }
+  bool flag = true;
+  if (Size() != other.Size())
+    flag = false;
+  else {
+    for (int i = 0; i < Size(); i++) {
+      if (other[i] != chars_[i])
+        flag = false;
     }
-    return flag;
+  }
+  return flag;
 }

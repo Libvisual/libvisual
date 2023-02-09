@@ -35,74 +35,71 @@
 // CRC borrowed from LCD4Linux
 #define CRCPOLY 0x8408
 
-static unsigned short CRC(const char *s)
-{
-    int i;
-    unsigned short crc;
+static unsigned short CRC(const char *s) {
+  int i;
+  unsigned short crc;
 
-    /* seed value */
-    crc = 0xffff;
+  /* seed value */
+  crc = 0xffff;
 
-    while (*s != '\0') {
-        crc ^= *s++;
-        for (i = 0; i < 8; i++)
-            crc = (crc >> 1) ^ ((crc & 1) ? CRCPOLY : 0);
-    }
-    return crc;
+  while (*s != '\0') {
+    crc ^= *s++;
+    for (i = 0; i < 8; i++)
+      crc = (crc >> 1) ^ ((crc & 1) ? CRCPOLY : 0);
+  }
+  return crc;
 }
 
 using namespace LCD;
 
 int PluginExec::DoExec(char *cmd, char *key, int delay) {
-    
-    int age = hash_age(&hash_, key);
 
-    if(age < 0) {
-        hash_put(&hash_, key, "");
+  int age = hash_age(&hash_, key);
 
-        if(delay < 10)
-            delay = 10;
+  if (age < 0) {
+    hash_put(&hash_, key, "");
 
-        //threads_.push_back(new PluginExecThread(cmd, key, delay));
-        return 0;
-    }
+    if (delay < 10)
+      delay = 10;
 
-    if(age < 10)
-        return 0;
+    // threads_.push_back(new PluginExecThread(cmd, key, delay));
+    return 0;
+  }
 
-/*
-    for(std::list<PluginExecThread *>::iterator it = threads_.begin();
-        it != threads_.end(); it++) {
-        if(strcmp(key, (*it)->GetKey()) == 0) {
-            (*it)->GetMutex().lock();
-            hash_put(&hash_, key, (*it)->GetRet());
-            (*it)->GetMutex().unlock();
-            return 0;
-        }
-    }
-*/
+  if (age < 10)
+    return 0;
 
-    LCDError("internal error: could not find thread exec-%s", key);
-    return -1;
+  /*
+      for(std::list<PluginExecThread *>::iterator it = threads_.begin();
+          it != threads_.end(); it++) {
+          if(strcmp(key, (*it)->GetKey()) == 0) {
+              (*it)->GetMutex().lock();
+              hash_put(&hash_, key, (*it)->GetRet());
+              (*it)->GetMutex().unlock();
+              return 0;
+          }
+      }
+  */
+
+  LCDError("internal error: could not find thread exec-%s", key);
+  return -1;
 }
 
-std::string PluginExec::Exec(std::string arg1, int delay)
-{
-    const char *cmd;
-    char key[5], *val;
+std::string PluginExec::Exec(std::string arg1, int delay) {
+  const char *cmd;
+  char key[5], *val;
 
-    cmd = arg1.c_str();
+  cmd = arg1.c_str();
 
-    qprintf(key, sizeof(key), "%x", CRC(cmd));
+  qprintf(key, sizeof(key), "%x", CRC(cmd));
 
-    if(DoExec((char *)cmd, key, delay) < 0) {
-        return "";
-    }
+  if (DoExec((char *)cmd, key, delay) < 0) {
+    return "";
+  }
 
-    val = hash_get(&hash_, key, NULL);
-    return val ? val : "";
+  val = hash_get(&hash_, key, NULL);
+  return val ? val : "";
 }
-
 
 /*
 void PluginExecThread::run() {
@@ -117,13 +114,11 @@ void PluginExecThread::run() {
         pipe = popen(cmd_, "r");
 
         if(pipe == NULL) {
-            LCDError("exec error: could not run pipe '%s': %s", cmd_, strerror(errno));
-            len = 0;
-        } else {
-            len = fread(buffer, 1, MEM_SIZE - 1, pipe);
+            LCDError("exec error: could not run pipe '%s': %s", cmd_,
+strerror(errno)); len = 0; } else { len = fread(buffer, 1, MEM_SIZE - 1, pipe);
             if(len <= 0) {
-                LCDError("exec error: could not read from pipe '%s': %s", cmd_, strerror(errno));
-                len = 0;
+                LCDError("exec error: could not read from pipe '%s': %s", cmd_,
+strerror(errno)); len = 0;
              }
              pclose(pipe);
         }
@@ -144,20 +139,19 @@ void PluginExecThread::run() {
 */
 
 void PluginExec::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("exec", objVal);
-*/
+  /*
+      QScriptEngine *engine = visitor->GetEngine();
+      QScriptValue val = engine->newObject();
+      QScriptValue objVal = engine->newQObject(val, this);
+      engine->globalObject().setProperty("exec", objVal);
+  */
 }
 
 void PluginExec::Disconnect() {
-/*
-    for(std::list<PluginExecThread *>::iterator it = threads_.begin();
-        it != threads_.end(); it++) {
-        (*it)->Stop();
-    }
-*/
+  /*
+      for(std::list<PluginExecThread *>::iterator it = threads_.begin();
+          it != threads_.end(); it++) {
+          (*it)->Stop();
+      }
+  */
 }
-

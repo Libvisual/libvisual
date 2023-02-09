@@ -3,32 +3,24 @@
 
 #include <libvisual/libvisual.h>
 
-typedef void (*LCDEventFunc) (void *data);
+typedef void (*LCDEventFunc)(void *data);
 
-namespace LCD 
-{
+namespace LCD {
 class LCDEvent {
-    public:
-    LCDEventFunc mFunc;
-    void *mData;
+public:
+  LCDEventFunc mFunc;
+  void *mData;
 
-    LCDEvent(LCDEventFunc func, void *data)
-    {
+  LCDEvent(LCDEventFunc func, void *data) {
 
-        mFunc = func;
-        mData = data;
-    }
+    mFunc = func;
+    mData = data;
+  }
 
-    ~LCDEvent()
-    {
-    }
+  ~LCDEvent() {}
 
-    void Fire()
-    {
-        mFunc(mData);
-    }
+  void Fire() { mFunc(mData); }
 };
-};
+}; // namespace LCD
 
 #endif
-

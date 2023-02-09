@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -27,57 +27,56 @@
 #include <libvisual/libvisual.h>
 
 typedef enum {
-	PLOTTER_SCOPE_LINES,
-	PLOTTER_SCOPE_DOTS,
-	PLOTTER_SCOPE_SOLID,
-	PLOTTER_SCOPE_NOTHING
+  PLOTTER_SCOPE_LINES,
+  PLOTTER_SCOPE_DOTS,
+  PLOTTER_SCOPE_SOLID,
+  PLOTTER_SCOPE_NOTHING
 } JakdawPlotterOptions;
 
 typedef enum {
-	PLOTTER_COLOUR_SOLID,
-	PLOTTER_COLOUR_RANDOM,
-	PLOTTER_COLOUR_MUSICTRIG
+  PLOTTER_COLOUR_SOLID,
+  PLOTTER_COLOUR_RANDOM,
+  PLOTTER_COLOUR_MUSICTRIG
 } JakdawPlotterColor;
 
-typedef enum
-{
-	FEEDBACK_ZOOMRIPPLE,
-	FEEDBACK_BLURONLY,
-	FEEDBACK_ZOOMROTATE,
-	FEEDBACK_SCROLL,
-	FEEDBACK_INTOSCREEN,
-	FEEDBACK_NEWRIPPLE
+typedef enum {
+  FEEDBACK_ZOOMRIPPLE,
+  FEEDBACK_BLURONLY,
+  FEEDBACK_ZOOMROTATE,
+  FEEDBACK_SCROLL,
+  FEEDBACK_INTOSCREEN,
+  FEEDBACK_NEWRIPPLE
 } JakdawFeedbackType;
 
 typedef struct {
-	int			 xres;
-	int			 yres;
+  int xres;
+  int yres;
 
-	int			 decay_rate;
+  int decay_rate;
 
-	JakdawFeedbackType	 zoom_mode;
-	double			 zoom_ripplesize;
-	double			 zoom_ripplefact;
-	double			 zoom_zoomfact;
+  JakdawFeedbackType zoom_mode;
+  double zoom_ripplesize;
+  double zoom_ripplefact;
+  double zoom_zoomfact;
 
-	float			 plotter_amplitude;
-	JakdawPlotterColor	 plotter_colortype;
-	int			 plotter_scopecolor;
-	JakdawPlotterOptions	 plotter_scopetype;
+  float plotter_amplitude;
+  JakdawPlotterColor plotter_colortype;
+  int plotter_scopecolor;
+  JakdawPlotterOptions plotter_scopetype;
 
-	/* Feedback privates */
-	uint32_t		*table;
-	uint32_t		*new_image;
-	int			 tableptr;
+  /* Feedback privates */
+  uint32_t *table;
+  uint32_t *new_image;
+  int tableptr;
 
-	/* PCM Buffer */
-	VisBuffer		*pcmbuf;
+  /* PCM Buffer */
+  VisBuffer *pcmbuf;
 
-	/* Spectrum buffer */
-	VisBuffer		*freqbuf;
+  /* Spectrum buffer */
+  VisBuffer *freqbuf;
 
-	/* Plugin it's random context */
-	VisRandomContext	*rcontext;
+  /* Plugin it's random context */
+  VisRandomContext *rcontext;
 } JakdawPrivate;
 
 #endif /* _ACTOR_JAKDAW_H */

@@ -25,31 +25,28 @@
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
-static int lv_morph_slide_init_right (VisPluginData *plugin);
+static int lv_morph_slide_init_right(VisPluginData *plugin);
 
-const VisPluginInfo *get_plugin_info (void)
-{
-    static VisPluginInfo info = {
-        .type     = VISUAL_PLUGIN_TYPE_MORPH,
+const VisPluginInfo *get_plugin_info(void) {
+  static VisPluginInfo info = {
+      .type = VISUAL_PLUGIN_TYPE_MORPH,
 
-        .plugname = "slide_right",
-        .name     = "Slide right morph",
-        .author   = "Dennis Smit <ds@nerds-incorporated.org>",
-        .version  = "0.1",
-        .about    = N_("A slide in/out morph plugin"),
-        .help     = N_("This morph plugin morphs between two video sources by sliding one in and the other out"),
-        .license  = VISUAL_PLUGIN_LICENSE_LGPL,
+      .plugname = "slide_right",
+      .name = "Slide right morph",
+      .author = "Dennis Smit <ds@nerds-incorporated.org>",
+      .version = "0.1",
+      .about = N_("A slide in/out morph plugin"),
+      .help = N_("This morph plugin morphs between two video sources by "
+                 "sliding one in and the other out"),
+      .license = VISUAL_PLUGIN_LICENSE_LGPL,
 
-        .init     = lv_morph_slide_init_right,
-        .cleanup  = lv_morph_slide_cleanup,
-        .plugin   = &morph
-    };
+      .init = lv_morph_slide_init_right,
+      .cleanup = lv_morph_slide_cleanup,
+      .plugin = &morph};
 
-    return &info;
+  return &info;
 }
 
-static int lv_morph_slide_init_right (VisPluginData *plugin)
-{
-    return lv_morph_slide_init (plugin, SLIDE_RIGHT);
+static int lv_morph_slide_init_right(VisPluginData *plugin) {
+  return lv_morph_slide_init(plugin, SLIDE_RIGHT);
 }
-

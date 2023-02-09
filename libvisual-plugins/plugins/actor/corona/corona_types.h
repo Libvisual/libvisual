@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Richard Ashburn <richard.asbury@btinternet.com>
  *
  * Authors: Richard Ashburn <richard.asbury@btinternet.com>
@@ -31,8 +31,7 @@
 
 // TIMED LEVEL
 //
-struct TimedLevel
-{
+struct TimedLevel {
   unsigned char frequency[2][512];
   int state;
   unsigned int timeStamp;
@@ -42,12 +41,10 @@ struct TimedLevel
 
 // COLOR
 //
-struct ColorRGB 
-{
+struct ColorRGB {
   unsigned char rgbRed;
   unsigned char rgbGreen;
   unsigned char rgbBlue;
 };
-
 
 #endif

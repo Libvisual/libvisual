@@ -37,171 +37,176 @@ VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
 namespace {
 
-  int         lv_dancingparticles_init        (VisPluginData *plugin);
-  void        lv_dancingparticles_cleanup     (VisPluginData *plugin);
-  void        lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height);
-  void        lv_dancingparticles_resize      (VisPluginData *plugin, int width, int height);
-  int         lv_dancingparticles_events      (VisPluginData *plugin, VisEventQueue *events);
-  void        lv_dancingparticles_render      (VisPluginData *plugin, VisVideo *video, VisAudio *audio);
-  VisPalette *lv_dancingparticles_palette     (VisPluginData *plugin);
-}
+int lv_dancingparticles_init(VisPluginData *plugin);
+void lv_dancingparticles_cleanup(VisPluginData *plugin);
+void lv_dancingparticles_requisition(VisPluginData *plugin, int *width,
+                                     int *height);
+void lv_dancingparticles_resize(VisPluginData *plugin, int width, int height);
+int lv_dancingparticles_events(VisPluginData *plugin, VisEventQueue *events);
+void lv_dancingparticles_render(VisPluginData *plugin, VisVideo *video,
+                                VisAudio *audio);
+VisPalette *lv_dancingparticles_palette(VisPluginData *plugin);
+} // namespace
 
 unsigned int fast_sqrt_table[0x10000];
 int titleHasChanged = false;
 const char *curtitle = "Moeders";
 
 /* Main plugin stuff */
-const VisPluginInfo *get_plugin_info ()
-{
-	static VisActorPlugin actor;
+const VisPluginInfo *get_plugin_info() {
+  static VisActorPlugin actor;
 
-	actor.requisition = lv_dancingparticles_requisition;
-	actor.palette     = lv_dancingparticles_palette;
-	actor.render      = lv_dancingparticles_render;
-	actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL;
+  actor.requisition = lv_dancingparticles_requisition;
+  actor.palette = lv_dancingparticles_palette;
+  actor.render = lv_dancingparticles_render;
+  actor.vidoptions.depth = VISUAL_VIDEO_DEPTH_GL;
 
-	static VisPluginInfo info;
+  static VisPluginInfo info;
 
-	info.type     = VISUAL_PLUGIN_TYPE_ACTOR;
-	info.plugname = "dancingparticles";
-	info.name     = "libvisual Dancing Particles plugin";
-	info.author   = N_("Original by: Pierre Tardy <tardyp@free.fr>, Port by: Dennis Smit <ds@nerds-incorporated.org>");
-	info.version  = "0.1";
-	info.about    = N_("Libvisual Dancing Particles plugin");
-	info.help     =  N_("This plugin shows dancing particles");
-	info.license  = VISUAL_PLUGIN_LICENSE_GPL,
+  info.type = VISUAL_PLUGIN_TYPE_ACTOR;
+  info.plugname = "dancingparticles";
+  info.name = "libvisual Dancing Particles plugin";
+  info.author = N_("Original by: Pierre Tardy <tardyp@free.fr>, Port by: "
+                   "Dennis Smit <ds@nerds-incorporated.org>");
+  info.version = "0.1";
+  info.about = N_("Libvisual Dancing Particles plugin");
+  info.help = N_("This plugin shows dancing particles");
+  info.license = VISUAL_PLUGIN_LICENSE_GPL,
 
-	info.init     = lv_dancingparticles_init;
-	info.cleanup  = lv_dancingparticles_cleanup;
-	info.events   = lv_dancingparticles_events;
-	info.plugin   = &actor;
+  info.init = lv_dancingparticles_init;
+  info.cleanup = lv_dancingparticles_cleanup;
+  info.events = lv_dancingparticles_events;
+  info.plugin = &actor;
 
-	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
-	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
-	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
-	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
-	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
-	VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA, 1);
+  VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions,
+                                     VISUAL_GL_ATTRIBUTE_RED_SIZE, 5);
+  VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions,
+                                     VISUAL_GL_ATTRIBUTE_GREEN_SIZE, 5);
+  VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions,
+                                     VISUAL_GL_ATTRIBUTE_BLUE_SIZE, 5);
+  VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions,
+                                     VISUAL_GL_ATTRIBUTE_DEPTH_SIZE, 16);
+  VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions,
+                                     VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER, 1);
+  VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(actor.vidoptions, VISUAL_GL_ATTRIBUTE_RGBA,
+                                     1);
 
-	return &info;
+  return &info;
 }
 
 namespace {
 
-int lv_dancingparticles_init (VisPluginData *plugin)
-{
+int lv_dancingparticles_init(VisPluginData *plugin) {
 #if ENABLE_NLS
-    bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
+  bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
 #endif
 
-    auto priv = visual_mem_new0 (DancingParticlesPrivate, 1);
-    visual_plugin_set_private (plugin, priv);
+  auto priv = visual_mem_new0(DancingParticlesPrivate, 1);
+  visual_plugin_set_private(plugin, priv);
 
-    VisParamList *params = visual_plugin_get_params (plugin);
-    visual_param_list_add_many (params,
-                                visual_param_new_bool ("transparent_bars",
-                                                       N_("Transparent bars"),
-                                                       FALSE,
-                                                       NULL),
-                                NULL);
+  VisParamList *params = visual_plugin_get_params(plugin);
+  visual_param_list_add_many(params,
+                             visual_param_new_bool("transparent_bars",
+                                                   N_("Transparent bars"),
+                                                   FALSE, NULL),
+                             NULL);
 
-    build_sqrt_table ();
+  build_sqrt_table();
 
-    init_gl ();
+  init_gl();
 
-    return true;
+  return true;
 }
 
-void lv_dancingparticles_cleanup (VisPluginData *plugin)
-{
-	auto priv = static_cast<DancingParticlesPrivate*> (visual_plugin_get_private (plugin));
+void lv_dancingparticles_cleanup(VisPluginData *plugin) {
+  auto priv =
+      static_cast<DancingParticlesPrivate *>(visual_plugin_get_private(plugin));
 
-	visual_mem_free (priv);
+  visual_mem_free(priv);
 }
 
-void lv_dancingparticles_requisition (VisPluginData *plugin, int *width, int *height)
-{
-	int reqw, reqh;
+void lv_dancingparticles_requisition(VisPluginData *plugin, int *width,
+                                     int *height) {
+  int reqw, reqh;
 
-	reqw = *width;
-	reqh = *height;
+  reqw = *width;
+  reqh = *height;
 
-	if (reqw < 1)
-		reqw = 1;
+  if (reqw < 1)
+    reqw = 1;
 
-	if (reqh < 1)
-		reqh = 1;
+  if (reqh < 1)
+    reqh = 1;
 
-	*width = reqw;
-	*height = reqh;
+  *width = reqw;
+  *height = reqh;
 }
 
-void lv_dancingparticles_resize (VisPluginData *plugin, int width, int height)
-{
-	glViewport(0, 0, width, height);
+void lv_dancingparticles_resize(VisPluginData *plugin, int width, int height) {
+  glViewport(0, 0, width, height);
 
-	build_sqrt_table ();
+  build_sqrt_table();
 }
 
-int lv_dancingparticles_events (VisPluginData *plugin, VisEventQueue *events)
-{
-	auto priv = static_cast<DancingParticlesPrivate*> (visual_plugin_get_private (plugin));
+int lv_dancingparticles_events(VisPluginData *plugin, VisEventQueue *events) {
+  auto priv =
+      static_cast<DancingParticlesPrivate *>(visual_plugin_get_private(plugin));
 
-	VisEvent ev;
-	VisParam *param;
+  VisEvent ev;
+  VisParam *param;
 
-	while (visual_event_queue_poll (events, &ev)) {
-		switch (ev.type) {
-			case VISUAL_EVENT_RESIZE:
-				lv_dancingparticles_resize (plugin, ev.event.resize.width, ev.event.resize.height);
-				break;
+  while (visual_event_queue_poll(events, &ev)) {
+    switch (ev.type) {
+    case VISUAL_EVENT_RESIZE:
+      lv_dancingparticles_resize(plugin, ev.event.resize.width,
+                                 ev.event.resize.height);
+      break;
 
-			case VISUAL_EVENT_PARAM:
-				param = static_cast<VisParam *> (ev.event.param.param);
+    case VISUAL_EVENT_PARAM:
+      param = static_cast<VisParam *>(ev.event.param.param);
 
-				if (visual_param_has_name (param, "transparent_bars")) {
-					priv->transparent = visual_param_get_value_bool (param);
+      if (visual_param_has_name(param, "transparent_bars")) {
+        priv->transparent = visual_param_get_value_bool(param);
 
-					if (priv->transparent == FALSE)
-						glDisable (GL_BLEND);
-					else
-						glEnable (GL_BLEND);
-				}
+        if (priv->transparent == FALSE)
+          glDisable(GL_BLEND);
+        else
+          glEnable(GL_BLEND);
+      }
 
-			default: /* to avoid warnings */
-				break;
-		}
-	}
+    default: /* to avoid warnings */
+      break;
+    }
+  }
 
-	return true;
+  return true;
 }
 
-VisPalette *lv_dancingparticles_palette (VisPluginData *plugin)
-{
-	return nullptr;
+VisPalette *lv_dancingparticles_palette(VisPluginData *plugin) {
+  return nullptr;
 }
 
-void lv_dancingparticles_render (VisPluginData *plugin, VisVideo *video, VisAudio *audio)
-{
-	const unsigned int size = 256;
+void lv_dancingparticles_render(VisPluginData *plugin, VisVideo *video,
+                                VisAudio *audio) {
+  const unsigned int size = 256;
 
-	float freq[3][size];
+  float freq[3][size];
 
-	LV::BufferPtr fbuf = LV::Buffer::create ();
-	fbuf->set (freq[0], size * sizeof(float));
-	audio->get_spectrum (fbuf, size, VISUAL_AUDIO_CHANNEL_LEFT, false);
+  LV::BufferPtr fbuf = LV::Buffer::create();
+  fbuf->set(freq[0], size * sizeof(float));
+  audio->get_spectrum(fbuf, size, VISUAL_AUDIO_CHANNEL_LEFT, false);
 
-	fbuf->set (freq[1], size * sizeof(float));
-	audio->get_spectrum (fbuf, size, VISUAL_AUDIO_CHANNEL_RIGHT, false);
+  fbuf->set(freq[1], size * sizeof(float));
+  audio->get_spectrum(fbuf, size, VISUAL_AUDIO_CHANNEL_RIGHT, false);
 
-	for (unsigned int i = 0; i < size; i++)
-		freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
+  for (unsigned int i = 0; i < size; i++)
+    freq[2][i] = (freq[0][i] + freq[1][i]) / 2;
 
-	/* FIXME on title change, do something */
-	dp_render_freq (freq);
-//	update_playlist_info ();
-	etoileLoop ();
-	draw_gl ();
+  /* FIXME on title change, do something */
+  dp_render_freq(freq);
+  //	update_playlist_info ();
+  etoileLoop();
+  draw_gl();
 }
 
 } // anonymous namespace

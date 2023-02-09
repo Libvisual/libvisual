@@ -43,7 +43,8 @@
 typedef void *(*VisMemCopyFunc)(void *dest, const void *src, visual_size_t n);
 
 /**
- * The visual_mem_copy_pitch function needs this signature. This function supports a negative pitch.
+ * The visual_mem_copy_pitch function needs this signature. This function
+ * supports a negative pitch.
  *
  * @arg dest Pointer to the dest buffer.
  * @arg src Pointer to the source buffer.
@@ -54,7 +55,8 @@ typedef void *(*VisMemCopyFunc)(void *dest, const void *src, visual_size_t n);
  *
  * @return Pointer to the dest buffer.
  */
-typedef void *(*VisMemCopyPitchFunc)(void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
+typedef void *(*VisMemCopyPitchFunc)(void *dest, const void *src, int pitch1,
+                                     int pitch2, int width, int rows);
 
 /**
  * The visual_mem_set function needs this signature.
@@ -98,7 +100,7 @@ LV_BEGIN_DECLS
  *
  * @return Pointer to newly allocated memory block, or NULL on failure
  */
-LV_API void *visual_mem_malloc (visual_size_t size) LV_ATTR_MALLOC;
+LV_API void *visual_mem_malloc(visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Allocates a block of memory with its content zeroed.
@@ -108,7 +110,7 @@ LV_API void *visual_mem_malloc (visual_size_t size) LV_ATTR_MALLOC;
  * @return Pointer to newly allocated memory block with its contents
  * zeroed, or NULL on failure
  */
-LV_API void *visual_mem_malloc0 (visual_size_t size) LV_ATTR_MALLOC;
+LV_API void *visual_mem_malloc0(visual_size_t size) LV_ATTR_MALLOC;
 
 /**
  * Reallocates memory, can be used to grow a buffer.
@@ -118,16 +120,17 @@ LV_API void *visual_mem_malloc0 (visual_size_t size) LV_ATTR_MALLOC;
  *
  * @return pointer to the reallocated memory block, or NULL on failure
  */
-LV_API void *visual_mem_realloc (void *ptr, visual_size_t size) LV_ATTR_MALLOC;
+LV_API void *visual_mem_realloc(void *ptr, visual_size_t size) LV_ATTR_MALLOC;
 
 /**
- * Frees a memory block allocated by visual_mem_malloc() and visual_mem_realloc().
+ * Frees a memory block allocated by visual_mem_malloc() and
+ * visual_mem_realloc().
  *
  * @param ptr Frees memory to which ptr points to
  *
  * @note visual_mem_free() accepts NULL pointers.
  */
-LV_API void visual_mem_free (void *ptr);
+LV_API void visual_mem_free(void *ptr);
 
 /**
  * Allocates a memory block aligned to a given address boundary.
@@ -137,9 +140,11 @@ LV_API void visual_mem_free (void *ptr);
  *
  * @return pointer to newly allocated memory block at the specified alignment
  *
- * @note Memory allocated by this function must be fred by visual_mem_free_aligned().
+ * @note Memory allocated by this function must be fred by
+ * visual_mem_free_aligned().
  */
-LV_API void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignment);
+LV_API void *visual_mem_malloc_aligned(visual_size_t size,
+                                       visual_size_t alignment);
 
 /**
  * Frees a memory block allocated by visual_mem_alloc_aligned().
@@ -148,13 +153,13 @@ LV_API void *visual_mem_malloc_aligned (visual_size_t size, visual_size_t alignm
  *
  * @note visual_mem_free_aligned() accepts NULL pointers.
  */
-LV_API void visual_mem_free_aligned (void *ptr);
+LV_API void visual_mem_free_aligned(void *ptr);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 extern LV_API VisMemCopyFunc visual_mem_copy;
 extern LV_API VisMemCopyPitchFunc visual_mem_copy_pitch;
 
-extern LV_API VisMemSet8Func  visual_mem_set;
+extern LV_API VisMemSet8Func visual_mem_set;
 extern LV_API VisMemSet16Func visual_mem_set16;
 extern LV_API VisMemSet32Func visual_mem_set32;
 
@@ -166,8 +171,9 @@ extern LV_API VisMemSet32Func visual_mem_set32;
  *
  * @return pointer to newly allocated array
  */
-#define visual_mem_new0(struct_type, n_structs) \
-    ((struct_type *) visual_mem_malloc0 (((visual_size_t) sizeof (struct_type)) * ((visual_size_t) (n_structs))))
+#define visual_mem_new0(struct_type, n_structs)                                \
+  ((struct_type *)visual_mem_malloc0(((visual_size_t)sizeof(struct_type)) *    \
+                                     ((visual_size_t)(n_structs))))
 
 LV_END_DECLS
 

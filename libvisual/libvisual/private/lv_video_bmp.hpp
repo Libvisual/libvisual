@@ -26,7 +26,7 @@
 #include <iosfwd>
 
 namespace LV {
-  VideoPtr bitmap_load_bmp (std::istream& input);
+VideoPtr bitmap_load_bmp(std::istream &input);
 }
 
 #endif // _LV_VIDEO_BMP_HPP

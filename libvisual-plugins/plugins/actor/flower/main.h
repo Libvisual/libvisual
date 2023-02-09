@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Antti Silvast <asilvast@iki.fi>
  *
  * Authors: Antti Silvast <asilvast@iki.fi>
@@ -32,37 +32,37 @@ typedef float Vect[3];
 typedef struct _FlowerInternal FlowerInternal;
 
 struct _FlowerInternal {
-	float tension;
-	float continuity;
-	float bias;
-	float tension_new;
-	float continuity_new;
-	float bias_new;
+  float tension;
+  float continuity;
+  float bias;
+  float tension_new;
+  float continuity_new;
+  float bias_new;
 
-	float rotx;
-	float roty;
+  float rotx;
+  float roty;
 
-	float spd;
+  float spd;
 
-	float posz;
-	float posz_new;
+  float posz;
+  float posz_new;
 
-	float audio_strength;
+  float audio_strength;
 
-	int width;
-	int height;
+  int width;
+  int height;
 
-	Vect kukka[7];
+  Vect kukka[7];
 
-	Vect kukka_morph[7];
+  Vect kukka_morph[7];
 
-	float audio_bars[256];
+  float audio_bars[256];
 
-	VisTimer *timer;
+  VisTimer *timer;
 };
 
 /* Prototypes */
-int init_flower (FlowerInternal *flower);
-void render_flower_effect (FlowerInternal *flower);
+int init_flower(FlowerInternal *flower);
+void render_flower_effect(FlowerInternal *flower);
 
 #endif /* _FLOWER_MAIN_H */

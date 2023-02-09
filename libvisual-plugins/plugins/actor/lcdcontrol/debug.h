@@ -21,7 +21,6 @@
  * along with LCDControl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
@@ -33,14 +32,15 @@ extern int verbose_level;
 extern "C" {
 #endif
 
-void message(const int level, const char *format, ...) __attribute__ ((format(__printf__, 2, 3)));
+void message(const int level, const char *format, ...)
+    __attribute__((format(__printf__, 2, 3)));
 
 #ifdef __cplusplus
 }
 #endif
 
-#define LCDDebug(args...) message (2, __FILE__ ": " args)
-#define LCDInfo(args...)  message (1, args)
-#define LCDError(args...) message (0, args)
+#define LCDDebug(args...) message(2, __FILE__ ": " args)
+#define LCDInfo(args...) message(1, args)
+#define LCDError(args...) message(0, args)
 
 #endif

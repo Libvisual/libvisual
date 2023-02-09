@@ -34,73 +34,58 @@
 #include "Evaluator.h"
 #include "debug.h"
 
-
 using namespace LCD;
 
-Property::Property(LCDCore *v, Json::Value *section, std::string name, 
-    Json::Value *defval) {
+Property::Property(LCDCore *v, Json::Value *section, std::string name,
+                   Json::Value *defval) {
 
-    visitor_ = v;
-    name_ = name;
-    is_valid = false;
-    expression_ = v->CFG_Fetch_Raw(section, name, defval);
-    if( expression_ != NULL && expression_->isString()) {
-        result_ = v->Eval(expression_->asCString());
-        is_valid = true;
-    } else if (expression_ != NULL ) {
-        LCDError("Property: <%s> has no expression_ or is not a string field.", name.c_str());
-        LCDError("%s", expression_->toStyledString().c_str());
-    }
+  visitor_ = v;
+  name_ = name;
+  is_valid = false;
+  expression_ = v->CFG_Fetch_Raw(section, name, defval);
+  if (expression_ != NULL && expression_->isString()) {
+    result_ = v->Eval(expression_->asCString());
+    is_valid = true;
+  } else if (expression_ != NULL) {
+    LCDError("Property: <%s> has no expression_ or is not a string field.",
+             name.c_str());
+    LCDError("%s", expression_->toStyledString().c_str());
+  }
 }
 
 Property::Property(const Property &prop) {
-    is_valid = prop.is_valid;
-    result_ = prop.result_;
-    expression_ = prop.expression_;
+  is_valid = prop.is_valid;
+  result_ = prop.result_;
+  expression_ = prop.expression_;
 }
 
-Property::~Property() {
-    delete expression_;
-}
+Property::~Property() { delete expression_; }
 
-bool Property::Valid() {
-    return is_valid;
-}
+bool Property::Valid() { return is_valid; }
 
 int Property::Eval() {
-    if(!is_valid) 
-        return -1;
+  if (!is_valid)
+    return -1;
 
-    int update = 1;
+  int update = 1;
 
-    std::string old;
+  std::string old;
 
-    result_ = visitor_->Eval(expression_->asCString());
+  result_ = visitor_->Eval(expression_->asCString());
 
-    if(old == result_ ) {
-        update = 0;
-    }
+  if (old == result_) {
+    update = 0;
+  }
 
-    return update;
+  return update;
 }
 
-double Property::P2N() {
-    return strtod(result_.c_str(), NULL);
-}
+double Property::P2N() { return strtod(result_.c_str(), NULL); }
 
-int Property::P2INT() {
-    return P2N();
-}
+int Property::P2INT() { return P2N(); }
 
-std::string Property::P2S() {
-    return result_;
-}
+std::string Property::P2S() { return result_; }
 
+void Property::SetValue(Json::Value val) {}
 
-void Property::SetValue(Json::Value val) {
-
-}
-
-Property Property::operator=(Property prop) {
-    return Property(prop);
-}
+Property Property::operator=(Property prop) { return Property(prop); }

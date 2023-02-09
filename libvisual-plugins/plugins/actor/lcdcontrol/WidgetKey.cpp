@@ -32,38 +32,33 @@
 
 using namespace LCD;
 
-WidgetKey::WidgetKey(LCDCore *v, std::string n, Json::Value *section) :
-    Widget(v, n, section, 0, 0, 0, WIDGET_TYPE_KEYPAD) {
+WidgetKey::WidgetKey(LCDCore *v, std::string n, Json::Value *section)
+    : Widget(v, n, section, 0, 0, 0, WIDGET_TYPE_KEYPAD) {
 
-    Json::Value *val = v->CFG_Fetch_Raw(section, "expression", new Json::Value(""));
-    code_ = val->asString();
-    delete val;
+  Json::Value *val =
+      v->CFG_Fetch_Raw(section, "expression", new Json::Value(""));
+  code_ = val->asString();
+  delete val;
 
-    val = v->CFG_Fetch(section, "key", new Json::Value(-1));
-    key_ = val->asInt();
-    delete val;
+  val = v->CFG_Fetch(section, "key", new Json::Value(-1));
+  key_ = val->asInt();
+  delete val;
 
-    started_ = false;
+  started_ = false;
 }
 
-WidgetKey::~WidgetKey() {
-}
+WidgetKey::~WidgetKey() {}
 
 void WidgetKey::KeyPressed(int k) {
-     if( started_ && k == key_ )
-         Update();
+  if (started_ && k == key_)
+    Update();
 }
 
 void WidgetKey::Update() {
-    LCDError("WidgetKey::Update() %d", key_);
-    visitor_->Eval(code_.c_str());
+  LCDError("WidgetKey::Update() %d", key_);
+  visitor_->Eval(code_.c_str());
 }
 
-void WidgetKey::Start() {
-    started_ = true;
-}
+void WidgetKey::Start() { started_ = true; }
 
-void WidgetKey::Stop() {
-    started_ = false;
-}
-
+void WidgetKey::Stop() { started_ = false; }

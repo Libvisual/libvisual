@@ -27,6 +27,6 @@
 
 #include "display_driver.hpp"
 
-DisplayDriver *sdl_driver_new (Display& display);
+DisplayDriver *sdl_driver_new(Display &display);
 
 #endif // _LV_TOOL_SDLDRIVER_HPP

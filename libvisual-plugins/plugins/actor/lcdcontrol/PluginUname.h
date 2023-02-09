@@ -31,13 +31,12 @@ namespace LCD {
 
 class PluginUname {
 
-    public:
-    PluginUname(lua *script);
+public:
+  PluginUname(lua *script);
 
-    std::string Uname(std::string arg1);
-
+  std::string Uname(std::string arg1);
 };
 
-};
+}; // namespace LCD
 
 #endif

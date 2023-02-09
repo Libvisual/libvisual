@@ -6,10 +6,8 @@ class ArgList;
 
 class ConfigFile {
 
-	public:
-		static bool				Load( const CEgFileSpec* inSpec, ArgList& outArgs );
+public:
+  static bool Load(const CEgFileSpec *inSpec, ArgList &outArgs);
 };
 
 #endif
-
-

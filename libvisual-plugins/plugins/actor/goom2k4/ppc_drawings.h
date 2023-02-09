@@ -15,4 +15,3 @@ void ppc_brightness_G4(Pixel *src, Pixel *dest, int size, int coeff);
 
 /* G5 Specific PowerPC Code (Possible use of Altivec) */
 void ppc_brightness_G5(Pixel *src, Pixel *dest, int size, int coeff);
-

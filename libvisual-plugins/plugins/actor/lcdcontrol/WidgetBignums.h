@@ -43,35 +43,34 @@ class LCDGraphic;
 class LCDCore;
 
 class WidgetBignums : public Widget {
-    std::vector<char> FB_;
-    std::vector<char> ch_;
-    int min_;
-    int max_;
-    int update_;
-    Property *expression_;
-    Property *expr_min_;
-    Property *expr_max_;
+  std::vector<char> FB_;
+  std::vector<char> ch_;
+  int min_;
+  int max_;
+  int update_;
+  Property *expression_;
+  Property *expr_min_;
+  Property *expr_max_;
 
-    LCDTimer *timer_;
+  LCDTimer *timer_;
 
-    void (*Draw)(WidgetBignums *);
-    
-    public:
-    WidgetBignums(LCDCore *visitor, std::string name, Json::Value *section, 
-        int row, int col, int layer);
-    ~WidgetBignums();
-    void TextScroll() {};
-    void SetupChars();
-    void Update();
-    void Start();
-    void Stop();
-    std::vector<char> GetFB() { return FB_; }
-    std::vector<char> GetCh() { return ch_; }
+  void (*Draw)(WidgetBignums *);
 
-    void Resize(int rows, int cols, int old_rows, int old_cols);
+public:
+  WidgetBignums(LCDCore *visitor, std::string name, Json::Value *section,
+                int row, int col, int layer);
+  ~WidgetBignums();
+  void TextScroll(){};
+  void SetupChars();
+  void Update();
+  void Start();
+  void Stop();
+  std::vector<char> GetFB() { return FB_; }
+  std::vector<char> GetCh() { return ch_; }
+
+  void Resize(int rows, int cols, int old_rows, int old_cols);
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

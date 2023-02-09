@@ -12,121 +12,116 @@
 #include <stdlib.h>
 #endif
 
-Prefs::Prefs( const char* inPrefsName, bool inSysStored ) {
-	mSysStored	= inSysStored;
-	mDirty		= true;
+Prefs::Prefs(const char *inPrefsName, bool inSysStored) {
+  mSysStored = inSysStored;
+  mDirty = true;
 
-	mPrefName.Assign( inPrefsName );
+  mPrefName.Assign(inPrefsName);
 
-	#ifdef EG_MAC
-  	short int	theVRef;
-	long		theDirID;
-	short		theErr;
-	FSSpec		prefSpec;
+#ifdef EG_MAC
+  short int theVRef;
+  long theDirID;
+  short theErr;
+  FSSpec prefSpec;
 
-	if ( inSysStored ) {
-		theErr = ::FindFolder( kOnSystemDisk, kPreferencesFolderType, kCreateFolder, &theVRef, &theDirID );
-		if ( theErr != noErr ) {
-			theVRef = 0;
-			theDirID = 0;
-		} }
-	else {
-		theVRef		= ( (FSSpec*) EgOSUtils::sAppSpec.OSSpec() ) -> vRefNum;
-		theDirID	= ( (FSSpec*) EgOSUtils::sAppSpec.OSSpec() ) -> parID;
-	}
-	::FSMakeFSSpec( theVRef, theDirID, mPrefName.getPasStr(), &prefSpec );
-	mFileSpec.Assign( &prefSpec, 'TEXT' );
-	#endif
+  if (inSysStored) {
+    theErr = ::FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder,
+                          &theVRef, &theDirID);
+    if (theErr != noErr) {
+      theVRef = 0;
+      theDirID = 0;
+    }
+  } else {
+    theVRef = ((FSSpec *)EgOSUtils::sAppSpec.OSSpec())->vRefNum;
+    theDirID = ((FSSpec *)EgOSUtils::sAppSpec.OSSpec())->parID;
+  }
+  ::FSMakeFSSpec(theVRef, theDirID, mPrefName.getPasStr(), &prefSpec);
+  mFileSpec.Assign(&prefSpec, 'TEXT');
+#endif
 
-	#ifdef EG_WIN
-	// Note: mSysStored == true is unimplmented--just continue as mSysStored == false
-	// (yah, right--like i'm gonna even *think* about touching the registry!)
-	UtilStr prefPath;
-	prefPath.Assign( (char*) EgOSUtils::sAppSpec.OSSpec() );
-	prefPath.Append( mPrefName );
-	mFileSpec.Assign( prefPath.getCStr(), 0 );
-	#endif
+#ifdef EG_WIN
+  // Note: mSysStored == true is unimplmented--just continue as mSysStored ==
+  // false (yah, right--like i'm gonna even *think* about touching the
+  // registry!)
+  UtilStr prefPath;
+  prefPath.Assign((char *)EgOSUtils::sAppSpec.OSSpec());
+  prefPath.Append(mPrefName);
+  mFileSpec.Assign(prefPath.getCStr(), 0);
+#endif
 
-	#ifdef UNIX_X
-	UtilStr prefPath;
-	prefPath.Assign( getenv("HOME") );
-	prefPath.Append( '/' );
-	prefPath.Append( mPrefName );
-	mFileSpec.Assign( prefPath.getCStr(), 0 );
-	#endif
-
+#ifdef UNIX_X
+  UtilStr prefPath;
+  prefPath.Assign(getenv("HOME"));
+  prefPath.Append('/');
+  prefPath.Append(mPrefName);
+  mFileSpec.Assign(prefPath.getCStr(), 0);
+#endif
 }
-
-
 
 CEgErr Prefs::Load() {
-	CEgIFile iFile;
+  CEgIFile iFile;
 
-	mPrefs.Clear();
-	iFile.open( &mFileSpec );
-	mPrefs.SetArgs( &iFile );
+  mPrefs.Clear();
+  iFile.open(&mFileSpec);
+  mPrefs.SetArgs(&iFile);
 
+  if (iFile.noErr())
+    mDirty = false;
 
-	if ( iFile.noErr() )
-		mDirty = false;
-
-	return iFile;
+  return iFile;
 }
-
 
 CEgErr Prefs::Store() {
-	CEgIOFile oFile;
+  CEgIOFile oFile;
 
-	if ( mDirty ) {
-		long origType = CEgIOFile::sCreatorType;
-		#if EG_MAC
-		CEgIOFile::sCreatorType = 0x74747874;
-		#elif EG_WIN
-		CEgIOFile::sCreatorType = 0x3f3f3f3f;
-		#endif
+  if (mDirty) {
+    long origType = CEgIOFile::sCreatorType;
+#if EG_MAC
+    CEgIOFile::sCreatorType = 0x74747874;
+#elif EG_WIN
+    CEgIOFile::sCreatorType = 0x3f3f3f3f;
+#endif
 
-		oFile.open( &mFileSpec );
+    oFile.open(&mFileSpec);
 
-		if ( oFile.noErr() ) {
+    if (oFile.noErr()) {
 
-			mPrefs.ExportTo( &oFile, true );
-			oFile.Writeln();
-		}
-		mDirty = false;
-		CEgIOFile::sCreatorType = origType;
-	}
+      mPrefs.ExportTo(&oFile, true);
+      oFile.Writeln();
+    }
+    mDirty = false;
+    CEgIOFile::sCreatorType = origType;
+  }
 
-	return oFile;
+  return oFile;
 }
 
+void Prefs::SetPref(long inID, const UtilStr &inData) {
 
-void Prefs::SetPref( long inID, const UtilStr& inData ) {
+  if (!mDirty) {
+    const UtilStr *str;
 
-	if ( ! mDirty ) {
-		const UtilStr* str;
+    str = mPrefs.GetStr(inID);
+    if (str) {
+      if (str->compareTo(&inData))
+        mDirty = true;
+    } else
+      mDirty = true;
+  }
 
-		str = mPrefs.GetStr( inID );
-		if ( str ) {
-			if ( str -> compareTo( &inData ) )
-				mDirty = true; }
-		else
-			mDirty = true;
-	}
-
-	mPrefs.SetArg( inID, inData );
+  mPrefs.SetArg(inID, inData);
 }
 
+void Prefs::SetPref(long inID, long inData) {
+  bool exists;
+  long num;
 
-void Prefs::SetPref( long inID, long inData ) {
-	bool exists;
-	long num;
+  if (!mDirty) {
 
-	if ( ! mDirty ) {
+    exists = mPrefs.GetArg(inID, num);
+    if (!exists || num != inData)
+      mDirty = true;
+  }
 
-		exists = mPrefs.GetArg( inID, num );
-		if ( ! exists || num != inData )
-			mDirty = true;
-	}
-
-	mPrefs.SetArg( inID, inData );
+  mPrefs.SetArg(inID, inData);
 }

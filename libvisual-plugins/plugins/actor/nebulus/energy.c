@@ -2,15 +2,11 @@
 
 GLfloat energy_time, energy_speed = 0.04f, old_energy_speed = 0.04f;
 
-typedef struct
-{
+typedef struct {
   GLfloat fu, fv;
 } ctexel;
 
-
-static void
-put_quad(ctexel cuvpos)
-{
+static void put_quad(ctexel cuvpos) {
   glTexCoord2f(0 + cuvpos.fu, 0 + cuvpos.fv);
   glVertex3f(-300, 300, 0);
   glTexCoord2f(1 + cuvpos.fu, 0 + cuvpos.fv);
@@ -21,13 +17,10 @@ put_quad(ctexel cuvpos)
   glVertex3f(-300, -300, 0);
 }
 
-
-static void
-drawenergy(GLfloat ftime)
-{
+static void drawenergy(GLfloat ftime) {
   ctexel cuvpos;
   int i;
-  GLfloat fog_color[3] = { 0.0f, 0.0f, 0.0f };
+  GLfloat fog_color[3] = {0.0f, 0.0f, 0.0f};
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -38,8 +31,8 @@ drawenergy(GLfloat ftime)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
   glTranslatef(0.0f, 0.0f, -300.0f);
-  glRotatef(ftime*30.0f, 1.0f, 0.0f, 0.0f);
-  glRotatef(30*sin(ftime/3.0f) + 10.0f, 0.0f, 0.0f, 1.0f);
+  glRotatef(ftime * 30.0f, 1.0f, 0.0f, 0.0f);
+  glRotatef(30 * sin(ftime / 3.0f) + 10.0f, 0.0f, 0.0f, 1.0f);
   glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
 
   glFogf(GL_FOG_START, 200);
@@ -50,8 +43,8 @@ drawenergy(GLfloat ftime)
   glEnable(GL_FOG);
   glPushMatrix();
 
-  cuvpos.fu = 0.1f*sin(ftime);
-  cuvpos.fv = ftime/5.0f;
+  cuvpos.fu = 0.1f * sin(ftime);
+  cuvpos.fv = ftime / 5.0f;
 
   glColor3f(1.0f, 1.0f, 1.0f);
   glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
@@ -59,17 +52,14 @@ drawenergy(GLfloat ftime)
     glBegin(GL_QUADS);
     put_quad(cuvpos);
     glEnd();
-    glRotatef(180/7.0f, 1.0f, 0.0f, 0.0f);
+    glRotatef(180 / 7.0f, 1.0f, 0.0f, 0.0f);
   }
 
   glPopMatrix();
   glDisable(GL_FOG);
 }
 
-
-static void
-render_energy(void)
-{
+static void render_energy(void) {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0, 0, point_general->WIDTH, point_general->HEIGHT);
@@ -79,10 +69,7 @@ render_energy(void)
   glEnable(GL_TEXTURE_2D);
 }
 
-
-void
-draw_energy(void)
-{
+void draw_energy(void) {
   energy_speed = old_energy_speed;
   energy_speed = reduce_vsync(energy_speed);
   energy_time += energy_speed;

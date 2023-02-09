@@ -37,90 +37,88 @@
 
 namespace LV {
 
-  //! Computes a Discrete Fourier Transform
-  class LV_API DFT
-  {
-  public:
+//! Computes a Discrete Fourier Transform
+class LV_API DFT {
+public:
+  /**
+   * Creates a DFT object used to calculate amplitude spectrums over audio data.
+   *
+   * @note For optimal performance, use a power-of-2 spectrum
+   * size. The current implementation does not use the Fast
+   * Fourier Transform for non powers of 2.
+   *
+   * @note If samples_in is smaller than 2 * samples_out, the input
+   * will be padded with zeroes.
+   *
+   * @param samples_in  The number of samples provided to every
+   *                    call to DFT::perform() as input.
+   *
+   * @param samples_out Size of output spectrum (number of output
+   *                    samples).
+   */
+  DFT(unsigned int samples_out, unsigned int samples_in);
 
-      /**
-       * Creates a DFT object used to calculate amplitude spectrums over audio data.
-       *
-       * @note For optimal performance, use a power-of-2 spectrum
-       * size. The current implementation does not use the Fast
-       * Fourier Transform for non powers of 2.
-       *
-       * @note If samples_in is smaller than 2 * samples_out, the input
-       * will be padded with zeroes.
-       *
-       * @param samples_in  The number of samples provided to every
-       *                    call to DFT::perform() as input.
-       *
-       * @param samples_out Size of output spectrum (number of output
-       *                    samples).
-       */
-      DFT (unsigned int samples_out, unsigned int samples_in);
+  DFT(DFT const &) = delete;
 
-      DFT (DFT const&) = delete;
+  /**
+   * Move constructor
+   */
+  DFT(DFT &&rhs);
 
-      /**
-       * Move constructor
-       */
-      DFT (DFT&& rhs);
+  /**
+   * Destructor
+   */
+  ~DFT();
 
-      /**
-       * Destructor
-       */
-      ~DFT ();
+  DFT &operator=(DFT const &) = delete;
 
-      DFT& operator= (DFT const&) = delete;
+  /**
+   * Move assignment operator
+   */
+  DFT &operator=(DFT &&rhs);
 
-      /**
-       * Move assignment operator
-       */
-      DFT& operator= (DFT&& rhs);
+  /**
+   * Returns the output size of the DFT.
+   *
+   * @return Output size
+   */
+  unsigned int get_spectrum_size() const;
 
-      /**
-       * Returns the output size of the DFT.
-       *
-       * @return Output size
-       */
-      unsigned int get_spectrum_size () const;
+  /**
+   * Performs a DFT over a set of input samples.
+   *
+   * @param output Array of output samples
+   * @param input  Array of input samples with values in [-1.0, 1.0]
+   */
+  void perform(float *output, float const *input);
 
-      /**
-       * Performs a DFT over a set of input samples.
-       *
-       * @param output Array of output samples
-       * @param input  Array of input samples with values in [-1.0, 1.0]
-       */
-      void perform (float *output, float const* input);
+  /**
+   * Logarithmically scales an amplitude spectrum.
+   *
+   * @note Scaled values are guaranteed to be in [0.0, 1.0].
+   *
+   * @param output Array of output samples
+   * @param input  Array of input samples with values in [0.0, 1.0]
+   * @param size Array size.
+   *
+   */
+  static void log_scale(float *output, float const *input, unsigned int size);
 
-      /**
-       * Logarithmically scales an amplitude spectrum.
-       *
-       * @note Scaled values are guaranteed to be in [0.0, 1.0].
-       *
-       * @param output Array of output samples
-       * @param input  Array of input samples with values in [0.0, 1.0]
-       * @param size Array size.
-       *
-       */
-      static void log_scale (float* output, float const* input, unsigned int size);
+  static void log_scale_standard(float *output, float const *input,
+                                 unsigned int size);
 
-      static void log_scale_standard (float* output, float const* input, unsigned int size);
+  static void log_scale_custom(float *output, float const *input,
+                               unsigned int size, float log_scale_divisor);
 
-      static void log_scale_custom (float* output, float const* input, unsigned int size, float log_scale_divisor);
+private:
+  class Impl;
 
-  private:
+  std::unique_ptr<Impl> m_impl;
+};
 
-      class Impl;
-
-      std::unique_ptr<Impl> m_impl;
-  };
-
-}  // LV namespace
+} // namespace LV
 
 #endif /* __cplusplus */
-
 
 /* C API bindings */
 
@@ -133,14 +131,19 @@ struct _VisDFT;
 
 LV_BEGIN_DECLS
 
-LV_API VisDFT *visual_dft_new  (unsigned int samples_out, unsigned int samples_in);
-LV_API void    visual_dft_free (VisDFT *dft);
+LV_API VisDFT *visual_dft_new(unsigned int samples_out,
+                              unsigned int samples_in);
+LV_API void visual_dft_free(VisDFT *dft);
 
-LV_API void visual_dft_perform (VisDFT *dft, float *output, float const *input);
+LV_API void visual_dft_perform(VisDFT *dft, float *output, float const *input);
 
-LV_API void visual_dft_log_scale (float *output, float const *input, unsigned int size);
-LV_API void visual_dft_log_scale_standard (float *output, float const *input, unsigned int size);
-LV_API void visual_dft_log_scale_custom (float *output, float const *input, unsigned int size, float log_scale_divisor);
+LV_API void visual_dft_log_scale(float *output, float const *input,
+                                 unsigned int size);
+LV_API void visual_dft_log_scale_standard(float *output, float const *input,
+                                          unsigned int size);
+LV_API void visual_dft_log_scale_custom(float *output, float const *input,
+                                        unsigned int size,
+                                        float log_scale_divisor);
 
 LV_END_DECLS
 

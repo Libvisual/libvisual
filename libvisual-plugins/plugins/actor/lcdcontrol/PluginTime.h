@@ -32,14 +32,14 @@ namespace LCD {
 
 class PluginTime {
 
-    public:
-    PluginTime(lua *script);
+public:
+  PluginTime(lua *script);
 
-    double Time();
-    std::string Strftime(std::string arg1, double arg2);
-    std::string Strftime_tz(std::string arg1, double arg2, std::string arg3);
-    double GetTimeOfDay();
+  double Time();
+  std::string Strftime(std::string arg1, double arg2);
+  std::string Strftime_tz(std::string arg1, double arg2, std::string arg3);
+  double GetTimeOfDay();
 };
 
-}; // End namespace
+}; // namespace LCD
 #endif

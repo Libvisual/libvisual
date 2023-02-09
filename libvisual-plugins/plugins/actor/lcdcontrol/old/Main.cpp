@@ -25,28 +25,27 @@
 #include "LCDControl.h"
 #include "debug.h"
 #include <libvisual/libvisual.h>
-   
+
 LCD::LCDControl *lcdControl;
 
-void handler(int signal){
-    LCDDebug("got signal %d", signal);
-    lcdControl->Stop();
+void handler(int signal) {
+  LCDDebug("got signal %d", signal);
+  lcdControl->Stop();
 }
 
-
 int main(int argc, char *argv[]) {
-    verbose_level = 3;
-    signal(SIGHUP, handler);
-    signal(SIGINT, handler);
-    signal(SIGQUIT, handler);
-    signal(SIGTERM, handler);
-    visual_init(&argc, &argv);
-    visual_log_set_verboseness(VISUAL_LOG_DEBUG);
-    QApplication *app = new QApplication(argc, argv);
-    lcdControl = new LCD::LCDControl(app);
-    int ret = lcdControl->Start();
-    visual_quit();
-    delete lcdControl;
-    delete app;
-    return ret;
+  verbose_level = 3;
+  signal(SIGHUP, handler);
+  signal(SIGINT, handler);
+  signal(SIGQUIT, handler);
+  signal(SIGTERM, handler);
+  visual_init(&argc, &argv);
+  visual_log_set_verboseness(VISUAL_LOG_DEBUG);
+  QApplication *app = new QApplication(argc, argv);
+  lcdControl = new LCD::LCDControl(app);
+  int ret = lcdControl->Start();
+  visual_quit();
+  delete lcdControl;
+  delete app;
+  return ret;
 }

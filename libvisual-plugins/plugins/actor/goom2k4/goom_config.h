@@ -7,15 +7,15 @@
 #if 1
 /* ndef COLOR_BGRA */
 /** position des composantes **/
-    #define BLEU 0
-    #define VERT 1
-    #define ROUGE 2
-    #define ALPHA 3
+#define BLEU 0
+#define VERT 1
+#define ROUGE 2
+#define ALPHA 3
 #else
-    #define ROUGE 1
-    #define BLEU 3
-    #define VERT 2
-    #define ALPHA 0
+#define ROUGE 1
+#define BLEU 3
+#define VERT 2
+#define ALPHA 0
 #endif
 
 #include <libvisual/lv_defines.h>

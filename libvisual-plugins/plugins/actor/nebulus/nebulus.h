@@ -39,28 +39,26 @@ typedef struct nebulus {
   int infos;
 } nebulus;
 
-typedef struct
-{
+typedef struct {
   char *name;
   int value;
 } effect;
 
 typedef struct {
-  unsigned int   width;
-  unsigned int   height;
-  unsigned int   bytes_per_pixel; /* 3:RGB, 4:RGBA */
-  unsigned char  pixel_data[64 * 64 * 3 + 1];
+  unsigned int width;
+  unsigned int height;
+  unsigned int bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  unsigned char pixel_data[64 * 64 * 3 + 1];
 } image_s64;
 
 typedef struct {
-  unsigned int 	 width;
-  unsigned int 	 height;
-  unsigned int 	 bytes_per_pixel; /* 3:RGB, 4:RGBA */ 
-  unsigned char	 pixel_data[128 * 128 * 3 + 1];
+  unsigned int width;
+  unsigned int height;
+  unsigned int bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  unsigned char pixel_data[128 * 128 * 3 + 1];
 } image_s128;
 
-typedef struct
-{
+typedef struct {
   GLfloat x, y, z;
 } glcoord;
 
@@ -83,7 +81,7 @@ extern int create_knot, create_quadratic;
 extern GLuint blurtexture, knotbg, tunnel, tentacle, twist, twistbg;
 extern GLuint texchild, childbg, energy;
 extern GLuint facedl, cubedl, childdl;
-extern GLint *blur_data[128*128*4];
+extern GLint *blur_data[128 * 128 * 4];
 extern GLUquadricObj *myquadratic;
 extern GLfloat y_angle, y_speed, y_old_speed;
 extern GLfloat x_angle, x_speed;

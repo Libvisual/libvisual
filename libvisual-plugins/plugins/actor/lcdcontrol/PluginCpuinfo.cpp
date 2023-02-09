@@ -38,111 +38,99 @@ static FILE *stream;
 static int ParseCpuinfo(void);
 static std::string Cpuinfo(std::string key);
 
-static int ParseCpuinfo(void)
-{
-    int age;
+static int ParseCpuinfo(void) {
+  int age;
 
-    /* reread every second only */
-    age = hash_age(&CPUinfo, NULL);
-    if (age > 0 && age <= 1000)
-        return 0;
-
-
-    if (stream == NULL)
-        stream = fopen("/proc/cpuinfo", "r");
-    if (stream == NULL) {
-        LCDError("fopen(/proc/cpuinfo) failed: %s", strerror(errno));
-        return -1;
-    }
-    rewind(stream);
-    while (!feof(stream)) {
-        char buffer[256];
-        char *c, *key, *val;
-        fgets(buffer, sizeof(buffer), stream);
-        c = strchr(buffer, ':');
-        if (c == NULL)
-            continue;
-        key = buffer;
-        val = c + 1;
-        /* strip leading blanks from key */
-        while (isspace(*key))
-            *key++ = '\0';
-        /* strip trailing blanks from key */
-        do
-            *c = '\0';
-        while (isspace(*--c));
-        /* strip leading blanks from value */
-        while (isspace(*val))
-            *val++ = '\0';
-        /* strip trailing blanks from value */
-        for (c = val; *c != '\0'; c++);
-        while (isspace(*--c))
-            *c = '\0';
-
-        /* add entry to hash table */
-        hash_put(&CPUinfo, key, val);
-
-    }
+  /* reread every second only */
+  age = hash_age(&CPUinfo, NULL);
+  if (age > 0 && age <= 1000)
     return 0;
+
+  if (stream == NULL)
+    stream = fopen("/proc/cpuinfo", "r");
+  if (stream == NULL) {
+    LCDError("fopen(/proc/cpuinfo) failed: %s", strerror(errno));
+    return -1;
+  }
+  rewind(stream);
+  while (!feof(stream)) {
+    char buffer[256];
+    char *c, *key, *val;
+    fgets(buffer, sizeof(buffer), stream);
+    c = strchr(buffer, ':');
+    if (c == NULL)
+      continue;
+    key = buffer;
+    val = c + 1;
+    /* strip leading blanks from key */
+    while (isspace(*key))
+      *key++ = '\0';
+    /* strip trailing blanks from key */
+    do
+      *c = '\0';
+    while (isspace(*--c));
+    /* strip leading blanks from value */
+    while (isspace(*val))
+      *val++ = '\0';
+    /* strip trailing blanks from value */
+    for (c = val; *c != '\0'; c++)
+      ;
+    while (isspace(*--c))
+      *c = '\0';
+
+    /* add entry to hash table */
+    hash_put(&CPUinfo, key, val);
+  }
+  return 0;
 }
 
+static std::string Cpuinfo(std::string key) {
+  const char *val = "";
+  if (ParseCpuinfo() < 0) {
+    return "";
+  }
 
-static std::string Cpuinfo(std::string key)
-{
-    const char *val = "";
-    if (ParseCpuinfo() < 0) {
-        return "";
-    }
+  val = hash_get(&CPUinfo, key.c_str(), NULL);
+  if (val == NULL)
+    val = "";
 
-    val = hash_get(&CPUinfo, key.c_str(), NULL);
-    if (val == NULL)
-        val = "";
-    
-    return val;
+  return val;
 }
 
 class cpuinfo_t {
-    public:
-    static const lua::args_t *in_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+public:
+  static const lua::args_t *in_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const lua::args_t *out_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+  static const lua::args_t *out_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const std::string ns() { return "cpuinfo"; }
-    static const std::string name() { return "Cpuinfo"; }
+  static const std::string ns() { return "cpuinfo"; }
+  static const std::string name() { return "Cpuinfo"; }
 
-    static void calc(const lua::args_t& in, lua::args_t &out)
-    {
-        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
-        std::string str = Cpuinfo(key);
-        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
-    }
+  static void calc(const lua::args_t &in, lua::args_t &out) {
+    std::string key = dynamic_cast<lua::string_arg_t &>(*in[0]).value();
+    std::string str = Cpuinfo(key);
+    dynamic_cast<lua::string_arg_t &>(*out[0]).value() = str;
+  }
 };
 
-PluginCpuinfo::PluginCpuinfo(lua *script)
-{
-    script->register_function<cpuinfo_t>();
-    hash_create(&CPUinfo);
+PluginCpuinfo::PluginCpuinfo(lua *script) {
+  script->register_function<cpuinfo_t>();
+  hash_create(&CPUinfo);
+  stream = NULL;
+}
+
+PluginCpuinfo::~PluginCpuinfo() {
+  if (stream != NULL) {
+    fclose(stream);
     stream = NULL;
+  }
+  hash_destroy(&CPUinfo);
 }
-
-PluginCpuinfo::~PluginCpuinfo()
-{
-    if (stream != NULL) {
-        fclose(stream);
-        stream = NULL;
-    }
-    hash_destroy(&CPUinfo);
-}
-
-
-

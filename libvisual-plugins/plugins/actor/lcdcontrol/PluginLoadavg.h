@@ -29,16 +29,16 @@
 namespace LCD {
 
 class PluginLoadavg {
-    int fd;
-    int GetLoadavg(double loadavg[], int nelem);
+  int fd;
+  int GetLoadavg(double loadavg[], int nelem);
 
-    public:
-    PluginLoadavg(lua *script);
-    ~PluginLoadavg();
+public:
+  PluginLoadavg(lua *script);
+  ~PluginLoadavg();
 
-    double Loadavg(int arg1);
+  double Loadavg(int arg1);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

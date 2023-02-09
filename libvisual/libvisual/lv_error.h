@@ -39,7 +39,7 @@
  * @param error_msg Error message
  * @param priv      Optional private data passed to handler on invocation
  */
-typedef void (*VisErrorHandlerFunc) (const char *error_msg, void *priv);
+typedef void (*VisErrorHandlerFunc)(const char *error_msg, void *priv);
 
 LV_BEGIN_DECLS
 
@@ -50,7 +50,7 @@ LV_BEGIN_DECLS
  *
  * @see visual_error_set_handler()
  */
-LV_API void visual_error_raise (const char *error_msg);
+LV_API void visual_error_raise(const char *error_msg);
 
 /**
  * Sets the error handler callback.
@@ -60,7 +60,7 @@ LV_API void visual_error_raise (const char *error_msg);
  * @param handler Custom error handler
  * @param priv    Optional private data to pass to handler on invocation
  */
-LV_API void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv);
+LV_API void visual_error_set_handler(VisErrorHandlerFunc handler, void *priv);
 
 LV_END_DECLS
 

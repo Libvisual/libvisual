@@ -36,22 +36,21 @@ class LCDGraphic;
 class LCDCore;
 
 class WidgetKey : public Widget {
-    std::string code_;
-    int key_;
-    bool started_;
+  std::string code_;
+  int key_;
+  bool started_;
 
-    public:
-    WidgetKey(LCDCore *v, std::string name, Json::Value *config);
-    ~WidgetKey();
-    void Start();
-    void Stop();
-    void KeyPressed(int k);
+public:
+  WidgetKey(LCDCore *v, std::string name, Json::Value *config);
+  ~WidgetKey();
+  void Start();
+  void Stop();
+  void KeyPressed(int k);
 
-    void TextScroll() {}
-    void Update();
+  void TextScroll() {}
+  void Update();
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

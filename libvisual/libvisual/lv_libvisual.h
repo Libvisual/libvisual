@@ -41,108 +41,98 @@
 //! Libvisual namespace
 namespace LV {
 
-  class LV_API System;
-  template <>
-  LV_API System* Singleton<System>::m_instance;
+class LV_API System;
+template <> LV_API System *Singleton<System>::m_instance;
 
-  class LV_API System
-      : public Singleton<System>
-  {
-  public:
-
-      /**
-       * Initializes Libvisual.
-       *
-       * @param argc Number of arguments
-       * @param argv Argument strings
-       */
-      static void init (int& argc, char**& argv);
-
-      System (System const&) = delete;
-
-      virtual ~System ();
-
-      /**
-       * Returns the Libvisual version.
-       *
-       * @return version string
-       */
-      std::string get_version () const;
-
-      /**
-       * Returns the Libvisual API verison.
-	   *
-       * @return API version
-       */
-      int get_api_version () const;
-
-      /**
-       * Returns the system-wide parameter list
-       *
-       * @return Parameter list
-       */
-      ParamList& get_params () const;
-
-      /**
-       * Returns the system-wide random number generator.
-       */
-      RandomContext& get_rng () const;
-
-      /**
-       * Sets the seed for the system-wide random number generator.
-       *
-       * @param seed seed
-       */
-      void set_rng_seed (RandomSeed seed);
-
-  private:
-
-      class Impl;
-
-      const std::unique_ptr<Impl> m_impl;
-
-      System (int& argc, char**& argv);
-  };
-
-  // FIXME: Move this into lv_random.h
+class LV_API System : public Singleton<System> {
+public:
   /**
-   * Drop-in replacement for std::rand() using LV's system-wide random
-   * number generator.
+   * Initializes Libvisual.
    *
-   * @return a random number
+   * @param argc Number of arguments
+   * @param argv Argument strings
    */
-  inline uint32_t rand ()
-  {
-      return System::instance()->get_rng ().get_int ();
-  }
+  static void init(int &argc, char **&argv);
 
-} // LV namespace
+  System(System const &) = delete;
+
+  virtual ~System();
+
+  /**
+   * Returns the Libvisual version.
+   *
+   * @return version string
+   */
+  std::string get_version() const;
+
+  /**
+   * Returns the Libvisual API verison.
+   *
+   * @return API version
+   */
+  int get_api_version() const;
+
+  /**
+   * Returns the system-wide parameter list
+   *
+   * @return Parameter list
+   */
+  ParamList &get_params() const;
+
+  /**
+   * Returns the system-wide random number generator.
+   */
+  RandomContext &get_rng() const;
+
+  /**
+   * Sets the seed for the system-wide random number generator.
+   *
+   * @param seed seed
+   */
+  void set_rng_seed(RandomSeed seed);
+
+private:
+  class Impl;
+
+  const std::unique_ptr<Impl> m_impl;
+
+  System(int &argc, char **&argv);
+};
+
+// FIXME: Move this into lv_random.h
+/**
+ * Drop-in replacement for std::rand() using LV's system-wide random
+ * number generator.
+ *
+ * @return a random number
+ */
+inline uint32_t rand() { return System::instance()->get_rng().get_int(); }
+
+} // namespace LV
 
 #endif // __cplusplus
 
-
 LV_BEGIN_DECLS
 
-LV_API void visual_init (int *argc, char ***argv);
+LV_API void visual_init(int *argc, char ***argv);
 
-LV_API int  visual_is_initialized (void);
+LV_API int visual_is_initialized(void);
 
-LV_API void visual_quit (void);
+LV_API void visual_quit(void);
 
-LV_API const char *visual_get_version (void);
+LV_API const char *visual_get_version(void);
 
-LV_API int visual_get_api_version (void);
+LV_API int visual_get_api_version(void);
 
-LV_API VisParamList *visual_get_params (void);
+LV_API VisParamList *visual_get_params(void);
 
-LV_API void visual_set_rng_seed (VisRandomSeed seed);
+LV_API void visual_set_rng_seed(VisRandomSeed seed);
 
-LV_API VisRandomContext *visual_get_rng (void);
+LV_API VisRandomContext *visual_get_rng(void);
 
 // FIXME: Move this into lv_random.h
-static inline uint32_t visual_rand (void)
-{
-    return visual_random_context_int (visual_get_rng ());
+static inline uint32_t visual_rand(void) {
+  return visual_random_context_int(visual_get_rng());
 }
 
 LV_END_DECLS

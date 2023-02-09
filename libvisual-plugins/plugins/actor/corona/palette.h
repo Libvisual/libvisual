@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Richard Ashburn <richard.asbury@btinternet.com>
  *
  * Authors: Richard Ashburn <richard.asbury@btinternet.com>
@@ -33,61 +33,61 @@
 #include "corona_types.h"
 
 // PALETTE
-// 
+//
 typedef ColorRGB Palette[256];
-class   CompressedPalette;
+class CompressedPalette;
 
 // COLLECTION OF PALETTES
 //
 // Definition of some palettes stored in compressed format.
 //
-class PaletteCollection
-{
-  public:
-    PaletteCollection(const int palettes[][NB_PALETTES], int nbPalettes);
-    ~PaletteCollection();
+class PaletteCollection {
+public:
+  PaletteCollection(const int palettes[][NB_PALETTES], int nbPalettes);
+  ~PaletteCollection();
 
-    int size() const  { return m_nbPalettes; }
-    void expandPalette(int i, Palette dest) const;
+  int size() const { return m_nbPalettes; }
+  void expandPalette(int i, Palette dest) const;
 
-  private:
-    CompressedPalette *m_cpal;
-    int                m_nbPalettes;
+private:
+  CompressedPalette *m_cpal;
+  int m_nbPalettes;
 };
 
 // PALETTE CYCLER
 //
 // A class to create cycling palettes.
-// 
-class PaletteCycler
-{
-  private:
-    Palette m_srcpal;
-    Palette m_destpal;
-    Palette m_curpal;
+//
+class PaletteCycler {
+private:
+  Palette m_srcpal;
+  Palette m_destpal;
+  Palette m_curpal;
 
-    PaletteCollection m_palettes;
-    int    m_srcnum, m_destnum;
-    bool   m_transferring;
-    double m_progress;
+  PaletteCollection m_palettes;
+  int m_srcnum, m_destnum;
+  bool m_transferring;
+  double m_progress;
 
-    void startPaletteTransition();
-    void affectPaletteTransition(double p);
+  void startPaletteTransition();
+  void affectPaletteTransition(double p);
 
-  public:
-    PaletteCycler(const int palettes[][NB_PALETTES], int nbPalettes);
-    void update(TimedLevel *pLevels);
-    void updateVisPalette(VisPalette *pal);
-    const Palette &getPalette() const { return m_curpal; }
+public:
+  PaletteCycler(const int palettes[][NB_PALETTES], int nbPalettes);
+  void update(TimedLevel *pLevels);
+  void updateVisPalette(VisPalette *pal);
+  const Palette &getPalette() const { return m_curpal; }
 };
 
 // PALETTE CONVERSIOn
 //
-// Display/Architecture specific routines to convert Palette to int[] (hardware color)
-// 
+// Display/Architecture specific routines to convert Palette to int[] (hardware
+// color)
+//
 void paletteToRGBA(int dest[256], const Palette src);
 
 // BLIT A PALETTIZED SURFACE using converted palette.
-void blitSurface8To32(unsigned char *byteSurf, int *colorSurf, int palette[256], int size);
+void blitSurface8To32(unsigned char *byteSurf, int *colorSurf, int palette[256],
+                      int size);
 
 #endif

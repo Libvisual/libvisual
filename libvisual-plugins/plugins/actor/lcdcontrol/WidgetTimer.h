@@ -35,21 +35,20 @@ namespace LCD {
 class LCDCore;
 
 class WidgetTimer : public Widget {
-    Property *expression_;
-    //QTimer *timer_;
-    int update_;
+  Property *expression_;
+  // QTimer *timer_;
+  int update_;
 
-    public:
-    WidgetTimer(LCDCore *visitor, std::string name, Json::Value *config);
-    ~WidgetTimer();
-    void Start();
-    void Stop();
+public:
+  WidgetTimer(LCDCore *visitor, std::string name, Json::Value *config);
+  ~WidgetTimer();
+  void Start();
+  void Stop();
 
-    void Update();
-    void TextScroll() {}
+  void Update();
+  void TextScroll() {}
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

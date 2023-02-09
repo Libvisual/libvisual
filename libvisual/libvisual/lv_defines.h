@@ -25,89 +25,90 @@
 #define _LV_DEFINES_H
 
 #ifdef __cplusplus
-# define LV_C_LINKAGE extern "C"
+#define LV_C_LINKAGE extern "C"
 #else
-# define LV_C_LINKAGE
+#define LV_C_LINKAGE
 #endif /* __cplusplus */
 
 #ifdef __cplusplus
-# define LV_BEGIN_DECLS	LV_C_LINKAGE {
-# define LV_END_DECLS	}
+#define LV_BEGIN_DECLS LV_C_LINKAGE {
+#define LV_END_DECLS }
 #else
-# define LV_BEGIN_DECLS
-# define LV_END_DECLS
+#define LV_BEGIN_DECLS
+#define LV_END_DECLS
 #endif /* __cplusplus */
 
 #ifndef NULL
-# ifndef __cplusplus
-#   define NULL ((void *) 0)
-# endif
+#ifndef __cplusplus
+#define NULL ((void *)0)
+#endif
 #endif /* NULL */
 
 #ifndef FALSE
-#define FALSE	(0)
+#define FALSE (0)
 #endif
 
 #ifndef TRUE
-#define TRUE	(1)
+#define TRUE (1)
 #endif
 
 /* Compiler specific optimization macros */
 
 #if __GNUC__ >= 3
-# define LV_ATTR_MALLOC    __attribute__ ((malloc))
-# define LV_ATTR_PACKED    __attribute__ ((packed))
-# define LV_LIKELY(x)      __builtin_expect (!!(x), 1)
-# define LV_UNLIKELY(x)    __builtin_expect (!!(x), 0)
+#define LV_ATTR_MALLOC __attribute__((malloc))
+#define LV_ATTR_PACKED __attribute__((packed))
+#define LV_LIKELY(x) __builtin_expect(!!(x), 1)
+#define LV_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
-# define LV_ATTR_MALLOC    /* no malloc */
-# define LV_ATTR_PACKED    /* no packed */
-# define LV_LIKELY(x)      (x)
-# define LV_UNLIKELY(x)    (x)
+#define LV_ATTR_MALLOC /* no malloc */
+#define LV_ATTR_PACKED /* no packed */
+#define LV_LIKELY(x) (x)
+#define LV_UNLIKELY(x) (x)
 #endif /* __GNUC__ >= 3 */
 
 /* Compile-time format arguments checking macros */
 
 #if defined __GNUC__
-#  define LV_CHECK_PRINTF_FORMAT(a, b) __attribute__ ((__format__ (__printf__, a, b)))
+#define LV_CHECK_PRINTF_FORMAT(a, b)                                           \
+  __attribute__((__format__(__printf__, a, b)))
 #else
-#  define LV_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
-#endif /* __GNUC__ */
+#define LV_CHECK_PRINTF_FORMAT(a, b) /* no compile-time format string check */
+#endif                               /* __GNUC__ */
 
 /* Restrict */
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#  define LV_RESTRICT restrict
+#define LV_RESTRICT restrict
 #elif defined(__GNUC__) && __GNU__ >= 4
-#  define LV_RESTRICT __restrict__
+#define LV_RESTRICT __restrict__
 #elif defined(_MSC_VER) && _MSC_VER >= 1600
-#  define LV_RESTRICT __restrict
+#define LV_RESTRICT __restrict
 #else
-#  define LV_RESTRICT
+#define LV_RESTRICT
 #endif
 
 /* Symbol visibility macros */
 
 #if defined _WIN32 || defined __CYGWIN__
-  #define LV_DLL_IMPORT __declspec(dllimport)
-  #define LV_DLL_EXPORT __declspec(dllexport)
-  #define LV_DLL_LOCAL
+#define LV_DLL_IMPORT __declspec(dllimport)
+#define LV_DLL_EXPORT __declspec(dllexport)
+#define LV_DLL_LOCAL
 #else
-  #if __GNUC__ >= 4
-    #define LV_DLL_IMPORT __attribute__ ((visibility ("default")))
-    #define LV_DLL_EXPORT __attribute__ ((visibility ("default")))
-    #define LV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
-  #else
-    #define LV_DLL_IMPORT
-    #define LV_DLL_EXPORT
-    #define LV_DLL_LOCAL
-  #endif
+#if __GNUC__ >= 4
+#define LV_DLL_IMPORT __attribute__((visibility("default")))
+#define LV_DLL_EXPORT __attribute__((visibility("default")))
+#define LV_DLL_LOCAL __attribute__((visibility("hidden")))
+#else
+#define LV_DLL_IMPORT
+#define LV_DLL_EXPORT
+#define LV_DLL_LOCAL
+#endif
 #endif
 
 #ifdef libvisual_EXPORTS
-  #define LV_API LV_DLL_EXPORT
+#define LV_API LV_DLL_EXPORT
 #else
-  #define LV_API LV_DLL_IMPORT
+#define LV_API LV_DLL_IMPORT
 #endif
 
 #define LV_LOCAL LV_DLL_LOCAL
@@ -116,7 +117,7 @@
 
 /* Utility macros */
 #ifdef _MSC_VER
-  #define __PRETTY_FUNCTION__ __FUNCTION__
+#define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
 #endif /* _LV_DEFINES_H */

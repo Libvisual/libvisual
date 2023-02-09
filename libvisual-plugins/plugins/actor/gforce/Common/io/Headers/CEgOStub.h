@@ -3,21 +3,17 @@
 
 #include "CEgOStream.h"
 
-//#include "Eg_Consts.h"
-
+// #include "Eg_Consts.h"
 
 class CEgOStub : public CEgOStream {
-		
-	protected:
-		
-	public:
-										CEgOStub();
-										
-		virtual void					PutBlock( const void* inSrce, long numBytes );
 
-		long							mBytesPut;
+protected:
+public:
+  CEgOStub();
 
+  virtual void PutBlock(const void *inSrce, long numBytes);
 
+  long mBytesPut;
 };
 
 #endif

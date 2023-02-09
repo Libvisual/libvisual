@@ -28,51 +28,42 @@
 using namespace LCD;
 
 BufferedReader::BufferedReader() {
-    current_ = 0;
-    locked_ = false;
+  current_ = 0;
+  locked_ = false;
 }
 
 int BufferedReader::Peek(unsigned char *data, int bytes) {
-    int i;
-    for(i = current_; (i - current_) < bytes && 
-        i < (int)buffer_.size() ; i++ ) {
-        data[i-current_] = buffer_[i];
-    }
-    int read = i - current_;
-    current_+=i - current_;
-    return read;
+  int i;
+  for (i = current_; (i - current_) < bytes && i < (int)buffer_.size(); i++) {
+    data[i - current_] = buffer_[i];
+  }
+  int read = i - current_;
+  current_ += i - current_;
+  return read;
 }
 
 int BufferedReader::Read(unsigned char *data, int bytes) {
-    int i;
-    std::vector<unsigned char>::iterator it = buffer_.begin();
-    for( i = 0; i < bytes && i < (int)buffer_.size(); i++ ) {
-        data[i] = buffer_[i];
-        it++;
-    }
-    buffer_.erase(buffer_.begin(), it);
-    current_ = 0;
-    return i;
+  int i;
+  std::vector<unsigned char>::iterator it = buffer_.begin();
+  for (i = 0; i < bytes && i < (int)buffer_.size(); i++) {
+    data[i] = buffer_[i];
+    it++;
+  }
+  buffer_.erase(buffer_.begin(), it);
+  current_ = 0;
+  return i;
 }
 
 void BufferedReader::AddData(unsigned char *data, int len) {
-    for( int i = 0; i < len; i++ ) {
-        buffer_.push_back(data[i]);
-    }
+  for (int i = 0; i < len; i++) {
+    buffer_.push_back(data[i]);
+  }
 }
 
-void BufferedReader::SetCurrent(int c) {
-    current_ = c;
-}
+void BufferedReader::SetCurrent(int c) { current_ = c; }
 
-int BufferedReader::GetCurrent() {
-    return current_;
-}
+int BufferedReader::GetCurrent() { return current_; }
 
-void BufferedReader::SetLocked(bool locked) {
-    locked_ = locked;
-}
+void BufferedReader::SetLocked(bool locked) { locked_ = locked; }
 
-bool BufferedReader::GetLocked() {
-    return locked_;
-}
+bool BufferedReader::GetLocked() { return locked_; }

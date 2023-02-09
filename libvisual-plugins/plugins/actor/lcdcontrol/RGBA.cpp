@@ -26,33 +26,31 @@
 
 #include "RGBA.h"
 
-int LCD::color2RGBA(const char *color, RGBA * C)
-{
-    char *e;
-    unsigned long l;
+int LCD::color2RGBA(const char *color, RGBA *C) {
+  char *e;
+  unsigned long l;
 
-    if (color == NULL || *color == '\0') {
-        return -1;
-    }
+  if (color == NULL || *color == '\0') {
+    return -1;
+  }
 
-    l = strtoul(color, &e, 16);
-    if (e != NULL && *e != '\0') {
-        return -1;
-    }
+  l = strtoul(color, &e, 16);
+  if (e != NULL && *e != '\0') {
+    return -1;
+  }
 
-    if (strlen(color) == 8) {
-        /* RGBA */
-        C->A = (l >> 24) & 0xff;
-        C->R = (l >> 16) & 0xff;
-        C->G = (l >> 8) & 0xff;
-        C->B = (l >> 0) & 0xff;
-    } else {
-        /* RGB */
-        C->A = 0xff;
-        C->R = (l >> 16) & 0xff;
-        C->G = (l >> 8) & 0xff;
-        C->B = l & 0xff;
-    }
-    return 0;
+  if (strlen(color) == 8) {
+    /* RGBA */
+    C->A = (l >> 24) & 0xff;
+    C->R = (l >> 16) & 0xff;
+    C->G = (l >> 8) & 0xff;
+    C->B = (l >> 0) & 0xff;
+  } else {
+    /* RGB */
+    C->A = 0xff;
+    C->R = (l >> 16) & 0xff;
+    C->G = (l >> 8) & 0xff;
+    C->B = l & 0xff;
+  }
+  return 0;
 }
-

@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -25,11 +26,12 @@
 #define _OINK_SCENE_H
 
 /* FIXME, uint8_t *buf should be removed everywhere */
-void _oink_scene_background_special (OinksiePrivate *priv, uint8_t *buf);
-void _oink_scene_background_select (OinksiePrivate *priv, uint8_t *buf);
-void _oink_scene_blur_select (OinksiePrivate *priv, uint8_t *buf);
-void _oink_scene_scope_select (OinksiePrivate *priv, uint8_t *buf, int color, int height);
-void _oink_scene_randomize (OinksiePrivate *priv);
-void _oink_scene_render (OinksiePrivate *priv);
+void _oink_scene_background_special(OinksiePrivate *priv, uint8_t *buf);
+void _oink_scene_background_select(OinksiePrivate *priv, uint8_t *buf);
+void _oink_scene_blur_select(OinksiePrivate *priv, uint8_t *buf);
+void _oink_scene_scope_select(OinksiePrivate *priv, uint8_t *buf, int color,
+                              int height);
+void _oink_scene_randomize(OinksiePrivate *priv);
+void _oink_scene_render(OinksiePrivate *priv);
 
 #endif /* _OINK_SCENE_H */

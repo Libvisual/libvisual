@@ -25,97 +25,84 @@ using namespace LCD;
 
 // LCDGraphic RealBlit
 void DrvVideoBlit(LCDGraphic *lcd, const int row, const int col,
-    const int height, const int width) {
-    ((DrvVideo *)lcd)->DrvBlit(row, col, height, width);
+                  const int height, const int width) {
+  ((DrvVideo *)lcd)->DrvBlit(row, col, height, width);
 }
 
-
 // Constructor
-DrvVideo::DrvVideo(std::string name, LCDControl *v,
-    Json::Value *config, int layers, VisEventQueue *eventqueue) :
-    LCDCore(v, name, config, LCD_GRAPHIC, eventqueue, (LCDGraphic *)this),
-    LCDGraphic((LCDCore *)this) {
-    LCDError("DrvVideo");
+DrvVideo::DrvVideo(std::string name, LCDControl *v, Json::Value *config,
+                   int layers, VisEventQueue *eventqueue)
+    : LCDCore(v, name, config, LCD_GRAPHIC, eventqueue, (LCDGraphic *)this),
+      LCDGraphic((LCDCore *)this) {
+  LCDError("DrvVideo");
 
-    GraphicRealBlit = DrvVideoBlit;
+  GraphicRealBlit = DrvVideoBlit;
 
-    Json::Value *val = CFG_Fetch_Raw(config, name + ".cols", new Json::Value(SCREEN_W));
-    cols_ = val->asInt();
-    delete val;
+  Json::Value *val =
+      CFG_Fetch_Raw(config, name + ".cols", new Json::Value(SCREEN_W));
+  cols_ = val->asInt();
+  delete val;
 
-    val = CFG_Fetch_Raw(config, name + ".rows", new Json::Value(SCREEN_H));
-    rows_ = val->asInt();
-    delete val;
+  val = CFG_Fetch_Raw(config, name + ".rows", new Json::Value(SCREEN_H));
+  rows_ = val->asInt();
+  delete val;
 
-    val = CFG_Fetch_Raw(config, name + ".update", new Json::Value(30));
-    update_ = val->asInt();
-    delete val;
+  val = CFG_Fetch_Raw(config, name + ".update", new Json::Value(30));
+  update_ = val->asInt();
+  delete val;
 
-    GraphicInit(rows_, cols_, 8, 8, layers);
+  GraphicInit(rows_, cols_, 8, 8, layers);
 
-    video_ = visual_video_new_with_buffer(cols_, rows_, VISUAL_VIDEO_DEPTH_32BIT);
+  video_ = visual_video_new_with_buffer(cols_, rows_, VISUAL_VIDEO_DEPTH_32BIT);
 }
 
 // Destructor
-DrvVideo::~DrvVideo() {
-    visual_video_unref(video_);
-}
+DrvVideo::~DrvVideo() { visual_video_unref(video_); }
 
 // Initialize device and libusb
 void DrvVideo::SetupDevice() {
-    if(update_ < 0)
-        return;
+  if (update_ < 0)
+    return;
 }
 
 // Deinit driver
-void DrvVideo::TakeDown() {
-    Disconnect();
-}
+void DrvVideo::TakeDown() { Disconnect(); }
 
 // Configuration setup
-void DrvVideo::CFGSetup() {
-    LCDCore::CFGSetup();
-}
+void DrvVideo::CFGSetup() { LCDCore::CFGSetup(); }
 
 // Connect -- generic method called from main code
 void DrvVideo::Connect() {
-    if(update_ < 0)
-        return;
-    LCDError("DrvVideo::Connect()");
-    connected_ = true;
-    GraphicClear();
-    GraphicStart();
+  if (update_ < 0)
+    return;
+  LCDError("DrvVideo::Connect()");
+  connected_ = true;
+  GraphicClear();
+  GraphicStart();
 }
 
 // Disconnect -- deinit
-void DrvVideo::Disconnect() {
-    connected_ = false;
-}
+void DrvVideo::Disconnect() { connected_ = false; }
 
 void DrvVideo::DrvUpdateImg() {
-    //unsigned int size = visual_video_get_size(video_);
-    //uint8_t *data = (uint8_t *)visual_video_get_pixels(video_);
-
-    
+  // unsigned int size = visual_video_get_size(video_);
+  // uint8_t *data = (uint8_t *)visual_video_get_pixels(video_);
 }
 
 // Driver-side blit method
-void DrvVideo::DrvBlit(const int row, const int col, 
-    const int height, const int width) {
-/*
-    uint32_t *pixels = (uint32_t *)visual_video_get_pixels(video_);
+void DrvVideo::DrvBlit(const int row, const int col, const int height,
+                       const int width) {
+  /*
+      uint32_t *pixels = (uint32_t *)visual_video_get_pixels(video_);
 
-    for(int r = row; r < row + height; r++) {
-        for(int c = col; c < col + width; c++) {
-            //We don't need this because LCDGraphic has a VisVideo* getter now.
-            pixels[r * cols_ + c] = GraphicRGB(r, c).ToInt();
-        }
-    }
-*/  
+      for(int r = row; r < row + height; r++) {
+          for(int c = col; c < col + width; c++) {
+              //We don't need this because LCDGraphic has a VisVideo* getter
+     now. pixels[r * cols_ + c] = GraphicRGB(r, c).ToInt();
+          }
+      }
+  */
 }
 
 // Clear the LCD
-void DrvVideo::DrvClear() {
-    
-}
-
+void DrvVideo::DrvClear() {}

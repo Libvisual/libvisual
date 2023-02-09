@@ -32,12 +32,12 @@
  * @{
  */
 
-#define VISUAL_NSECS_PER_SEC    1000000000
-#define VISUAL_USECS_PER_SEC    1000000
-#define VISUAL_MSECS_PER_SEC    1000
-#define VISUAL_USECS_PER_MSEC   1000
-#define VISUAL_NSECS_PER_MSEC   1000000
-#define VISUAL_NSECS_PER_USEC   1000
+#define VISUAL_NSECS_PER_SEC 1000000000
+#define VISUAL_USECS_PER_SEC 1000000
+#define VISUAL_MSECS_PER_SEC 1000
+#define VISUAL_USECS_PER_MSEC 1000
+#define VISUAL_NSECS_PER_MSEC 1000000
+#define VISUAL_NSECS_PER_USEC 1000
 
 #ifdef __cplusplus
 
@@ -46,173 +46,147 @@
 
 namespace LV {
 
-  //! Encodes time.
-  class LV_API Time
-  {
-  public:
+//! Encodes time.
+class LV_API Time {
+public:
+  //! seconds
+  long sec;
 
-      //! seconds
-      long sec;
+  //! nanoseconds
+  long nsec;
 
-      //! nanoseconds
-      long nsec;
+  explicit Time(long sec_ = 0, long nsec_ = 0) : sec(sec_), nsec(nsec_) {}
 
-      explicit Time (long sec_ = 0, long nsec_ = 0)
-          : sec  (sec_)
-          , nsec (nsec_)
-      {}
+  static Time from_secs(double secs) {
+    double int_part, frac_part;
+    frac_part = std::modf(secs, &int_part);
 
-      static Time from_secs (double secs)
-      {
-          double int_part, frac_part;
-          frac_part = std::modf (secs, &int_part);
+    return Time(int_part, frac_part * VISUAL_NSECS_PER_SEC);
+  }
 
-          return Time (int_part, frac_part * VISUAL_NSECS_PER_SEC);
-      }
+  static Time from_msecs(uint64_t msecs) {
+    return Time(msecs / VISUAL_MSECS_PER_SEC,
+                (msecs % VISUAL_MSECS_PER_SEC) * VISUAL_NSECS_PER_MSEC);
+  }
 
-      static Time from_msecs (uint64_t msecs)
-      {
-          return Time (msecs / VISUAL_MSECS_PER_SEC,
-                       (msecs % VISUAL_MSECS_PER_SEC) * VISUAL_NSECS_PER_MSEC);
-      }
+  static Time from_usecs(uint64_t usecs) {
+    return Time(usecs / VISUAL_USECS_PER_SEC,
+                (usecs % VISUAL_USECS_PER_SEC) * VISUAL_NSECS_PER_USEC);
+  }
 
-      static Time from_usecs (uint64_t usecs)
-      {
-          return Time (usecs / VISUAL_USECS_PER_SEC,
-                       (usecs % VISUAL_USECS_PER_SEC) * VISUAL_NSECS_PER_USEC);
-      }
+  static Time now();
 
-      static Time now ();
+  friend Time operator-(Time const &lhs, Time const &rhs) {
+    Time diff(lhs);
+    diff -= rhs;
 
-      friend Time operator- (Time const& lhs, Time const& rhs)
-      {
-          Time diff (lhs);
-          diff -= rhs;
+    return diff;
+  }
 
-          return diff;
-      }
+  Time &operator-=(Time const &rhs) {
+    sec -= rhs.sec;
+    nsec -= rhs.nsec;
 
-      Time& operator-= (Time const& rhs)
-      {
-          sec  -= rhs.sec;
-          nsec -= rhs.nsec;
+    if (nsec < 0) {
+      sec--;
+      nsec += VISUAL_NSECS_PER_SEC;
+    }
 
-          if (nsec < 0) {
-              sec--;
-              nsec += VISUAL_NSECS_PER_SEC;
-          }
+    return *this;
+  }
 
-          return *this;
-      }
+  friend bool operator==(Time const &lhs, Time const &rhs) {
+    return lhs.sec == rhs.sec && lhs.nsec == rhs.nsec;
+  }
 
-      friend bool operator== (Time const& lhs, Time const& rhs)
-      {
-          return lhs.sec == rhs.sec && lhs.nsec == rhs.nsec;
-      }
+  friend bool operator!=(Time const &lhs, Time const &rhs) {
+    return !(lhs == rhs);
+  }
 
-      friend bool operator!= (Time const& lhs, Time const& rhs)
-      {
-          return !(lhs == rhs);
-      }
+  friend bool operator>=(Time const &lhs, Time const &rhs) {
+    return lhs.sec >= rhs.sec;
+  }
 
-      friend bool operator>= (Time const& lhs, Time const& rhs)
-      {
-          return lhs.sec >= rhs.sec;
-      }
+  friend bool operator<=(Time const &lhs, Time const &rhs) {
+    return rhs >= lhs;
+  }
 
-      friend bool operator<= (Time const& lhs, Time const& rhs)
-      {
-          return rhs >= lhs;
-      }
+  friend bool operator>(Time const &lhs, Time const &rhs) {
+    return (lhs.sec > rhs.sec) || (lhs.sec == rhs.sec && lhs.nsec > rhs.nsec);
+  }
 
-      friend bool operator> (Time const& lhs, Time const& rhs)
-      {
-          return (lhs.sec > rhs.sec) || (lhs.sec == rhs.sec && lhs.nsec > rhs.nsec);
-      }
+  friend bool operator<(Time const &lhs, Time const &rhs) { return rhs > lhs; }
 
-      friend bool operator< (Time const& lhs, Time const& rhs)
-      {
-          return rhs > lhs;
-      }
+  //! Converts the time to seconds
+  double to_secs() const { return sec + nsec * (1.0 / VISUAL_NSECS_PER_SEC); }
 
-      //! Converts the time to seconds
-      double to_secs () const
-      {
-          return sec + nsec * (1.0 / VISUAL_NSECS_PER_SEC);
-      }
+  //! Converts the time to milliseconds
+  uint64_t to_msecs() const {
+    return uint64_t(sec) * VISUAL_MSECS_PER_SEC + nsec / VISUAL_NSECS_PER_MSEC;
+  }
 
-      //! Converts the time to milliseconds
-      uint64_t to_msecs () const
-      {
-          return uint64_t (sec) * VISUAL_MSECS_PER_SEC + nsec / VISUAL_NSECS_PER_MSEC;
-      }
+  //! Converts the time to microseconds
+  uint64_t to_usecs() const {
+    return uint64_t(sec) * VISUAL_USECS_PER_SEC + nsec / VISUAL_NSECS_PER_USEC;
+  }
 
-      //! Converts the time to microseconds
-      uint64_t to_usecs () const
-      {
-          return uint64_t (sec) * VISUAL_USECS_PER_SEC + nsec / VISUAL_NSECS_PER_USEC;
-      }
+  //! Sleeps for a period of time. This will yield the calling thread.
+  static void usleep(uint64_t usecs);
+};
 
-      //! Sleeps for a period of time. This will yield the calling thread.
-      static void usleep (uint64_t usecs);
-  };
+class LV_API Timer {
+public:
+  //! Creates a new Timer
+  Timer();
 
-  class LV_API Timer
-  {
-  public:
+  //! Copy constructor
+  Timer(Timer const &timer);
 
-      //! Creates a new Timer
-      Timer ();
+  //! Move constructor
+  Timer(Timer &&rhs);
 
-      //! Copy constructor
-      Timer (Timer const& timer);
+  //! Destructor
+  ~Timer();
 
-      //! Move constructor
-      Timer (Timer&& rhs);
+  //! Copy assignment operator
+  Timer &operator=(Timer const &rhs);
 
-      //! Destructor
-      ~Timer ();
+  //! Move assignment operator
+  Timer &operator=(Timer &&rhs);
 
-      //! Copy assignment operator
-      Timer& operator= (Timer const& rhs);
+  //! Checks if the timer is active.
+  bool is_active() const;
 
-      //! Move assignment operator
-      Timer& operator= (Timer&& rhs);
+  //! Resets the timer
+  void reset();
 
-      //! Checks if the timer is active.
-      bool is_active () const;
+  //! Starts the timer.
+  void start();
 
-      //! Resets the timer
-      void reset ();
+  //! Stops the timer.
+  void stop();
 
-      //! Starts the timer.
-      void start ();
+  Time get_start_time() const;
 
-      //! Stops the timer.
-      void stop ();
+  Time get_end_time() const;
 
-      Time get_start_time () const;
+  //! Returns the length of time since the timer was started
+  Time elapsed() const;
 
-      Time get_end_time () const;
+  bool is_past(Time const &age) const;
 
-      //! Returns the length of time since the timer was started
-      Time elapsed () const;
+private:
+  class Impl;
+  std::unique_ptr<Impl> m_impl;
+};
 
-      bool is_past (Time const& age) const;
-
-  private:
-
-      class Impl;
-      std::unique_ptr<Impl> m_impl;
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif /* __cplusplus */
 
 #ifdef __cplusplus
 
-typedef LV::Time  VisTime;
+typedef LV::Time VisTime;
 typedef LV::Timer VisTimer;
 
 #else
@@ -227,46 +201,46 @@ struct _VisTimer;
 
 LV_BEGIN_DECLS
 
-LV_API VisTime *visual_time_new             (void);
-LV_API VisTime *visual_time_new_now         (void);
-LV_API VisTime *visual_time_new_with_values (long sec, long nsec);
-LV_API VisTime *visual_time_clone           (VisTime *src);
-LV_API void     visual_time_free            (VisTime *time_);
+LV_API VisTime *visual_time_new(void);
+LV_API VisTime *visual_time_new_now(void);
+LV_API VisTime *visual_time_new_with_values(long sec, long nsec);
+LV_API VisTime *visual_time_clone(VisTime *src);
+LV_API void visual_time_free(VisTime *time_);
 
-LV_API void visual_time_set     (VisTime *time_, long sec, long usec);
-LV_API void visual_time_copy    (VisTime *dest, VisTime *src);
-LV_API void visual_time_get_now (VisTime *time_);
+LV_API void visual_time_set(VisTime *time_, long sec, long usec);
+LV_API void visual_time_copy(VisTime *dest, VisTime *src);
+LV_API void visual_time_get_now(VisTime *time_);
 
-LV_API void visual_time_diff    (VisTime *diff, VisTime *time1, VisTime *time2);
-LV_API int  visual_time_is_past (VisTime *time_, VisTime *ref);
+LV_API void visual_time_diff(VisTime *diff, VisTime *time1, VisTime *time2);
+LV_API int visual_time_is_past(VisTime *time_, VisTime *ref);
 
-LV_API double   visual_time_to_secs  (VisTime *time_);
-LV_API uint64_t visual_time_to_msecs (VisTime *time_);
-LV_API uint64_t visual_time_to_usecs (VisTime *time_);
+LV_API double visual_time_to_secs(VisTime *time_);
+LV_API uint64_t visual_time_to_msecs(VisTime *time_);
+LV_API uint64_t visual_time_to_usecs(VisTime *time_);
 
-LV_API void visual_usleep (uint64_t usecs);
+LV_API void visual_usleep(uint64_t usecs);
 
-LV_API void visual_time_set_from_msecs (VisTime *time_, uint64_t msecs);
+LV_API void visual_time_set_from_msecs(VisTime *time_, uint64_t msecs);
 
-LV_API VisTimer *visual_timer_new  (void);
-LV_API void      visual_timer_free (VisTimer *timer);
+LV_API VisTimer *visual_timer_new(void);
+LV_API void visual_timer_free(VisTimer *timer);
 
-LV_API void visual_timer_reset     (VisTimer *timer);
-LV_API void visual_timer_start     (VisTimer *timer);
-LV_API void visual_timer_stop      (VisTimer *timer);
-LV_API void visual_timer_resume    (VisTimer *timer);
-LV_API int  visual_timer_is_active (VisTimer *timer);
+LV_API void visual_timer_reset(VisTimer *timer);
+LV_API void visual_timer_start(VisTimer *timer);
+LV_API void visual_timer_stop(VisTimer *timer);
+LV_API void visual_timer_resume(VisTimer *timer);
+LV_API int visual_timer_is_active(VisTimer *timer);
 
-LV_API void     visual_timer_elapsed (VisTimer *timer, VisTime *time_);
-LV_API uint64_t visual_timer_elapsed_msecs (VisTimer *timer);
-LV_API uint64_t visual_timer_elapsed_usecs (VisTimer *timer);
-LV_API double   visual_timer_elapsed_secs  (VisTimer *timer);
+LV_API void visual_timer_elapsed(VisTimer *timer, VisTime *time_);
+LV_API uint64_t visual_timer_elapsed_msecs(VisTimer *timer);
+LV_API uint64_t visual_timer_elapsed_usecs(VisTimer *timer);
+LV_API double visual_timer_elapsed_secs(VisTimer *timer);
 
-LV_API int visual_timer_is_past  (VisTimer *timer, VisTime *time_);
-LV_API int visual_timer_is_past2 (VisTimer *timer, long sec, long nsec);
+LV_API int visual_timer_is_past(VisTimer *timer, VisTime *time_);
+LV_API int visual_timer_is_past2(VisTimer *timer, long sec, long nsec);
 
 // FIXME: Remove this
-//#define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
+// #define visual_time_get_now() (clock() / (float)CLOCKS_PER_SEC * 1000)
 
 LV_END_DECLS
 

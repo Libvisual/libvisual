@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -27,53 +27,53 @@
 #include <libvisual/libvisual.h>
 
 typedef struct {
-	int	 i;
-	float	*f;
+  int i;
+  float *f;
 } SinCos;
 
 typedef struct {
-	float		 pcm_buffer[1024];
-	float		 render_buffer[512];
+  float pcm_buffer[1024];
+  float render_buffer[512];
 
-	int		 bass;
-	int		 state;
-	int		 old_state;
+  int bass;
+  int state;
+  int old_state;
 
-	int		 width;
-	int		 height;
+  int width;
+  int height;
 
-	int		 tablex;
-	int		 tabley;
+  int tablex;
+  int tabley;
 
-	/* General */
-	int		 bass_sensibility;
-	int		 effect;
-	int		 options;
-	int		 lines;
-	int		 spectrum;
-	int		 use_3d;
+  /* General */
+  int bass_sensibility;
+  int effect;
+  int options;
+  int lines;
+  int spectrum;
+  int use_3d;
 
-	/* Data */
-	float		 k_put;
-	float		 rot_tourni;
-	uint16_t	 val_maxi;
-	int		 chcol0;
-	double		 R[4];
-	float		 compt_grille_3d;
-	float		 compt_cercle_3d;
+  /* Data */
+  float k_put;
+  float rot_tourni;
+  uint16_t val_maxi;
+  int chcol0;
+  double R[4];
+  float compt_grille_3d;
+  float compt_cercle_3d;
 
-	/* Plazma tables */
-	uint8_t		*tmem;
-	uint8_t		*tmem1;
+  /* Plazma tables */
+  uint8_t *tmem;
+  uint8_t *tmem1;
 
-	/* Sin tables */
-	SinCos		 cosw;
-	SinCos		 sinw;
+  /* Sin tables */
+  SinCos cosw;
+  SinCos sinw;
 
-	/* Libvisual data */
-	VisVideo	*video;
-	uint8_t		*pixel;
-	VisPalette  *colors;
+  /* Libvisual data */
+  VisVideo *video;
+  uint8_t *pixel;
+  VisPalette *colors;
 
 } PlazmaPrivate;
 

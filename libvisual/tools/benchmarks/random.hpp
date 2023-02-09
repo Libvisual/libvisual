@@ -5,35 +5,35 @@
 #include <type_traits>
 
 namespace LV {
-  namespace Tools {
+namespace Tools {
 
-    // Creates a container filled with random values, each in the interval [min, max]
-    template <class Container>
-    Container make_random (typename Container::value_type min, typename Container::value_type max, typename Container::size_type size)
-    {
-        typedef std::mt19937_64 RandomNumGen;
-        std::random_device rd;
-        RandomNumGen rng { rd () };
+// Creates a container filled with random values, each in the interval [min,
+// max]
+template <class Container>
+Container make_random(typename Container::value_type min,
+                      typename Container::value_type max,
+                      typename Container::size_type size) {
+  typedef std::mt19937_64 RandomNumGen;
+  std::random_device rd;
+  RandomNumGen rng{rd()};
 
-        typedef typename Container::value_type T;
-        typedef typename std::conditional<
-                             std::is_floating_point<T>::value,
-                             std::uniform_real_distribution<T>,
-                             std::uniform_int_distribution<T>
-                         >::type Distribution;
+  typedef typename Container::value_type T;
+  typedef typename std::conditional<
+      std::is_floating_point<T>::value, std::uniform_real_distribution<T>,
+      std::uniform_int_distribution<T>>::type Distribution;
 
-        Distribution distrib (min, max);
+  Distribution distrib(min, max);
 
-        Container container (size);
-        for (auto& i : container) {
-            i = distrib (rng);
-        }
+  Container container(size);
+  for (auto &i : container) {
+    i = distrib(rng);
+  }
 
-        return container;
-    }
+  return container;
+}
 
-  } // Tools namespace
+} // namespace Tools
 
-} // LV namespace
+} // namespace LV
 
 #endif // _LV_TOOLS_RANDOM_HPP

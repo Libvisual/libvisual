@@ -21,7 +21,7 @@
  * along with LCDControl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* 
+/*
  * exported functions:
  *
  * message (level, format, ...)
@@ -33,7 +33,7 @@
  *
  */
 
-//#include "config.h"
+// #include "config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -47,44 +47,43 @@ int running_background = 0;
 
 int verbose_level = 0;
 
-void message(const int level, const char *format, ...)
-{
-    va_list ap;
-    char buffer[256];
-    static int log_open = 0;
+void message(const int level, const char *format, ...) {
+  va_list ap;
+  char buffer[256];
+  static int log_open = 0;
 
-    if (level > verbose_level)
-	return;
+  if (level > verbose_level)
+    return;
 
-    va_start(ap, format);
-    vsnprintf(buffer, sizeof(buffer), format, ap);
-    va_end(ap);
+  va_start(ap, format);
+  vsnprintf(buffer, sizeof(buffer), format, ap);
+  va_end(ap);
 
-    if (!running_background) {
+  if (!running_background) {
 
 #ifdef WITH_CURSES
-	extern int curses_Error(char *);
-	if (!curses_error(buffer))
+    extern int curses_Error(char *);
+    if (!curses_error(buffer))
 #endif
-	    fprintf(level ? stdout : stderr, "%s\n", buffer);
-    }
+      fprintf(level ? stdout : stderr, "%s\n", buffer);
+  }
 
-    if (running_foreground)
-	return;
+  if (running_foreground)
+    return;
 
-    if (!log_open) {
-	openlog("LCDControl", LOG_PID, LOG_USER);
-	log_open = 1;
-    }
+  if (!log_open) {
+    openlog("LCDControl", LOG_PID, LOG_USER);
+    log_open = 1;
+  }
 
-    switch (level) {
-    case 0:
-	syslog(LOG_ERR, "%s", buffer);
-	break;
-    case 1:
-	syslog(LOG_INFO, "%s", buffer);
-	break;
-    default:
-	syslog(LOG_DEBUG, "%s", buffer);
-    }
+  switch (level) {
+  case 0:
+    syslog(LOG_ERR, "%s", buffer);
+    break;
+  case 1:
+    syslog(LOG_INFO, "%s", buffer);
+    break;
+  default:
+    syslog(LOG_DEBUG, "%s", buffer);
+  }
 }

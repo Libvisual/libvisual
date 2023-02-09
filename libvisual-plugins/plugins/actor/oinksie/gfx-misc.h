@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -26,14 +27,22 @@
 
 #include "oinksie.h"
 
-void _oink_gfx_something_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y, int type, int pixmap);
-void _oink_gfx_pixmap_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y, int type);
-int _oink_gfx_pixel_get (OinksiePrivate *priv, uint8_t *buf, int x, int y);
-void _oink_gfx_pixel_set (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y);
-void _oink_gfx_line (OinksiePrivate *priv, uint8_t *buf, int color, int x0, int y0, int x1, int y1);
-void _oink_gfx_hline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2);
-void _oink_gfx_vline (OinksiePrivate *priv, uint8_t *buf, int color, int x, int y1, int y2);
-void _oink_gfx_circle_filled (OinksiePrivate *priv, uint8_t *buf, int color, int size, int x, int y);
-void _oink_gfx_circle (OinksiePrivate *priv, uint8_t *buf, int color, int xsize, int ysize, int x, int y);
+void _oink_gfx_something_set(OinksiePrivate *priv, uint8_t *buf, int color,
+                             int x, int y, int type, int pixmap);
+void _oink_gfx_pixmap_set(OinksiePrivate *priv, uint8_t *buf, int color, int x,
+                          int y, int type);
+int _oink_gfx_pixel_get(OinksiePrivate *priv, uint8_t *buf, int x, int y);
+void _oink_gfx_pixel_set(OinksiePrivate *priv, uint8_t *buf, int color, int x,
+                         int y);
+void _oink_gfx_line(OinksiePrivate *priv, uint8_t *buf, int color, int x0,
+                    int y0, int x1, int y1);
+void _oink_gfx_hline(OinksiePrivate *priv, uint8_t *buf, int color, int x,
+                     int y1, int y2);
+void _oink_gfx_vline(OinksiePrivate *priv, uint8_t *buf, int color, int x,
+                     int y1, int y2);
+void _oink_gfx_circle_filled(OinksiePrivate *priv, uint8_t *buf, int color,
+                             int size, int x, int y);
+void _oink_gfx_circle(OinksiePrivate *priv, uint8_t *buf, int color, int xsize,
+                      int ysize, int x, int y);
 
 #endif /* _OINK_GFX_MISC_H */

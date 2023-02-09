@@ -3,45 +3,39 @@
 
 namespace LV {
 
-  //! Singleton class template.
+//! Singleton class template.
+//!
+//! @tparam T Class to make singleton out of
+//!
+//! @note Singleton is implemented using the curiously recurring template
+//! pattern (CRTP).
+//!
+template <class T> class Singleton {
+public:
+  Singleton(Singleton const &) = delete;
+
+  Singleton const &operator=(Singleton const &) = delete;
+
+  //! Destructor
+  virtual ~Singleton() {}
+
+  //! Returns the singleton instance
   //!
-  //! @tparam T Class to make singleton out of
-  //!
-  //! @note Singleton is implemented using the curiously recurring template pattern (CRTP).
-  //!
-  template <class T>
-  class Singleton
-  {
-  public:
+  //! @return singleton instance
+  static T *instance() { return m_instance; }
 
-      Singleton (Singleton const&) = delete;
+  //! Destroys the singleton instance
+  static void destroy() {
+    delete m_instance;
+    m_instance = nullptr;
+  }
 
-      Singleton const& operator= (Singleton const&) = delete;
+protected:
+  static T *m_instance;
 
-      //! Destructor
-      virtual ~Singleton () {}
+  Singleton() = default;
+};
 
-      //! Returns the singleton instance
-      //!
-      //! @return singleton instance
-      static T* instance () {
-          return m_instance;
-      }
-
-      //! Destroys the singleton instance
-      static void destroy ()
-      {
-          delete m_instance;
-          m_instance = nullptr;
-      }
-
-  protected:
-
-      static T* m_instance;
-
-      Singleton () = default;
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif // _LV_SINGLETON_HPP

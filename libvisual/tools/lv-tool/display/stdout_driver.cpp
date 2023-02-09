@@ -31,110 +31,83 @@
 
 // MinGW unistd.h doesn't have *_FILENO or SEEK_* defined
 #ifdef VISUAL_WITH_MINGW
-#  define STDOUT_FILENO 1
+#define STDOUT_FILENO 1
 #endif
 
 namespace {
 
-  class StdoutDriver
-      : public DisplayDriver
-  {
-  public:
+class StdoutDriver : public DisplayDriver {
+public:
+  StdoutDriver(Display &display) { (void)display; }
 
-      StdoutDriver (Display& display)
-      {
-          (void)display;
-      }
+  virtual ~StdoutDriver() { close(); }
 
-      virtual ~StdoutDriver ()
-      {
-          close ();
-      }
+  virtual LV::VideoPtr create(VisVideoDepth depth,
+                              VisVideoAttrOptions const *vidoptions,
+                              unsigned int width, unsigned int height,
+                              bool resizable) {
+    (void)vidoptions;
+    (void)resizable;
 
-      virtual LV::VideoPtr create (VisVideoDepth depth,
-                                   VisVideoAttrOptions const* vidoptions,
-                                   unsigned int width,
-                                   unsigned int height,
-                                   bool resizable)
-      {
-          (void)vidoptions;
-          (void)resizable;
+    if (depth == VISUAL_VIDEO_DEPTH_GL) {
+      visual_log(VISUAL_LOG_ERROR,
+                 "Cannot use stdout driver for OpenGL rendering");
+      return nullptr;
+    }
 
-          if (depth == VISUAL_VIDEO_DEPTH_GL)
-          {
-              visual_log (VISUAL_LOG_ERROR, "Cannot use stdout driver for OpenGL rendering");
-              return nullptr;
-          }
+    m_screen_video = LV::Video::create(width, height, depth);
 
-          m_screen_video = LV::Video::create (width, height, depth);
+    return m_screen_video;
+  }
 
-          return m_screen_video;
-      }
+  virtual void close() { m_screen_video.reset(); }
 
-      virtual void close ()
-      {
-          m_screen_video.reset ();
-      }
+  virtual void lock() {
+    // nothing to do
+  }
 
-      virtual void lock ()
-      {
-          // nothing to do
-      }
+  virtual void unlock() {
+    // nothing to do
+  }
 
-      virtual void unlock ()
-      {
-          // nothing to do
-      }
+  virtual bool is_fullscreen() const { return false; }
 
-      virtual bool is_fullscreen () const
-      {
-          return false;
-      }
+  virtual void set_fullscreen(bool fullscreen, bool autoscale) {
+    (void)fullscreen;
+    (void)autoscale;
 
-      virtual void set_fullscreen (bool fullscreen, bool autoscale)
-      {
-          (void)fullscreen;
-          (void)autoscale;
+    // nothing to do
+  }
 
-          // nothing to do
-      }
+  virtual LV::VideoPtr get_video() const { return m_screen_video; }
 
-      virtual LV::VideoPtr get_video () const
-      {
-          return m_screen_video;
-      }
+  virtual void set_title(std::string const &title) {
+    (void)title;
 
-      virtual void set_title(std::string const& title)
-      {
-          (void)title;
+    // nothing to do
+  }
 
-          // nothing to do
-      }
+  virtual void update_rect(LV::Rect const &rect) {
+    (void)rect;
 
-      virtual void update_rect (LV::Rect const& rect)
-      {
-          (void)rect;
+    if (write(STDOUT_FILENO, m_screen_video->get_pixels(),
+              m_screen_video->get_size()) == -1)
+      visual_log(VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
+  }
 
-          if (write (STDOUT_FILENO, m_screen_video->get_pixels (), m_screen_video->get_size ()) == -1)
-              visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
-      }
+  virtual void drain_events(VisEventQueue &eventqueue) {
+    (void)eventqueue;
 
-      virtual void drain_events (VisEventQueue& eventqueue)
-      {
-          (void)eventqueue;
+    // nothing to do
+  }
 
-          // nothing to do
-      }
-
-  private:
-
-      LV::VideoPtr m_screen_video;
-  };
+private:
+  LV::VideoPtr m_screen_video;
+};
 
 } // anonymous namespace
 
 // creator
-DisplayDriver* stdout_driver_new (Display& display)
-{
-    return new StdoutDriver (display);
+DisplayDriver *stdout_driver_new(Display &display) {
+  return new StdoutDriver(display);
 }

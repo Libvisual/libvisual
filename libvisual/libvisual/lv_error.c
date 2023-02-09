@@ -29,33 +29,30 @@
 #include <stdlib.h>
 #include <signal.h>
 
-static void log_and_exit (const char *error);
+static void log_and_exit(const char *error);
 
 static VisErrorHandlerFunc error_handler = NULL;
 static void *error_handler_priv = NULL;
 
-void visual_error_raise (const char *error)
-{
-	if (error_handler) {
-		error_handler (error, error_handler_priv);
-	} else {
-		log_and_exit (error);
-	}
+void visual_error_raise(const char *error) {
+  if (error_handler) {
+    error_handler(error, error_handler_priv);
+  } else {
+    log_and_exit(error);
+  }
 }
 
-void visual_error_set_handler (VisErrorHandlerFunc handler, void *priv)
-{
-	error_handler = handler;
-	error_handler_priv = priv;
+void visual_error_set_handler(VisErrorHandlerFunc handler, void *priv) {
+  error_handler = handler;
+  error_handler_priv = priv;
 }
 
-static void log_and_exit (const char *error)
-{
-	visual_log (VISUAL_LOG_CRITICAL, "Aborting due to error: %s", error);
+static void log_and_exit(const char *error) {
+  visual_log(VISUAL_LOG_CRITICAL, "Aborting due to error: %s", error);
 
 #ifdef VISUAL_OS_POSIX
-	raise (SIGTRAP);
+  raise(SIGTRAP);
 #endif
 
-	exit (EXIT_FAILURE);
+  exit(EXIT_FAILURE);
 }

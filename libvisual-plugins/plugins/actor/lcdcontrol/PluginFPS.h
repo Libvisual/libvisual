@@ -26,15 +26,14 @@
 
 #include "luascript.h"
 
-
 namespace LCD {
 
 class PluginFPS {
-    public:
-    PluginFPS(lua *script);
-    ~PluginFPS();
+public:
+  PluginFPS(lua *script);
+  ~PluginFPS();
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

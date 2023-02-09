@@ -18,34 +18,32 @@ namespace LCD {
 
 class DrvVideo : public LCDCore, public LCDGraphic {
 
-    VisVideo *video_;
+  VisVideo *video_;
 
-    bool connected_;
-    int update_;
-    int cols_;
-    int rows_;
-    int bpp_;
-    int depth_;
+  bool connected_;
+  int update_;
+  int cols_;
+  int rows_;
+  int bpp_;
+  int depth_;
 
-    void DrvClear();
-    void DrvUpdateImg();
-    void DrvUpdate();
+  void DrvClear();
+  void DrvUpdateImg();
+  void DrvUpdate();
 
-    public:
-    DrvVideo(std::string name, LCDControl *v,
-        Json::Value *config, int layers, VisEventQueue *eventqueue);
-    ~DrvVideo();    
-    void SetupDevice();
-    void TakeDown();
-    void CFGSetup();
-    void Connect();
-    void Disconnect();
-    void UpdateThread();
-    void DrvBlit(const int row, const int col, const int height, const int width);
-
+public:
+  DrvVideo(std::string name, LCDControl *v, Json::Value *config, int layers,
+           VisEventQueue *eventqueue);
+  ~DrvVideo();
+  void SetupDevice();
+  void TakeDown();
+  void CFGSetup();
+  void Connect();
+  void Disconnect();
+  void UpdateThread();
+  void DrvBlit(const int row, const int col, const int height, const int width);
 };
 
-
-}; // End namespace
+}; // namespace LCD
 
 #endif

@@ -1,5 +1,5 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
- * 
+ *
  * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -34,35 +34,36 @@
 
 #include "avs_sound.h"
 
+int lvavs_sound_get_from_source(VisAudio *audio, float ***data) {
+  VisBuffer *tmp = visual_buffer_new_allocate(sizeof(float) * 1024);
 
-int lvavs_sound_get_from_source (VisAudio *audio, float ***data)
-{
-    VisBuffer *tmp = visual_buffer_new_allocate(sizeof(float) * 1024);
+  /* Left audio */
+  if (visual_audio_get_sample(audio, tmp, VISUAL_AUDIO_CHANNEL_LEFT)) {
+    VisBuffer *pcmbuf1 =
+        visual_buffer_new_wrap_data(data[0][0], sizeof(float) * 1024, 0);
+    visual_audio_sample_buffer_mix(pcmbuf1, tmp, TRUE, 1.0);
+    visual_buffer_unref(pcmbuf1);
+  }
 
-    /* Left audio */
-    if(visual_audio_get_sample(audio, tmp, VISUAL_AUDIO_CHANNEL_LEFT)) {
-        VisBuffer *pcmbuf1 = visual_buffer_new_wrap_data(data[0][0], sizeof(float) * 1024, 0);
-        visual_audio_sample_buffer_mix(pcmbuf1, tmp, TRUE, 1.0);
-        visual_buffer_unref(pcmbuf1);
-    }
+  VisBuffer *spmbuf1 =
+      visual_buffer_new_wrap_data(data[1][0], sizeof(float) * 1024, 0);
+  visual_audio_get_spectrum_for_sample(spmbuf1, tmp, TRUE);
+  visual_buffer_unref(spmbuf1);
 
-    VisBuffer *spmbuf1 = visual_buffer_new_wrap_data(data[1][0], sizeof(float) * 1024, 0);
-    visual_audio_get_spectrum_for_sample(spmbuf1, tmp, TRUE);
-    visual_buffer_unref(spmbuf1);
+  /* Right audio */
+  if (visual_audio_get_sample(audio, tmp, VISUAL_AUDIO_CHANNEL_LEFT)) {
+    VisBuffer *pcmbuf2 =
+        visual_buffer_new_wrap_data(data[0][1], sizeof(float) * 1024, 0);
+    visual_audio_sample_buffer_mix(pcmbuf2, tmp, TRUE, 1.0);
+    visual_buffer_unref(pcmbuf2);
+  }
 
-    /* Right audio */
-    if(visual_audio_get_sample(audio, tmp, VISUAL_AUDIO_CHANNEL_LEFT)) {
-        VisBuffer *pcmbuf2 = visual_buffer_new_wrap_data (data[0][1], sizeof(float) * 1024, 0);
-        visual_audio_sample_buffer_mix (pcmbuf2, tmp, TRUE, 1.0);
-        visual_buffer_unref(pcmbuf2);
-    }
+  VisBuffer *spmbuf2 =
+      visual_buffer_new_wrap_data(data[1][1], sizeof(float) * 1024, 0);
+  visual_audio_get_spectrum_for_sample(spmbuf2, tmp, TRUE);
+  visual_buffer_unref(spmbuf2);
 
-    VisBuffer *spmbuf2 = visual_buffer_new_wrap_data(data[1][1], sizeof(float) * 1024, 0);
-    visual_audio_get_spectrum_for_sample(spmbuf2, tmp, TRUE);
-    visual_buffer_unref(spmbuf2);
+  visual_buffer_unref(tmp);
 
-    visual_buffer_unref(tmp);
-
-    return 0;
+  return 0;
 }
-

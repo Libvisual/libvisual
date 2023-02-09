@@ -24,18 +24,18 @@
 #include <libvisual/libvisual.h>
 
 typedef struct {
-        int                      height;
-        int                      width;
-        /* true if colormap should be regenerated */
-        int                      update_colmap;
-        VisPalette              *pal;
-        uint8_t                 *rgb_buf;
-        VisVideo                *video;
-        VisBuffer               *pcmbuf;
-        VisRandomContext        *rcontext;
-        VisColor                color;
-        VisPluginData           *plugin;
-        int                     update_config_string;
+  int height;
+  int width;
+  /* true if colormap should be regenerated */
+  int update_colmap;
+  VisPalette *pal;
+  uint8_t *rgb_buf;
+  VisVideo *video;
+  VisBuffer *pcmbuf;
+  VisRandomContext *rcontext;
+  VisColor color;
+  VisPluginData *plugin;
+  int update_config_string;
 } BlurskPrivate;
 
 #endif /* _LV_ACTOR_BLURSK_H */

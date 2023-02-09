@@ -31,9 +31,9 @@
  * @{
  */
 
-#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val) \
-    options.gl_attrs[attr].attribute = attr; \
-    options.gl_attrs[attr].value     = val;
+#define VISUAL_VIDEO_ATTR_OPTIONS_GL_ENTRY(options, attr, val)                 \
+  options.gl_attrs[attr].attribute = attr;                                     \
+  options.gl_attrs[attr].value = val;
 
 /**
  * OpenGL framebuffer attributes.
@@ -41,24 +41,24 @@
  * @see VisGLAttrEntry
  */
 typedef enum {
-	VISUAL_GL_ATTRIBUTE_NONE = 0,          /**< Special flag to indicate no attributes. */
-	VISUAL_GL_ATTRIBUTE_BUFFER_SIZE,       /**< Depth of the color buffer. */
-	VISUAL_GL_ATTRIBUTE_LEVEL,             /**< Level in plane stacking. */
-	VISUAL_GL_ATTRIBUTE_RGBA,              /**< True if RGBA mode. */
-	VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER,      /**< Double buffering supported. */
-	VISUAL_GL_ATTRIBUTE_STEREO,            /**< Stereo buffering supported. */
-	VISUAL_GL_ATTRIBUTE_AUX_BUFFERS,       /**< Number of aux buffers. */
-	VISUAL_GL_ATTRIBUTE_RED_SIZE,          /**< Number of red component bits. */
-	VISUAL_GL_ATTRIBUTE_GREEN_SIZE,        /**< Number of green component bits. */
-	VISUAL_GL_ATTRIBUTE_BLUE_SIZE,         /**< Number of blue component bits. */
-	VISUAL_GL_ATTRIBUTE_ALPHA_SIZE,        /**< Number of alpha component bits. */
-	VISUAL_GL_ATTRIBUTE_DEPTH_SIZE,        /**< Number of depth bits. */
-	VISUAL_GL_ATTRIBUTE_STENCIL_SIZE,      /**< Number of stencil bits. */
-	VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE,    /**< Number of red accum bits. */
-	VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE,  /**< Number of green accum bits. */
-	VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE,   /**< Number of blue accum bits. */
-	VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE,  /**< Number of alpha accum bits. */
-	VISUAL_GL_ATTRIBUTE_LAST
+  VISUAL_GL_ATTRIBUTE_NONE = 0, /**< Special flag to indicate no attributes. */
+  VISUAL_GL_ATTRIBUTE_BUFFER_SIZE,      /**< Depth of the color buffer. */
+  VISUAL_GL_ATTRIBUTE_LEVEL,            /**< Level in plane stacking. */
+  VISUAL_GL_ATTRIBUTE_RGBA,             /**< True if RGBA mode. */
+  VISUAL_GL_ATTRIBUTE_DOUBLEBUFFER,     /**< Double buffering supported. */
+  VISUAL_GL_ATTRIBUTE_STEREO,           /**< Stereo buffering supported. */
+  VISUAL_GL_ATTRIBUTE_AUX_BUFFERS,      /**< Number of aux buffers. */
+  VISUAL_GL_ATTRIBUTE_RED_SIZE,         /**< Number of red component bits. */
+  VISUAL_GL_ATTRIBUTE_GREEN_SIZE,       /**< Number of green component bits. */
+  VISUAL_GL_ATTRIBUTE_BLUE_SIZE,        /**< Number of blue component bits. */
+  VISUAL_GL_ATTRIBUTE_ALPHA_SIZE,       /**< Number of alpha component bits. */
+  VISUAL_GL_ATTRIBUTE_DEPTH_SIZE,       /**< Number of depth bits. */
+  VISUAL_GL_ATTRIBUTE_STENCIL_SIZE,     /**< Number of stencil bits. */
+  VISUAL_GL_ATTRIBUTE_ACCUM_RED_SIZE,   /**< Number of red accum bits. */
+  VISUAL_GL_ATTRIBUTE_ACCUM_GREEN_SIZE, /**< Number of green accum bits. */
+  VISUAL_GL_ATTRIBUTE_ACCUM_BLUE_SIZE,  /**< Number of blue accum bits. */
+  VISUAL_GL_ATTRIBUTE_ACCUM_ALPHA_SIZE, /**< Number of alpha accum bits. */
+  VISUAL_GL_ATTRIBUTE_LAST
 } VisGLAttr;
 
 typedef struct _VisGLAttrEntry VisGLAttrEntry;
@@ -69,8 +69,8 @@ typedef struct _VisGLAttrEntry VisGLAttrEntry;
  * Used to specify OpenGL framebuffer requirements.
  */
 struct _VisGLAttrEntry {
-	VisGLAttr attribute;         /**< Attribute tag */
-	int       value;             /**< Attribute value */
+  VisGLAttr attribute; /**< Attribute tag */
+  int value;           /**< Attribute value */
 };
 
 /**

@@ -34,68 +34,57 @@
 using namespace LCD;
 
 LCDControl::LCDControl(void *priv, VisEventQueue *eventqueue) {
-    priv_ = priv;
-    active_ = false;
-    timers_ = new LCDTimerBin();
-    eventqueue_ = eventqueue;
-    stats_init(&stats_);
+  priv_ = priv;
+  active_ = false;
+  timers_ = new LCDTimerBin();
+  eventqueue_ = eventqueue;
+  stats_init(&stats_);
 }
 
 LCDControl::~LCDControl() {
-/*
-    Shutdown();
-    for(std::vector<std::string>::iterator it = display_keys_.begin();
-        it != display_keys_.end(); it++) {
-        if(devices_.find(*it) != devices_.end() && devices_[*it])
-            delete devices_[*it];
-    }
-*/
+  /*
+      Shutdown();
+      for(std::vector<std::string>::iterator it = display_keys_.begin();
+          it != display_keys_.end(); it++) {
+          if(devices_.find(*it) != devices_.end() && devices_[*it])
+              delete devices_[*it];
+      }
+  */
 }
 
 int LCDControl::Start() {
-    std::string file = std::string(getenv("HOME")) + "/.lcdcontrol_config.js";
+  std::string file = std::string(getenv("HOME")) + "/.lcdcontrol_config.js";
 
-    if((active_ = CFG_Init(file)))
-    {
-        ConfigSetup();
-    }
+  if ((active_ = CFG_Init(file))) {
+    ConfigSetup();
+  }
 
-    return 1;
+  return 1;
 }
 
-void LCDControl::Stop() {
-    active_ = false;
+void LCDControl::Stop() { active_ = false; }
+
+void LCDControl::Lock() { mutex_.lock(); }
+
+void LCDControl::Unlock() { mutex_.unlock(); }
+
+void LCDControl::Tick() {
+  if (not active_)
+    return;
+  // stats_startFrame(&stats_);
+  timers_->Tick();
+  // stats_endFrame(&stats_);
 }
 
-void LCDControl::Lock() {
-    mutex_.lock();
-}
-
-void LCDControl::Unlock() {
-    mutex_.unlock();
-}
-
-void LCDControl::Tick()
-{
-    if(not active_)
-        return;
-    //stats_startFrame(&stats_);
-    timers_->Tick();
-    //stats_endFrame(&stats_);
-}
-
-LCDTimerBin *LCDControl::GetTimers()
-{
-    return timers_;
-}
+LCDTimerBin *LCDControl::GetTimers() { return timers_; }
 
 VisVideo *LCDControl::GetVideo() {
-    if(not active_ or not device_)
-        return NULL;
-    return device_->GetVideo();
+  if (not active_ or not device_)
+    return NULL;
+  return device_->GetVideo();
 }
 void LCDControl::TryLock() {
-    // FIXME
+  // FIXME
 }
 
 /*
@@ -103,9 +92,8 @@ void LCDControl::ProcessVariables(Json::Value *config, Evaluator *ev) {
     Json::Value *vars = CFG_Fetch_Raw(config, "variables");
     if(vars) {
         Json::Value::Members keys = vars->getMemberNames();
-        for(std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); it++) {
-            Json::Value *val = CFG_Fetch_Raw(vars, *it);
-            if(!val)
+        for(std::vector<std::string>::iterator it = keys.begin(); it !=
+keys.end(); it++) { Json::Value *val = CFG_Fetch_Raw(vars, *it); if(!val)
                 continue;
                 LCDInfo("Adding variable <%s>", (*it).c_str());
             QScriptValue *scriptVal;
@@ -170,64 +158,67 @@ void LCDControl::ProcessVariables(Json::Value *config, Evaluator *ev) {
 */
 
 void LCDControl::ConfigSetup() {
-    if(!CFG_Get_Root()) return;
+  if (!CFG_Get_Root())
+    return;
 
-    Json::Value::Members keys = CFG_Get_Root()->getMemberNames();
+  Json::Value::Members keys = CFG_Get_Root()->getMemberNames();
 
-    for(std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); it++ ) {
-        if(it->find("display_", 0) != std::string::npos) {
-            Json::Value *display = CFG_Fetch_Raw(CFG_Get_Root(), it->c_str());
-            Json::Value *driver = CFG_Fetch_Raw(display, "driver");
-            if(!driver) {
-                LCDError("CFG: Must specify driver <%s>", it->c_str());
-                continue;
-            }
-            Json::Value *rows = CFG_Fetch_Raw(display, "rows", new Json::Value(0));
-            Json::Value *cols = CFG_Fetch_Raw(display, "cols", new Json::Value(0));
-            Json::Value *layers = CFG_Fetch_Raw(display, "layers", new Json::Value(1));
-            Json::Value *model = CFG_Fetch_Raw(display, "model");
-            if(driver->asString() == "video") {
-                devices_[*it] = new DrvVideo(*it, this, CFG_Get_Root(), layers->asInt(), eventqueue_);
-            } else {
-                continue;
-            }
-            if(model) delete model;
-            delete display;
-            delete driver;
-            delete rows;
-            delete cols;
-        }
-        
+  for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end();
+       it++) {
+    if (it->find("display_", 0) != std::string::npos) {
+      Json::Value *display = CFG_Fetch_Raw(CFG_Get_Root(), it->c_str());
+      Json::Value *driver = CFG_Fetch_Raw(display, "driver");
+      if (!driver) {
+        LCDError("CFG: Must specify driver <%s>", it->c_str());
+        continue;
+      }
+      Json::Value *rows = CFG_Fetch_Raw(display, "rows", new Json::Value(0));
+      Json::Value *cols = CFG_Fetch_Raw(display, "cols", new Json::Value(0));
+      Json::Value *layers =
+          CFG_Fetch_Raw(display, "layers", new Json::Value(1));
+      Json::Value *model = CFG_Fetch_Raw(display, "model");
+      if (driver->asString() == "video") {
+        devices_[*it] = new DrvVideo(*it, this, CFG_Get_Root(), layers->asInt(),
+                                     eventqueue_);
+      } else {
+        continue;
+      }
+      if (model)
+        delete model;
+      delete display;
+      delete driver;
+      delete rows;
+      delete cols;
     }
+  }
 
-    for(std::map<std::string, LCDCore *>::iterator it = 
-        devices_.begin(); it != devices_.end(); it++) {
-        display_keys_.push_back(it->first);
-        LCDError("Starting <%s> %p", it->first.c_str(), it->second);
-        LCDCore *device = it->second;
-        device->CFGSetup();
-        device->SetupDevice();
-        device->Connect();
-        device->BuildLayouts();
-        device->StartLayout();
-        device_ = device;
-        LCDError("Starting 222222222222222 <%s> %p", it->first.c_str(), it->second);
-    }
+  for (std::map<std::string, LCDCore *>::iterator it = devices_.begin();
+       it != devices_.end(); it++) {
+    display_keys_.push_back(it->first);
+    LCDError("Starting <%s> %p", it->first.c_str(), it->second);
+    LCDCore *device = it->second;
+    device->CFGSetup();
+    device->SetupDevice();
+    device->Connect();
+    device->BuildLayouts();
+    device->StartLayout();
+    device_ = device;
+    LCDError("Starting 222222222222222 <%s> %p", it->first.c_str(), it->second);
+  }
 }
 
 void LCDControl::Shutdown() {
-/*
-    for(std::map<std::string, LCDCore *>::iterator it =
-        devices_.begin(); it != devices_.end(); it++ ) {
-        it->second->TakeDown();
-    }
-*/
+  /*
+      for(std::map<std::string, LCDCore *>::iterator it =
+          devices_.begin(); it != devices_.end(); it++ ) {
+          it->second->TakeDown();
+      }
+  */
 }
 
 LCDCore *LCDControl::FindDisplay(std::string name) {
-    std::map<std::string, LCDCore *>::iterator dev = devices_.find(name);
-    if(dev == devices_.end())
-        return NULL;
-    return dev->second;
+  std::map<std::string, LCDCore *>::iterator dev = devices_.find(name);
+  if (dev == devices_.end())
+    return NULL;
+  return dev->second;
 }
-

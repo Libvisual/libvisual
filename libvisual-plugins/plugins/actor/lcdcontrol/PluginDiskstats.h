@@ -32,17 +32,17 @@ namespace LCD {
 
 class PluginDiskstats {
 
-    HASH DISKSTATS;
-    FILE *stream;
-    int ParseDiskstats();
+  HASH DISKSTATS;
+  FILE *stream;
+  int ParseDiskstats();
 
-    public:
-    PluginDiskstats(lua *script);
-    ~PluginDiskstats();
+public:
+  PluginDiskstats(lua *script);
+  ~PluginDiskstats();
 
-    double Diskstats(std::string arg1, std::string arg2, int arg3);
+  double Diskstats(std::string arg1, std::string arg2, int arg3);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

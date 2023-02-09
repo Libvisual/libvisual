@@ -40,88 +40,85 @@
 
 namespace LV {
 
-  typedef uint32_t RandomSeed;
+typedef uint32_t RandomSeed;
+
+/**
+ * Pseudorandom number generator class.
+ */
+class LV_API RandomContext {
+public:
+  typedef RandomSeed Seed;
 
   /**
-   * Pseudorandom number generator class.
+   * Creates a new RandomContext with a given seed.
+   *
+   * @param seed Initial seed for generating random number sequences
    */
-  class LV_API RandomContext
-  {
-  public:
+  explicit RandomContext(Seed seed);
 
-      typedef RandomSeed Seed;
+  RandomContext(RandomContext const &) = delete;
 
-      /**
-       * Creates a new RandomContext with a given seed.
-       *
-       * @param seed Initial seed for generating random number sequences
-       */
-      explicit RandomContext (Seed seed);
+  /**
+   * Move constructor
+   */
+  RandomContext(RandomContext &&rhs);
 
-      RandomContext (RandomContext const&) = delete;
+  /**
+   * Destructor
+   */
+  ~RandomContext();
 
-      /**
-       * Move constructor
-       */
-      RandomContext (RandomContext&& rhs);
+  RandomContext &operator=(RandomContext const &) = delete;
 
-      /**
-       * Destructor
-       */
-      ~RandomContext ();
+  /*
+   * Move assignment operator
+   */
+  RandomContext &operator=(RandomContext &&rhs);
 
-      RandomContext& operator= (RandomContext const&) = delete;
+  /**
+   * Sets the seed.
+   *
+   * @param seed New seed
+   */
+  void set_seed(uint32_t seed);
 
-      /*
-       * Move assignment operator
-       */
-      RandomContext& operator= (RandomContext&& rhs);
+  /**
+   * Returns a random integer.
+   *
+   * @return A random integer
+   */
+  uint32_t get_int();
 
-      /**
-       * Sets the seed.
-       *
-       * @param seed New seed
-       */
-      void set_seed (uint32_t seed);
+  /**
+   * Returns a random integer in a given range.
+   *
+   * @param min Lower bound
+   * @param max Upper bound
+   *
+   * @return A random integer between min and max inclusive
+   */
+  uint32_t get_int(unsigned int min, unsigned int max);
 
-      /**
-       * Returns a random integer.
-       *
-       * @return A random integer
-       */
-      uint32_t get_int ();
+  /**
+   * Returns a random double-precision floating point value between 0.0 and 1.0.
+   *
+   * @return A random value between 0.0 and 1.0
+   */
+  double get_double();
 
-      /**
-       * Returns a random integer in a given range.
-       *
-       * @param min Lower bound
-       * @param max Upper bound
-       *
-       * @return A random integer between min and max inclusive
-       */
-      uint32_t get_int (unsigned int min, unsigned int max);
+  /**
+   * Returns a random single-precision floating point value between 0.0 and 1.0.
+   *
+   * @return A random value between 0.0 and 1.0
+   */
+  float get_float();
 
-      /**
-       * Returns a random double-precision floating point value between 0.0 and 1.0.
-       *
-       * @return A random value between 0.0 and 1.0
-       */
-      double get_double ();
+private:
+  class Impl;
+  std::unique_ptr<Impl> m_impl;
+};
 
-      /**
-       * Returns a random single-precision floating point value between 0.0 and 1.0.
-       *
-       * @return A random value between 0.0 and 1.0
-       */
-      float get_float ();
-
-  private:
-
-      class Impl;
-      std::unique_ptr<Impl> m_impl;
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif /* __cplusplus */
 
@@ -129,24 +126,27 @@ namespace LV {
 
 #ifdef __cplusplus
 typedef ::LV::RandomContext VisRandomContext;
-typedef ::LV::RandomSeed    VisRandomSeed;
+typedef ::LV::RandomSeed VisRandomSeed;
 #else
-  typedef struct _VisRandomContext VisRandomContext;
-  struct _VisRandomContext;
+typedef struct _VisRandomContext VisRandomContext;
+struct _VisRandomContext;
 
-  typedef uint32_t VisRandomSeed;
+typedef uint32_t VisRandomSeed;
 #endif
 
 LV_BEGIN_DECLS
 
-LV_API VisRandomContext *visual_random_context_new  (VisRandomSeed seed);
-LV_API void              visual_random_context_free (VisRandomContext *rcontext);
+LV_API VisRandomContext *visual_random_context_new(VisRandomSeed seed);
+LV_API void visual_random_context_free(VisRandomContext *rcontext);
 
-LV_API void     visual_random_context_set_seed  (VisRandomContext *rcontext, VisRandomSeed seed);
-LV_API uint32_t visual_random_context_int       (VisRandomContext *rcontext);
-LV_API uint32_t visual_random_context_int_range (VisRandomContext *rcontext, unsigned int min, unsigned int max);
-LV_API double   visual_random_context_double    (VisRandomContext *rcontext);
-LV_API float    visual_random_context_float     (VisRandomContext *rcontext);
+LV_API void visual_random_context_set_seed(VisRandomContext *rcontext,
+                                           VisRandomSeed seed);
+LV_API uint32_t visual_random_context_int(VisRandomContext *rcontext);
+LV_API uint32_t visual_random_context_int_range(VisRandomContext *rcontext,
+                                                unsigned int min,
+                                                unsigned int max);
+LV_API double visual_random_context_double(VisRandomContext *rcontext);
+LV_API float visual_random_context_float(VisRandomContext *rcontext);
 
 LV_END_DECLS
 

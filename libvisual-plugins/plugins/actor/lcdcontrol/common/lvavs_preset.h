@@ -1,5 +1,5 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
- * 
+ *
  * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -32,57 +32,58 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define LVAVS_PRESET(obj)				(VISUAL_CHECK_CAST ((obj), LVAVSPreset))
-#define LVAVS_PRESET_ELEMENT(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPresetElement))
-#define LVAVS_PRESET_CONTAINER(obj)			(VISUAL_CHECK_CAST ((obj), LVAVSPresetContainer))
+#define LVAVS_PRESET(obj) (VISUAL_CHECK_CAST((obj), LVAVSPreset))
+#define LVAVS_PRESET_ELEMENT(obj) (VISUAL_CHECK_CAST((obj), LVAVSPresetElement))
+#define LVAVS_PRESET_CONTAINER(obj)                                            \
+  (VISUAL_CHECK_CAST((obj), LVAVSPresetContainer))
 
 typedef struct _LVAVSPreset LVAVSPreset;
 typedef struct _LVAVSPresetElement LVAVSPresetElement;
 typedef struct _LVAVSPresetContainer LVAVSPresetContainer;
 
 typedef enum {
-	LVAVS_PRESET_ELEMENT_TYPE_NULL,
-	LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
-	LVAVS_PRESET_ELEMENT_TYPE_CONTAINER,
-	LVAVS_PRESET_ELEMENT_TYPE_RENDERSTATE,
-	LVAVS_PRESET_ELEMENT_TYPE_COMMENT,
-    LVAVS_PRESET_ELEMENT_TYPE_STACK,
-    LVAVS_PRESET_ELEMENT_TYPE_BPM
+  LVAVS_PRESET_ELEMENT_TYPE_NULL,
+  LVAVS_PRESET_ELEMENT_TYPE_PLUGIN,
+  LVAVS_PRESET_ELEMENT_TYPE_CONTAINER,
+  LVAVS_PRESET_ELEMENT_TYPE_RENDERSTATE,
+  LVAVS_PRESET_ELEMENT_TYPE_COMMENT,
+  LVAVS_PRESET_ELEMENT_TYPE_STACK,
+  LVAVS_PRESET_ELEMENT_TYPE_BPM
 } LVAVSPresetElementType;
 
 /* The AVS data structure */
 struct _LVAVSPreset {
-	VisObject		 object;
+  VisObject object;
 
-	char			*origfile;
+  char *origfile;
 
-	LVAVSPresetContainer	*main;
+  LVAVSPresetContainer *main;
 };
 
 struct _LVAVSPresetElement {
-	VisObject		 object;
+  VisObject object;
 
-	LVAVSPresetElementType	 type;
+  LVAVSPresetElementType type;
 
-	char		*element_name;
+  char *element_name;
 
-	VisParamContainer	*pcont;
+  VisParamContainer *pcont;
 };
 
 struct _LVAVSPresetContainer {
-	LVAVSPresetElement	 element;
+  LVAVSPresetElement element;
 
-	VisList			*members;
+  VisList *members;
 };
 
-
 /* Prototypes */
-LVAVSPreset *lvavs_preset_new (void);
-LVAVSPreset *lvavs_preset_new_from_preset (char *filename);
-LVAVSPreset *lvavs_preset_new_from_wavs (AVSTree *wavs);
+LVAVSPreset *lvavs_preset_new(void);
+LVAVSPreset *lvavs_preset_new_from_preset(char *filename);
+LVAVSPreset *lvavs_preset_new_from_wavs(AVSTree *wavs);
 
-LVAVSPresetElement *lvavs_preset_element_new (LVAVSPresetElementType type, const char *name);
-LVAVSPresetContainer *lvavs_preset_container_new (void);
+LVAVSPresetElement *lvavs_preset_element_new(LVAVSPresetElementType type,
+                                             const char *name);
+LVAVSPresetContainer *lvavs_preset_container_new(void);
 
 #ifdef __cplusplus
 }

@@ -2,8 +2,9 @@
  * $URL$
  *
  * Copyright (C) 2007 Volker Gering <v.gering@t-online.de>
- * Copyright (C) 2004, 2005, 2006, 2007 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
- * Copyright (C) 2009 Scott Sibley <scott@starlon.net>
+ * Copyright (C) 2004, 2005, 2006, 2007 The LCD4Linux Team
+ * <lcd4linux-devel@users.sourceforge.net> Copyright (C) 2009 Scott Sibley
+ * <scott@starlon.net>
  *
  * This file is part of LCDControl.
  *
@@ -32,20 +33,20 @@ namespace LCD {
 
 class PluginNetinfo {
 
-    int socknr;
-    int OpenNet();
+  int socknr;
+  int OpenNet();
 
-    public:
-    PluginNetinfo(lua *script);
-    ~PluginNetinfo();
+public:
+  PluginNetinfo(lua *script);
+  ~PluginNetinfo();
 
-    double Exists(std::string arg1);
-    std::string Hwaddr(std::string arg1);
-    std::string Ipaddr(std::string arg1);
-    std::string Netmask(std::string arg1);
-    std::string Bcaddr(std::string arg1);
+  double Exists(std::string arg1);
+  std::string Hwaddr(std::string arg1);
+  std::string Ipaddr(std::string arg1);
+  std::string Netmask(std::string arg1);
+  std::string Bcaddr(std::string arg1);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

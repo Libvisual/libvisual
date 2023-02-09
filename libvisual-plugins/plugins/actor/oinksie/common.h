@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -27,10 +28,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define PI	3.14159265358979323846
+#define PI 3.14159265358979323846
 
 #define MAX(a, b) (a > b ? a : b)
-#define MIN(a ,b) (a > b ? b : a)
+#define MIN(a, b) (a > b ? b : a)
 
 #define BYTETRUNC(a) ((a) > 255 ? 255 : (a))
 

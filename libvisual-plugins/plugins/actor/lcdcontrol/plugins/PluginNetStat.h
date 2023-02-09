@@ -32,23 +32,23 @@ class Evaluator;
 
 class PluginNetStat {
 
-    HASH NetStat;
-    FILE *Stream;
-    bool first_time;
-    int linecount;
+  HASH NetStat;
+  FILE *Stream;
+  bool first_time;
+  int linecount;
 
-    int ParseNetStat();
+  int ParseNetStat();
 
-    public:
-    PluginNetStat();
-    ~PluginNetStat();
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
+public:
+  PluginNetStat();
+  ~PluginNetStat();
+  void Connect(Evaluator *visitor);
+  void Disconnect() {}
 
-    std::string Netstat(std::string arg1, std::string arg2);
-    int LineCount();
+  std::string Netstat(std::string arg1, std::string arg2);
+  int LineCount();
 };
 
-} // End namespace
+} // namespace LCD
 
 #endif

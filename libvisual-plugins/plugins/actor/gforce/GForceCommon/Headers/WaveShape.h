@@ -4,64 +4,57 @@
 #include "ExprArray.h"
 #include "ExpressionDict.h"
 
-
 class ArgList;
 class PixPort;
 
 class WaveShape {
 
-	public:
+public:
+  WaveShape(float &inTPtr);
 
+  void SetMagFcn(ExprUserFcn **inMagFcn);
 
-								WaveShape( float& inTPtr );
+  void SetFFTFcn(ExprUserFcn **InFFTFcn);
 
-		void					SetMagFcn( ExprUserFcn** inMagFcn );
+  void Load(ArgList &inArgs, long inDefaultNumSteps);
 
-		void					SetFFTFcn( ExprUserFcn** InFFTFcn );
+  void SetupTransition(WaveShape *inDest);
 
-		void					Load( ArgList& inArgs, long inDefaultNumSteps );
+#define SHAPE_MORPH_ALPHA 1.7
 
+  void Draw(long inNumSteps, PixPort &inDest, float inFader, WaveShape *inWave2,
+            float inMorphPct);
 
-		void					SetupTransition( WaveShape* inDest );
+protected:
+  // Holds a copy of the ptr to the external time index
+  float *mTPtr;
 
-		#define					SHAPE_MORPH_ALPHA	1.7
+  // Dict vars
+  float mPI, mNumSampleBins, mNumFFTBins;
+  float mMouseX, mMouseY;
 
+  ExpressionDict mDict;
+  float mShapeTrans;
+  long mNumWaves;
+  bool mAspect1to1;
+  bool mConnectBins, mConnectBinsOrig;
+  bool mConnectFirstLast, mConnectFirstLastOrig;
+  ExprArray mA, mB, mC;
+  ExprArray mWaveY;
+  ExprArray mWaveX;
+  Expression mLineWidth;
+  Expression mNum_S_Steps;
+  Expression mIntensity;
+  bool mPen_Dep_S;
+  bool mLineWidth_Dep_S;
 
-		void					Draw( long inNumSteps, PixPort& inDest, float inFader, WaveShape* inWave2, float inMorphPct );
+  void SetupFrame(WaveShape *inDest, float inW);
 
-	protected:
+  static float sS;
+  static long sXY[2 * MAX_WAVES_PER_SHAPE];
+  static long sStartXY[2 * MAX_WAVES_PER_SHAPE];
 
-		// Holds a copy of the ptr to the external time index
-		float*					mTPtr;
-
-
-		// Dict vars
-		float					mPI, mNumSampleBins, mNumFFTBins;
-		float					mMouseX, mMouseY;
-
-		ExpressionDict			mDict;
-		float					mShapeTrans;
-		long					mNumWaves;
-		bool					mAspect1to1;
-		bool					mConnectBins, mConnectBinsOrig;
-		bool					mConnectFirstLast, mConnectFirstLastOrig;
-		ExprArray				mA, mB, mC;
-		ExprArray				mWaveY;
-		ExprArray				mWaveX;
-		Expression				mLineWidth;
-		Expression				mNum_S_Steps;
-		Expression				mIntensity;
-		bool					mPen_Dep_S;
-		bool					mLineWidth_Dep_S;
-
-
-		void					SetupFrame( WaveShape* inDest, float inW );
-
-		static float			sS;
-		static long				sXY[ 2 * MAX_WAVES_PER_SHAPE ];
-		static long				sStartXY[ 2 * MAX_WAVES_PER_SHAPE ];
-
-		void					CalcNumS_Steps( WaveShape* inWave2, long inDefaultNumBins );
+  void CalcNumS_Steps(WaveShape *inWave2, long inDefaultNumBins);
 };
 
 #endif

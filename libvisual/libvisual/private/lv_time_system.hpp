@@ -5,18 +5,18 @@
 
 namespace LV {
 
-  namespace TimeSystem {
+namespace TimeSystem {
 
-    void start ();
+void start();
 
-    void shutdown ();
+void shutdown();
 
-    Time now ();
+Time now();
 
-    void usleep (uint64_t usecs);
+void usleep(uint64_t usecs);
 
-  } // TimeSystem
+} // namespace TimeSystem
 
-} // LV
+} // namespace LV
 
 #endif // _LV_TIMING_SYSTEM_HPP

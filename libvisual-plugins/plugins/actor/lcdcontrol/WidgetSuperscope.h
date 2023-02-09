@@ -43,54 +43,56 @@ class LCDGraphic;
 class LCDCore;
 
 class WidgetSuperscope : public Widget {
-    public:
-    Property *visible_;
-    std::string init_, beat_, frame_, point_;
-    int update_;
-    int ch_;
-    int index_;
-    int channel_source;
-    int drawmode;
-    VisPalette *pal;
+public:
+  Property *visible_;
+  std::string init_, beat_, frame_, point_;
+  int update_;
+  int ch_;
+  int index_;
+  int channel_source;
+  int drawmode;
+  VisPalette *pal;
 
-    double n, b, x, y, i, v, w, h, red, green, blue, linesize, skip, drawmode, t, d; 
+  double n, b, x, y, i, v, w, h, red, green, blue, linesize, skip, drawmode, t,
+      d;
 
-    SpecialChar *bitmap_;
-    VisVideo *video_;
-    LCDTimer *timer_;
+  SpecialChar *bitmap_;
+  VisVideo *video_;
+  LCDTimer *timer_;
 
-    void (*Draw)(WidgetSuperscope *);
+  void (*Draw)(WidgetSuperscope *);
 
-    WidgetSuperscope(LCDCore *visitor, std::string name, Json::Value *section, int row, int col, int layer);
-    ~WidgetSuperscope();
-    void SetupChars();
-    void Start();
-    void Stop();
-    SpecialChar GetBitmap() { return *bitmap_; }
-    int GetCh() { return ch_; }
-    Property *GetVisible() { return visible_; }
+  WidgetSuperscope(LCDCore *visitor, std::string name, Json::Value *section,
+                   int row, int col, int layer);
+  ~WidgetSuperscope();
+  void SetupChars();
+  void Start();
+  void Stop();
+  SpecialChar GetBitmap() { return *bitmap_; }
+  int GetCh() { return ch_; }
+  Property *GetVisible() { return visible_; }
 
-    void Update();
-    void TextScroll() {}
+  void Update();
+  void TextScroll() {}
 
-    void Resize(int rows, int cols, int old_rows, int old_cols);
+  void Resize(int rows, int cols, int old_rows, int old_cols);
 };
 
-inline std::vector<std::string> &Split(const std::string &s, char delim, std::vector<std::string> &elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while(std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
+inline std::vector<std::string> &Split(const std::string &s, char delim,
+                                       std::vector<std::string> &elems) {
+  std::stringstream ss(s);
+  std::string item;
+  while (std::getline(ss, item, delim)) {
+    elems.push_back(item);
+  }
+  return elems;
 }
 
 inline std::vector<std::string> Split(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    return Split(s, delim, elems);
+  std::vector<std::string> elems;
+  return Split(s, delim, elems);
 }
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

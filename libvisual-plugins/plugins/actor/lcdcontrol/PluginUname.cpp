@@ -35,71 +35,66 @@ using namespace LCD;
 
 PluginUname *pluguname;
 
-std::string PluginUname::Uname(std::string arg1)
-{
-    struct utsname utsbuf;
-    std::string key;
-    const char *value;
+std::string PluginUname::Uname(std::string arg1) {
+  struct utsname utsbuf;
+  std::string key;
+  const char *value;
 
-    key = arg1;
+  key = arg1;
 
-    if (uname(&utsbuf) != 0) {
-        LCDError("uname() failed: %s", strerror(errno));
-        return "";
-    }
+  if (uname(&utsbuf) != 0) {
+    LCDError("uname() failed: %s", strerror(errno));
+    return "";
+  }
 
-    if (key == "sysname") {
-        value = utsbuf.sysname;
-    } else if (key == "nodename") {
-        value = utsbuf.nodename;
-    } else if (key == "release") {
-        value = utsbuf.release;
-    } else if (key == "version") {
-        value = utsbuf.version;
-    } else if (key == "machine") {
-        value = utsbuf.machine;
-/*#if defined(_GNU_SOURCE) && ! defined(__APPLE__) && ! defined(__CYGWIN__)
-    else if (key == "domainname")
-        value = utsbuf.domainname;
-#endif
-*/
-    } else {
-        LCDError("uname: unknown field '%s'", key.c_str());
-        value = "";
-    }
+  if (key == "sysname") {
+    value = utsbuf.sysname;
+  } else if (key == "nodename") {
+    value = utsbuf.nodename;
+  } else if (key == "release") {
+    value = utsbuf.release;
+  } else if (key == "version") {
+    value = utsbuf.version;
+  } else if (key == "machine") {
+    value = utsbuf.machine;
+    /*#if defined(_GNU_SOURCE) && ! defined(__APPLE__) && ! defined(__CYGWIN__)
+        else if (key == "domainname")
+            value = utsbuf.domainname;
+    #endif
+    */
+  } else {
+    LCDError("uname: unknown field '%s'", key.c_str());
+    value = "";
+  }
 
-    return value;
+  return value;
 }
 
 class uname1_t {
-    public:
-    static const lua::args_t *in_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+public:
+  static const lua::args_t *in_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const lua::args_t *out_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+  static const lua::args_t *out_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const std::string ns() { return "uname"; }
-    static const std::string name() { return "Uname"; }
+  static const std::string ns() { return "uname"; }
+  static const std::string name() { return "Uname"; }
 
-    static void calc(const lua::args_t& in, lua::args_t &out)
-    {
-        std::string key = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
-        std::string str = pluguname->Uname(key);
-        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
-    }
+  static void calc(const lua::args_t &in, lua::args_t &out) {
+    std::string key = dynamic_cast<lua::string_arg_t &>(*in[0]).value();
+    std::string str = pluguname->Uname(key);
+    dynamic_cast<lua::string_arg_t &>(*out[0]).value() = str;
+  }
 };
 
-PluginUname::PluginUname(lua *script)
-{
-    pluguname = this;
-    script->register_function<uname1_t>();
+PluginUname::PluginUname(lua *script) {
+  pluguname = this;
+  script->register_function<uname1_t>();
 }

@@ -1,8 +1,8 @@
-/* 
+/*
  *  Jakdaw's XMMS Plugin.
  *  Copyright (C) 1999, 2000, Christopher Wilson.
  *
- *  Email: <Jakdaw@usa.net> 
+ *  Email: <Jakdaw@usa.net>
  *  Project Homepage: <http://www.jakdaw.ucam.org/xmms/>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 
 #include "actor_jakdaw.h"
 
-void _jakdaw_plotter_draw (JakdawPrivate *priv, float *pcm_data, float *freq_data, uint32_t *vscr);
+void _jakdaw_plotter_draw(JakdawPrivate *priv, float *pcm_data,
+                          float *freq_data, uint32_t *vscr);
 
 #endif /* _PLOTTER_H */

@@ -35,49 +35,56 @@ namespace LCD {
 
 class LCDCore;
 
-typedef enum { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT, ALIGN_MARQUEE, ALIGN_AUTOMATIC, ALIGN_PINGPONG } TEXT_ALIGN;
+typedef enum {
+  ALIGN_LEFT,
+  ALIGN_CENTER,
+  ALIGN_RIGHT,
+  ALIGN_MARQUEE,
+  ALIGN_AUTOMATIC,
+  ALIGN_PINGPONG
+} TEXT_ALIGN;
 typedef enum { SCROLL_RIGHT, SCROLL_LEFT } SCROLL_DIRECTION;
 
 class WidgetText : public Widget {
-    Property *prefix_;      /* label on the left side */
-    Property *postfix_;     /* label on the right side */
-    Property *value_;       /* value of text widget */
-    Property *style_;       /* text style (plain/bold/slant) */
-    std::string string_;    /* formatted value */
-    std::string buffer_;    /* string with 'width+1' bytes allocated  */
-    int offset_;            /* Increment by pixel */
-    int precision_;         /* number of digits after the decimal point */
-    TEXT_ALIGN align_;      /* alignment: L(eft), C(enter), R(ight), M(arquee), A(utomatic) */
-    int update_;            /* update interval */
-    int scroll_;            /* marquee starting point */
-    int speed_;             /* marquee scrolling speed */
-    int direction_;         /* pingpong direction, 0=right, 1=left */
-    int delay_;             /* pingpong scrolling, wait before switch direction */
-    bool bold_;
+  Property *prefix_;   /* label on the left side */
+  Property *postfix_;  /* label on the right side */
+  Property *value_;    /* value of text widget */
+  Property *style_;    /* text style (plain/bold/slant) */
+  std::string string_; /* formatted value */
+  std::string buffer_; /* string with 'width+1' bytes allocated  */
+  int offset_;         /* Increment by pixel */
+  int precision_;      /* number of digits after the decimal point */
+  TEXT_ALIGN
+      align_; /* alignment: L(eft), C(enter), R(ight), M(arquee), A(utomatic) */
+  int update_;    /* update interval */
+  int scroll_;    /* marquee starting point */
+  int speed_;     /* marquee scrolling speed */
+  int direction_; /* pingpong direction, 0=right, 1=left */
+  int delay_;     /* pingpong scrolling, wait before switch direction */
+  bool bold_;
 
-    LCDTimer *timer_;
-    LCDTimer *scroll_timer_;
+  LCDTimer *timer_;
+  LCDTimer *scroll_timer_;
 
-    public:
-    WidgetText(LCDCore *visitor, std::string name, Json::Value *section, 
-        int row, int col, int layer);
-    ~WidgetText();
-    void (*Draw)(WidgetText *w);
-    std::string GetBuffer() { return buffer_; }
-    int GetOffset() { return offset_; }
-    int GetDirection() { return direction_; }
-    bool GetBold() { return bold_; }
-    void Start();
-    void Stop();
+public:
+  WidgetText(LCDCore *visitor, std::string name, Json::Value *section, int row,
+             int col, int layer);
+  ~WidgetText();
+  void (*Draw)(WidgetText *w);
+  std::string GetBuffer() { return buffer_; }
+  int GetOffset() { return offset_; }
+  int GetDirection() { return direction_; }
+  bool GetBold() { return bold_; }
+  void Start();
+  void Stop();
 
-    // Slots
-    void Update();
-    void TextScroll();
+  // Slots
+  void Update();
+  void TextScroll();
 
-    void Resize(int rows, int cols, int old_rows, int old_cols);
+  void Resize(int rows, int cols, int old_rows, int old_cols);
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

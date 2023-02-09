@@ -57,113 +57,113 @@
 
 namespace LCD {
 
-//class PluginLCD;
+// class PluginLCD;
 class LCDControl;
 
 struct widget_template {
-    std::string key;
-    int row;
-    int col;
-    int layer;
+  std::string key;
+  int row;
+  int col;
+  int layer;
 };
 
-class LCDCore: public virtual Evaluator, public CFG {
-    std::vector<std::string> layouts_;
-    std::string current_layout_;
-    std::string last_layout_;
-    std::vector<std::string> static_widgets_;
-    std::map<std::string, std::vector<widget_template> > widget_templates_;
-    std::map<std::string, Widget *> widgets_;
-    std::map<std::string, bool> keyless_layouts_;
-    int type_;
-    int layout_timeout_;
-    int transition_speed_;
-    int direction_;
-    bool is_transitioning_;
-    bool clear_on_layout_change_;
-    bool transitions_off_;
-    LCDTimer *timer_;
-    LCDTimer *transition_timer_;
-    VisEventQueue *eventqueue_;
+class LCDCore : public virtual Evaluator, public CFG {
+  std::vector<std::string> layouts_;
+  std::string current_layout_;
+  std::string last_layout_;
+  std::vector<std::string> static_widgets_;
+  std::map<std::string, std::vector<widget_template>> widget_templates_;
+  std::map<std::string, Widget *> widgets_;
+  std::map<std::string, bool> keyless_layouts_;
+  int type_;
+  int layout_timeout_;
+  int transition_speed_;
+  int direction_;
+  bool is_transitioning_;
+  bool clear_on_layout_change_;
+  bool transitions_off_;
+  LCDTimer *timer_;
+  LCDTimer *transition_timer_;
+  VisEventQueue *eventqueue_;
 
-    //PluginLCD *pluginLCD;
+  // PluginLCD *pluginLCD;
 
-    protected:
-    LCDBase *lcd_;
-    std::string name_;
-    LCDControl *app_;
+protected:
+  LCDBase *lcd_;
+  std::string name_;
+  LCDControl *app_;
 
-    public:
-    LCDCore(LCDControl *app, std::string name, Json::Value *config, 
-        int type, VisEventQueue *eventqueue, LCDBase *lcd = (LCDBase *)NULL);
-    virtual ~LCDCore();
-    virtual void CFGSetup();
-    void BuildLayouts();
-    void StartLayout(std::string key = "");
-    int GetType() { return type_; }
-    LCDBase *GetLCD() { return lcd_; }
-    virtual void Connect(){};
-    virtual void SetupDevice(){};
-    virtual void TakeDown(){};
-    VisVideo *GetVideo(){ return lcd_->GetVideo(); };
-    std::map<std::string, Widget *> GetWidgets();
-    std::string CFG_Key();
-    std::vector<std::string> GetLayouts() { return layouts_; }
-    int GetDirection() { return direction_; }
-    std::string GetCurrentLayout() { return current_layout_; }
-    std::string GetLastLayout() { return last_layout_; }
-    std::string GetName() { return name_; }
-    LCDControl *GetApp() { return app_; }
-    bool ClearOnLayoutChange() { return clear_on_layout_change_; }
-    bool IsActive();
-    void TextSetSpecialChars() {}
-    void LayoutChangeBefore() {}
-    void LayoutChangeAfter() {}
-    void TextSpecialCharChanged(int i) {}
-    void ChangeLayout();
-    void StopLayout(std::string layout);
-    void StartTransition(std::string transition);
-    void LayoutTransition();
-    void TransitionFinished();
-    void Transition(int);
-    void KeypadEvent(const int k);
-    int ResizeLCD(int row, int col);
-    void SelectLayout(std::string layout);
-    int RemoveWidget(std::string name);
-    std::string AddWidget(std::string layout, int row, int col, 
-        int layer, std::string object);
-    int MoveWidget(std::string widget, int rows, int cols);
+public:
+  LCDCore(LCDControl *app, std::string name, Json::Value *config, int type,
+          VisEventQueue *eventqueue, LCDBase *lcd = (LCDBase *)NULL);
+  virtual ~LCDCore();
+  virtual void CFGSetup();
+  void BuildLayouts();
+  void StartLayout(std::string key = "");
+  int GetType() { return type_; }
+  LCDBase *GetLCD() { return lcd_; }
+  virtual void Connect(){};
+  virtual void SetupDevice(){};
+  virtual void TakeDown(){};
+  VisVideo *GetVideo() { return lcd_->GetVideo(); };
+  std::map<std::string, Widget *> GetWidgets();
+  std::string CFG_Key();
+  std::vector<std::string> GetLayouts() { return layouts_; }
+  int GetDirection() { return direction_; }
+  std::string GetCurrentLayout() { return current_layout_; }
+  std::string GetLastLayout() { return last_layout_; }
+  std::string GetName() { return name_; }
+  LCDControl *GetApp() { return app_; }
+  bool ClearOnLayoutChange() { return clear_on_layout_change_; }
+  bool IsActive();
+  void TextSetSpecialChars() {}
+  void LayoutChangeBefore() {}
+  void LayoutChangeAfter() {}
+  void TextSpecialCharChanged(int i) {}
+  void ChangeLayout();
+  void StopLayout(std::string layout);
+  void StartTransition(std::string transition);
+  void LayoutTransition();
+  void TransitionFinished();
+  void Transition(int);
+  void KeypadEvent(const int k);
+  int ResizeLCD(int row, int col);
+  void SelectLayout(std::string layout);
+  int RemoveWidget(std::string name);
+  std::string AddWidget(std::string layout, int row, int col, int layer,
+                        std::string object);
+  int MoveWidget(std::string widget, int rows, int cols);
 
-    LCDTimerBin *timers_;
+  LCDTimerBin *timers_;
 
-    int gen_index_;
+  int gen_index_;
 
-    _generator(layoutGenerator) {
-        LCDCore *obj;
-        layoutGenerator(int j, LCDCore *v, bool init = false) {
-            obj = v;
-	    if(init) obj->gen_index_ = 1;
-            obj->gen_index_+=j-1;
-            if(obj->gen_index_ >= (int)obj->GetLayouts().size())
-                obj->gen_index_ = 0;
-            if(obj->gen_index_ < 0)
-                obj->gen_index_ = obj->GetLayouts().size() - 1;
-        }
-        _emit(std::string)
-            while(true) {
-                _yield(obj->GetLayouts()[obj->gen_index_++]);
-                if(obj->gen_index_ >= (int)obj->GetLayouts().size())
-                    obj->gen_index_ = 0;
-            }
-        _stop;
-    };
+  _generator(layoutGenerator) {
+    LCDCore *obj;
+    layoutGenerator(int j, LCDCore *v, bool init = false) {
+      obj = v;
+      if (init)
+        obj->gen_index_ = 1;
+      obj->gen_index_ += j - 1;
+      if (obj->gen_index_ >= (int)obj->GetLayouts().size())
+        obj->gen_index_ = 0;
+      if (obj->gen_index_ < 0)
+        obj->gen_index_ = obj->GetLayouts().size() - 1;
+    }
+    _emit(std::string) while (true) {
+      _yield(obj->GetLayouts()[obj->gen_index_++]);
+      if (obj->gen_index_ >= (int)obj->GetLayouts().size())
+        obj->gen_index_ = 0;
+    }
+    _stop;
+  };
 
-    void InitGen(int i = 0) { gen_index_ = i; }
-    private:
-    layoutGenerator gen_;
+  void InitGen(int i = 0) { gen_index_ = i; }
+
+private:
+  layoutGenerator gen_;
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

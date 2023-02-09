@@ -5,8 +5,7 @@
 
 GLfloat tunnel_time, tunnel_speed = 1.8f, old_tunnel_speed = 1.8f;
 
-typedef struct
-{
+typedef struct {
   GLfloat radius[COUNT];
 } ring_type;
 
@@ -16,15 +15,12 @@ GLfloat tex_rad = 1.0f, tex_len = 1.0f, len_fact = 0.50f, kot;
 int start_ring = 0;
 int tunnel_first = TRUE;
 
-
-void
-precalculate_tunnel(void)
-{
+void precalculate_tunnel(void) {
   int i, j, k, uring;
   GLfloat ckot0;
   GLfloat x, y, r;
   GLfloat rx, ry;
-  glcoord normal = { 0.0f, 0.0f, 0.0f };
+  glcoord normal = {0.0f, 0.0f, 0.0f};
 
   tunnel_time = 0.6f;
   for (k = 0; k < DEPTH; k++) {
@@ -34,9 +30,9 @@ precalculate_tunnel(void)
       itime -= 1.0f;
       for (i = 0; i < COUNT; i++) {
         kot = (GLfloat)i / COUNT * PI2;
-        ring[start_ring].radius[i] = 100 + 20 * sinf(kot*3 + total_time)
-                                         + 20 * sinf(kot*2 + total_time*2 + 50)
-                                         + 15 * sinf(kot*4 - total_time*3 + 60);
+        ring[start_ring].radius[i] = 100 + 20 * sinf(kot * 3 + total_time) +
+                                     20 * sinf(kot * 2 + total_time * 2 + 50) +
+                                     15 * sinf(kot * 4 - total_time * 3 + 60);
         ring[start_ring].radius[i] *= 0.01f;
       }
       start_ring = (start_ring + 1) % DEPTH;
@@ -54,11 +50,11 @@ precalculate_tunnel(void)
         normal.x = -x;
         normal.y = -y;
         normal.z = 1.0f - r;
-        normal.x = normal.x * sqrt(normal.x * normal.x + normal.y*normal.y + 
+        normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y +
                                    normal.z * normal.z);
-        normal.y = normal.y * sqrt(normal.x * normal.x + normal.y*normal.y + 
+        normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y +
                                    normal.z * normal.z);
-        normal.z = normal.z * sqrt(normal.x * normal.x + normal.y*normal.y + 
+        normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y +
                                    normal.z * normal.z);
         ckot0 += 0.1f;
         rx = 0.3f * cosf(ckot0 + total_time * 3);
@@ -69,11 +65,11 @@ precalculate_tunnel(void)
         normal.x = -x;
         normal.y = -y;
         normal.z = 1.0f - r;
-        normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y + 
+        normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y +
                                    normal.z * normal.z);
-        normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y + 
+        normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y +
                                    normal.z * normal.z);
-        normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y + 
+        normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y +
                                    normal.z * normal.z);
       }
       uring = (uring + 1) % DEPTH;
@@ -82,10 +78,7 @@ precalculate_tunnel(void)
   tunnel_first = FALSE;
 }
 
-
-static void
-updatetunnel(void)
-{
+static void updatetunnel(void) {
   int i;
 
   tunnel_time = 0.06f;
@@ -95,26 +88,23 @@ updatetunnel(void)
     itime -= 1.0f;
     for (i = 0; i < COUNT; i++) {
       kot = (GLfloat)i / COUNT * PI2;
-      ring[start_ring].radius[i] = 100 + 20 * sinf(kot*3 + total_time)
-                                       + 20 * sinf(kot*2 + total_time*2 + 50)
-                                       + 15 * sinf(kot*4 - total_time*3 + 60);
+      ring[start_ring].radius[i] = 100 + 20 * sinf(kot * 3 + total_time) +
+                                   20 * sinf(kot * 2 + total_time * 2 + 50) +
+                                   15 * sinf(kot * 4 - total_time * 3 + 60);
       ring[start_ring].radius[i] *= 0.01f;
     }
     start_ring = (start_ring + 1) % DEPTH;
   }
 }
 
-
-static void
-drawtunnel(void)
-{
+static void drawtunnel(void) {
   int i, j, uring;
   GLfloat ckot0;
   GLfloat x, y, z, r;
   GLfloat rx, ry;
   GLfloat u, v;
-  GLfloat fog_color[3] = { 0.0f, 0.0f, 0.0f };
-  glcoord normal = { 0.0f, 0.0f, 0.0f };
+  GLfloat fog_color[3] = {0.0f, 0.0f, 0.0f};
+  glcoord normal = {0.0f, 0.0f, 0.0f};
 
   glPushMatrix();
   glTranslatef(0.0f, 0.0f, 0.0f);
@@ -141,11 +131,11 @@ drawtunnel(void)
       normal.x = -x;
       normal.y = -y;
       normal.z = 1.0f - r;
-      normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y + 
+      normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y +
                                  normal.z * normal.z);
-      normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y + 
+      normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y +
                                  normal.z * normal.z);
-      normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y + 
+      normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y +
                                  normal.z * normal.z);
       glTexCoord2f(u, v);
       glVertex3f(x, y, z);
@@ -160,11 +150,11 @@ drawtunnel(void)
       normal.x = -x;
       normal.y = -y;
       normal.z = 1.0f - r;
-      normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y + 
+      normal.x = normal.x * sqrt(normal.x * normal.x + normal.y * normal.y +
                                  normal.z * normal.z);
-      normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y + 
+      normal.y = normal.y * sqrt(normal.x * normal.x + normal.y * normal.y +
                                  normal.z * normal.z);
-      normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y + 
+      normal.z = normal.z * sqrt(normal.x * normal.x + normal.y * normal.y +
                                  normal.z * normal.z);
       glTexCoord2f(u, v);
       glVertex3f(x, y, z);
@@ -176,10 +166,7 @@ drawtunnel(void)
   glPopMatrix();
 }
 
-
-static void
-render_tunnel(void)
-{
+static void render_tunnel(void) {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0, 0, point_general->WIDTH, point_general->HEIGHT);
@@ -189,10 +176,7 @@ render_tunnel(void)
   glEnable(GL_TEXTURE_2D);
 }
 
-
-void
-draw_tunnel(void)
-{
+void draw_tunnel(void) {
   tunnel_speed = old_tunnel_speed;
   tunnel_speed = reduce_vsync(tunnel_speed);
   render_tunnel();

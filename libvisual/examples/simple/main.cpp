@@ -27,32 +27,30 @@
 #include <stdexcept>
 #include <cstdlib>
 
-int main (int argc, char** argv)
-{
-    LV::System::init (argc, argv);
-    visual_log_set_verbosity (VISUAL_LOG_ERROR);
+int main(int argc, char **argv) {
+  LV::System::init(argc, argv);
+  visual_log_set_verbosity(VISUAL_LOG_ERROR);
 
-    int exit_code = EXIT_SUCCESS;
+  int exit_code = EXIT_SUCCESS;
 
-    try {
-        if (SDL_Init (SDL_INIT_VIDEO)) {
-            throw std::runtime_error { std::string {"Failed to initialize SDL: "} + SDL_GetError () };
-        }
-        std::atexit (SDL_Quit);
-
-        SimpleExample example;
-        example.run ();
+  try {
+    if (SDL_Init(SDL_INIT_VIDEO)) {
+      throw std::runtime_error{std::string{"Failed to initialize SDL: "} +
+                               SDL_GetError()};
     }
-    catch (std::exception& error) {
-        std::cerr << "Error! " << error.what () << std::endl;
-        exit_code = EXIT_FAILURE;
-    }
-    catch (...) {
-        std::cerr << "Unknown error occurred\n";
-        exit_code = EXIT_FAILURE;
-    }
+    std::atexit(SDL_Quit);
 
-    LV::System::destroy ();
+    SimpleExample example;
+    example.run();
+  } catch (std::exception &error) {
+    std::cerr << "Error! " << error.what() << std::endl;
+    exit_code = EXIT_FAILURE;
+  } catch (...) {
+    std::cerr << "Unknown error occurred\n";
+    exit_code = EXIT_FAILURE;
+  }
 
-    return exit_code;
+  LV::System::destroy();
+
+  return exit_code;
 }

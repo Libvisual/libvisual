@@ -28,20 +28,21 @@
 namespace LCD {
 
 class GenericSerial {
-    speed_t baud_;
-    std::string port_;
-    int fd_;
-    bool connected_;
-    std::string device_name_;
-    public:
-    GenericSerial(std::string name);
-    virtual ~GenericSerial() {}
-    int SerialOpen(std::string port, int baud, int flags = 0);
-    void SerialClose();
-    int SerialPoll(unsigned char *str, int len);
-    int SerialReadData(unsigned char *str, int len);
-    int SerialWrite(unsigned char *str, int len);
+  speed_t baud_;
+  std::string port_;
+  int fd_;
+  bool connected_;
+  std::string device_name_;
+
+public:
+  GenericSerial(std::string name);
+  virtual ~GenericSerial() {}
+  int SerialOpen(std::string port, int baud, int flags = 0);
+  void SerialClose();
+  int SerialPoll(unsigned char *str, int len);
+  int SerialReadData(unsigned char *str, int len);
+  int SerialWrite(unsigned char *str, int len);
 };
 
-}; // End namespace
+}; // namespace LCD
 #endif

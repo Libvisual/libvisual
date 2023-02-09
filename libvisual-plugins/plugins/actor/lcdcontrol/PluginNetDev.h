@@ -33,20 +33,20 @@ namespace LCD {
 
 class PluginNetDev {
 
-    HASH NetDev;
-    FILE *Stream;
-    int first_time;
+  HASH NetDev;
+  FILE *Stream;
+  int first_time;
 
-    int ParseNetDev();
+  int ParseNetDev();
 
-    public:
-    PluginNetDev(lua *script);
-    ~PluginNetDev();
+public:
+  PluginNetDev(lua *script);
+  ~PluginNetDev();
 
-    double Regex(std::string arg1, std::string arg2, double arg3);
-    double Fast(std::string arg1, std::string arg2, double arg3);
+  double Regex(std::string arg1, std::string arg2, double arg3);
+  double Fast(std::string arg1, std::string arg2, double arg3);
 };
 
-};
+}; // namespace LCD
 
 #endif

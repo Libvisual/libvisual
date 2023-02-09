@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -26,12 +27,14 @@
 
 #include "oinksie.h"
 
-void _oink_gfx_palette_init (OinksiePrivate *priv);
-void _oink_gfx_palette_save_old (OinksiePrivate *priv);
-void _oink_gfx_palette_transform (OinksiePrivate *priv);
-void _oink_gfx_palette_build (OinksiePrivate *priv, uint8_t funky);
-void _oink_gfx_palette_color (OinksiePrivate *priv, int color, int red, int green, int blue);
-uint8_t _oink_gfx_palette_gradient_gen (OinksiePrivate *priv, uint8_t i, int mode);
-void _oink_gfx_palette_build_gradient (OinksiePrivate *priv, uint8_t funky);
+void _oink_gfx_palette_init(OinksiePrivate *priv);
+void _oink_gfx_palette_save_old(OinksiePrivate *priv);
+void _oink_gfx_palette_transform(OinksiePrivate *priv);
+void _oink_gfx_palette_build(OinksiePrivate *priv, uint8_t funky);
+void _oink_gfx_palette_color(OinksiePrivate *priv, int color, int red,
+                             int green, int blue);
+uint8_t _oink_gfx_palette_gradient_gen(OinksiePrivate *priv, uint8_t i,
+                                       int mode);
+void _oink_gfx_palette_build_gradient(OinksiePrivate *priv, uint8_t funky);
 
 #endif /* _OINK_GFX_PALETTE_H */

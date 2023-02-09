@@ -31,30 +31,29 @@
 
 using namespace LCD;
 
-WidgetScript::WidgetScript(LCDCore *v, std::string n, Json::Value *section) :
-    Widget(v, n, section, 0, 0, 0, WIDGET_TYPE_KEYPAD) {
+WidgetScript::WidgetScript(LCDCore *v, std::string n, Json::Value *section)
+    : Widget(v, n, section, 0, 0, 0, WIDGET_TYPE_KEYPAD) {
 
-    Json::Value *scriptFile = v->CFG_Fetch_Raw(section, "file", NULL);
-    if(scriptFile) {
-        FILE *file = fopen( scriptFile->asCString(), "rb");
-        if( !file ) {
-            LCDError("WidgetScript: Unable to open file <%s>", scriptFile->asCString());
-            return;
-        }
-        fseek(file, 0, SEEK_END);
-        long size = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        char *buffer = new char[size+1];
-        buffer[size] = 0x0;
-        if( fread( buffer, 1, size, file) != (unsigned long) size)
-            return;
-        std::string script = buffer;
-        delete []buffer;
-        fclose(file);
-        v->Eval(script);
+  Json::Value *scriptFile = v->CFG_Fetch_Raw(section, "file", NULL);
+  if (scriptFile) {
+    FILE *file = fopen(scriptFile->asCString(), "rb");
+    if (!file) {
+      LCDError("WidgetScript: Unable to open file <%s>",
+               scriptFile->asCString());
+      return;
     }
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char *buffer = new char[size + 1];
+    buffer[size] = 0x0;
+    if (fread(buffer, 1, size, file) != (unsigned long)size)
+      return;
+    std::string script = buffer;
+    delete[] buffer;
+    fclose(file);
+    v->Eval(script);
+  }
 }
 
-WidgetScript::~WidgetScript() {
-}
-
+WidgetScript::~WidgetScript() {}
