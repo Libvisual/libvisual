@@ -1,5 +1,5 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
- * 
+ *
  * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -31,7 +31,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Prototypes */
-VisTime *avs_config_standard_color_cycler_time (void);
+VisTime *avs_config_standard_color_cycler_time(void);
 
 #ifdef __cplusplus
 }

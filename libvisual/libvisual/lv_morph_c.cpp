@@ -26,104 +26,91 @@
 
 namespace {
 
-  LV::PluginList const&
-  get_morph_plugin_list ()
-  {
-      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_MORPH);
-  }
+LV::PluginList const &get_morph_plugin_list() {
+  return LV::PluginRegistry::instance()->get_plugins_by_type(
+      VISUAL_PLUGIN_TYPE_MORPH);
+}
 
 } // anonymous namespace
 
-const char *visual_morph_get_next_by_name (const char *name)
-{
-    return LV::plugin_get_next_by_name (get_morph_plugin_list (), name);
+const char *visual_morph_get_next_by_name(const char *name) {
+  return LV::plugin_get_next_by_name(get_morph_plugin_list(), name);
 }
 
-const char *visual_morph_get_prev_by_name (const char *name)
-{
-    return LV::plugin_get_prev_by_name (get_morph_plugin_list (), name);
+const char *visual_morph_get_prev_by_name(const char *name) {
+  return LV::plugin_get_prev_by_name(get_morph_plugin_list(), name);
 }
 
-VisPluginData *visual_morph_get_plugin (VisMorph *morph)
-{
-    visual_return_val_if_fail (morph != nullptr, nullptr);
+VisPluginData *visual_morph_get_plugin(VisMorph *morph) {
+  visual_return_val_if_fail(morph != nullptr, nullptr);
 
-    return morph->get_plugin ();
+  return morph->get_plugin();
 }
 
-VisMorph *visual_morph_new (const char *name)
-{
-    auto self = LV::Morph::load (name);
-    if (self) {
-        LV::intrusive_ptr_add_ref (self.get ());
-    }
+VisMorph *visual_morph_new(const char *name) {
+  auto self = LV::Morph::load(name);
+  if (self) {
+    LV::intrusive_ptr_add_ref(self.get());
+  }
 
-    return self.get ();
+  return self.get();
 }
 
-int visual_morph_realize (VisMorph *self)
-{
-    visual_return_val_if_fail (self != nullptr, FALSE);
+int visual_morph_realize(VisMorph *self) {
+  visual_return_val_if_fail(self != nullptr, FALSE);
 
-    return self->realize ();
+  return self->realize();
 }
 
-VisVideoDepth visual_morph_get_supported_depths (VisMorph *self)
-{
-    visual_return_val_if_fail (self != nullptr, VISUAL_VIDEO_DEPTH_NONE);
+VisVideoDepth visual_morph_get_supported_depths(VisMorph *self) {
+  visual_return_val_if_fail(self != nullptr, VISUAL_VIDEO_DEPTH_NONE);
 
-    return self->get_supported_depths ();
+  return self->get_supported_depths();
 }
 
-VisVideoAttrOptions *visual_morph_get_video_attribute_options (VisMorph *self)
-{
-    visual_return_val_if_fail (self != nullptr, nullptr);
+VisVideoAttrOptions *visual_morph_get_video_attribute_options(VisMorph *self) {
+  visual_return_val_if_fail(self != nullptr, nullptr);
 
-    return const_cast<VisVideoAttrOptions*> (self->get_video_attribute_options ());
+  return const_cast<VisVideoAttrOptions *>(self->get_video_attribute_options());
 }
 
-void visual_morph_set_video (VisMorph *self, VisVideo *video)
-{
-    visual_return_if_fail (self != nullptr);
+void visual_morph_set_video(VisMorph *self, VisVideo *video) {
+  visual_return_if_fail(self != nullptr);
 
-    self->set_video (video);
+  self->set_video(video);
 }
 
-void visual_morph_set_time (VisMorph *self, VisTime *time)
-{
-    visual_return_if_fail (self != nullptr);
-    visual_return_if_fail (time != nullptr);
+void visual_morph_set_time(VisMorph *self, VisTime *time) {
+  visual_return_if_fail(self != nullptr);
+  visual_return_if_fail(time != nullptr);
 
-    self->set_time (*time);
+  self->set_time(*time);
 }
 
-void visual_morph_set_progress (VisMorph *self, float progress)
-{
-    visual_return_if_fail (self != nullptr);
+void visual_morph_set_progress(VisMorph *self, float progress) {
+  visual_return_if_fail(self != nullptr);
 
-    self->set_progress (progress);
+  self->set_progress(progress);
 }
 
-VisPalette *visual_morph_get_palette (VisMorph *self)
-{
-    visual_return_val_if_fail (self != nullptr, nullptr);
+VisPalette *visual_morph_get_palette(VisMorph *self) {
+  visual_return_val_if_fail(self != nullptr, nullptr);
 
-    return const_cast<LV::Palette*> (self->get_palette ());
+  return const_cast<LV::Palette *>(self->get_palette());
 }
 
-int visual_morph_is_done (VisMorph *self)
-{
-    visual_return_val_if_fail (self != nullptr, TRUE);
+int visual_morph_is_done(VisMorph *self) {
+  visual_return_val_if_fail(self != nullptr, TRUE);
 
-    return self->is_done ();
+  return self->is_done();
 }
 
-int visual_morph_run (VisMorph *self, VisAudio *audio, VisVideo *src1, VisVideo *src2)
-{
-    visual_return_val_if_fail (self  != nullptr, FALSE);
-    visual_return_val_if_fail (audio != nullptr, FALSE);
-    visual_return_val_if_fail (src1  != nullptr, FALSE);
-    visual_return_val_if_fail (src2  != nullptr, FALSE);
+int visual_morph_run(VisMorph *self, VisAudio *audio, VisVideo *src1,
+                     VisVideo *src2) {
+  visual_return_val_if_fail(self != nullptr, FALSE);
+  visual_return_val_if_fail(audio != nullptr, FALSE);
+  visual_return_val_if_fail(src1 != nullptr, FALSE);
+  visual_return_val_if_fail(src2 != nullptr, FALSE);
 
-    return self->run (*audio, src1, src2);
+  return self->run(*audio, src1, src2);
 }

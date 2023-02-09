@@ -40,13 +40,13 @@ LV_BEGIN_DECLS
  * @see visual_log()
  */
 typedef enum {
-	VISUAL_LOG_DEBUG,     /**< Debugging information */
-	VISUAL_LOG_INFO,      /**< Status and general information */
-	VISUAL_LOG_WARNING,   /**< Warnings */
-	VISUAL_LOG_ERROR,     /**< Errors */
-	VISUAL_LOG_CRITICAL,  /**< Critical errors */
+  VISUAL_LOG_DEBUG,    /**< Debugging information */
+  VISUAL_LOG_INFO,     /**< Status and general information */
+  VISUAL_LOG_WARNING,  /**< Warnings */
+  VISUAL_LOG_ERROR,    /**< Errors */
+  VISUAL_LOG_CRITICAL, /**< Critical errors */
 
-	VISUAL_LOG_NUM_LEVELS /**< Number of log severity levels in total */
+  VISUAL_LOG_NUM_LEVELS /**< Number of log severity levels in total */
 } VisLogSeverity;
 
 /**
@@ -55,9 +55,9 @@ typedef enum {
  * @see VisLogHandlerFunc
  */
 typedef struct {
-	const char   *file;  /**< Name of source file */
-	const char   *func;  /**< Name of function */
-	unsigned int  line;  /**< Line number in source file */
+  const char *file;  /**< Name of source file */
+  const char *func;  /**< Name of function */
+  unsigned int line; /**< Line number in source file */
 } VisLogSource;
 
 /**
@@ -70,22 +70,23 @@ typedef struct {
  * @param source    Information on the message origin
  * @param user_data User data passed to message handler
  */
-typedef void (*VisLogHandlerFunc) (VisLogSeverity severity, const char *message,
-	const VisLogSource *source, void *user_data);
+typedef void (*VisLogHandlerFunc)(VisLogSeverity severity, const char *message,
+                                  const VisLogSource *source, void *user_data);
 
 /**
- * Sets the log verbosity level. Any message of a lower severity level will be dropped.
+ * Sets the log verbosity level. Any message of a lower severity level will be
+ * dropped.
  *
  * @param level Minimum severity level
  */
-LV_API void visual_log_set_verbosity (VisLogSeverity level);
+LV_API void visual_log_set_verbosity(VisLogSeverity level);
 
 /**
  * Returns the current log verbosity level.
  *
  * @return level Current severity level threshold
  */
-LV_API VisLogSeverity visual_log_get_verbosity (void);
+LV_API VisLogSeverity visual_log_get_verbosity(void);
 
 /**
  * Registers a log message handler for a severity level.
@@ -94,7 +95,8 @@ LV_API VisLogSeverity visual_log_get_verbosity (void);
  * @param handler   Message handler callback
  * @param user_data User data passed to the handler during invocation
  */
-LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc handler, void *user_data);
+LV_API void visual_log_set_handler(VisLogSeverity severity,
+                                   VisLogHandlerFunc handler, void *user_data);
 
 /**
  * Logs a message.
@@ -103,15 +105,12 @@ LV_API void visual_log_set_handler (VisLogSeverity severity, VisLogHandlerFunc h
  * @param format    printf format string of the log message
  * @param ...       Format string arguments
  */
-#define visual_log(severity,...)  \
-	_lv_log (severity,            \
-	         __FILE__,            \
-	         __LINE__,            \
-	         __PRETTY_FUNCTION__, \
-	         __VA_ARGS__)
+#define visual_log(severity, ...)                                              \
+  _lv_log(severity, __FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__)
 
-LV_API void _lv_log (VisLogSeverity severity, const char *file, int line, const char *funcname,
-	const char *fmt, ...) LV_CHECK_PRINTF_FORMAT(5, 6);
+LV_API void _lv_log(VisLogSeverity severity, const char *file, int line,
+                    const char *funcname, const char *fmt, ...)
+    LV_CHECK_PRINTF_FORMAT(5, 6);
 
 LV_END_DECLS
 

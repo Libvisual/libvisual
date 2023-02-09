@@ -28,57 +28,48 @@
 
 namespace LV {
 
-  class Module::Impl
-  {
-  public:
+class Module::Impl {
+public:
+  HMODULE handle;
+  std::string path;
+};
 
-      HMODULE     handle;
-      std::string path;
-  };
-
-  ModulePtr Module::load (std::string const& path)
-  {
-      try {
-          return {new Module {path}, false};
-      }
-      catch (std::exception& error) {
-          visual_log (VISUAL_LOG_ERROR, "%s", error.what ());
-          return nullptr;
-      }
+ModulePtr Module::load(std::string const &path) {
+  try {
+    return {new Module{path}, false};
+  } catch (std::exception &error) {
+    visual_log(VISUAL_LOG_ERROR, "%s", error.what());
+    return nullptr;
   }
+}
 
-  Module::Module (std::string const& path)
-      : m_impl (new Impl)
-      , m_ref_count (1)
-  {
-      visual_log (VISUAL_LOG_DEBUG, "Loading DLL: %s", path.c_str ());
+Module::Module(std::string const &path) : m_impl(new Impl), m_ref_count(1) {
+  visual_log(VISUAL_LOG_DEBUG, "Loading DLL: %s", path.c_str());
 
-      m_impl->handle = LoadLibrary (path.c_str ());
-      m_impl->path = path;
+  m_impl->handle = LoadLibrary(path.c_str());
+  m_impl->path = path;
 
-      if (!m_impl->handle) {
-          std::ostringstream msg;
-          msg << "Failed to load shared object (" << path << "): Win32 error code #" << GetLastError ();
-          throw std::runtime_error {msg.str ()};
-      }
+  if (!m_impl->handle) {
+    std::ostringstream msg;
+    msg << "Failed to load shared object (" << path << "): Win32 error code #"
+        << GetLastError();
+    throw std::runtime_error{msg.str()};
   }
+}
 
-  Module::~Module ()
-  {
-      visual_log (VISUAL_LOG_DEBUG, "Unloading DLL: %s", m_impl->path.c_str ());
+Module::~Module() {
+  visual_log(VISUAL_LOG_DEBUG, "Unloading DLL: %s", m_impl->path.c_str());
 
-      FreeLibrary (m_impl->handle);
-  }
+  FreeLibrary(m_impl->handle);
+}
 
-  void* Module::get_symbol (std::string const& name)
-  {
-      return reinterpret_cast<void*> (GetProcAddress (m_impl->handle, name.c_str ()));
-  }
+void *Module::get_symbol(std::string const &name) {
+  return reinterpret_cast<void *>(GetProcAddress(m_impl->handle, name.c_str()));
+}
 
-  std::string const& Module::path_suffix ()
-  {
-      static std::string str (".dll");
-      return str;
-  }
+std::string const &Module::path_suffix() {
+  static std::string str(".dll");
+  return str;
+}
 
-} // LV namespace
+} // namespace LV

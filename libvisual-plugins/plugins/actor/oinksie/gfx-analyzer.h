@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -24,6 +25,7 @@
 #ifndef _OINK_GFX_ANALYZER_H
 #define _OINK_GFX_ANALYZER_H
 
-void _oink_gfx_analyzer_stereo (OinksiePrivate *priv, uint8_t *buf, int color, int y);
+void _oink_gfx_analyzer_stereo(OinksiePrivate *priv, uint8_t *buf, int color,
+                               int y);
 
 #endif /* _OINK_GFX_ANALYZER_H */

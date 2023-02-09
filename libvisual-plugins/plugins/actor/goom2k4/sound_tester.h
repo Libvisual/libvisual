@@ -8,4 +8,3 @@
 void evaluate_sound(int16_t data[2][512], SoundInfo *sndInfo);
 
 #endif
-

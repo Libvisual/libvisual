@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Pascal Brochart <p.brochart@libertysurf.fr>
  *
  * Authors: Pascal Brochart <p.brochart@libertysurf.fr>
@@ -27,9 +27,9 @@
 
 #include "actor_plazma.h"
 
-void _plazma_init (PlazmaPrivate *priv);
-void _plazma_run (PlazmaPrivate *priv);
-void _plazma_cleanup (PlazmaPrivate *priv);
-void _plazma_change_effect (PlazmaPrivate *priv);
+void _plazma_init(PlazmaPrivate *priv);
+void _plazma_run(PlazmaPrivate *priv);
+void _plazma_cleanup(PlazmaPrivate *priv);
+void _plazma_change_effect(PlazmaPrivate *priv);
 
 #endif /* _PLAZMA_H */

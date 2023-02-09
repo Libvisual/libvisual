@@ -26,30 +26,28 @@
 
 namespace LV {
 
-  class VideoTransform
-  {
-  public:
+class VideoTransform {
+public:
+  static void rotate_90(Video &dst, Video const &src);
+  static void rotate_180(Video &dst, Video const &src);
+  static void rotate_270(Video &dst, Video const &src);
 
-      static void rotate_90  (Video& dst, Video const& src);
-      static void rotate_180 (Video& dst, Video const& src);
-      static void rotate_270 (Video& dst, Video const& src);
+  static void mirror_x(Video &dst, Video const &src);
+  static void mirror_y(Video &dst, Video const &src);
 
-      static void mirror_x (Video& dst, Video const& src);
-      static void mirror_y (Video& dst, Video const& src);
+  static void scale_nearest_color8(Video &dst, Video const &src);
+  static void scale_nearest_color16(Video &dst, Video const &src);
+  static void scale_nearest_color24(Video &dst, Video const &src);
+  static void scale_nearest_color32(Video &dst, Video const &src);
 
-      static void scale_nearest_color8  (Video& dst, Video const& src);
-      static void scale_nearest_color16 (Video& dst, Video const& src);
-      static void scale_nearest_color24 (Video& dst, Video const& src);
-      static void scale_nearest_color32 (Video& dst, Video const& src);
+  static void scale_bilinear_color8(Video &dst, Video const &src);
+  static void scale_bilinear_color16(Video &dst, Video const &src);
+  static void scale_bilinear_color24(Video &dst, Video const &src);
+  static void scale_bilinear_color32(Video &dst, Video const &src);
 
-      static void scale_bilinear_color8  (Video& dst, Video const& src);
-      static void scale_bilinear_color16 (Video& dst, Video const& src);
-      static void scale_bilinear_color24 (Video& dst, Video const& src);
-      static void scale_bilinear_color32 (Video& dst, Video const& src);
+  static void scale_bilinear_color32_mmx(Video &dst, Video const &src);
+};
 
-      static void scale_bilinear_color32_mmx (Video& dst, Video const& src);
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif /* _LV_VIDEO_SCALE_HPP */

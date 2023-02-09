@@ -31,15 +31,13 @@
 namespace LCD {
 
 class PluginCpuinfo {
-    private:
-
-    public:
-    PluginCpuinfo(lua *script);
-    ~PluginCpuinfo();
-    std::string Cpuinfo(std::string str);
+private:
+public:
+  PluginCpuinfo(lua *script);
+  ~PluginCpuinfo();
+  std::string Cpuinfo(std::string str);
 };
 
-
-}; // End namespace
+}; // namespace LCD
 
 #endif

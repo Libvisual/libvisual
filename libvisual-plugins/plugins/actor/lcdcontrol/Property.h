@@ -37,26 +37,26 @@ class LCDText;
 class LCDGraphic;
 
 class Property {
-    bool is_valid;
-    LCDCore *visitor_;
-    Json::Value *expression_;
-    std::string name_;
-    std::string result_;
+  bool is_valid;
+  LCDCore *visitor_;
+  Json::Value *expression_;
+  std::string name_;
+  std::string result_;
 
-    public:
-    Property(const Property &prop);
-    Property(LCDCore *visitor, Json::Value *section, std::string name,
-        Json::Value *defval);
-    ~Property();
-    bool Valid();
-    int Eval();
-    double P2N();
-    int P2INT();
-    std::string P2S();
-    void SetValue(Json::Value val);
-    Property operator=(Property prop);
+public:
+  Property(const Property &prop);
+  Property(LCDCore *visitor, Json::Value *section, std::string name,
+           Json::Value *defval);
+  ~Property();
+  bool Valid();
+  int Eval();
+  double P2N();
+  int P2INT();
+  std::string P2S();
+  void SetValue(Json::Value val);
+  Property operator=(Property prop);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

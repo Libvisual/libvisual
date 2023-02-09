@@ -35,13 +35,14 @@
  * Enumerate containing the different architectual types.
  */
 typedef enum {
-	VISUAL_CPU_TYPE_MIPS,		/**< Running on the mips architecture. */
-	VISUAL_CPU_TYPE_ALPHA,		/**< Running on the alpha architecture. */
-	VISUAL_CPU_TYPE_SPARC,		/**< Running on the sparc architecture. */
-	VISUAL_CPU_TYPE_X86,		/**< Running on the X86 architecture. */
-	VISUAL_CPU_TYPE_POWERPC,	/**< Running on the PowerPC architecture. */
-	VISUAL_CPU_TYPE_ARM,		/**< Running on the ARM architecture, */
-	VISUAL_CPU_TYPE_OTHER		/**< Running on an architecture that is not specified. */
+  VISUAL_CPU_TYPE_MIPS,    /**< Running on the mips architecture. */
+  VISUAL_CPU_TYPE_ALPHA,   /**< Running on the alpha architecture. */
+  VISUAL_CPU_TYPE_SPARC,   /**< Running on the sparc architecture. */
+  VISUAL_CPU_TYPE_X86,     /**< Running on the X86 architecture. */
+  VISUAL_CPU_TYPE_POWERPC, /**< Running on the PowerPC architecture. */
+  VISUAL_CPU_TYPE_ARM,     /**< Running on the ARM architecture, */
+  VISUAL_CPU_TYPE_OTHER /**< Running on an architecture that is not specified.
+                         */
 } VisCPUType;
 
 LV_BEGIN_DECLS
@@ -51,14 +52,14 @@ LV_BEGIN_DECLS
  *
  * @return processor architecture
  */
-LV_API VisCPUType visual_cpu_get_type (void);
+LV_API VisCPUType visual_cpu_get_type(void);
 
 /**
  * Returns the number of processor cores
  *
  * @return number of processor cores
  */
-LV_API unsigned int visual_cpu_get_num_cores (void);
+LV_API unsigned int visual_cpu_get_num_cores(void);
 
 /**
  * Returns whether processor supports MMX instructions.
@@ -67,7 +68,7 @@ LV_API unsigned int visual_cpu_get_num_cores (void);
  *
  * @return TRUE if MMX is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_mmx (void);
+LV_API int visual_cpu_has_mmx(void);
 
 /**
  * Returns whether processor supports MMX2 instructions.
@@ -76,7 +77,7 @@ LV_API int visual_cpu_has_mmx (void);
  *
  * @return TRUE if MMX2 is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_mmx2 (void);
+LV_API int visual_cpu_has_mmx2(void);
 
 /**
  * Returns whether processor supports SSE instructions.
@@ -85,7 +86,7 @@ LV_API int visual_cpu_has_mmx2 (void);
  *
  * @return TRUE if SSE is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_sse (void);
+LV_API int visual_cpu_has_sse(void);
 
 /**
  * Returns whether processor supports SSE2 instructions.
@@ -94,7 +95,7 @@ LV_API int visual_cpu_has_sse (void);
  *
  * @return TRUE if SSE2 is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_sse2 (void);
+LV_API int visual_cpu_has_sse2(void);
 
 /**
  * Returns whether processor supports 3DNow!.
@@ -103,7 +104,7 @@ LV_API int visual_cpu_has_sse2 (void);
  *
  * @return TRUE if 3DNow! is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_3dnow (void);
+LV_API int visual_cpu_has_3dnow(void);
 
 /**
  * Returns whether processor supports 3DNow! extensions.
@@ -112,7 +113,7 @@ LV_API int visual_cpu_has_3dnow (void);
  *
  * @return TRUE if 3DNow! extensions are supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_3dnow_ext (void);
+LV_API int visual_cpu_has_3dnow_ext(void);
 
 /**
  * Returns whether processor supports AltiVec instructions.
@@ -121,7 +122,7 @@ LV_API int visual_cpu_has_3dnow_ext (void);
  *
  * @return TRUE if AltiVec is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_altivec (void);
+LV_API int visual_cpu_has_altivec(void);
 
 /**
  * Returns whether processor supports ARMv7.
@@ -130,7 +131,7 @@ LV_API int visual_cpu_has_altivec (void);
  *
  * @return TRUE if ARMv7 is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_armv7 (void);
+LV_API int visual_cpu_has_armv7(void);
 
 /**
  * Returns whether processor supports the ARM VFPv3 extension.
@@ -139,7 +140,7 @@ LV_API int visual_cpu_has_armv7 (void);
  *
  * @return TRUE if VFPv3 is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_vfpv3 (void);
+LV_API int visual_cpu_has_vfpv3(void);
 
 /**
  * Returns whether processor supports the ARM NEON extension.
@@ -148,7 +149,7 @@ LV_API int visual_cpu_has_vfpv3 (void);
  *
  * @return TRUE if NEON is supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_neon (void);
+LV_API int visual_cpu_has_neon(void);
 
 /**
  * Function to retrieve if ARM LDREX and STREX instructions are supported
@@ -157,7 +158,7 @@ LV_API int visual_cpu_has_neon (void);
  *
  * @return TRUE if LDREX and STREX are supported, FALSE otherwise
  */
-LV_API int visual_cpu_has_ldrex_strex (void);
+LV_API int visual_cpu_has_ldrex_strex(void);
 
 LV_END_DECLS
 

@@ -27,54 +27,50 @@
 /* struct timeval */
 #include <sys/time.h>
 
-
 typedef struct {
-    int size;
-    char *value;
-    struct timeval timestamp;
+  int size;
+  char *value;
+  struct timeval timestamp;
 } HASH_SLOT;
 
-
 typedef struct {
-    char *key;
-    int val;
+  char *key;
+  int val;
 } HASH_COLUMN;
 
 typedef struct {
-    char *key;
-    int index;
-    int nSlot;
-    HASH_SLOT *Slot;
+  char *key;
+  int index;
+  int nSlot;
+  HASH_SLOT *Slot;
 } HASH_ITEM;
 
-
 typedef struct {
-    int sorted;
-    struct timeval timestamp;
-    int nItems;
-    HASH_ITEM *Items;
-    int nColumns;
-    HASH_COLUMN *Columns;
-    char *delimiter;
+  int sorted;
+  struct timeval timestamp;
+  int nItems;
+  HASH_ITEM *Items;
+  int nColumns;
+  HASH_COLUMN *Columns;
+  char *delimiter;
 } HASH;
 
+void hash_create(HASH *Hash);
 
+int hash_age(HASH *Hash, const char *key);
 
-void hash_create(HASH * Hash);
+void hash_set_column(HASH *Hash, const int number, const char *column);
+void hash_set_delimiter(HASH *Hash, const char *delimiter);
 
-int hash_age(HASH * Hash, const char *key);
+char *hash_get(HASH *Hash, const char *key, const char *column);
+double hash_get_delta(HASH *Hash, const char *key, const char *column,
+                      const int delay);
+double hash_get_regex(HASH *Hash, const char *key, const char *column,
+                      const int delay);
 
-void hash_set_column(HASH * Hash, const int number, const char *column);
-void hash_set_delimiter(HASH * Hash, const char *delimiter);
+void hash_put(HASH *Hash, const char *key, const char *value);
+void hash_put_delta(HASH *Hash, const char *key, const char *value);
 
-char *hash_get(HASH * Hash, const char *key, const char *column);
-double hash_get_delta(HASH * Hash, const char *key, const char *column, const int delay);
-double hash_get_regex(HASH * Hash, const char *key, const char *column, const int delay);
-
-void hash_put(HASH * Hash, const char *key, const char *value);
-void hash_put_delta(HASH * Hash, const char *key, const char *value);
-
-void hash_destroy(HASH * Hash);
-
+void hash_destroy(HASH *Hash);
 
 #endif

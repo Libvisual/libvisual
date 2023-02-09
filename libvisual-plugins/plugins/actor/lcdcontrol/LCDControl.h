@@ -41,33 +41,33 @@ class Evaluator;
 
 class LCDControl : public CFG {
 
-    bool active_;
-    LCDCore *device_;
-    std::map<std::string, LCDCore *> devices_;
-    std::vector<std::string> display_keys_;
-    LCDTimerBin *timers_;
-    VisEventQueue *eventqueue_;
-    void ConfigSetup();
+  bool active_;
+  LCDCore *device_;
+  std::map<std::string, LCDCore *> devices_;
+  std::vector<std::string> display_keys_;
+  LCDTimerBin *timers_;
+  VisEventQueue *eventqueue_;
+  void ConfigSetup();
 
-    public:
-    std::mutex mutex_;
-    Stats stats_;
-    void *priv_;
-    LCDControl(void *priv, VisEventQueue *eventqueue);
-    ~LCDControl();
-    int Start();
-    void Stop();
-    void Lock();
-    void Unlock();
-    void TryLock();
-    void Tick();
-    void Shutdown();
-    LCDTimerBin *GetTimers();
-    LCDCore *FindDisplay(std::string name);
-    void ProcessVariables(Json::Value *config, Evaluator *ev);
-    bool IsActive() { return active_; }
-    VisVideo *GetVideo();
+public:
+  std::mutex mutex_;
+  Stats stats_;
+  void *priv_;
+  LCDControl(void *priv, VisEventQueue *eventqueue);
+  ~LCDControl();
+  int Start();
+  void Stop();
+  void Lock();
+  void Unlock();
+  void TryLock();
+  void Tick();
+  void Shutdown();
+  LCDTimerBin *GetTimers();
+  LCDCore *FindDisplay(std::string name);
+  void ProcessVariables(Json::Value *config, Evaluator *ev);
+  bool IsActive() { return active_; }
+  VisVideo *GetVideo();
 };
 
-}; // End namespace
+}; // namespace LCD
 #endif

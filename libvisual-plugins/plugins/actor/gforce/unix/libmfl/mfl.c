@@ -52,38 +52,41 @@ mfl_font mfl_LoadRawFont(const char *fname) {
   /* Open font file */
   ff = fopen(fname, "rb");
   if (ff == NULL) {
-    visual_log (VISUAL_LOG_WARNING, "Unable to open font file: %s", fname);
+    visual_log(VISUAL_LOG_WARNING, "Unable to open font file: %s", fname);
     goto lrf_open_fault;
   }
 
   /* Get length of font file */
-  if (fseek(ff, 0, SEEK_END) != 0) goto lrf_fault;
+  if (fseek(ff, 0, SEEK_END) != 0)
+    goto lrf_fault;
   l = ftell(ff);
 
   /* Seek to start */
-  if (fseek(ff, 0, SEEK_SET) != 0) goto lrf_fault;
+  if (fseek(ff, 0, SEEK_SET) != 0)
+    goto lrf_fault;
 
   /* Determine font height */
-  if (l & 0xff) goto lrf_fault;  /* Unknown length */
+  if (l & 0xff)
+    goto lrf_fault; /* Unknown length */
 
   /* Allocate data, fill out structure */
   f = malloc(sizeof(struct mfl_font_s));
   f->height = l >> 8;
   f->data = malloc(l);
- 
+
   /* Read font data */
   if (fread(f->data, 1, l, ff) != l) {
-    visual_log (VISUAL_LOG_WARNING, "Unable to fully read font file: %s", fname);
+    visual_log(VISUAL_LOG_WARNING, "Unable to fully read font file: %s", fname);
     free(f->data);
     free(f);
     f = NULL;
   }
 
- lrf_fault:
+lrf_fault:
   /* Close input file */
   fclose(ff);
 
- lrf_open_fault:
+lrf_open_fault:
   return f;
 }
 
@@ -95,12 +98,10 @@ void mfl_DestroyFont(mfl_font f) {
   free(f);
 }
 
-
-mfl_context mfl_CreateContext(void *buf, unsigned int bpp, 
-			      unsigned int bpl, unsigned int width,
-			      unsigned int height) {
+mfl_context mfl_CreateContext(void *buf, unsigned int bpp, unsigned int bpl,
+                              unsigned int width, unsigned int height) {
   mfl_context cx = malloc(sizeof(struct mfl_context_s));
-  
+
   cx->buf = buf;
   cx->bpp = bpp;
   cx->bpl = bpl;
@@ -113,24 +114,16 @@ mfl_context mfl_CreateContext(void *buf, unsigned int bpp,
   return cx;
 }
 
-void mfl_DestroyContext(mfl_context cx) {
-  free(cx);
-}
+void mfl_DestroyContext(mfl_context cx) { free(cx); }
 
-void mfl_SetTextColor(mfl_context cx, unsigned long c) {
-  cx->color = c;
-}
+void mfl_SetTextColor(mfl_context cx, unsigned long c) { cx->color = c; }
 
-void mfl_SetFont(mfl_context cx, mfl_font f) {
-  cx->font = f;
-}
+void mfl_SetFont(mfl_context cx, mfl_font f) { cx->font = f; }
 
-void mfl_SetDrawMode(mfl_context cx, int mode) {
-  cx->opmode = mode;
-}
+void mfl_SetDrawMode(mfl_context cx, int mode) { cx->opmode = mode; }
 
-inline unsigned int mfl_GetTextWidthL(const mfl_context cx, 
-				      const char *s, int l) {
+inline unsigned int mfl_GetTextWidthL(const mfl_context cx, const char *s,
+                                      int l) {
   return l * 8;
 }
 
@@ -145,12 +138,13 @@ void mfl_OutChar8(const mfl_context cx, int x, int y, char c) {
   unsigned char *fp;
   unsigned char *dp, *ndp;
   unsigned char *dpe;
-  
-  if (cx->font == NULL) return;
+
+  if (cx->font == NULL)
+    return;
 
   /* Setup pointers */
-  fp = cx->font->data + (cx->font->height * c);  
-  
+  fp = cx->font->data + (cx->font->height * c);
+
   if (y < 0) {
     rows = cx->font->height + y;
     fp -= y;
@@ -161,13 +155,15 @@ void mfl_OutChar8(const mfl_context cx, int x, int y, char c) {
   if (y + rows >= cx->height) {
     rows = cx->height - y;
   }
-  if (rows <= 0) return;
+  if (rows <= 0)
+    return;
 
   smask = 0x80;
   if (x < 0) {
     smask >>= -x;
     x = 0;
-    if (smask == 0) return;
+    if (smask == 0)
+      return;
   }
 
   dp = (unsigned char *)cx->buf + (y * cx->bpl) + x;
@@ -178,14 +174,22 @@ void mfl_OutChar8(const mfl_context cx, int x, int y, char c) {
     ndp = dp + cx->bpl;
     for (j = smask; j > 0 && dp < dpe; j >>= 1) {
       if (*fp & j) {
-	switch(cx->opmode) {
-	case MFL_XOR: *dp ^= cx->color; break;
-	case MFL_OR: *dp |= cx->color; break;
-	case MFL_SETALL: *dp = 0xff; break;
-	  /* If we don't recognize the style, revert to normal */
-	default: *dp = cx->color; break;
-	}
-      }	
+        switch (cx->opmode) {
+        case MFL_XOR:
+          *dp ^= cx->color;
+          break;
+        case MFL_OR:
+          *dp |= cx->color;
+          break;
+        case MFL_SETALL:
+          *dp = 0xff;
+          break;
+          /* If we don't recognize the style, revert to normal */
+        default:
+          *dp = cx->color;
+          break;
+        }
+      }
       dp++;
     }
     fp++;
@@ -195,11 +199,11 @@ void mfl_OutChar8(const mfl_context cx, int x, int y, char c) {
 
 void mfl_OutText8L(const mfl_context cx, int x, int y, const char *s, int l) {
   const char *esp = s + l;
-  
+
   while (s < esp) {
     mfl_OutChar8(cx, x, y, *s);
     s++;
-    x+=8;
+    x += 8;
   }
 }
 
@@ -209,9 +213,9 @@ void mfl_OutText8(const mfl_context cx, int x, int y, const char *s) {
 
 #ifdef MFL_TEST
 main(int argc, char **argv) {
-  #define SCREEN_X 78
-  #define SCREEN_Y 22
-  #define SCREEN_BPL (SCREEN_X + 1)
+#define SCREEN_X 78
+#define SCREEN_Y 22
+#define SCREEN_BPL (SCREEN_X + 1)
 
   mfl_font f;
   mfl_context c;
@@ -219,7 +223,7 @@ main(int argc, char **argv) {
   int y;
 
   char screen[SCREEN_BPL * SCREEN_Y + 1];
-  
+
   for (i = 0; i < SCREEN_Y; i++) {
     visual_mem_set(&(screen[i * SCREEN_BPL]), '.', SCREEN_X);
     screen[i * SCREEN_BPL + SCREEN_X] = '\n';
@@ -240,6 +244,3 @@ main(int argc, char **argv) {
   puts(screen);
 }
 #endif
-
-
-

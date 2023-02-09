@@ -36,18 +36,20 @@ class Evaluator;
 class PluginExecThread;
 
 class PluginExec {
-    HASH hash_;
-    //std::list<PluginExecThread *> threads_;
-    int DoExec(char *cmd, char *key, int delay);
+  HASH hash_;
+  // std::list<PluginExecThread *> threads_;
+  int DoExec(char *cmd, char *key, int delay);
 
-    public:
-    PluginExec() { hash_create(&hash_); }
-    ~PluginExec() { Disconnect(); hash_destroy(&hash_); }
-    void Connect(Evaluator *visitor);
-    void Disconnect();
+public:
+  PluginExec() { hash_create(&hash_); }
+  ~PluginExec() {
+    Disconnect();
+    hash_destroy(&hash_);
+  }
+  void Connect(Evaluator *visitor);
+  void Disconnect();
 
-    std::string Exec(std::string arg1, int timeout);
-
+  std::string Exec(std::string arg1, int timeout);
 };
 
 #define MEM_SIZE 4096
@@ -64,7 +66,7 @@ class PluginExecThread {
     void run();
 
     public:
-    PluginExecThread(char *cmd, char *key, int delay) { 
+    PluginExecThread(char *cmd, char *key, int delay) {
         storage_.setLocalData(new char[MEM_SIZE]);
         cmd_ = strdup(cmd);
         key_ = strdup(key);
@@ -77,14 +79,14 @@ class PluginExecThread {
     }
     void Stop() { running_ = false; }
     char *GetKey() { return key_; }
-    char *GetRet() { 
-        if(!storage_.hasLocalData()) 
-            return NULL; 
+    char *GetRet() {
+        if(!storage_.hasLocalData())
+            return NULL;
         return storage_.localData();
     }
 };
 */
 
-};
+}; // namespace LCD
 
 #endif

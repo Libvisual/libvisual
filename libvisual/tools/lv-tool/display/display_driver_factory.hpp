@@ -30,38 +30,34 @@
 #include <functional>
 #include <vector>
 
-typedef std::function<DisplayDriver* (Display& display)> DisplayDriverCreator;
+typedef std::function<DisplayDriver *(Display &display)> DisplayDriverCreator;
 
 typedef std::vector<std::string> DisplayDriverList;
 
-class DisplayDriverFactory
-{
+class DisplayDriverFactory {
 public:
+  typedef DisplayDriverCreator Creator;
 
-    typedef DisplayDriverCreator Creator;
+  static DisplayDriverFactory &instance() {
+    static DisplayDriverFactory m_instance;
+    return m_instance;
+  }
 
-    static DisplayDriverFactory& instance ()
-    {
-	    static DisplayDriverFactory m_instance;
-	    return m_instance;
-    }
+  DisplayDriver *make(std::string const &name, Display &display);
 
-    DisplayDriver* make (std::string const& name, Display& display);
+  void add_driver(std::string const &name, Creator const &creator);
 
-    void add_driver (std::string const& name, Creator const& creator);
+  bool has_driver(std::string const &name) const;
 
-    bool has_driver (std::string const& name) const;
-
-    DisplayDriverList get_driver_list () const;
+  DisplayDriverList get_driver_list() const;
 
 private:
+  class Impl;
+  const std::unique_ptr<Impl> m_impl;
 
-    class Impl;
-    const std::unique_ptr<Impl> m_impl;
+  DisplayDriverFactory();
 
-    DisplayDriverFactory ();
-
-    ~DisplayDriverFactory ();
+  ~DisplayDriverFactory();
 };
 
 #endif // _LV_TOOL_DISPLAY_DRIVER_FACTORY_HPP

@@ -34,15 +34,15 @@ namespace LCD {
 class LCDCore;
 
 class WidgetScript : public Widget {
-    public:
-    WidgetScript(LCDCore *visitor, std::string name, Json::Value *config);
-    ~WidgetScript();
-    void Start() {}
-    void Stop() {}
-    void TextScroll() {}
-    void Update() {}
+public:
+  WidgetScript(LCDCore *visitor, std::string name, Json::Value *config);
+  ~WidgetScript();
+  void Start() {}
+  void Stop() {}
+  void TextScroll() {}
+  void Update() {}
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

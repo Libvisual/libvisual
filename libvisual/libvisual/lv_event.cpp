@@ -29,68 +29,53 @@
 
 namespace LV {
 
-  namespace {
+namespace {
 
-    unsigned int get_event_priority (VisEvent const& event)
-    {
-        return event.type == VISUAL_EVENT_RESIZE ? 100 : 0;
-    }
+unsigned int get_event_priority(VisEvent const &event) {
+  return event.type == VISUAL_EVENT_RESIZE ? 100 : 0;
+}
 
-    struct EventPriorityLesser
-    {
-        bool operator() (VisEvent const& event1, VisEvent const& event2) const
-        {
-            return get_event_priority (event1) < get_event_priority (event2);
-        }
-    };
-
-  } // anonymous namespace
-
-  class EventQueue::Impl
-  {
-  public:
-
-      typedef std::priority_queue<Event, std::vector<Event>, EventPriorityLesser> Queue;
-
-      Queue events;
-
-      // FIXME: We need custom input handlers for actors
-      int           mousex;
-      int           mousey;
-      VisMouseState mousestate;
-
-      Impl ()
-          : mousex (0)
-          , mousey (0)
-          , mousestate (VISUAL_MOUSE_UP)
-      {}
-  };
-
-  EventQueue::EventQueue ()
-      : m_impl (new Impl)
-  {
-      // empty
+struct EventPriorityLesser {
+  bool operator()(VisEvent const &event1, VisEvent const &event2) const {
+    return get_event_priority(event1) < get_event_priority(event2);
   }
+};
 
-  EventQueue::~EventQueue ()
-  {
-      // empty
+} // anonymous namespace
+
+class EventQueue::Impl {
+public:
+  typedef std::priority_queue<Event, std::vector<Event>, EventPriorityLesser>
+      Queue;
+
+  Queue events;
+
+  // FIXME: We need custom input handlers for actors
+  int mousex;
+  int mousey;
+  VisMouseState mousestate;
+
+  Impl() : mousex(0), mousey(0), mousestate(VISUAL_MOUSE_UP) {}
+};
+
+EventQueue::EventQueue() : m_impl(new Impl) {
+  // empty
+}
+
+EventQueue::~EventQueue() {
+  // empty
+}
+
+bool EventQueue::poll(VisEvent &event) {
+  if (!m_impl->events.empty()) {
+    event = m_impl->events.top();
+    m_impl->events.pop();
+    return true;
+  } else {
+    return false;
   }
+}
 
-  bool EventQueue::poll (VisEvent& event)
-  {
-      if (!m_impl->events.empty ()) {
-          event = m_impl->events.top ();
-          m_impl->events.pop ();
-          return true;
-      } else {
-          return false;
-      }
-  }
+void EventQueue::add(VisEvent const &event) { m_impl->events.push(event); }
 
-  void EventQueue::add (VisEvent const& event)
-  {
-      m_impl->events.push (event);
-  }
-
-} // LV namespace
+} // namespace LV

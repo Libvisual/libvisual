@@ -1,12 +1,12 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 1999, 2001 Zinx Verituse <zinx@xmms.org>
  *
  * Authors: Zinx Verituse <zinx@xmms.org>
  *	    Dennis Smit <ds@nerds-incorporated.org>
  *
  * Notes: Bumpscope plugin originally from XMMS.
- * 
+ *
  * $Id: bump_scope.h,v 1.5 2005/12/20 18:49:13 synap Exp $
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,8 @@
 
 #include "actor_bumpscope.h"
 
-void __bumpscope_generate_palette (BumpscopePrivate *priv, VisColor *col);
-void __bumpscope_generate_phongdat (BumpscopePrivate *priv);
-void __bumpscope_render_pcm (BumpscopePrivate *priv, float *data);
-void __bumpscope_init (BumpscopePrivate *priv);
-void __bumpscope_cleanup (BumpscopePrivate *priv);
-
+void __bumpscope_generate_palette(BumpscopePrivate *priv, VisColor *col);
+void __bumpscope_generate_phongdat(BumpscopePrivate *priv);
+void __bumpscope_render_pcm(BumpscopePrivate *priv, float *data);
+void __bumpscope_init(BumpscopePrivate *priv);
+void __bumpscope_cleanup(BumpscopePrivate *priv);

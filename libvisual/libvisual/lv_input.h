@@ -40,98 +40,91 @@
 
 namespace LV {
 
-  class Input;
+class Input;
 
-  typedef LV::IntrusivePtr<Input> InputPtr;
+typedef LV::IntrusivePtr<Input> InputPtr;
 
-  class LV_API Input
-  {
-  public:
+class LV_API Input {
+public:
+  /**
+   * Determines if an input plugin by the given name is available.
+   *
+   * @param name Name of input plugin to check for
+   *
+   * @return True if an input plugin by that name is available, else false
+   */
+  static bool available(std::string const &name);
 
-      /**
-       * Determines if an input plugin by the given name is available.
-       *
-       * @param name Name of input plugin to check for
-       *
-       * @return True if an input plugin by that name is available, else false
-       */
-      static bool available (std::string const& name);
+  /**
+   * Creates a new Input with a plugin of a given name.
+   *
+   * @param name Name of plugin to load
+   *
+   * @return A new Input, or nullptr on failure.
+   */
+  static InputPtr load(std::string const &name);
 
-      /**
-       * Creates a new Input with a plugin of a given name.
-       *
-       * @param name Name of plugin to load
-       *
-       * @return A new Input, or nullptr on failure.
-       */
-      static InputPtr load (std::string const& name);
+  ~Input();
 
-      ~Input ();
+  /**
+   * Returns the plugin object.
+   *
+   * @return Plugin object
+   */
+  VisPluginData *get_plugin();
 
-      /**
-       * Returns the plugin object.
-       *
-       * @return Plugin object
-       */
-      VisPluginData* get_plugin ();
+  /**
+   * Realizes this Input.
+   *
+   * @return true on success, false otherwise
+   */
+  bool realize();
 
-      /**
-       * Realizes this Input.
-       *
-       * @return true on success, false otherwise
-       */
-      bool realize ();
+  /**
+   * Sets a PCM data callback.
+   *
+   * Used for adding a custom upload function.
+   *
+   * @note Setting a callback will bypass the plugin upload() method.
+   *
+   * @param callback  Callback
+   */
+  void set_callback(std::function<bool(Audio &)> const &callback);
 
-      /**
-       * Sets a PCM data callback.
-       *
-       * Used for adding a custom upload function.
-       *
-       * @note Setting a callback will bypass the plugin upload() method.
-       *
-       * @param callback  Callback
-       */
-      void set_callback (std::function<bool (Audio&)> const& callback);
+  Audio const &get_audio();
 
-      Audio const& get_audio ();
+  /**
+   * Runs this Input.
+   *
+   * This function will call the plugin upload() method to
+   * retrieve audio samples. If a custom callback is set via
+   * set_callback(), the callback will be used instead.
+   *
+   * @return true on success, false otherwise
+   */
+  bool run();
 
-      /**
-       * Runs this Input.
-       *
-       * This function will call the plugin upload() method to
-       * retrieve audio samples. If a custom callback is set via
-       * set_callback(), the callback will be used instead.
-       *
-       * @return true on success, false otherwise
-       */
-      bool run ();
+private:
+  friend void intrusive_ptr_add_ref(Input const *input);
+  friend void intrusive_ptr_release(Input const *input);
 
-  private:
+  class Impl;
+  const std::unique_ptr<Impl> m_impl;
 
-      friend void intrusive_ptr_add_ref (Input const* input);
-      friend void intrusive_ptr_release (Input const* input);
+  mutable unsigned int m_ref_count;
 
-      class Impl;
-      const std::unique_ptr<Impl> m_impl;
+  explicit Input(std::string const &name);
+};
 
-      mutable unsigned int m_ref_count;
+inline void intrusive_ptr_add_ref(Input const *input) { input->m_ref_count++; }
 
-      explicit Input (std::string const& name);
-  };
-
-  inline void intrusive_ptr_add_ref (Input const* input)
-  {
-      input->m_ref_count++;
+inline void intrusive_ptr_release(Input const *input) {
+  if (--input->m_ref_count == 0) {
+    delete input;
   }
+}
 
-  inline void intrusive_ptr_release (Input const* input)
-  {
-      if (--input->m_ref_count == 0) {
-          delete input;
-      }
-  }
-
-} // LV namespace
+} // namespace LV
 
 typedef LV::Input VisInput;
 
@@ -156,12 +149,14 @@ typedef struct _VisInputPlugin VisInputPlugin;
  * @param audio     Audio object to upload data to
  * @param user_data Data set in visual_input_set_callback()
  */
-typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio, void *user_data);
+typedef int (*VisInputUploadCallbackFunc)(VisInput *input, VisAudio *audio,
+                                          void *user_data);
 
 /**
  * Function signature and type of the Input upload() method.
  *
- * The upload() method is called to produce audio samples for rendering by Actors.
+ * The upload() method is called to produce audio samples for rendering by
+ * Actors.
  *
  * @param plugin Plugin object
  * @param audio  Audio object to upload data to
@@ -174,20 +169,22 @@ typedef int (*VisPluginInputUploadFunc)(VisPluginData *plugin, VisAudio *audio);
  * Input plugin class.
  */
 struct _VisInputPlugin {
-    VisPluginInputUploadFunc upload;    /**< Sample upload function */
+  VisPluginInputUploadFunc upload; /**< Sample upload function */
 };
 
 LV_BEGIN_DECLS
 
-LV_API VisInput *visual_input_new     (const char *name);
-LV_API void      visual_input_ref     (VisInput *input);
-LV_API void      visual_input_unref   (VisInput *input);
-LV_API int       visual_input_realize (VisInput *input);
-LV_API int       visual_input_run     (VisInput *input);
+LV_API VisInput *visual_input_new(const char *name);
+LV_API void visual_input_ref(VisInput *input);
+LV_API void visual_input_unref(VisInput *input);
+LV_API int visual_input_realize(VisInput *input);
+LV_API int visual_input_run(VisInput *input);
 
-LV_API VisPluginData *visual_input_get_plugin  (VisInput *input);
-LV_API VisAudio      *visual_input_get_audio    (VisInput *audio);
-LV_API void           visual_input_set_callback (VisInput *input, VisInputUploadCallbackFunc callback, void *user_data);
+LV_API VisPluginData *visual_input_get_plugin(VisInput *input);
+LV_API VisAudio *visual_input_get_audio(VisInput *audio);
+LV_API void visual_input_set_callback(VisInput *input,
+                                      VisInputUploadCallbackFunc callback,
+                                      void *user_data);
 
 /**
  * Returns the name of the next available input plugin.
@@ -198,7 +195,7 @@ LV_API void           visual_input_set_callback (VisInput *input, VisInputUpload
  *
  * @return Name of next available plugin
  */
-LV_API const char *visual_input_get_next_by_name (const char *name);
+LV_API const char *visual_input_get_next_by_name(const char *name);
 
 /**
  * Returns the name of the previous available input plugin.
@@ -209,7 +206,7 @@ LV_API const char *visual_input_get_next_by_name (const char *name);
  *
  * @return Name of previous available plugin
  */
-LV_API const char *visual_input_get_prev_by_name (const char *name);
+LV_API const char *visual_input_get_prev_by_name(const char *name);
 
 LV_END_DECLS
 

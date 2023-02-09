@@ -3,26 +3,24 @@
 
 class BST {
 
-	friend class BST;
-	
-	protected:
-		BST*						mLeft;
-		BST*						mRight;
-		BST*						mParent;
-		
-		long						mKey;
-		
-	public:
-									BST();
-		virtual						~BST();
+  friend class BST;
 
+protected:
+  BST *mLeft;
+  BST *mRight;
+  BST *mParent;
 
-		void						Detach();
-		
-		BST*						Fetch( long inKey );
-		
-		void						Insert( BST* inNode );
-		
+  long mKey;
+
+public:
+  BST();
+  virtual ~BST();
+
+  void Detach();
+
+  BST *Fetch(long inKey);
+
+  void Insert(BST *inNode);
 };
 
 #endif

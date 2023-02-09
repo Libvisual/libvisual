@@ -29,103 +29,85 @@
 
 namespace LV {
 
-  typedef std::minstd_rand Generator;
+typedef std::minstd_rand Generator;
 
-  class RandomContext::Impl
-  {
-  public:
+class RandomContext::Impl {
+public:
+  Generator generator;
+};
 
-      Generator generator;
-  };
+RandomContext::RandomContext(Seed seed) : m_impl(new Impl) { set_seed(seed); }
 
-  RandomContext::RandomContext (Seed seed)
-      : m_impl (new Impl)
-  {
-      set_seed (seed);
-  }
+RandomContext::RandomContext(RandomContext &&rhs)
+    : m_impl{std::move(rhs.m_impl)} {
+  // empty
+}
 
-  RandomContext::RandomContext (RandomContext&& rhs)
-      : m_impl {std::move (rhs.m_impl)}
-  {
-      // empty
-  }
+RandomContext::~RandomContext() {
+  // empty
+}
 
-  RandomContext::~RandomContext ()
-  {
-      // empty
-  }
+RandomContext &RandomContext::operator=(RandomContext &&rhs) {
+  m_impl.swap(rhs.m_impl);
+  return *this;
+}
 
-  RandomContext& RandomContext::operator= (RandomContext&& rhs)
-  {
-      m_impl.swap (rhs.m_impl);
-      return *this;
-  }
+void RandomContext::set_seed(Seed seed) { m_impl->generator.seed(seed); }
 
-  void RandomContext::set_seed (Seed seed)
-  {
-      m_impl->generator.seed (seed);
-  }
+uint32_t RandomContext::get_int() { return m_impl->generator(); }
 
-  uint32_t RandomContext::get_int ()
-  {
-      return m_impl->generator ();
-  }
+uint32_t RandomContext::get_int(unsigned int min, unsigned int max) {
+#if VISUAL_RANDOM_FAST_FP_RND
+  // FIXME: Test this to see if this is really faster or produce
+  // better distributed numbers
 
-  uint32_t RandomContext::get_int (unsigned int min, unsigned int max)
-  {
-  #if VISUAL_RANDOM_FAST_FP_RND
-      // FIXME: Test this to see if this is really faster or produce
-      // better distributed numbers
+  // Uses fast floating number generator and two divisions elimitated.
+  // More than 2 times faster than original.
+  float fm = min; // +10% speedup...
 
-      // Uses fast floating number generator and two divisions elimitated.
-      // More than 2 times faster than original.
-      float fm = min; // +10% speedup...
+  return get_float() * (max - min + 1) + fm;
+#else
+  return get_int() % (max - min + 1) + min;
+#endif
+}
 
-      return get_float () * (max - min + 1) + fm;
-  #else
-      return get_int () % (max - min + 1) + min;
-  #endif
-  }
+double RandomContext::get_double() {
+  uint32_t irnd = m_impl->generator();
 
-  double RandomContext::get_double ()
-  {
-      uint32_t irnd = m_impl->generator ();
+#if VISUAL_RANDOM_FAST_FP_RND
+  union {
+    unsigned int i[2];
+    double d;
+  } value;
 
-  #if VISUAL_RANDOM_FAST_FP_RND
-      union {
-          unsigned int i[2];
-          double d;
-      } value;
+  // This saves floating point division (20 clocks on AXP, 38 on P4)
+  // and introduces store-to-load data size mismatch penalty and
+  // substraction op.
+  // Faster on AXP anyway :)
+  value.i[0] = (irnd << 20);
+  value.i[1] = 0x3ff00000 | (irnd >> 12);
+  return value.d - 1.0;
+#else
+  return double(irnd) / Generator::max();
+#endif
+}
 
-      // This saves floating point division (20 clocks on AXP, 38 on P4)
-      // and introduces store-to-load data size mismatch penalty and
-      // substraction op.
-      // Faster on AXP anyway :)
-      value.i[0] = (irnd << 20);
-      value.i[1] = 0x3ff00000 | (irnd >> 12);
-      return value.d - 1.0;
-  #else
-      return double (irnd) / Generator::max ();
-  #endif
-  }
+float RandomContext::get_float() {
+  uint32_t irnd = m_impl->generator();
 
-  float RandomContext::get_float ()
-  {
-      uint32_t irnd = m_impl->generator ();
+#if VISUAL_RANDOM_FAST_FP_RND
+  // Saves floating point division. Introduces substraction. Yet faster! :)
 
-  #if VISUAL_RANDOM_FAST_FP_RND
-      // Saves floating point division. Introduces substraction. Yet faster! :)
+  union {
+    unsigned int i;
+    float f;
+  } value;
 
-      union {
-          unsigned int i;
-          float f;
-      } value;
+  value.i = 0x3f800000 | (t >> 9);
+  return value.f - 1.0f;
+#else
+  return float(irnd) / float(Generator::max());
+#endif
+}
 
-      value.i = 0x3f800000 | (t >> 9);
-      return value.f - 1.0f;
-  #else
-      return float (irnd) / float(Generator::max ());
-  #endif
-  }
-
-} // LV namespace
+} // namespace LV

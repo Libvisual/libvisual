@@ -45,51 +45,50 @@ class LCDGraphic;
 typedef enum { STYLE_HOLLOW = 1, STYLE_NORMAL = 2 } STYLE;
 
 class WidgetBar : public Widget {
-    Property *expression_;
-    Property *expression2_;
-    Property *expr_min_;
-    Property *expr_max_;
+  Property *expression_;
+  Property *expression2_;
+  Property *expr_min_;
+  Property *expr_max_;
 
-    int color_valid_[2];
-    RGBA color_[2];
+  int color_valid_[2];
+  RGBA color_[2];
 
-    DIRECTION direction_;
-    int update_;
-    STYLE style_;
+  DIRECTION direction_;
+  int update_;
+  STYLE style_;
 
-    double val1_;
-    double val2_;
-    double min_;
-    double max_;
+  double val1_;
+  double val2_;
+  double min_;
+  double max_;
 
-    std::map<int, char> ch_;
+  std::map<int, char> ch_;
 
-    LCDTimer *timer_;
+  LCDTimer *timer_;
 
-    void (*Draw)(WidgetBar *);
+  void (*Draw)(WidgetBar *);
 
-    public:
-    WidgetBar(LCDCore *visitor, std::string name, 
-        Json::Value *section, int row, int col, int layer);
-    ~WidgetBar();
-    void SetupChars();
-    void Start();
-    void Stop();
-    DIRECTION GetDirection() { return direction_; }
-    STYLE GetStyle() { return style_; }
-    double GetVal1() { return val1_; }
-    double GetVal2() { return val2_; }
-    std::map<int, char> &GetChars() { return ch_; }
-    int *GetColorValid() { return color_valid_; }
-    RGBA *GetColor() { return color_; }
+public:
+  WidgetBar(LCDCore *visitor, std::string name, Json::Value *section, int row,
+            int col, int layer);
+  ~WidgetBar();
+  void SetupChars();
+  void Start();
+  void Stop();
+  DIRECTION GetDirection() { return direction_; }
+  STYLE GetStyle() { return style_; }
+  double GetVal1() { return val1_; }
+  double GetVal2() { return val2_; }
+  std::map<int, char> &GetChars() { return ch_; }
+  int *GetColorValid() { return color_valid_; }
+  RGBA *GetColor() { return color_; }
 
-    void Update();
-    void TextScroll() {};
+  void Update();
+  void TextScroll(){};
 
-    void Resize(int rows, int cols, int old_rows, int old_cols);
+  void Resize(int rows, int cols, int old_rows, int old_cols);
 };
 
-
-}; // End namespace
+}; // namespace LCD
 
 #endif

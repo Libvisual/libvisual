@@ -5,20 +5,20 @@ typedef struct GOOM_HASH_ENTRY GoomHashEntry;
 typedef struct GOOM_HASH GoomHash;
 
 typedef union {
-    void *ptr;
-    int i;
-    float f;
+  void *ptr;
+  int i;
+  float f;
 } HashValue;
 
 struct GOOM_HASH_ENTRY {
-	char *key;
-    HashValue value;
-	GoomHashEntry *lower;
-	GoomHashEntry *upper;
+  char *key;
+  HashValue value;
+  GoomHashEntry *lower;
+  GoomHashEntry *upper;
 };
 
 struct GOOM_HASH {
-	GoomHashEntry *root;
+  GoomHashEntry *root;
 };
 
 GoomHash *goom_hash_new(void);

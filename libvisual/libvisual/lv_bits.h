@@ -32,23 +32,18 @@ LV_BEGIN_DECLS
  * Macros to convert LE <-> BE
  * 'I' stands for integer here.
  */
-#define VISUAL_ENDIAN_LE_BE_I16(w) (\
-	(((w) & 0xff00) >> 8) |\
-	(((w) & 0x00ff) << 8) )
+#define VISUAL_ENDIAN_LE_BE_I16(w) ((((w)&0xff00) >> 8) | (((w)&0x00ff) << 8))
 
-#define VISUAL_ENDIAN_LE_BE_I32(w) (\
-	(((w) & 0x000000ff) << 24) | \
-	(((w) & 0x0000ff00) << 8) | \
-	(((w) & 0x00ff0000) >> 8) | \
-	(((w) & 0xff000000) >> 24) )
+#define VISUAL_ENDIAN_LE_BE_I32(w)                                             \
+  ((((w)&0x000000ff) << 24) | (((w)&0x0000ff00) << 8) |                        \
+   (((w)&0x00ff0000) >> 8) | (((w)&0xff000000) >> 24))
 
-
-#if ! ((VISUAL_BIG_ENDIAN) | (VISUAL_LITTLE_ENDIAN))
-#	error determining system endianess. (none set)
+#if !((VISUAL_BIG_ENDIAN) | (VISUAL_LITTLE_ENDIAN))
+#error determining system endianess. (none set)
 #endif
 
 #if ((VISUAL_BIG_ENDIAN == 1) & (VISUAL_LITTLE_ENDIAN == 1))
-#       error determing system endianess (both set?)
+#error determing system endianess (both set?)
 #endif
 
 /**
@@ -56,22 +51,22 @@ LV_BEGIN_DECLS
  */
 
 #if VISUAL_BIG_ENDIAN == 1
-#	define VISUAL_ENDIAN_BEI16(x) (x)
-#	define VISUAL_ENDIAN_BEI32(x) (x)
-#	define VISUAL_ENDIAN_LEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
-#	define VISUAL_ENDIAN_LEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
+#define VISUAL_ENDIAN_BEI16(x) (x)
+#define VISUAL_ENDIAN_BEI32(x) (x)
+#define VISUAL_ENDIAN_LEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
+#define VISUAL_ENDIAN_LEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
 #else
-#	define VISUAL_ENDIAN_LEI16(x) (x)
-#	define VISUAL_ENDIAN_LEI32(x) (x)
-#	define VISUAL_ENDIAN_BEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
-#	define VISUAL_ENDIAN_BEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
+#define VISUAL_ENDIAN_LEI16(x) (x)
+#define VISUAL_ENDIAN_LEI32(x) (x)
+#define VISUAL_ENDIAN_BEI16(x) VISUAL_ENDIAN_LE_BE_I16(x)
+#define VISUAL_ENDIAN_BEI32(x) VISUAL_ENDIAN_LE_BE_I32(x)
 #endif
 
 /**
  * Macro to check if 'x' is aligned on 'y' bytes. This macro will fail
  * when supplied with '1'. However you wouldn't want to do that anyway.
  */
-#define VISUAL_ALIGNED(x, y)	(!(((intptr_t) x) & (y - 1)))
+#define VISUAL_ALIGNED(x, y) (!(((intptr_t)x) & (y - 1)))
 
 LV_END_DECLS
 

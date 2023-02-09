@@ -38,53 +38,52 @@ class LCDGraphic;
 class LCDCore;
 
 class WidgetGif : public Widget {
-    Property *update_;            /* update interval (msec) */
-    Property *visible_;
-    Json::Value *file_;
-    int xpoint_;
-    int ypoint_;
-    //int *ascii_;
-    Magick::Color transparent_;
-    Magick::Color background_;
-    bool has_transparent_;
-    int showbackground_;
-    int inverted_;
-    bool has_chars_;
-    std::vector<char> ch_;
-    RGBA *bitmap_;
-    std::list<Magick::Image> image_;
-    std::list<Magick::Image>::iterator framePtr_;
-    std::list<Magick::Image>::iterator start_;
-    std::list<Magick::Image>::iterator end_;
-    void (*Draw)(WidgetGif *w);
+  Property *update_; /* update interval (msec) */
+  Property *visible_;
+  Json::Value *file_;
+  int xpoint_;
+  int ypoint_;
+  // int *ascii_;
+  Magick::Color transparent_;
+  Magick::Color background_;
+  bool has_transparent_;
+  int showbackground_;
+  int inverted_;
+  bool has_chars_;
+  std::vector<char> ch_;
+  RGBA *bitmap_;
+  std::list<Magick::Image> image_;
+  std::list<Magick::Image>::iterator framePtr_;
+  std::list<Magick::Image>::iterator start_;
+  std::list<Magick::Image>::iterator end_;
+  void (*Draw)(WidgetGif *w);
 
-    public:
-    WidgetGif(LCDCore *visitor, std::string name, Json::Value *section, 
-    int row, int col, int layer);
-    ~WidgetGif();
-    void Start();
-    void Stop();
-    void SetupChars();
-    bool HasChars() { return has_chars_; };
-    RGBA *Bitmap() { return bitmap_; };
-    std::vector<char> GetChars() { return ch_; };
-    int GetXpoint() { return xpoint_; };
-    int GetYpoint() { return ypoint_; };
-    int GetInverted() { return inverted_; }
-    Magick::Color GetBackground() { return background_; };
-    Magick::Color GetTransparent() { return transparent_; };
-    RGBA *GetBitmap() { return bitmap_; };
-    Property *GetVisible() { return visible_; }
+public:
+  WidgetGif(LCDCore *visitor, std::string name, Json::Value *section, int row,
+            int col, int layer);
+  ~WidgetGif();
+  void Start();
+  void Stop();
+  void SetupChars();
+  bool HasChars() { return has_chars_; };
+  RGBA *Bitmap() { return bitmap_; };
+  std::vector<char> GetChars() { return ch_; };
+  int GetXpoint() { return xpoint_; };
+  int GetYpoint() { return ypoint_; };
+  int GetInverted() { return inverted_; }
+  Magick::Color GetBackground() { return background_; };
+  Magick::Color GetTransparent() { return transparent_; };
+  RGBA *GetBitmap() { return bitmap_; };
+  Property *GetVisible() { return visible_; }
 
-    // Slots
-    void Update();
-    void TextScroll() {}
-    
-    public slots:
-    void Resize(int rows, int cols, int old_rows, int old_cols);
+  // Slots
+  void Update();
+  void TextScroll() {}
+
+public slots:
+  void Resize(int rows, int cols, int old_rows, int old_cols);
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Remi Arquier <arquier@crans.org>
  *
  * Authors: Remi Arquier <arquier@crans.org>
@@ -24,9 +24,9 @@
 
 #include "jess.h"
 
-int nice(int inc);  
+int nice(int inc);
 void *renderer(JessPrivate *priv);
-void fade(float variable, uint8_t * dim);
+void fade(float variable, uint8_t *dim);
 void draw_mode(JessPrivate *priv, int mode);
 void on_beat(JessPrivate *priv, int beat);
 void on_reprise(JessPrivate *priv);

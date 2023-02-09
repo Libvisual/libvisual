@@ -34,127 +34,113 @@ using namespace LCD;
 
 PluginTime *plugtime;
 
-double PluginTime::Time()
-{
-    return (double)time(NULL);
-}
+double PluginTime::Time() { return (double)time(NULL); }
 
+std::string PluginTime::Strftime(std::string arg1, double arg2) {
+  char value[256];
+  time_t t = arg2;
 
-std::string PluginTime::Strftime(std::string arg1, double arg2)
-{
-    char value[256];
-    time_t t = arg2;
+  value[0] = '\0';
+  strftime(value, sizeof(value), arg1.c_str(), localtime(&t));
 
-    value[0] = '\0';
-    strftime(value, sizeof(value), arg1.c_str(), localtime(&t));
-
-    return value;
+  return value;
 }
 
 class time_strf_t {
-    public:
-    static const lua::args_t *in_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        args->add(new lua::int_arg_t());
-        return args;
-    }
+public:
+  static const lua::args_t *in_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    args->add(new lua::int_arg_t());
+    return args;
+  }
 
-    static const lua::args_t *out_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+  static const lua::args_t *out_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const std::string ns() { return "time"; }
-    static const std::string name() { return "strf"; }
+  static const std::string ns() { return "time"; }
+  static const std::string name() { return "strf"; }
 
-    static void calc(const lua::args_t& in, lua::args_t &out)
-    {
-        std::string fmt = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
-        double t = dynamic_cast<lua::int_arg_t&>(*in[1]).value();
-        std::string str = plugtime->Strftime(fmt, t);
-        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
-    }
+  static void calc(const lua::args_t &in, lua::args_t &out) {
+    std::string fmt = dynamic_cast<lua::string_arg_t &>(*in[0]).value();
+    double t = dynamic_cast<lua::int_arg_t &>(*in[1]).value();
+    std::string str = plugtime->Strftime(fmt, t);
+    dynamic_cast<lua::string_arg_t &>(*out[0]).value() = str;
+  }
 };
 
-std::string PluginTime::Strftime_tz(std::string arg1, double arg2, std::string arg3)
-{
-    char value[256] = "";
-    time_t t = arg2;
-    char *tz = (char *)arg3.c_str();
-    char *old_tz;
+std::string PluginTime::Strftime_tz(std::string arg1, double arg2,
+                                    std::string arg3) {
+  char value[256] = "";
+  time_t t = arg2;
+  char *tz = (char *)arg3.c_str();
+  char *old_tz;
 
-    old_tz = getenv("TZ");
+  old_tz = getenv("TZ");
 
-    /*
-     * because the next setenv() call may overwrite that string, we
-     * duplicate it here
-     */
-    if (old_tz) {
-        old_tz = strdup(old_tz);
-    }
+  /*
+   * because the next setenv() call may overwrite that string, we
+   * duplicate it here
+   */
+  if (old_tz) {
+    old_tz = strdup(old_tz);
+  }
 
-    setenv("TZ", tz, 1);
-    tzset();
+  setenv("TZ", tz, 1);
+  tzset();
 
-    strftime(value, sizeof(value), arg1.c_str(), localtime(&t));
+  strftime(value, sizeof(value), arg1.c_str(), localtime(&t));
 
-    if (old_tz) {
-        setenv("TZ", old_tz, 1);
-    } else {
-        unsetenv("TZ");
-    }
-    tzset();
+  if (old_tz) {
+    setenv("TZ", old_tz, 1);
+  } else {
+    unsetenv("TZ");
+  }
+  tzset();
 
-    free(old_tz);
+  free(old_tz);
 
-    return value;
+  return value;
 }
 
 class time_strf_tz_t {
-    public:
-    static const lua::args_t *in_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        args->add(new lua::int_arg_t());
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+public:
+  static const lua::args_t *in_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    args->add(new lua::int_arg_t());
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const lua::args_t *out_args()
-    {
-        lua::args_t *args = new lua::args_t();
-        args->add(new lua::string_arg_t());
-        return args;
-    }
+  static const lua::args_t *out_args() {
+    lua::args_t *args = new lua::args_t();
+    args->add(new lua::string_arg_t());
+    return args;
+  }
 
-    static const std::string ns() { return "time"; }
-    static const std::string name() { return "strf_tz"; }
+  static const std::string ns() { return "time"; }
+  static const std::string name() { return "strf_tz"; }
 
-    static void calc(const lua::args_t& in, lua::args_t &out)
-    {
-        std::string fmt = dynamic_cast<lua::string_arg_t&>(*in[0]).value();
-        double t = dynamic_cast<lua::int_arg_t&>(*in[1]).value();
-        std::string tz = dynamic_cast<lua::string_arg_t&>(*in[2]).value();
-        std::string str = plugtime->Strftime_tz(fmt, t, tz);
-        dynamic_cast<lua::string_arg_t&>(*out[0]).value() = str;
-    }
+  static void calc(const lua::args_t &in, lua::args_t &out) {
+    std::string fmt = dynamic_cast<lua::string_arg_t &>(*in[0]).value();
+    double t = dynamic_cast<lua::int_arg_t &>(*in[1]).value();
+    std::string tz = dynamic_cast<lua::string_arg_t &>(*in[2]).value();
+    std::string str = plugtime->Strftime_tz(fmt, t, tz);
+    dynamic_cast<lua::string_arg_t &>(*out[0]).value() = str;
+  }
 };
 
-
 double PluginTime::GetTimeOfDay() {
-    struct timeval now;
-    gettimeofday(&now, NULL);
-    return now.tv_sec * 1000 + now.tv_usec / 1000;
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  return now.tv_sec * 1000 + now.tv_usec / 1000;
 }
 
-PluginTime::PluginTime(lua *script)
-{
-    script->register_function<time_strf_t>();
-    script->register_function<time_strf_tz_t>();
+PluginTime::PluginTime(lua *script) {
+  script->register_function<time_strf_t>();
+  script->register_function<time_strf_tz_t>();
 }
-

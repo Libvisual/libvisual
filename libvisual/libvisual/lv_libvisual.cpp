@@ -38,133 +38,93 @@
 #include "gettext.h"
 
 extern "C" {
-  void visual_cpu_initialize (void);
-  void visual_mem_initialize (void);
+void visual_cpu_initialize(void);
+void visual_mem_initialize(void);
 }
 
-namespace LV
-{
+namespace LV {
 
-  namespace {
+namespace {
 
-    RandomSeed random_seed ()
-    {
-        return RandomSeed (Time::now ().to_usecs ());
-    }
+RandomSeed random_seed() { return RandomSeed(Time::now().to_usecs()); }
 
-  } // anonymous namespace
+} // anonymous namespace
 
-  class System::Impl
-  {
-  public:
+class System::Impl {
+public:
+  ParamList params;
+  RandomContext rng;
 
-      ParamList     params;
-      RandomContext rng;
+  Impl();
 
-      Impl ();
+  static ParamList initial_params();
+};
 
-      static ParamList initial_params ();
-  };
+System::Impl::Impl() : params{initial_params()}, rng{random_seed()} {}
 
-  System::Impl::Impl ()
-      : params {initial_params ()}
-      , rng    {random_seed ()}
-  {}
+ParamList System::Impl::initial_params() {
+  return {
+      visual_param_new_integer("songinfo-show", "Show song info", 1, nullptr),
+      visual_param_new_integer("songinfo-timeout",
+                               "Songinfo timeout in seconds", 5, nullptr),
+      visual_param_new_bool("songinfo-in-plugins", "Show songinfo in plugins",
+                            true, nullptr),
+      visual_param_new_integer("songinfo-cover-width", "Song cover art width",
+                               128, visual_param_in_range_integer(32, 1000)),
+      visual_param_new_integer("songinfo-cover-height", "Song cover art height",
+                               128, visual_param_in_range_integer(32, 1000))};
+}
 
-  ParamList System::Impl::initial_params ()
-  {
-      return {
-           visual_param_new_integer ("songinfo-show",
-                                     "Show song info",
-                                     1,
-                                     nullptr),
-           visual_param_new_integer ("songinfo-timeout",
-                                     "Songinfo timeout in seconds",
-                                     5,
-                                     nullptr),
-           visual_param_new_bool    ("songinfo-in-plugins",
-                                     "Show songinfo in plugins",
-                                     true,
-                                     nullptr),
-           visual_param_new_integer ("songinfo-cover-width",
-                                     "Song cover art width",
-                                     128,
-                                     visual_param_in_range_integer (32, 1000)),
-           visual_param_new_integer ("songinfo-cover-height",
-                                     "Song cover art height",
-                                     128,
-                                     visual_param_in_range_integer (32, 1000))
-      };
+template <> LV_API System *Singleton<System>::m_instance = nullptr;
+
+void System::init(int &argc, char **&argv) {
+  if (m_instance) {
+    visual_log(VISUAL_LOG_WARNING, "Attempt to initialize LV a second time");
+    return;
   }
 
-  template <>
-  LV_API System* Singleton<System>::m_instance = nullptr;
+  m_instance = new System(argc, argv);
+}
 
-  void System::init (int& argc, char**& argv)
-  {
-      if (m_instance) {
-          visual_log (VISUAL_LOG_WARNING, "Attempt to initialize LV a second time");
-          return;
-      }
+std::string System::get_version() const {
+  return VISUAL_VERSION " (" LV_REVISION ")";
+}
 
-      m_instance = new System (argc, argv);
-  }
+int System::get_api_version() const { return VISUAL_API_VERSION; }
 
-  std::string System::get_version () const
-  {
-      return VISUAL_VERSION " (" LV_REVISION ")";
-  }
+ParamList &System::get_params() const { return m_impl->params; }
 
-  int System::get_api_version () const
-  {
-      return VISUAL_API_VERSION;
-  }
+RandomContext &System::get_rng() const { return m_impl->rng; }
 
-  ParamList& System::get_params () const
-  {
-      return m_impl->params;
-  }
+void System::set_rng_seed(VisRandomSeed seed) { m_impl->rng.set_seed(seed); }
 
-  RandomContext& System::get_rng () const
-  {
-      return m_impl->rng;
-  }
+System::System(int &argc, char **&argv) : m_impl(new Impl) {
+  (void)argc;
+  (void)argv;
 
-  void System::set_rng_seed (VisRandomSeed seed)
-  {
-      m_impl->rng.set_seed (seed);
-  }
-
-  System::System (int& argc, char**& argv)
-      : m_impl(new Impl)
-  {
-      (void)argc;
-      (void)argv;
-
-      visual_log (VISUAL_LOG_INFO, "Starting Libvisual %s", get_version ().c_str ());
+  visual_log(VISUAL_LOG_INFO, "Starting Libvisual %s", get_version().c_str());
 
 #if ENABLE_NLS
-      bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);
-      bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+  bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
+  bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 #endif
 
-      // Initialize CPU caps
-      visual_cpu_initialize ();
+  // Initialize CPU caps
+  visual_cpu_initialize();
 
-      // Initialize Mem system
-      visual_mem_initialize ();
+  // Initialize Mem system
+  visual_mem_initialize();
 
-      // Initialize high-resolution timer system
-      TimeSystem::start ();
+  // Initialize high-resolution timer system
+  TimeSystem::start();
 
-      // Initialize the plugin registry
-      PluginRegistry::init ();
-  }
+  // Initialize the plugin registry
+  PluginRegistry::init();
+}
 
-  System::~System ()
-  {
-      PluginRegistry::destroy ();
-      TimeSystem::shutdown ();
-  }
+System::~System() {
+  PluginRegistry::destroy();
+  TimeSystem::shutdown();
+}
 
-} // LV namespace
+} // namespace LV

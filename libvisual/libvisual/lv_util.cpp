@@ -28,30 +28,28 @@
 
 namespace LV {
 
-  namespace fs = std::filesystem;
+namespace fs = std::filesystem;
 
-  bool for_each_file_in_dir (fs::path const&                       dir_path,
-                             std::function<bool (fs::path const&)> filter,
-                             std::function<bool (fs::path const&)> func)
-  {
-      std::set<fs::path> sorted_paths;
+bool for_each_file_in_dir(fs::path const &dir_path,
+                          std::function<bool(fs::path const &)> filter,
+                          std::function<bool(fs::path const &)> func) {
+  std::set<fs::path> sorted_paths;
 
-      try {
-          for (auto const& entry : fs::directory_iterator (dir_path)) {
-              sorted_paths.insert (entry.path());
-          }
+  try {
+    for (auto const &entry : fs::directory_iterator(dir_path)) {
+      sorted_paths.insert(entry.path());
+    }
 
-          for (auto const& entry : sorted_paths) {
-              if (filter (entry) and (!func (entry))) {
-                  return false;
-              }
-          }
-
-          return true;
+    for (auto const &entry : sorted_paths) {
+      if (filter(entry) and (!func(entry))) {
+        return false;
       }
-      catch (fs::filesystem_error& error) {
-          return false;
-      }
+    }
+
+    return true;
+  } catch (fs::filesystem_error &error) {
+    return false;
   }
+}
 
-} // LV namespace
+} // namespace LV

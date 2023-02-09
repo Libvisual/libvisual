@@ -1,5 +1,5 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
+ *
  * Copyright (C) 2000, 2001 Remi Arquier <arquier@crans.org>
  *
  * Authors: Remi Arquier <arquier@crans.org>
@@ -22,5 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-void rotation_3d(float *x, float *y, float *z, float alpha, float beta, float gamma);
-void perspective(float *x, float *y, float *z,int persp,int dist_cam);
+void rotation_3d(float *x, float *y, float *z, float alpha, float beta,
+                 float gamma);
+void perspective(float *x, float *y, float *z, int persp, int dist_cam);

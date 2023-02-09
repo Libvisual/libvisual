@@ -44,33 +44,32 @@ class LCDGraphic;
 class LCDCore;
 
 class WidgetFPS : public Widget {
-    std::vector<char> FB_;
-    std::vector<char> ch_;
-    bool flipped_;
-    int update_;
+  std::vector<char> FB_;
+  std::vector<char> ch_;
+  bool flipped_;
+  int update_;
 
-    Stats stats_;
+  Stats stats_;
 
-    LCDTimer *timer_;
+  LCDTimer *timer_;
 
-    void (*Draw)(WidgetFPS *);
-    
-    public:
-    WidgetFPS(LCDCore *visitor, std::string name, Json::Value *section, 
-        int row, int col, int layer);
-    ~WidgetFPS();
-    void TextScroll() {};
-    void SetupChars();
-    void Update();
-    void Start();
-    void Stop();
-    std::vector<char> GetFB() { return FB_; }
-    std::vector<char> GetCh() { return ch_; }
+  void (*Draw)(WidgetFPS *);
 
-    void Resize(int rows, int cols, int old_rows, int old_cols);
+public:
+  WidgetFPS(LCDCore *visitor, std::string name, Json::Value *section, int row,
+            int col, int layer);
+  ~WidgetFPS();
+  void TextScroll(){};
+  void SetupChars();
+  void Update();
+  void Start();
+  void Stop();
+  std::vector<char> GetFB() { return FB_; }
+  std::vector<char> GetCh() { return ch_; }
+
+  void Resize(int rows, int cols, int old_rows, int old_cols);
 };
 
-}; // End namespace
-
+}; // namespace LCD
 
 #endif

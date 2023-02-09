@@ -36,160 +36,155 @@
 
 using namespace LCD;
 
-void icon_update(void *data)
-{
-    WidgetIcon *icon = (WidgetIcon *)data;
-    icon->Update();
+void icon_update(void *data) {
+  WidgetIcon *icon = (WidgetIcon *)data;
+  icon->Update();
 }
 
 extern void TextIconDraw(WidgetIcon *w);
 extern void GraphicIconDraw(WidgetIcon *w);
 
-WidgetIcon::WidgetIcon(LCDCore *v, std::string n, 
-    Json::Value *section, int row, int col, int layer) :
-    Widget(v, n, section, row, col, layer, WIDGET_TYPE_ICON | 
-    WIDGET_TYPE_RC | WIDGET_TYPE_SPECIAL) {
+WidgetIcon::WidgetIcon(LCDCore *v, std::string n, Json::Value *section, int row,
+                       int col, int layer)
+    : Widget(v, n, section, row, col, layer,
+             WIDGET_TYPE_ICON | WIDGET_TYPE_RC | WIDGET_TYPE_SPECIAL) {
 
+  if (lcd_type_ == LCD_TEXT)
+    Draw = TextIconDraw;
+  else if (lcd_type_ == LCD_GRAPHIC)
+    Draw = GraphicIconDraw;
+  else
+    Draw = NULL;
 
-    if(lcd_type_ == LCD_TEXT)
-        Draw = TextIconDraw;
-    else if(lcd_type_ == LCD_GRAPHIC)
-        Draw = GraphicIconDraw;
-    else
-        Draw = NULL;
+  cols_ = 1;
+  rows_ = 1;
 
-    cols_ = 1;
-    rows_ = 1;
+  visible_ = new Property(v, section, "visible", new Json::Value("return 1"));
 
-    visible_ = new Property(v, section, "visible", new Json::Value("return 1"));
+  Json::Value *val = v->CFG_Fetch_Raw(section, "speed", new Json::Value(500));
+  update_ = val->asInt();
+  delete val;
 
-    Json::Value *val = v->CFG_Fetch_Raw(section, "speed", new Json::Value(500));
-    update_ = val->asInt();
-    delete val;
+  fg_valid_ = WidgetColor(section, "foreground", &fg_color_);
+  bg_valid_ = WidgetColor(section, "background", &bg_color_);
 
-    fg_valid_ = WidgetColor(section, "foreground", &fg_color_);
-    bg_valid_ = WidgetColor(section, "background", &bg_color_);
+  val = v->CFG_Fetch_Raw(section, "bitmap");
 
-    val = v->CFG_Fetch_Raw(section, "bitmap");
+  if (!val) {
+    update_ = -1;
+    return;
+  }
 
-    if(!val) {
-        update_ = -1;
-        return;
+  std::vector<SpecialChar> ch;
+
+  for (int i = 0; i < v->GetLCD()->YRES; i++) {
+    std::stringstream strm;
+    std::string str;
+    strm << "row" << i + 1;
+    strm >> str;
+    Json::Value *row = v->CFG_Fetch_Raw(val, str);
+    if (!row)
+      break;
+    std::vector<std::string> line = Split(row->asString(), '|');
+    if (line[line.size() - 1] == "")
+      line.erase(line.end());
+    for (unsigned int j = 0; j < line.size(); j++) {
+      std::string segment = line[j];
+      if (j >= ch.size())
+        ch.push_back(SpecialChar(v->GetLCD()->YRES));
+      for (unsigned int c = 0; c < segment.size(); c++) {
+        if (segment[c] == '*')
+          ch[j][i] ^= 1 << c;
+      }
     }
+    delete row;
+  }
+  delete val;
 
-    std::vector<SpecialChar> ch;
+  data_ = ch;
 
-    for(int i = 0; i < v->GetLCD()->YRES; i++) {
-        std::stringstream strm;
-        std::string str;
-        strm << "row" << i + 1;
-        strm >> str;
-        Json::Value *row = v->CFG_Fetch_Raw(val, str);
-        if(!row) break;
-        std::vector<std::string> line = Split(row->asString(), '|');
-        if( line[line.size() - 1] == "" )
-            line.erase(line.end());
-        for(unsigned int j = 0; j < line.size(); j++) {
-            std::string segment = line[j];
-            if( j >= ch.size() )
-                ch.push_back(SpecialChar(v->GetLCD()->YRES));
-            for(unsigned int c = 0; c < segment.size(); c++ ) {
-                if( segment[c] == '*' )
-                    ch[j][i] ^= 1<<c;
-            }
-        }
-        delete row;    
-    }
-    delete val;
+  index_ = 0;
 
-    data_ = ch;
+  started_ = false;
 
-    index_ = 0;
+  ch_ = -1;
 
-    started_ = false;
+  bitmap_ = new SpecialChar(data_[0].Size());
 
-    ch_ = -1;
-
-    bitmap_ = new SpecialChar(data_[0].Size());
-
-    timer_ = v->timers_->AddTimer(icon_update, this, update_, true);
+  timer_ = v->timers_->AddTimer(icon_update, this, update_, true);
 }
 
-
 WidgetIcon::~WidgetIcon() {
-    Stop();
-    delete visible_;
-    delete bitmap_;
+  Stop();
+  delete visible_;
+  delete bitmap_;
 }
 
 void WidgetIcon::Resize(int rows, int cols, int old_rows, int old_cols) {
-    int yres = visitor_->GetLCD()->YRES;
-    int xres = visitor_->GetLCD()->XRES;
-    float r = row_ * yres / (float)old_rows;
-    float c = col_ * xres / (float)old_cols;
-    row_ = (int)((rows * r / yres) + 0.5);
-    col_ = (int)((cols * c / xres) + 0.5);
-    Update();
+  int yres = visitor_->GetLCD()->YRES;
+  int xres = visitor_->GetLCD()->XRES;
+  float r = row_ * yres / (float)old_rows;
+  float c = col_ * xres / (float)old_cols;
+  row_ = (int)((rows * r / yres) + 0.5);
+  col_ = (int)((cols * c / xres) + 0.5);
+  Update();
 }
 
 void WidgetIcon::SetupChars() {
-    std::map<std::string, Widget *> widgets = visitor_->GetWidgets();
-    for(std::map<std::string, Widget *>::iterator it = 
-        widgets.begin();
-        it != widgets.end(); it++) {
-        if(it->second->GetWidgetBase() == widget_base_ &&
-            ((WidgetIcon *)it->second)->GetCh() >= 0) {
-                ch_ = ((WidgetIcon *)it->second)->GetCh();
-                return;
-        }
+  std::map<std::string, Widget *> widgets = visitor_->GetWidgets();
+  for (std::map<std::string, Widget *>::iterator it = widgets.begin();
+       it != widgets.end(); it++) {
+    if (it->second->GetWidgetBase() == widget_base_ &&
+        ((WidgetIcon *)it->second)->GetCh() >= 0) {
+      ch_ = ((WidgetIcon *)it->second)->GetCh();
+      return;
     }
-    LCDText *lcd = (LCDText *)visitor_->GetLCD();
-    if((int)lcd->special_chars.size() >= lcd->CHARS) {
-        LCDError("Can not allot char for widget: %s", name_.c_str());
-        update_ = -1;
-        return;
-    }
-    lcd->special_chars.push_back(SpecialChar(lcd->YRES));
-    ch_ = lcd->special_chars.size() - 1;
+  }
+  LCDText *lcd = (LCDText *)visitor_->GetLCD();
+  if ((int)lcd->special_chars.size() >= lcd->CHARS) {
+    LCDError("Can not allot char for widget: %s", name_.c_str());
+    update_ = -1;
+    return;
+  }
+  lcd->special_chars.push_back(SpecialChar(lcd->YRES));
+  ch_ = lcd->special_chars.size() - 1;
 }
 
 void WidgetIcon::Update() {
 
-    *bitmap_ = data_[index_++];
+  *bitmap_ = data_[index_++];
 
-    if(index_ >= (int)data_.size())
-        index_ = 0;
-    
-    Draw(this);
+  if (index_ >= (int)data_.size())
+    index_ = 0;
+
+  Draw(this);
 }
 
 void WidgetIcon::Start() {
-    if(update_ < 0) 
-        return;
-    started_ = false;
-    if(type_ == LCD_TEXT)
-    {
-        std::map<std::string, Widget *> widgets;
-        widgets = visitor_->GetWidgets();
-        for(std::map<std::string, Widget *>::iterator it = widgets.begin();
-            it != widgets.end() && lcd_type_ == LCD_TEXT; it++) {
-            if(it->second->GetWidgetBase() == widget_base_ && 
-                it->second->GetStarted()) {
-                started_ = true;
-                break;
-            }
-        }
-    }
-    if(!started_) {
-        timer_->Start();
+  if (update_ < 0)
+    return;
+  started_ = false;
+  if (type_ == LCD_TEXT) {
+    std::map<std::string, Widget *> widgets;
+    widgets = visitor_->GetWidgets();
+    for (std::map<std::string, Widget *>::iterator it = widgets.begin();
+         it != widgets.end() && lcd_type_ == LCD_TEXT; it++) {
+      if (it->second->GetWidgetBase() == widget_base_ &&
+          it->second->GetStarted()) {
         started_ = true;
-    } 
-    Update();
+        break;
+      }
+    }
+  }
+  if (!started_) {
+    timer_->Start();
+    started_ = true;
+  }
+  Update();
 }
 
 void WidgetIcon::Stop() {
-    timer_->Stop();
-    started_ = false;
-    ch_ = -1;
+  timer_->Stop();
+  started_ = false;
+  ch_ = -1;
 }
-

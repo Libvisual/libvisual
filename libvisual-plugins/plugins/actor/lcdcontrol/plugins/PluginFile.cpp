@@ -38,43 +38,43 @@ using namespace LCD;
 /* returns text of that line */
 
 std::string PluginFile::Readline(std::string arg1, int arg2) {
-    char value[80], val2[80];
-    FILE *fp;
-    int reqline, i, size;
+  char value[80], val2[80];
+  FILE *fp;
+  int reqline, i, size;
 
-    reqline = arg2;
-    fp = fopen(arg1.c_str(), "r");
-    if (!fp) {
-        LCDError("readline couldn't open file '%s'", arg1.c_str());
-        value[0] = '\0';
-    } else {
-        i = 0;
-        while (!feof(fp) && i++ < reqline) {
-            fgets(val2, sizeof(val2), fp);
-            size = strcspn(val2, "\r\n");
-            strncpy(value, val2, size);
-            value[size] = '\0';
-            /* more than 80 chars, chew up rest of line */
-            while (!feof(fp) && strchr(val2, '\n') == NULL) {
-                fgets(val2, sizeof(val2), fp);
-            }
-        }
-        fclose(fp);
-        if (i <= reqline) {
-            LCDError("readline requested line %d but file only had %d lines", reqline, i - 1);
-            value[0] = '\0';
-        }
+  reqline = arg2;
+  fp = fopen(arg1.c_str(), "r");
+  if (!fp) {
+    LCDError("readline couldn't open file '%s'", arg1.c_str());
+    value[0] = '\0';
+  } else {
+    i = 0;
+    while (!feof(fp) && i++ < reqline) {
+      fgets(val2, sizeof(val2), fp);
+      size = strcspn(val2, "\r\n");
+      strncpy(value, val2, size);
+      value[size] = '\0';
+      /* more than 80 chars, chew up rest of line */
+      while (!feof(fp) && strchr(val2, '\n') == NULL) {
+        fgets(val2, sizeof(val2), fp);
+      }
     }
+    fclose(fp);
+    if (i <= reqline) {
+      LCDError("readline requested line %d but file only had %d lines", reqline,
+               i - 1);
+      value[0] = '\0';
+    }
+  }
 
-    return value;
+  return value;
 }
 
 void PluginFile::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("file", objVal);
-*/
+  /*
+      QScriptEngine *engine = visitor->GetEngine();
+      QScriptValue val = engine->newObject();
+      QScriptValue objVal = engine->newQObject(val, this);
+      engine->globalObject().setProperty("file", objVal);
+  */
 }
-

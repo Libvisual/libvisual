@@ -1,5 +1,5 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
- * 
+ *
  * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -34,12 +34,10 @@
 
 #include "avs_config.h"
 
-VisTime *avs_config_standard_color_cycler_time ()
-{
-	static VisTime ccyclertime;
+VisTime *avs_config_standard_color_cycler_time() {
+  static VisTime ccyclertime;
 
-	visual_time_set (&ccyclertime, 1, 0);
+  visual_time_set(&ccyclertime, 1, 0);
 
-	return &ccyclertime;
+  return &ccyclertime;
 }
-

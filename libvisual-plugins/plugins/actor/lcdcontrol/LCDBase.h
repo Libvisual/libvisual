@@ -27,29 +27,29 @@
 namespace LCD {
 
 class LCDBase {
-    public:
-    virtual ~LCDBase() {}
-    virtual void Transition() = 0;
-    virtual void SignalTransitionStart(std::string layout) = 0;
-    virtual void SignalTransitionEnd() = 0;
-    virtual int ResizeLCD(int rows, int cols) = 0;
+public:
+  virtual ~LCDBase() {}
+  virtual void Transition() = 0;
+  virtual void SignalTransitionStart(std::string layout) = 0;
+  virtual void SignalTransitionEnd() = 0;
+  virtual int ResizeLCD(int rows, int cols) = 0;
 
-    virtual void ResizeBefore(int rows, int cols) = 0;
-    virtual void ResizeAfter() = 0;
-    virtual void LayoutChangeBefore() = 0;
-    virtual void LayoutChangeAfter() = 0;
+  virtual void ResizeBefore(int rows, int cols) = 0;
+  virtual void ResizeAfter() = 0;
+  virtual void LayoutChangeBefore() = 0;
+  virtual void LayoutChangeAfter() = 0;
 
-    virtual VisVideo *GetVideo() = 0;
-    int XRES;
-    int YRES;
-    int LROWS;
-    int LCOLS;
-    int DROWS;
-    int DCOLS;
-    int LAYERS;
-    bool clear_on_layout_change_;
+  virtual VisVideo *GetVideo() = 0;
+  int XRES;
+  int YRES;
+  int LROWS;
+  int LCOLS;
+  int DROWS;
+  int DCOLS;
+  int LAYERS;
+  bool clear_on_layout_change_;
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

@@ -33,18 +33,17 @@ namespace LCD {
 
 class PluginMeminfo {
 
-    HASH MemInfo;
-    FILE *stream;
-    int ParseMeminfo();
+  HASH MemInfo;
+  FILE *stream;
+  int ParseMeminfo();
 
-    public:
-    PluginMeminfo(lua *script);
-    ~PluginMeminfo();
+public:
+  PluginMeminfo(lua *script);
+  ~PluginMeminfo();
 
-    std::string Meminfo(std::string arg1);
-        
+  std::string Meminfo(std::string arg1);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

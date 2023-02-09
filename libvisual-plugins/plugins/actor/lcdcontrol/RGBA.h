@@ -36,44 +36,41 @@ typedef struct {
 } RGBA;
 */
 class RGBA {
-    public:
-    VisColor rgb;
-    RGBA() : rgb(0, 0, 0, 255) {}
-    RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255) :
-        rgb(r, g, b, a){
-        R = r; G = g; B = b; A = a;
-    }
-    RGBA(int val) {
-        
-	    visual_color_set_from_uint32(&rgb, val);
-    	R = rgb.r;
-	    G = rgb.g;
-    	B = rgb.b;
-	    A = rgb.a;
-    }
-    uint32_t ToInt()
-    {
-        return visual_color_to_uint32(&rgb);
-    }
-    VisColor *ToColor()
-    {
-        return &rgb;
-    }
-    unsigned char R;
-    unsigned char G;
-    unsigned char B;
-    unsigned char A;
+public:
+  VisColor rgb;
+  RGBA() : rgb(0, 0, 0, 255) {}
+  RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255)
+      : rgb(r, g, b, a) {
+    R = r;
+    G = g;
+    B = b;
+    A = a;
+  }
+  RGBA(int val) {
 
-    bool operator==(const RGBA &rhv) const {
-        return R == rhv.R && G == rhv.G && B == rhv.B && A == rhv.A;
-    }
-    bool operator!=(const RGBA &rhv) const {
-        return R != rhv.R || G != rhv.G || B != rhv.B || A != rhv.A;
-    }
+    visual_color_set_from_uint32(&rgb, val);
+    R = rgb.r;
+    G = rgb.g;
+    B = rgb.b;
+    A = rgb.a;
+  }
+  uint32_t ToInt() { return visual_color_to_uint32(&rgb); }
+  VisColor *ToColor() { return &rgb; }
+  unsigned char R;
+  unsigned char G;
+  unsigned char B;
+  unsigned char A;
+
+  bool operator==(const RGBA &rhv) const {
+    return R == rhv.R && G == rhv.G && B == rhv.B && A == rhv.A;
+  }
+  bool operator!=(const RGBA &rhv) const {
+    return R != rhv.R || G != rhv.G || B != rhv.B || A != rhv.A;
+  }
 };
 
-int color2RGBA(const char *color, RGBA * C);
+int color2RGBA(const char *color, RGBA *C);
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

@@ -35,155 +35,155 @@
 using namespace LCD;
 
 int PluginNetStat::ParseNetStat() {
-    const char *DELIMITER = " :\t\n";
-    int age;
-    int row, col;
+  const char *DELIMITER = " :\t\n";
+  int age;
+  int row, col;
 
-    age = hash_age(&NetStat, NULL);
-    if(age >= 0 && age <= 1)
-        return 0;
-    if( Stream == NULL )
-        Stream = fopen("/proc/net/tcp", "r");
-    if( Stream == NULL ) {
-        LCDError("fopen(/proc/net/tcp) failed: %s", strerror(errno));
-        return -1;
-    }
-
-    rewind(Stream);
-    row = 0;
-    linecount = 0;
-
-    while(!feof(Stream)) {
-        char buffer[256];
-        char line[16];
-        char *beg, *end;
-        unsigned int len;
-
-        if(fgets(buffer, sizeof(buffer), Stream) == NULL)
-            break;
-
-        switch(++row) {
-        case 1:
-            if(first_time) {
-                first_time = false;
-                col = 0;
-                beg = buffer;
-
-                    while(beg) {
-                    switch(col) {
-                    case 2:
-                        hash_set_column(&NetStat, col++, "local_port");
-                        while(strlen(beg) > 0 && strchr(DELIMITER, *beg))
-                            beg++;
-                        break;
-                    case 4:
-                        hash_set_column(&NetStat, col++, "rem_port");
-                        while(strlen(beg) > 0 && strchr(DELIMITER, *beg))
-                            beg++;
-                        break;
-                    default:
-                        char key[32];
-                        while(strlen(beg) > 0 && strchr(DELIMITER, *beg))
-                            beg++;
-                        if((end = strpbrk(beg, DELIMITER)) != NULL)
-                            *end = '\0';
-                        qprintf(key, sizeof(key), "%s", beg);
-                        hash_set_column(&NetStat, col++, key);
-                        beg = end ? end + 1 : NULL;
-                        break;
-                        }
-                }
-            }
-        default:
-            beg = buffer;
-            while(*beg && *beg == ' ')
-                beg++;
-            end = beg + 1;
-            while(*end && *end != ':')
-                end++;
-            len = end - beg;
-            if( len >= sizeof(line))
-                len = sizeof(line) - 1;
-            strncpy(line, beg, len);
-            line[len] = '\0';
-
-            hash_put_delta(&NetStat, line, buffer);
-            linecount++;
-        }
-    }
+  age = hash_age(&NetStat, NULL);
+  if (age >= 0 && age <= 1)
     return 0;
+  if (Stream == NULL)
+    Stream = fopen("/proc/net/tcp", "r");
+  if (Stream == NULL) {
+    LCDError("fopen(/proc/net/tcp) failed: %s", strerror(errno));
+    return -1;
+  }
+
+  rewind(Stream);
+  row = 0;
+  linecount = 0;
+
+  while (!feof(Stream)) {
+    char buffer[256];
+    char line[16];
+    char *beg, *end;
+    unsigned int len;
+
+    if (fgets(buffer, sizeof(buffer), Stream) == NULL)
+      break;
+
+    switch (++row) {
+    case 1:
+      if (first_time) {
+        first_time = false;
+        col = 0;
+        beg = buffer;
+
+        while (beg) {
+          switch (col) {
+          case 2:
+            hash_set_column(&NetStat, col++, "local_port");
+            while (strlen(beg) > 0 && strchr(DELIMITER, *beg))
+              beg++;
+            break;
+          case 4:
+            hash_set_column(&NetStat, col++, "rem_port");
+            while (strlen(beg) > 0 && strchr(DELIMITER, *beg))
+              beg++;
+            break;
+          default:
+            char key[32];
+            while (strlen(beg) > 0 && strchr(DELIMITER, *beg))
+              beg++;
+            if ((end = strpbrk(beg, DELIMITER)) != NULL)
+              *end = '\0';
+            qprintf(key, sizeof(key), "%s", beg);
+            hash_set_column(&NetStat, col++, key);
+            beg = end ? end + 1 : NULL;
+            break;
+          }
+        }
+      }
+    default:
+      beg = buffer;
+      while (*beg && *beg == ' ')
+        beg++;
+      end = beg + 1;
+      while (*end && *end != ':')
+        end++;
+      len = end - beg;
+      if (len >= sizeof(line))
+        len = sizeof(line) - 1;
+      strncpy(line, beg, len);
+      line[len] = '\0';
+
+      hash_put_delta(&NetStat, line, buffer);
+      linecount++;
+    }
+  }
+  return 0;
 }
 
 std::string PluginNetStat::Netstat(std::string arg1, std::string arg2) {
-    std::string line, column;
+  std::string line, column;
 
-    if(ParseNetStat() < 0) {
-        return "Error";
-    }
+  if (ParseNetStat() < 0) {
+    return "Error";
+  }
 
-    line = arg1;
-    column = arg2;
+  line = arg1;
+  column = arg2;
 
-    const char *val = hash_get(&NetStat, line.c_str(), column.c_str());
+  const char *val = hash_get(&NetStat, line.c_str(), column.c_str());
 
-    if(val == NULL)
-        return "";
+  if (val == NULL)
+    return "";
 
-    char buffer[17];
-    buffer[0] = 0;
-    if(column == "local_address" || column == "rem_address" ) {
-        char *tmp = (char*)val;
-        unsigned int s_addr1, s_addr2;
-        sscanf(tmp, "%4X", &s_addr1);
-        tmp+=4;
-        sscanf(tmp, "%X", &s_addr2);
-        unsigned long s_addr = (s_addr2 << 16) + s_addr1;
-        unsigned int a1 = s_addr / pow(256, 3);
-        unsigned int a2 = (s_addr % (int)pow(256, 3)) / pow(256, 2);
-        unsigned int a3 = ((s_addr % (int)pow(256, 3)) % 
-            (int)pow(256, 2)) / pow(256, 1);
-        unsigned int a4 = (((s_addr % (int)pow(256, 3)) % 
-            (int)pow(256, 2)) % (int)pow(256, 1)) / pow(256, 0);
-        qprintf(buffer, sizeof(buffer), "%d.%d.%d.%d", a1, a2, a3, a4);
-        
-    } else if(column == "local_port" || column == "rem_port" ) {
-        unsigned int s_port;
-        sscanf(val, "%X", &s_port);
-        qprintf(buffer, sizeof(buffer), "%d", s_port);
-    }
-        
-    return buffer[0] == 0 ? val : buffer;
+  char buffer[17];
+  buffer[0] = 0;
+  if (column == "local_address" || column == "rem_address") {
+    char *tmp = (char *)val;
+    unsigned int s_addr1, s_addr2;
+    sscanf(tmp, "%4X", &s_addr1);
+    tmp += 4;
+    sscanf(tmp, "%X", &s_addr2);
+    unsigned long s_addr = (s_addr2 << 16) + s_addr1;
+    unsigned int a1 = s_addr / pow(256, 3);
+    unsigned int a2 = (s_addr % (int)pow(256, 3)) / pow(256, 2);
+    unsigned int a3 =
+        ((s_addr % (int)pow(256, 3)) % (int)pow(256, 2)) / pow(256, 1);
+    unsigned int a4 =
+        (((s_addr % (int)pow(256, 3)) % (int)pow(256, 2)) % (int)pow(256, 1)) /
+        pow(256, 0);
+    qprintf(buffer, sizeof(buffer), "%d.%d.%d.%d", a1, a2, a3, a4);
+
+  } else if (column == "local_port" || column == "rem_port") {
+    unsigned int s_port;
+    sscanf(val, "%X", &s_port);
+    qprintf(buffer, sizeof(buffer), "%d", s_port);
+  }
+
+  return buffer[0] == 0 ? val : buffer;
 }
 
 int PluginNetStat::LineCount() {
-    if(ParseNetStat() < 0) {
-        return -1;
-    }
-    return linecount;
+  if (ParseNetStat() < 0) {
+    return -1;
+  }
+  return linecount;
 }
 
 PluginNetStat::PluginNetStat() {
-    first_time = true;
-    linecount = 0;
-    Stream = NULL;
-    hash_create(&NetStat);
-    hash_set_delimiter(&NetStat, " :\t\n");
+  first_time = true;
+  linecount = 0;
+  Stream = NULL;
+  hash_create(&NetStat);
+  hash_set_delimiter(&NetStat, " :\t\n");
 }
 
 PluginNetStat::~PluginNetStat() {
-    if(Stream != NULL) {
-        fclose(Stream);
-        Stream = NULL;
-    }
-    hash_destroy(&NetStat);
+  if (Stream != NULL) {
+    fclose(Stream);
+    Stream = NULL;
+  }
+  hash_destroy(&NetStat);
 }
 
 void PluginNetStat::Connect(Evaluator *visitor) {
-/*
-    QScriptEngine *engine = visitor->GetEngine();
-    QScriptValue val = engine->newObject();
-    QScriptValue objVal = engine->newQObject(val, this);
-    engine->globalObject().setProperty("netstat", objVal);
-*/
+  /*
+      QScriptEngine *engine = visitor->GetEngine();
+      QScriptValue val = engine->newObject();
+      QScriptValue objVal = engine->newQObject(val, this);
+      engine->globalObject().setProperty("netstat", objVal);
+  */
 }
-

@@ -31,190 +31,158 @@
 
 namespace LV {
 
-  class PluginData
-  {
-  public:
+class PluginData {
+public:
+  VisPluginInfo const *info;
 
-      VisPluginInfo const *info;
+  EventQueue eventqueue;
+  ParamList params;
+  int plugflags;
+  RandomContext random;
+  bool realized;
+  void *priv;
 
-      EventQueue           eventqueue;
-      ParamList            params;
-      int                  plugflags;
-      RandomContext        random;
-      bool                 realized;
-      void                *priv;
+  PluginData();
+};
 
-      PluginData ();
-  };
-
-  const char *plugin_get_next_by_name (PluginList const& list, const char *name)
-  {
-      for (unsigned int i = 0; i < list.size (); i++)
-      {
-          if (std::strcmp (list[i].info->plugname, name) == 0)
-          {
-              unsigned int next_i = (i + 1) % list.size ();
-              return list[next_i].info->plugname;
-          }
-      }
-
-      return nullptr;
+const char *plugin_get_next_by_name(PluginList const &list, const char *name) {
+  for (unsigned int i = 0; i < list.size(); i++) {
+    if (std::strcmp(list[i].info->plugname, name) == 0) {
+      unsigned int next_i = (i + 1) % list.size();
+      return list[next_i].info->plugname;
+    }
   }
 
-  const char *plugin_get_prev_by_name (PluginList const& list, const char *name)
-  {
-      for (unsigned int i = 0; i < list.size (); i++)
-      {
-          if (std::strcmp (list[i].info->plugname, name) == 0)
-          {
-              unsigned int prev_i = (i + list.size () - 1) % list.size ();
-              return list[prev_i].info->plugname;
-          }
-      }
+  return nullptr;
+}
 
-      return nullptr;
+const char *plugin_get_prev_by_name(PluginList const &list, const char *name) {
+  for (unsigned int i = 0; i < list.size(); i++) {
+    if (std::strcmp(list[i].info->plugname, name) == 0) {
+      unsigned int prev_i = (i + list.size() - 1) % list.size();
+      return list[prev_i].info->plugname;
+    }
   }
 
-  PluginData::PluginData ()
-      : info      {nullptr}
-      , plugflags {0}
-      , random    {LV::rand ()}
-      , realized  {false}
-      , priv      {nullptr}
-  {
-      // nothing
+  return nullptr;
+}
+
+PluginData::PluginData()
+    : info{nullptr}, plugflags{0}, random{LV::rand()}, realized{false},
+      priv{nullptr} {
+  // nothing
+}
+
+} // namespace LV
+
+void visual_plugin_events_pump(VisPluginData *plugin) {
+  visual_return_if_fail(plugin != nullptr);
+
+  if (plugin->info->events) {
+    plugin->info->events(plugin, &plugin->eventqueue);
+  }
+}
+
+VisEventQueue *visual_plugin_get_event_queue(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, nullptr);
+
+  return &plugin->eventqueue;
+}
+
+VisPluginInfo const *visual_plugin_get_info(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, nullptr);
+
+  return plugin->info;
+}
+
+VisParamList *visual_plugin_get_params(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, nullptr);
+
+  return &plugin->params;
+}
+
+VisRandomContext *visual_plugin_get_random_context(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, nullptr);
+
+  return &plugin->random;
+}
+
+void *visual_plugin_get_specific(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, nullptr);
+
+  auto pluginfo = visual_plugin_get_info(plugin);
+  visual_return_val_if_fail(pluginfo != nullptr, nullptr);
+
+  return pluginfo->plugin;
+}
+
+static VisPluginData *visual_plugin_new() { return new VisPluginData; }
+
+static void visual_plugin_free(VisPluginData *plugin) { delete plugin; }
+
+void visual_plugin_unload(VisPluginData *plugin) {
+  visual_return_if_fail(plugin != nullptr);
+
+  if (plugin->realized) {
+    plugin->info->cleanup(plugin);
   }
 
-} // LV namespace
-
-void visual_plugin_events_pump (VisPluginData *plugin)
-{
-    visual_return_if_fail (plugin != nullptr);
-
-    if (plugin->info->events) {
-        plugin->info->events (plugin, &plugin->eventqueue);
-    }
+  visual_plugin_free(plugin);
 }
 
-VisEventQueue *visual_plugin_get_event_queue (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
+VisPluginData *visual_plugin_load(VisPluginType type, const char *name) {
+  // FIXME: Check if plugin has already been loaded
 
-    return &plugin->eventqueue;
+  auto info = LV::PluginRegistry::instance()->get_plugin_info(type, name);
+  if (!info) {
+    return nullptr;
+  }
+
+  auto plugin = visual_plugin_new();
+  plugin->info = info;
+
+  return plugin;
 }
 
-VisPluginInfo const* visual_plugin_get_info (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
+int visual_plugin_realize(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, FALSE);
 
-    return plugin->info;
-}
-
-VisParamList *visual_plugin_get_params (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
-
-    return &plugin->params;
-}
-
-VisRandomContext *visual_plugin_get_random_context (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
-
-    return &plugin->random;
-}
-
-void *visual_plugin_get_specific (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
-
-    auto pluginfo = visual_plugin_get_info (plugin);
-    visual_return_val_if_fail (pluginfo != nullptr, nullptr);
-
-    return pluginfo->plugin;
-}
-
-static VisPluginData *visual_plugin_new ()
-{
-    return new VisPluginData;
-}
-
-static void visual_plugin_free (VisPluginData *plugin)
-{
-    delete plugin;
-}
-
-void visual_plugin_unload (VisPluginData *plugin)
-{
-    visual_return_if_fail (plugin != nullptr);
-
-    if (plugin->realized) {
-        plugin->info->cleanup (plugin);
-    }
-
-    visual_plugin_free (plugin);
-}
-
-VisPluginData *visual_plugin_load (VisPluginType type, const char *name)
-{
-    // FIXME: Check if plugin has already been loaded
-
-    auto info = LV::PluginRegistry::instance()->get_plugin_info (type, name);
-    if (!info) {
-        return nullptr;
-    }
-
-    auto plugin = visual_plugin_new ();
-    plugin->info = info;
-
-    return plugin;
-}
-
-int visual_plugin_realize (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, FALSE);
-
-    if (plugin->realized) {
-        return TRUE;
-    }
-
-    visual_log (VISUAL_LOG_DEBUG, "Activating plugin '%s'", plugin->info->plugname);
-
-    auto params = visual_plugin_get_params (plugin);
-    params->set_event_queue (plugin->eventqueue);
-
-    if (!plugin->info->init (plugin)) {
-        visual_log (VISUAL_LOG_ERROR, "Failed to initialise plugin");
-        return FALSE;
-    }
-
-    plugin->realized = TRUE;
-
+  if (plugin->realized) {
     return TRUE;
+  }
+
+  visual_log(VISUAL_LOG_DEBUG, "Activating plugin '%s'",
+             plugin->info->plugname);
+
+  auto params = visual_plugin_get_params(plugin);
+  params->set_event_queue(plugin->eventqueue);
+
+  if (!plugin->info->init(plugin)) {
+    visual_log(VISUAL_LOG_ERROR, "Failed to initialise plugin");
+    return FALSE;
+  }
+
+  plugin->realized = TRUE;
+
+  return TRUE;
 }
 
-int visual_plugin_is_realized (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, FALSE);
+int visual_plugin_is_realized(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, FALSE);
 
-    return plugin->realized;
+  return plugin->realized;
 }
 
-void visual_plugin_set_private (VisPluginData *plugin, void *priv)
-{
-    visual_return_if_fail (plugin != nullptr);
+void visual_plugin_set_private(VisPluginData *plugin, void *priv) {
+  visual_return_if_fail(plugin != nullptr);
 
-    plugin->priv = priv;
+  plugin->priv = priv;
 }
 
-void *visual_plugin_get_private (VisPluginData *plugin)
-{
-    visual_return_val_if_fail (plugin != nullptr, nullptr);
+void *visual_plugin_get_private(VisPluginData *plugin) {
+  visual_return_val_if_fail(plugin != nullptr, nullptr);
 
-    return plugin->priv;
+  return plugin->priv;
 }
 
-int visual_plugin_get_api_version ()
-{
-    return VISUAL_PLUGIN_API_VERSION;
-}
+int visual_plugin_get_api_version() { return VISUAL_PLUGIN_API_VERSION; }

@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -30,23 +31,21 @@
 #include "oink-config.h"
 
 /* random configs */
-void _oink_config_random_blurmode (OinksiePrivate *priv)
-{
-	priv->config.blurmode = visual_random_context_int_range (priv->rcontext, 0, CONFIG_BLURMODES);
+void _oink_config_random_blurmode(OinksiePrivate *priv) {
+  priv->config.blurmode =
+      visual_random_context_int_range(priv->rcontext, 0, CONFIG_BLURMODES);
 }
 
-void _oink_config_random_scopemode (OinksiePrivate *priv)
-{
-	priv->config.scopemode = visual_random_context_int_range (priv->rcontext, 0, CONFIG_SCOPEMODES);
+void _oink_config_random_scopemode(OinksiePrivate *priv) {
+  priv->config.scopemode =
+      visual_random_context_int_range(priv->rcontext, 0, CONFIG_SCOPEMODES);
 }
 
-void _oink_config_random_backgroundmode (OinksiePrivate *priv)
-{
-	priv->config.backgroundmode = visual_random_context_int_range (priv->rcontext, 0, CONFIG_BACKGROUNDMODES);
+void _oink_config_random_backgroundmode(OinksiePrivate *priv) {
+  priv->config.backgroundmode = visual_random_context_int_range(
+      priv->rcontext, 0, CONFIG_BACKGROUNDMODES);
 }
 
-void _oink_config_random_palfunky (OinksiePrivate *priv)
-{
-	priv->config.palfunky = visual_random_context_int_range (priv->rcontext, 0, 1);
+void _oink_config_random_palfunky(OinksiePrivate *priv) {
+  priv->config.palfunky = visual_random_context_int_range(priv->rcontext, 0, 1);
 }
-

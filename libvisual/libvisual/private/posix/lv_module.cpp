@@ -27,56 +27,48 @@
 
 namespace LV {
 
-  class Module::Impl
-  {
-  public:
+class Module::Impl {
+public:
+  void *handle;
+  std::string path;
+};
 
-      void*       handle;
-      std::string path;
-  };
-
-  ModulePtr Module::load (std::string const& path)
-  {
-      try {
-          return {new Module {path}, false};
-      }
-      catch (std::exception& error) {
-          visual_log (VISUAL_LOG_ERROR, "%s", error.what ());
-          return nullptr;
-      }
+ModulePtr Module::load(std::string const &path) {
+  try {
+    return {new Module{path}, false};
+  } catch (std::exception &error) {
+    visual_log(VISUAL_LOG_ERROR, "%s", error.what());
+    return nullptr;
   }
+}
 
-  Module::Module (std::string const& path)
-      : m_impl (new Impl)
-      , m_ref_count (1)
-  {
-      visual_log (VISUAL_LOG_DEBUG, "Loading shared object: %s", path.c_str ());
+Module::Module(std::string const &path) : m_impl(new Impl), m_ref_count(1) {
+  visual_log(VISUAL_LOG_DEBUG, "Loading shared object: %s", path.c_str());
 
-      m_impl->handle = dlopen (path.c_str(), RTLD_LAZY);
-      m_impl->path = path;
+  m_impl->handle = dlopen(path.c_str(), RTLD_LAZY);
+  m_impl->path = path;
 
-      if (!m_impl->handle) {
-          std::string msg = "Failed to load shared object (" + path + "): " + dlerror();
-          throw std::runtime_error {msg};
-      }
+  if (!m_impl->handle) {
+    std::string msg =
+        "Failed to load shared object (" + path + "): " + dlerror();
+    throw std::runtime_error{msg};
   }
+}
 
-  Module::~Module ()
-  {
-      visual_log (VISUAL_LOG_DEBUG, "Unloading shared object: %s", m_impl->path.c_str ());
+Module::~Module() {
+  visual_log(VISUAL_LOG_DEBUG, "Unloading shared object: %s",
+             m_impl->path.c_str());
 
-      dlclose (m_impl->handle);
-  }
+  dlclose(m_impl->handle);
+}
 
-  void* Module::get_symbol (std::string const& name)
-  {
-      return dlsym (m_impl->handle, name.c_str ());
-  }
+void *Module::get_symbol(std::string const &name) {
+  return dlsym(m_impl->handle, name.c_str());
+}
 
-  std::string const& Module::path_suffix ()
-  {
-      static std::string str (".so");
-      return str;
-  }
+std::string const &Module::path_suffix() {
+  static std::string str(".so");
+  return str;
+}
 
-} // LV namespace
+} // namespace LV

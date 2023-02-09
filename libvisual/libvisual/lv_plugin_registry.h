@@ -13,93 +13,90 @@
 
 namespace LV {
 
-  typedef ::VisPluginType PluginType;
+typedef ::VisPluginType PluginType;
 
-  class LV_API PluginRegistry;
-  template<>
-  LV_API PluginRegistry* Singleton<PluginRegistry>::m_instance;
+class LV_API PluginRegistry;
+template <> LV_API PluginRegistry *Singleton<PluginRegistry>::m_instance;
 
-  //! Manages the registry of plugins
-  //!
-  //! @note This is a singleton class. Its only instance must
-  //!       be accessed via the instance() method.
-  //!
-  class LV_API PluginRegistry
-      : public Singleton<PluginRegistry>
-  {
-  public:
+//! Manages the registry of plugins
+//!
+//! @note This is a singleton class. Its only instance must
+//!       be accessed via the instance() method.
+//!
+class LV_API PluginRegistry : public Singleton<PluginRegistry> {
+public:
+  PluginRegistry(PluginRegistry const &) = delete;
 
-      PluginRegistry (PluginRegistry const&) = delete;
+  /** Destructor */
+  virtual ~PluginRegistry();
 
-      /** Destructor */
-      virtual ~PluginRegistry ();
+  /**
+   * Adds an extra plugin search path.
+   *
+   * @param path Path to plugin directory
+   */
+  void add_path(std::string const &path);
 
-      /**
-       * Adds an extra plugin search path.
-       *
-       * @param path Path to plugin directory
-       */
-      void add_path (std::string const& path);
+  PluginRef const *find_plugin(PluginType type, std::string const &name) const;
 
-      PluginRef const* find_plugin (PluginType type, std::string const& name) const;
+  /**
+   * Checks if a plugin is available.
+   *
+   * @param type Type of plugin
+   * @param name Name of plugin
+   *
+   * @return Returns true if plugin is available, false otherwise
+   */
+  bool has_plugin(PluginType type, std::string const &name) const;
 
-      /**
-       * Checks if a plugin is available.
-       *
-       * @param type Type of plugin
-       * @param name Name of plugin
-       *
-       * @return Returns true if plugin is available, false otherwise
-       */
-      bool has_plugin (PluginType type, std::string const& name) const;
+  /**
+   * Returns the list of all available plugins.
+   *
+   * @return List of plugins
+   */
+  PluginList const &get_plugins() const;
 
-      /**
-       * Returns the list of all available plugins.
-       *
-       * @return List of plugins
-       */
-      PluginList const& get_plugins () const;
+  /**
+   * Returns the list of all available plugins of a given type.
+   *
+   * @param type Type of plugin
+   *
+   * @return List of plugins of the given type
+   */
+  PluginList const &get_plugins_by_type(PluginType type) const;
 
-      /**
-       * Returns the list of all available plugins of a given type.
-       *
-       * @param type Type of plugin
-       *
-       * @return List of plugins of the given type
-       */
-      PluginList const& get_plugins_by_type (PluginType type) const;
+  /**
+   * Returns information on a plugin
+   *
+   * @param type Type of plugin
+   * @param name Name of plugin
+   *
+   * @return Plugin information
+   */
+  VisPluginInfo const *get_plugin_info(PluginType type,
+                                       std::string const &name) const;
 
-      /**
-       * Returns information on a plugin
-       *
-       * @param type Type of plugin
-       * @param name Name of plugin
-       *
-       * @return Plugin information
-       */
-      VisPluginInfo const* get_plugin_info (PluginType type, std::string const& name) const;
+private:
+  friend class System;
 
-  private:
+  class Impl;
 
-      friend class System;
+  const std::unique_ptr<Impl> m_impl;
 
-      class Impl;
+  PluginRegistry();
 
-      const std::unique_ptr<Impl> m_impl;
+  static void init();
+};
 
-      PluginRegistry ();
-
-      static void init ();
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif /* __cplusplus */
 
 LV_BEGIN_DECLS
 
-LV_API void visual_plugin_registry_add_path (const char *path);
-LV_API int  visual_plugin_registry_has_plugin (VisPluginType type, const char *name);
+LV_API void visual_plugin_registry_add_path(const char *path);
+LV_API int visual_plugin_registry_has_plugin(VisPluginType type,
+                                             const char *name);
 
 LV_END_DECLS
 

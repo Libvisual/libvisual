@@ -26,144 +26,92 @@
 
 namespace LV {
 
-  SongInfo::SongInfo (SongInfoType type)
-      : m_type    (type)
-      , m_length  (0)
-      , m_elapsed (0)
-  {
-      // empty
+SongInfo::SongInfo(SongInfoType type)
+    : m_type(type), m_length(0), m_elapsed(0) {
+  // empty
+}
+
+SongInfo::~SongInfo() {
+  // empty
+}
+
+void SongInfo::set_type(SongInfoType type) { m_type = type; }
+
+SongInfoType SongInfo::get_type() const { return m_type; }
+
+void SongInfo::set_length(int length) { m_length = length; }
+
+int SongInfo::get_length() const { return m_length; }
+
+void SongInfo::set_elapsed(int elapsed) { m_elapsed = elapsed; }
+
+int SongInfo::get_elapsed() const { return m_elapsed; }
+
+void SongInfo::set_simple_name(std::string const &name) { m_song_name = name; }
+
+std::string SongInfo::get_simple_name() const { return m_song_name; }
+
+void SongInfo::set_artist(std::string const &artist) { m_artist = artist; }
+
+std::string SongInfo::get_artist() const { return m_artist; }
+
+void SongInfo::set_album(std::string const &album) { m_album = album; }
+
+std::string SongInfo::get_album() const { return m_album; }
+
+void SongInfo::set_song(std::string const &song) { m_song = song; }
+
+std::string SongInfo::get_song() const { return m_song; }
+
+void SongInfo::set_cover(VideoPtr const &cover) {
+  // Get the desired cover art size
+  auto &system_params = LV::System::instance()->get_params();
+  auto xparam = system_params.get("songinfo-cover-width");
+  auto yparam = system_params.get("songinfo-cover-height");
+
+  int cover_width = 64;
+  int cover_height = 64;
+
+  if (xparam && yparam) {
+    cover_width = visual_param_get_value_integer(xparam);
+    cover_height = visual_param_get_value_integer(yparam);
   }
 
-  SongInfo::~SongInfo ()
-  {
-      // empty
-  }
+  // The coverart image
+  m_cover = Video::create_scale_depth(cover, cover_width, cover_height,
+                                      VISUAL_VIDEO_DEPTH_32BIT,
+                                      VISUAL_VIDEO_SCALE_BILINEAR);
+}
 
-  void SongInfo::set_type (SongInfoType type)
-  {
-      m_type = type;
-  }
+void SongInfo::mark() { m_timer.start(); }
 
-  SongInfoType SongInfo::get_type () const
-  {
-      return m_type;
-  }
+long SongInfo::get_age() {
+  auto cur = Time::now();
+  auto start_time = m_timer.get_start_time();
 
-  void SongInfo::set_length (int length)
-  {
-      m_length = length;
-  }
+  // Clock has been changed into the past
+  if (cur < start_time)
+    mark();
 
-  int SongInfo::get_length () const
-  {
-      return m_length;
-  }
+  cur -= start_time;
 
-  void SongInfo::set_elapsed (int elapsed)
-  {
-      m_elapsed = elapsed;
-  }
+  return cur.sec;
+}
 
-  int SongInfo::get_elapsed () const
-  {
-      return m_elapsed;
-  }
+bool operator==(SongInfo const &lhs, SongInfo const &rhs) {
+  if (lhs.m_song_name != rhs.m_song_name)
+    return false;
 
-  void SongInfo::set_simple_name (std::string const& name)
-  {
-      m_song_name = name;
-  }
+  if (lhs.m_artist != rhs.m_artist)
+    return false;
 
-  std::string SongInfo::get_simple_name () const
-  {
-      return m_song_name;
-  }
+  if (lhs.m_album != rhs.m_album)
+    return false;
 
-  void SongInfo::set_artist (std::string const& artist)
-  {
-      m_artist = artist;
-  }
+  if (lhs.m_song != rhs.m_song)
+    return false;
 
-  std::string SongInfo::get_artist () const
-  {
-      return m_artist;
-  }
+  return true;
+}
 
-  void SongInfo::set_album (std::string const& album)
-  {
-      m_album = album;
-  }
-
-  std::string SongInfo::get_album () const
-  {
-      return m_album;
-  }
-
-  void SongInfo::set_song (std::string const& song)
-  {
-      m_song = song;
-  }
-
-  std::string SongInfo::get_song () const
-  {
-      return m_song;
-  }
-
-  void SongInfo::set_cover (VideoPtr const& cover)
-  {
-      // Get the desired cover art size
-      auto& system_params = LV::System::instance()->get_params ();
-      auto  xparam = system_params.get ("songinfo-cover-width");
-      auto  yparam = system_params.get ("songinfo-cover-height");
-
-      int cover_width = 64;
-      int cover_height = 64;
-
-      if (xparam && yparam) {
-          cover_width  = visual_param_get_value_integer (xparam);
-          cover_height = visual_param_get_value_integer (yparam);
-      }
-
-      // The coverart image
-      m_cover = Video::create_scale_depth (cover, cover_width, cover_height,
-                                           VISUAL_VIDEO_DEPTH_32BIT,
-                                           VISUAL_VIDEO_SCALE_BILINEAR);
-  }
-
-  void SongInfo::mark ()
-  {
-      m_timer.start ();
-  }
-
-  long SongInfo::get_age ()
-  {
-      auto cur = Time::now ();
-      auto start_time = m_timer.get_start_time ();
-
-      // Clock has been changed into the past
-      if (cur < start_time)
-          mark ();
-
-      cur -= start_time;
-
-      return cur.sec;
-  }
-
-  bool operator== (SongInfo const& lhs, SongInfo const& rhs)
-  {
-      if (lhs.m_song_name != rhs.m_song_name)
-          return false;
-
-      if (lhs.m_artist != rhs.m_artist)
-          return false;
-
-      if (lhs.m_album != rhs.m_album)
-          return false;
-
-      if (lhs.m_song != rhs.m_song)
-          return false;
-
-      return true;
-  }
-
-} // LV namespace
+} // namespace LV

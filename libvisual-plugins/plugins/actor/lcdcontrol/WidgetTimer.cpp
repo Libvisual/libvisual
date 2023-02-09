@@ -34,43 +34,41 @@
 
 using namespace LCD;
 
-WidgetTimer::WidgetTimer(LCDCore *v, std::string n, Json::Value *section) :
-    Widget(v, n, section, 0, 0, 0, WIDGET_TYPE_TIMER) {
+WidgetTimer::WidgetTimer(LCDCore *v, std::string n, Json::Value *section)
+    : Widget(v, n, section, 0, 0, 0, WIDGET_TYPE_TIMER) {
 
-    expression_ = new Property(v, section, "expression", new Json::Value(""));
+  expression_ = new Property(v, section, "expression", new Json::Value(""));
 
-    Json::Value *val = v->CFG_Fetch(section, "update", new Json::Value(-1));
-    update_ = val->asInt();
-    delete val;
+  Json::Value *val = v->CFG_Fetch(section, "update", new Json::Value(-1));
+  update_ = val->asInt();
+  delete val;
 
-/*
-    timer_ = new QTimer();
-    timer_->setSingleShot(false);
-    timer_->setInterval(update_);
-    //QObject::connect(timer_, SIGNAL(timeout()), this, SLOT(Update()));
-*/
+  /*
+      timer_ = new QTimer();
+      timer_->setSingleShot(false);
+      timer_->setInterval(update_);
+      //QObject::connect(timer_, SIGNAL(timeout()), this, SLOT(Update()));
+  */
 }
 
 WidgetTimer::~WidgetTimer() {
-    Stop();
-    delete expression_;
+  Stop();
+  delete expression_;
 }
 
 void WidgetTimer::Start() {
-    if( update_ < 0)
-        return;
-    //timer_->start();
-    Update();
+  if (update_ < 0)
+    return;
+  // timer_->start();
+  Update();
 }
 
 void WidgetTimer::Stop() {
-    //timer_->stop();
+  // timer_->stop();
 }
 
 void WidgetTimer::Update() {
-    if(!expression_->Valid())
-        return;
-    expression_->Eval();
+  if (!expression_->Valid())
+    return;
+  expression_->Eval();
 }
-
-

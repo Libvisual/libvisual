@@ -27,182 +27,130 @@
 
 namespace LV {
 
-  class Buffer::Impl
-  {
-  public:
+class Buffer::Impl {
+public:
+  void *data;
+  std::size_t size;
+  bool is_owner;
 
-      void*       data;
-      std::size_t size;
-      bool        is_owner;
+  Impl() : data(0), size(0), is_owner(false) {}
 
-      Impl ()
-          : data (0)
-          , size (0)
-          , is_owner (false)
-      {}
+  ~Impl() { free(); }
 
-      ~Impl ()
-      {
-          free ();
-      }
+  void wrap(void *data_, std::size_t size_, bool own) {
+    if (is_owner) {
+      visual_mem_free(data);
+    }
 
-      void wrap (void* data_, std::size_t size_, bool own)
-      {
-          if (is_owner) {
-              visual_mem_free (data);
-          }
-
-          data = data_;
-          size = size_;
-          is_owner = own;
-      }
-
-      void allocate (std::size_t size_)
-      {
-          if (is_owner) {
-              visual_mem_free (data);
-          }
-
-          data = visual_mem_malloc0 (size_);
-          size = size_;
-          is_owner = true;
-      }
-
-      void free ()
-      {
-          if (is_owner) {
-              visual_mem_free (data);
-          }
-
-          data = 0;
-          size = 0;
-          is_owner = false;
-      }
-  };
-
-  Buffer::Buffer ()
-      : m_impl (new Impl)
-      , m_ref_count (1)
-  {
+    data = data_;
+    size = size_;
+    is_owner = own;
   }
 
-  BufferPtr Buffer::create ()
-  {
-      return BufferPtr (new Buffer, false);
+  void allocate(std::size_t size_) {
+    if (is_owner) {
+      visual_mem_free(data);
+    }
+
+    data = visual_mem_malloc0(size_);
+    size = size_;
+    is_owner = true;
   }
 
-  BufferPtr Buffer::wrap (void* data, std::size_t size, bool own)
-  {
-      BufferPtr self (new Buffer, false);
+  void free() {
+    if (is_owner) {
+      visual_mem_free(data);
+    }
 
-      self->m_impl->wrap (data, size, own);
-
-      return self;
+    data = 0;
+    size = 0;
+    is_owner = false;
   }
+};
 
-  BufferPtr Buffer::create (std::size_t size)
-  {
-      BufferPtr self (new Buffer, false);
+Buffer::Buffer() : m_impl(new Impl), m_ref_count(1) {}
 
-      self->m_impl->allocate (size);
+BufferPtr Buffer::create() { return BufferPtr(new Buffer, false); }
 
-      return self;
-  }
+BufferPtr Buffer::wrap(void *data, std::size_t size, bool own) {
+  BufferPtr self(new Buffer, false);
 
-  Buffer::~Buffer ()
-  {
-      // empty
-  }
+  self->m_impl->wrap(data, size, own);
 
-  void Buffer::destroy_content ()
-  {
-      m_impl->free ();
-  }
+  return self;
+}
 
-  void Buffer::set (void* data, std::size_t size)
-  {
-      m_impl->wrap (data, size, false);
-  }
+BufferPtr Buffer::create(std::size_t size) {
+  BufferPtr self(new Buffer, false);
 
-  void Buffer::set_size (std::size_t size)
-  {
-      m_impl->size = size;
-  }
+  self->m_impl->allocate(size);
 
-  void Buffer::set_data (void *data)
-  {
-      m_impl->wrap (data, m_impl->size, false);
-  }
+  return self;
+}
 
-  void Buffer::allocate (std::size_t size)
-  {
-      m_impl->allocate (size);
-  }
+Buffer::~Buffer() {
+  // empty
+}
 
-  void* Buffer::get_data () const
-  {
-      return m_impl->data;
-  }
+void Buffer::destroy_content() { m_impl->free(); }
 
-  void* Buffer::get_data (std::size_t offset) const
-  {
-      return static_cast<uint8_t*> (m_impl->data) + offset;
-  }
+void Buffer::set(void *data, std::size_t size) {
+  m_impl->wrap(data, size, false);
+}
 
-  std::size_t Buffer::get_size () const
-  {
-      return m_impl->size;
-  }
+void Buffer::set_size(std::size_t size) { m_impl->size = size; }
 
-  bool Buffer::is_allocated () const
-  {
-      return m_impl->is_owner;
-  }
+void Buffer::set_data(void *data) { m_impl->wrap(data, m_impl->size, false); }
 
-  void Buffer::copy (BufferConstPtr const& src)
-  {
-      m_impl->allocate (src->m_impl->size);
-      visual_mem_copy (m_impl->data, src->m_impl->data, src->m_impl->size);
-  }
+void Buffer::allocate(std::size_t size) { m_impl->allocate(size); }
 
-  void Buffer::copy_to (void* dest, std::size_t size) const
-  {
-      visual_return_if_fail (dest != nullptr);
+void *Buffer::get_data() const { return m_impl->data; }
 
-      visual_mem_copy (dest, m_impl->data, std::min (size, m_impl->size));
-  }
+void *Buffer::get_data(std::size_t offset) const {
+  return static_cast<uint8_t *>(m_impl->data) + offset;
+}
 
-  void Buffer::copy_to (BufferPtr const& dest) const
-  {
-      copy_to (dest->get_data (), dest->get_size ());
-  }
+std::size_t Buffer::get_size() const { return m_impl->size; }
 
-  void Buffer::put (BufferConstPtr const& src, std::size_t offset)
-  {
-      put (src->m_impl->data, src->m_impl->size, offset);
-  }
+bool Buffer::is_allocated() const { return m_impl->is_owner; }
 
-  void Buffer::put (void const* data, std::size_t size, std::size_t offset)
-  {
-      visual_return_if_fail (data != nullptr);
-      visual_return_if_fail (offset < m_impl->size);
+void Buffer::copy(BufferConstPtr const &src) {
+  m_impl->allocate(src->m_impl->size);
+  visual_mem_copy(m_impl->data, src->m_impl->data, src->m_impl->size);
+}
 
-      size = std::min (m_impl->size - offset, size);
+void Buffer::copy_to(void *dest, std::size_t size) const {
+  visual_return_if_fail(dest != nullptr);
 
-      visual_mem_copy (static_cast<uint8_t*> (m_impl->data) + offset, data, size);
-  }
+  visual_mem_copy(dest, m_impl->data, std::min(size, m_impl->size));
+}
 
-  void Buffer::fill (uint8_t value)
-  {
-      visual_mem_set (m_impl->data, value, m_impl->size);
-  }
+void Buffer::copy_to(BufferPtr const &dest) const {
+  copy_to(dest->get_data(), dest->get_size());
+}
 
-  void Buffer::fill_with_pattern (void const* data, std::size_t size)
-  {
-      visual_return_if_fail (data != nullptr);
+void Buffer::put(BufferConstPtr const &src, std::size_t offset) {
+  put(src->m_impl->data, src->m_impl->size, offset);
+}
 
-      for (std::size_t offset = 0; offset < m_impl->size; offset += size)
-          put (data, size, offset);
-  }
+void Buffer::put(void const *data, std::size_t size, std::size_t offset) {
+  visual_return_if_fail(data != nullptr);
+  visual_return_if_fail(offset < m_impl->size);
 
-} // LV namespace
+  size = std::min(m_impl->size - offset, size);
+
+  visual_mem_copy(static_cast<uint8_t *>(m_impl->data) + offset, data, size);
+}
+
+void Buffer::fill(uint8_t value) {
+  visual_mem_set(m_impl->data, value, m_impl->size);
+}
+
+void Buffer::fill_with_pattern(void const *data, std::size_t size) {
+  visual_return_if_fail(data != nullptr);
+
+  for (std::size_t offset = 0; offset < m_impl->size; offset += size)
+    put(data, size, offset);
+}
+
+} // namespace LV

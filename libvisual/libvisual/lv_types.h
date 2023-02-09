@@ -29,7 +29,7 @@
 
 LV_BEGIN_DECLS
 
-#define VISUAL_TABLESIZE(table)			(sizeof (table) / sizeof (table[0]))
+#define VISUAL_TABLESIZE(table) (sizeof(table) / sizeof(table[0]))
 
 LV_END_DECLS
 

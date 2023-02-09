@@ -42,7 +42,6 @@ struct BoolVal {
   int value;
 };
 
-
 typedef struct _PARAM {
   char *name;
   char *desc;
@@ -55,13 +54,13 @@ typedef struct _PARAM {
     struct ListVal slist;
     struct BoolVal bval;
   } param;
-  
+
   /* used by the core to inform the GUI of a change */
   void (*change_listener)(struct _PARAM *_this);
 
   /* used by the GUI to inform the core of a change */
   void (*changed)(struct _PARAM *_this);
-  
+
   void *user_data; /* can be used by the GUI */
 } PluginParam;
 
@@ -91,7 +90,7 @@ PluginParam goom_secure_i_feedback(char *name);
 
 void goom_set_str_param_value(PluginParam *p, const char *str);
 void goom_set_list_param_value(PluginParam *p, const char *str);
-    
+
 typedef struct _PARAMETERS {
   char *name;
   char *desc;

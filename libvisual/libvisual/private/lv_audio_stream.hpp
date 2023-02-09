@@ -33,31 +33,28 @@
 
 namespace LV {
 
-  class AudioStream
-  {
-  public:
+class AudioStream {
+public:
+  AudioStream();
 
-      AudioStream ();
+  AudioStream(AudioStream const &) = delete;
 
-      AudioStream (AudioStream const&) = delete;
+  ~AudioStream();
 
-      ~AudioStream ();
+  AudioStream &operator=(AudioStream const &) = delete;
 
-      AudioStream& operator= (AudioStream const&) = delete;
+  std::size_t get_size() const;
 
-      std::size_t get_size () const;
+  void write(BufferConstPtr const &buffer, Time const &timestamp);
 
-      void write (BufferConstPtr const& buffer, Time const& timestamp);
+  std::size_t read(BufferPtr const &buffer, std::size_t nbytes);
 
-      std::size_t read (BufferPtr const& buffer, std::size_t nbytes);
+private:
+  class Impl;
 
-  private:
+  const std::unique_ptr<Impl> m_impl;
+};
 
-      class Impl;
-
-      const std::unique_ptr<Impl> m_impl;
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif // _LV_AUDIO_STREAM_HPP

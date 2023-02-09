@@ -26,9 +26,9 @@
 #include <string.h>
 #include <ctype.h>
 
-static int textheight;  /* height of the tallest character, plus 1 */
-static int frame;   /* frame counter, used for color-cycling */
-static int textbg;  /* background color for text */
+static int textheight; /* height of the tallest character, plus 1 */
+static int frame;      /* frame counter, used for color-cycling */
+static int textbg;     /* background color for text */
 
 /* this is a map of the shapes for 0-9, A-Z, and a few punctuation characters.
  * A space char indicates that the pixel should be unchanged, a period that it
@@ -38,888 +38,858 @@ static int textbg;  /* background color for text */
  * and NULL marks the end of the list.  After run-time initialization, the
  * single-character strings are converted to NULLs.
  */
-static char *shapes[] = {
-    "_",
-    "    ",
+static char *shapes[] = {"_",
+                         "    ",
 
-    " ",
-    "         ",
+                         " ",
+                         "         ",
 
-    "0",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "0",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "1",
-    "   ...   ",
-    "  .xxx.  ",
-    " .xxxx.  ",
-    "  ..xx.  ",
-    "   .xx.  ",
-    "   .xx.  ",
-    "   .xx.  ",
-    " ...xx.. ",
-    ".xxxxxxx.",
-    " ....... ",
-    
-    "2",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    " ..  .xx.",
-    "  ...xx. ",
-    " .xxxx.  ",
-    ".xx...   ",
-    ".xx..... ",
-    ".xxxxxxx.",
-    " ....... ",
-    
-    "3",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    " .. ..xx.",
-    "   .xxx. ",
-    "    ..xx.",
-    " ..  .xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
-    
-    "4",
-    "    ...  ",
-    "   .xxx. ",
-    "  .xxxx. ",
-    " .xx.xx. ",
-    ".xx..xx. ",
-    ".xx..xx. ",
-    ".xxxxxxx.",
-    " ....xx. ",
-    "    .xx. ",
-    "     ..  ",
-    
-    "5",
-    " ....... ",
-    ".xxxxxxx.",
-    ".xx..... ",
-    ".xx....  ",
-    ".xxxxxx. ",
-    "......xx.",
-    " ..  .xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "1",
+                         "   ...   ",
+                         "  .xxx.  ",
+                         " .xxxx.  ",
+                         "  ..xx.  ",
+                         "   .xx.  ",
+                         "   .xx.  ",
+                         "   .xx.  ",
+                         " ...xx.. ",
+                         ".xxxxxxx.",
+                         " ....... ",
 
-    "6",
-    "    ..   ",
-    "   .xx.  ",
-    "  .xx.   ",
-    " .xx.    ",
-    ".xx....  ",
-    ".xxxxxx. ",
-    ".xx...xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "2",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         " ..  .xx.",
+                         "  ...xx. ",
+                         " .xxxx.  ",
+                         ".xx...   ",
+                         ".xx..... ",
+                         ".xxxxxxx.",
+                         " ....... ",
 
-    "7",
-    " ....... ",
-    ".xxxxxxx.",
-    ".x....xx.",
-    " .  .xx. ",
-    "    .xx. ",
-    "   .xx.  ",
-    "   .xx.  ",
-    "   .xx.  ",
-    "   .xx.  ",
-    "    ..   ",
+                         "3",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         " .. ..xx.",
+                         "   .xxx. ",
+                         "    ..xx.",
+                         " ..  .xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "8",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    ".xx...xx.",
-    ".xx. .xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "4",
+                         "    ...  ",
+                         "   .xxx. ",
+                         "  .xxxx. ",
+                         " .xx.xx. ",
+                         ".xx..xx. ",
+                         ".xx..xx. ",
+                         ".xxxxxxx.",
+                         " ....xx. ",
+                         "    .xx. ",
+                         "     ..  ",
 
-    "9",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    ".xx...xx.",
-    " .xxxxxx.",
-    "  ....xx.",
-    "    .xx. ",
-    "   .xx.  ",
-    "  .xx.   ",
-    "   ..    ",
+                         "5",
+                         " ....... ",
+                         ".xxxxxxx.",
+                         ".xx..... ",
+                         ".xx....  ",
+                         ".xxxxxx. ",
+                         "......xx.",
+                         " ..  .xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "a",
-    "         ",
-    "         ",
-    "  .....  ",
-    " .xxxxx. ",
-    "  ....xx.",
-    " .xxxxxx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    " .xxxxxx.",
-    "  ...... ",
+                         "6",
+                         "    ..   ",
+                         "   .xx.  ",
+                         "  .xx.   ",
+                         " .xx.    ",
+                         ".xx....  ",
+                         ".xxxxxx. ",
+                         ".xx...xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "b",
-    " ..       ",
-    ".xx.      ",
-    ".xx.....  ",
-    ".xx.xxxx. ",
-    ".xxx...xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xxx...xx.",
-    ".xx.xxxx. ",
-    " .. ....  ",
+                         "7",
+                         " ....... ",
+                         ".xxxxxxx.",
+                         ".x....xx.",
+                         " .  .xx. ",
+                         "    .xx. ",
+                         "   .xx.  ",
+                         "   .xx.  ",
+                         "   .xx.  ",
+                         "   .xx.  ",
+                         "    ..   ",
 
-    "c",
-    "         ",
-    "         ",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    ".xx.  .. ",
-    ".xx.     ",
-    ".xx..... ",
-    " .xxxxxx.",
-    "  .....  ",
+                         "8",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         ".xx. .xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "d",
-    "       .. ",
-    "      .xx.",
-    "  .....xx.",
-    " .xxxx.xx.",
-    ".xx...xxx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx...xxx.",
-    " .xxxx.xx.",
-    "  .... .. ",
+                         "9",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         ".xx...xx.",
+                         " .xxxxxx.",
+                         "  ....xx.",
+                         "    .xx. ",
+                         "   .xx.  ",
+                         "  .xx.   ",
+                         "   ..    ",
 
-    "e",
-    "         ",
-    "         ",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xxxxxx. ",
-    ".xx....  ",
-    " .xxxxx. ",
-    "  .....  ",
+                         "a",
+                         "         ",
+                         "         ",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         "  ....xx.",
+                         " .xxxxxx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         " .xxxxxx.",
+                         "  ...... ",
 
-    "f",
-    "   ....  ",
-    "  .xxxx. ",
-    " .xx..xx.",
-    " .xx. .. ",
-    " .xx.    ",
-    ".xxxx.   ",
-    " .xx.    ",
-    " .xx.    ",
-    " .xx.    ",
-    "  ..     ",
+                         "b",
+                         " ..       ",
+                         ".xx.      ",
+                         ".xx.....  ",
+                         ".xx.xxxx. ",
+                         ".xxx...xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xxx...xx.",
+                         ".xx.xxxx. ",
+                         " .. ....  ",
 
-    "g",
-    "         ",
-    "         ",
-    " .. .... ",
-    " .xxx.xx.",
-    ".xx..xxx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx..xxx.",
-    " .xxx.xx.",
-    "  ....xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "c",
+                         "         ",
+                         "         ",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         ".xx.  .. ",
+                         ".xx.     ",
+                         ".xx..... ",
+                         " .xxxxxx.",
+                         "  .....  ",
 
-    "h",
-    " ..      ",
-    ".xx.     ",
-    ".xx....  ",
-    ".xx.xxx. ",
-    ".xxx..xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    " ..   .. ",
+                         "d",
+                         "       .. ",
+                         "      .xx.",
+                         "  .....xx.",
+                         " .xxxx.xx.",
+                         ".xx...xxx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx...xxx.",
+                         " .xxxx.xx.",
+                         "  .... .. ",
 
-    "i",
-    " .. ",
-    ".xx.",
-    " .. ",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    " .. ",
+                         "e",
+                         "         ",
+                         "         ",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xxxxxx. ",
+                         ".xx....  ",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "j",
-    "   .. ",
-    "  .xx.",
-    "   .. ",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    " ..xx.",
-    ".xxx. ",
-    " ...  ",
+                         "f",
+                         "   ....  ",
+                         "  .xxxx. ",
+                         " .xx..xx.",
+                         " .xx. .. ",
+                         " .xx.    ",
+                         ".xxxx.   ",
+                         " .xx.    ",
+                         " .xx.    ",
+                         " .xx.    ",
+                         "  ..     ",
 
-    "k",
-    " ..      ",
-    ".xx.     ",
-    ".xx.  .. ",
-    ".xx. .xx.",
-    ".xx..xx. ",
-    ".xxxxx.  ",
-    ".xx..xx. ",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    " ..   .. ",
+                         "g",
+                         "         ",
+                         "         ",
+                         " .. .... ",
+                         " .xxx.xx.",
+                         ".xx..xxx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx..xxx.",
+                         " .xxx.xx.",
+                         "  ....xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "l",
-    " ...  ",
-    ".xxx. ",
-    " .xx. ",
-    " .xx. ",
-    " .xx. ",
-    " .xx. ",
-    " .xx. ",
-    " .xx. ",
-    ".xxxx.",
-    " .... ",
+                         "h",
+                         " ..      ",
+                         ".xx.     ",
+                         ".xx....  ",
+                         ".xx.xxx. ",
+                         ".xxx..xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         " ..   .. ",
 
-    "m",
-    "              ",
-    "              ",
-    " .. ... ....  ",
-    ".xx.xxx.xxxx. ",
-    ".xxx..xxx..xx.",
-    ".xx. .xx. .xx.",
-    ".xx. .xx. .xx.",
-    ".xx. .xx. .xx.",
-    ".xx. .xx. .xx.",
-    " ..   ..   .. ",
+                         "i",
+                         " .. ",
+                         ".xx.",
+                         " .. ",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         " .. ",
 
-    "n",
-    "          ",
-    "          ",
-    " .. ....  ",
-    ".xx.xxxx. ",
-    ".xxx...xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    " ..    .. ",
+                         "j",
+                         "   .. ",
+                         "  .xx.",
+                         "   .. ",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         " ..xx.",
+                         ".xxx. ",
+                         " ...  ",
 
-    "o",
-    "         ",
-    "         ",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "k",
+                         " ..      ",
+                         ".xx.     ",
+                         ".xx.  .. ",
+                         ".xx. .xx.",
+                         ".xx..xx. ",
+                         ".xxxxx.  ",
+                         ".xx..xx. ",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         " ..   .. ",
 
-    "p",
-    "          ",
-    "          ",
-    " .. ....  ",
-    ".xx.xxxx. ",
-    ".xxx...xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xxx...xx.",
-    ".xx.xxxx. ",
-    ".xx.....  ",
-    ".xx.      ",
-    " ..       ",
+                         "l",
+                         " ...  ",
+                         ".xxx. ",
+                         " .xx. ",
+                         " .xx. ",
+                         " .xx. ",
+                         " .xx. ",
+                         " .xx. ",
+                         " .xx. ",
+                         ".xxxx.",
+                         " .... ",
 
-    "q",
-    "          ",
-    "          ",
-    "  .... .. ",
-    " .xxxx.xx.",
-    ".xx...xxx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx...xxx.",
-    " .xxxx.xx.",
-    "  .....xx.",
-    "      .xx.",
-    "       .. ",
+                         "m",
+                         "              ",
+                         "              ",
+                         " .. ... ....  ",
+                         ".xx.xxx.xxxx. ",
+                         ".xxx..xxx..xx.",
+                         ".xx. .xx. .xx.",
+                         ".xx. .xx. .xx.",
+                         ".xx. .xx. .xx.",
+                         ".xx. .xx. .xx.",
+                         " ..   ..   .. ",
 
-    "r",
-    "        ",
-    "        ",
-    " .. ... ",
-    ".xx.xxx.",
-    ".xxxx.. ",
-    ".xxx.   ",
-    ".xx.    ",
-    ".xx.    ",
-    ".xx.    ",
-    " ..     ",
+                         "n",
+                         "          ",
+                         "          ",
+                         " .. ....  ",
+                         ".xx.xxxx. ",
+                         ".xxx...xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         " ..    .. ",
 
-    "s",
-    "         ",
-    "         ",
-    "  .....  ",
-    " .xxxxx. ",
-    ".xx...xx.",
-    " .xxx..  ",
-    "  ..xxx. ",
-    ".xx...xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "o",
+                         "         ",
+                         "         ",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "t",
-    "   ..    ",
-    "  .xx.   ",
-    " ..xx... ",
-    ".xxxxxxx.",
-    " ..xx... ",
-    "  .xx.   ",
-    "  .xx.   ",
-    "  .xx.   ",
-    "   .xx.  ",
-    "    ..   ",
+                         "p",
+                         "          ",
+                         "          ",
+                         " .. ....  ",
+                         ".xx.xxxx. ",
+                         ".xxx...xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xxx...xx.",
+                         ".xx.xxxx. ",
+                         ".xx.....  ",
+                         ".xx.      ",
+                         " ..       ",
 
-    "u",
-    "          ",
-    "          ",
-    " ..    .. ",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx.  .xx.",
-    ".xx....xx.",
-    " .xxxxxx. ",
-    "  ......  ",
+                         "q",
+                         "          ",
+                         "          ",
+                         "  .... .. ",
+                         " .xxxx.xx.",
+                         ".xx...xxx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx...xxx.",
+                         " .xxxx.xx.",
+                         "  .....xx.",
+                         "      .xx.",
+                         "       .. ",
 
-    "v",
-    "         ",
-    "         ",
-    " ..   .. ",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    " .xx.xx. ",
-    " .xx.xx. ",
-    "  .xxx.  ",
-    "   ...   ",
+                         "r",
+                         "        ",
+                         "        ",
+                         " .. ... ",
+                         ".xx.xxx.",
+                         ".xxxx.. ",
+                         ".xxx.   ",
+                         ".xx.    ",
+                         ".xx.    ",
+                         ".xx.    ",
+                         " ..     ",
 
-    "w",
-    "             ",
-    "             ",
-    " ..       .. ",
-    ".xx.     .xx.",
-    ".xx.  .  .xx.",
-    ".xx. .x. .xx.",
-    " .xx.xxx.xx. ",
-    " .xx.xxx.xx. ",
-    "  .xxx.xxx.  ",
-    "   ... ...   ",
+                         "s",
+                         "         ",
+                         "         ",
+                         "  .....  ",
+                         " .xxxxx. ",
+                         ".xx...xx.",
+                         " .xxx..  ",
+                         "  ..xxx. ",
+                         ".xx...xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    "x",
-    "         ",
-    "         ",
-    " ..   .. ",
-    ".xx. .xx.",
-    " .xx.xx. ",
-    "  .xxx.  ",
-    "  .xxx.  ",
-    " .xx.xx. ",
-    ".xx. .xx.",
-    " ..   .. ",
+                         "t",
+                         "   ..    ",
+                         "  .xx.   ",
+                         " ..xx... ",
+                         ".xxxxxxx.",
+                         " ..xx... ",
+                         "  .xx.   ",
+                         "  .xx.   ",
+                         "  .xx.   ",
+                         "   .xx.  ",
+                         "    ..   ",
 
-    "y",
-    "         ",
-    "         ",
-    " ..   .. ",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx. .xx.",
-    ".xx..xxx.",
-    " .xxx.xx.",
-    "  ....xx.",
-    " .xxxxx. ",
-    "  .....  ",
+                         "u",
+                         "          ",
+                         "          ",
+                         " ..    .. ",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx.  .xx.",
+                         ".xx....xx.",
+                         " .xxxxxx. ",
+                         "  ......  ",
 
-    "z",
-    "         ",
-    "         ",
-    " ....... ",
-    ".xxxxxxx.",
-    " ....xx. ",
-    "   .xx.  ",
-    "  .xx.   ",
-    " .xx.... ",
-    ".xxxxxxx.",
-    " ....... ",
+                         "v",
+                         "         ",
+                         "         ",
+                         " ..   .. ",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         " .xx.xx. ",
+                         " .xx.xx. ",
+                         "  .xxx.  ",
+                         "   ...   ",
 
-    "-",
-    "        ",
-    "        ",
-    "        ",
-    " ...... ",
-    ".xxxxxx.",
-    " ...... ",
+                         "w",
+                         "             ",
+                         "             ",
+                         " ..       .. ",
+                         ".xx.     .xx.",
+                         ".xx.  .  .xx.",
+                         ".xx. .x. .xx.",
+                         " .xx.xxx.xx. ",
+                         " .xx.xxx.xx. ",
+                         "  .xxx.xxx.  ",
+                         "   ... ...   ",
 
-    "~",
-    "       ",
-    "       ",
-    "       ",
-    "  .... ",
-    " .xx.x.",
-    ".x.xx. ",
-    " ....  ",
+                         "x",
+                         "         ",
+                         "         ",
+                         " ..   .. ",
+                         ".xx. .xx.",
+                         " .xx.xx. ",
+                         "  .xxx.  ",
+                         "  .xxx.  ",
+                         " .xx.xx. ",
+                         ".xx. .xx.",
+                         " ..   .. ",
 
+                         "y",
+                         "         ",
+                         "         ",
+                         " ..   .. ",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx. .xx.",
+                         ".xx..xxx.",
+                         " .xxx.xx.",
+                         "  ....xx.",
+                         " .xxxxx. ",
+                         "  .....  ",
 
-    ".",
-    "    ",
-    "    ",
-    "    ",
-    "    ",
-    "    ",
-    "    ",
-    " .. ",
-    ".xx.",
-    ".xx.",
-    " .. ",
+                         "z",
+                         "         ",
+                         "         ",
+                         " ....... ",
+                         ".xxxxxxx.",
+                         " ....xx. ",
+                         "   .xx.  ",
+                         "  .xx.   ",
+                         " .xx.... ",
+                         ".xxxxxxx.",
+                         " ....... ",
 
-    "!",
-    " .. ",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    ".xx.",
-    " .. ",
-    " .. ",
-    ".xx.",
-    ".xx.",
-    " .. ",
+                         "-",
+                         "        ",
+                         "        ",
+                         "        ",
+                         " ...... ",
+                         ".xxxxxx.",
+                         " ...... ",
 
-    ":",
-    "    ",
-    " .. ",
-    ".xx.",
-    ".xx.",
-    " .. ",
-    "    ",
-    " .. ",
-    ".xx.",
-    ".xx.",
-    " .. ",
+                         "~",
+                         "       ",
+                         "       ",
+                         "       ",
+                         "  .... ",
+                         " .xx.x.",
+                         ".x.xx. ",
+                         " ....  ",
 
-    "#",
-    "    .  .  ",
-    "   .x..x. ",
-    "  ..x..x. ",
-    " .xxxxxxx.",
-    "  .x..x.. ",
-    " ..x..x.  ",
-    ".xxxxxxx. ",
-    " .x..x..  ",
-    " .x..x.   ",
-    "  .  .    ",
+                         ".",
+                         "    ",
+                         "    ",
+                         "    ",
+                         "    ",
+                         "    ",
+                         "    ",
+                         " .. ",
+                         ".xx.",
+                         ".xx.",
+                         " .. ",
 
-    "[",
-    " .... ",
-    ".xxxx.",
-    ".xx.  ",
-    ".xx.  ",
-    ".xx.  ",
-    ".xx.  ",
-    ".xx.  ",
-    ".xx.  ",
-    ".xxxx.",
-    " .... ",
+                         "!",
+                         " .. ",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         ".xx.",
+                         " .. ",
+                         " .. ",
+                         ".xx.",
+                         ".xx.",
+                         " .. ",
 
-    "]",
-    " .... ",
-    ".xxxx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    ".xxxx.",
-    " .... ",
+                         ":",
+                         "    ",
+                         " .. ",
+                         ".xx.",
+                         ".xx.",
+                         " .. ",
+                         "    ",
+                         " .. ",
+                         ".xx.",
+                         ".xx.",
+                         " .. ",
 
-    "(",
-    "   .. ",
-    "  .xx.",
-    " .xx. ",
-    ".xx.  ",
-    ".xx.  ",
-    ".xx.  ",
-    ".xx.  ",
-    " .xx. ",
-    "  .xx.",
-    "   .. ",
+                         "#",
+                         "    .  .  ",
+                         "   .x..x. ",
+                         "  ..x..x. ",
+                         " .xxxxxxx.",
+                         "  .x..x.. ",
+                         " ..x..x.  ",
+                         ".xxxxxxx. ",
+                         " .x..x..  ",
+                         " .x..x.   ",
+                         "  .  .    ",
 
-    ")",
-    " ..   ",
-    ".xx.  ",
-    " .xx. ",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    "  .xx.",
-    " .xx. ",
-    ".xx.  ",
-    " ..   ",
+                         "[",
+                         " .... ",
+                         ".xxxx.",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xxxx.",
+                         " .... ",
 
-    "'",
-    "  .. ",
-    " .xx.",
-    " .xx.",
-    ".xx. ",
-    " ..  ",
+                         "]",
+                         " .... ",
+                         ".xxxx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         ".xxxx.",
+                         " .... ",
 
-    ",",
-    "      ",
-    "      ",
-    "      ",
-    "      ",
-    "  ..  ",
-    " .xx. ",
-    ".xxxx.",
-    " .xx. ",
-    ".xx.  ",
-    " ..   ",
+                         "(",
+                         "   .. ",
+                         "  .xx.",
+                         " .xx. ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         ".xx.  ",
+                         " .xx. ",
+                         "  .xx.",
+                         "   .. ",
 
-    "%",
-    "        ",
-    " ..     ",
-    ".xx. .. ",
-    " .. .xx.",
-    "   .xx. ",
-    "  .xx.  ",
-    " .xx.   ",
-    ".xx. .. ",
-    " .. .xx.",
-    "     .. ",
+                         ")",
+                         " ..   ",
+                         ".xx.  ",
+                         " .xx. ",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         "  .xx.",
+                         " .xx. ",
+                         ".xx.  ",
+                         " ..   ",
 
-    "/",
-    "        ",
-    "        ",
-    "     .. ",
-    "    .xx.",
-    "   .xx. ",
-    "  .xx.  ",
-    " .xx.   ",
-    ".xx.    ",
-    " ..     ",
+                         "'",
+                         "  .. ",
+                         " .xx.",
+                         " .xx.",
+                         ".xx. ",
+                         " ..  ",
 
-    ">",
-    "        ",
-    " ...    ",
-    ".xxx..  ",
-    " ..xxx. ",
-    "   ..xx.",
-    " ..xxx. ",
-    ".xxx..  ",
-    " ...    ",
+                         ",",
+                         "      ",
+                         "      ",
+                         "      ",
+                         "      ",
+                         "  ..  ",
+                         " .xx. ",
+                         ".xxxx.",
+                         " .xx. ",
+                         ".xx.  ",
+                         " ..   ",
 
-    "<",
-    "        ",
-    "    ... ",
-    "  ..xxx.",
-    " .xxx.. ",
-    ".xx..   ",
-    " .xxx.. ",
-    "  ..xxx.",
-    "    ... ",
+                         "%",
+                         "        ",
+                         " ..     ",
+                         ".xx. .. ",
+                         " .. .xx.",
+                         "   .xx. ",
+                         "  .xx.  ",
+                         " .xx.   ",
+                         ".xx. .. ",
+                         " .. .xx.",
+                         "     .. ",
 
-    NULL
-};
+                         "/",
+                         "        ",
+                         "        ",
+                         "     .. ",
+                         "    .xx.",
+                         "   .xx. ",
+                         "  .xx.  ",
+                         " .xx.   ",
+                         ".xx.    ",
+                         " ..     ",
 
+                         ">",
+                         "        ",
+                         " ...    ",
+                         ".xxx..  ",
+                         " ..xxx. ",
+                         "   ..xx.",
+                         " ..xxx. ",
+                         ".xxx..  ",
+                         " ...    ",
+
+                         "<",
+                         "        ",
+                         "    ... ",
+                         "  ..xxx.",
+                         " .xxx.. ",
+                         ".xx..   ",
+                         " .xxx.. ",
+                         "  ..xxx.",
+                         "    ... ",
+
+                         NULL};
 
 static char **chmap[127];
 
 static int row;
 static int big;
 
-static void textinit()
-{
-    int i, h;
+static void textinit() {
+  int i, h;
 
-    /* if already initialized, then do nothing */
-    if (!shapes[0])
-        return;
+  /* if already initialized, then do nothing */
+  if (!shapes[0])
+    return;
 
-    /* scan shapes for the characters defined there */
-    for (h = i = 0; shapes[i]; i++, h++)
-    {
-        /* start of new char? */
-        if (!shapes[i][1])
-        {
-            /* was previous char the tallest? */
-            if (h >= textheight)
-                textheight = h;
-            h = 0;
+  /* scan shapes for the characters defined there */
+  for (h = i = 0; shapes[i]; i++, h++) {
+    /* start of new char? */
+    if (!shapes[i][1]) {
+      /* was previous char the tallest? */
+      if (h >= textheight)
+        textheight = h;
+      h = 0;
 
-            /* remember the shape */
-            chmap[(int)shapes[i][0]] = &shapes[i + 1];
-            shapes[i] = NULL;
-        }
+      /* remember the shape */
+      chmap[(int)shapes[i][0]] = &shapes[i + 1];
+      shapes[i] = NULL;
     }
+  }
 }
 
+static unsigned char *normaltext(unsigned char *cursor, int bpl, char **shape,
+                                 int color) {
+  int x, y;
 
-static unsigned char *normaltext(unsigned char *cursor, int bpl, char **shape, int color)
-{
-    int x, y;
+  for (x = 0; shape[0][x]; x++, cursor++)
+    for (y = 0; shape[y]; y++)
+      switch (shape[y][x]) {
+      case '.':
+        cursor[y * bpl] = textbg;
+        break;
+      case 'x':
+        cursor[y * bpl] = color;
+        break;
+      }
 
-    for (x = 0; shape[0][x]; x++, cursor++)
-        for (y = 0; shape[y]; y++)
-            switch (shape[y][x])
-            {
-              case '.': cursor[y * bpl] = textbg; break;
-              case 'x': cursor[y * bpl] = color; break;
-            }
-
-    return cursor;
+  return cursor;
 }
 
+static unsigned char *bigtext(unsigned char *cursor, int bpl, char **shape,
+                              int color) {
+  int x, y;
+  unsigned char *raster;
 
-static unsigned char *bigtext(unsigned char *cursor, int bpl, char **shape, int color)
-{
-    int x, y;
-    unsigned char   *raster;
+  for (x = 0; shape[0][x]; x++, cursor += 2)
+    for (y = 0, raster = cursor; shape[y]; y++, raster += 2 * bpl)
+      switch (shape[y][x]) {
+      case '.':
+        raster[0] = raster[1] = raster[bpl] = raster[bpl + 1] = textbg;
+        break;
 
-    for (x = 0; shape[0][x]; x++, cursor += 2)
-        for (y = 0, raster = cursor; shape[y]; y++, raster += 2 * bpl)
-            switch (shape[y][x])
-            {
-              case '.':
-                raster[0] = raster[1] = raster[bpl]
-                    = raster[bpl + 1] = textbg;
-                break;
+      case 'x':
+        raster[0] = raster[1] = raster[bpl] = raster[bpl + 1] = color;
+        break;
+      }
 
-              case 'x':
-                raster[0] = raster[1] = raster[bpl]
-                    = raster[bpl + 1] = color;
-                break;
-            }
-
-    return cursor;
+  return cursor;
 }
-
 
 /* Find the number of chars in words that fit */
-static int fitwords(int maxwidth, char *text, int *width)
-{
-    int scale = big ? 2 : 1;
-    int i, w, last, lastw, ch;
-    int fudgefactor = 0;
+static int fitwords(int maxwidth, char *text, int *width) {
+  int scale = big ? 2 : 1;
+  int i, w, last, lastw, ch;
+  int fudgefactor = 0;
 
-    for (i = last = lastw = w = 0; text[i] && w < maxwidth - fudgefactor; i++)
-    {
-        ch = tolower(text[i]);
-        switch (ch)
-        {
-          case '{':
-            scale = 2;
-            break;
+  for (i = last = lastw = w = 0; text[i] && w < maxwidth - fudgefactor; i++) {
+    ch = tolower(text[i]);
+    switch (ch) {
+    case '{':
+      scale = 2;
+      break;
 
-          case '}':
-            scale = 1;
-            break;
+    case '}':
+      scale = 1;
+      break;
 
-          case '\n':
-            *width = w;
-            return i;
+    case '\n':
+      *width = w;
+      return i;
 
-          default:
-            /* ignore if it can't be shown */
-            if (ch < 0 || ch > 126 || !chmap[ch])
-                break;
+    default:
+      /* ignore if it can't be shown */
+      if (ch < 0 || ch > 126 || !chmap[ch])
+        break;
 
-            /* if end of word, remember it */
-            if (ch == ' ')
-            {
-                last = i;
-                lastw = w;
-            }
+      /* if end of word, remember it */
+      if (ch == ' ') {
+        last = i;
+        lastw = w;
+      }
 
-            /* prefer to break lines before certain punctuation */
-            if (strchr("-([,", ch))
-                fudgefactor = 100;
-            else
-                fudgefactor = 0;
+      /* prefer to break lines before certain punctuation */
+      if (strchr("-([,", ch))
+        fudgefactor = 100;
+      else
+        fudgefactor = 0;
 
-            /* add the width of this character */
-            w += scale * strlen(chmap[ch][0]);
-        }
+      /* add the width of this character */
+      w += scale * strlen(chmap[ch][0]);
     }
-    if (!text[i])
-    {
-        *width = w;
-        return i;
-    }
-    if (last > 0)
-    {
-        *width = lastw;
-        return last;
-    }
-    *width = maxwidth;
-    return i - 1;
+  }
+  if (!text[i]) {
+    *width = w;
+    return i;
+  }
+  if (last > 0) {
+    *width = lastw;
+    return last;
+  }
+  *width = maxwidth;
+  return i - 1;
 }
 
+static void textdrawrow(unsigned char *img, int height, int bpl, char *side,
+                        char *text, int max, int rowwidth) {
+  int big = FALSE;
+  unsigned char *cursor;
+  int bpt = bpl * (textheight / 2);
+  int hasbig;
+  int rowheight;
+  int i, ch, color;
 
-static void textdrawrow(unsigned char *img, int height, int bpl, char *side, char *text, int max, int rowwidth)
-{
-    int big = FALSE;
-    unsigned char   *cursor;
-    int bpt = bpl * (textheight / 2);
-    int hasbig;
-    int rowheight;
-    int i, ch, color;
-
-    /* determine whether this involves any big chars */
-    if (big)
-        hasbig = TRUE;
-    else
-    {
-        for (i = 0; i < max && text[i] && text[i] != '{'; i++)
-        {
-        }
-        hasbig = (i < max && text[i] == '{');
+  /* determine whether this involves any big chars */
+  if (big)
+    hasbig = TRUE;
+  else {
+    for (i = 0; i < max && text[i] && text[i] != '{'; i++) {
     }
+    hasbig = (i < max && text[i] == '{');
+  }
 
-    /* if too high, then skip it */
-    rowheight = (hasbig ? textheight * 2 : textheight);
-    if (row + rowheight >= height)
-        return;
+  /* if too high, then skip it */
+  rowheight = (hasbig ? textheight * 2 : textheight);
+  if (row + rowheight >= height)
+    return;
 
-    /* choose the starting position for this row */
-    cursor = img + row * bpl;
-    switch (*side)
-    {
-      case 'R':
-        cursor += (bpl - 3 - rowwidth);
-        break;
+  /* choose the starting position for this row */
+  cursor = img + row * bpl;
+  switch (*side) {
+  case 'R':
+    cursor += (bpl - 3 - rowwidth);
+    break;
 
-      case 'L':
-        cursor += 1;
-        break;
+  case 'L':
+    cursor += 1;
+    break;
 
-      default:
-        cursor += ((bpl - 3 - rowwidth)/2);
+  default:
+    cursor += ((bpl - 3 - rowwidth) / 2);
+  }
+
+  /* if big text, then start the base line a little lower to make room */
+  if (hasbig)
+    cursor += bpt;
+
+  /* for each text character... */
+  for (i = 0; i < max && text[i]; i++) {
+    /* handle special or unsupported characters */
+    ch = tolower(text[i]);
+    if (ch == '{') {
+      big = TRUE;
+      continue;
     }
-
-    /* if big text, then start the base line a little lower to make room */
-    if (hasbig)
-        cursor += bpt;
-
-    /* for each text character... */
-    for (i = 0; i < max && text[i]; i++)
-    {
-        /* handle special or unsupported characters */
-        ch = tolower(text[i]);
-        if (ch == '{')
-        {
-            big = TRUE;
-            continue;
-        }
-        if (ch == '}')
-        {
-            big = FALSE;
-            continue;
-        }
-        if (ch < 0 || ch > 126 || !chmap[ch])
-            continue;
-
-        /* choose a color */
-        color = (( frame - i) * 3) & 0xff;
-        if (color < 128)
-            color = color ^ 0xff;
-
-        /* draw the character */
-        if (big)
-        {
-            cursor -= bpt;
-            cursor = bigtext(cursor, bpl, chmap[ch], color);
-            cursor += bpt;
-        }
-        else
-        {
-            cursor = normaltext(cursor, bpl, chmap[ch], color);
-        }
+    if (ch == '}') {
+      big = FALSE;
+      continue;
     }
+    if (ch < 0 || ch > 126 || !chmap[ch])
+      continue;
 
-    /* increment row by the height of this text row */
-    row += (hasbig ? textheight * 2 : textheight);
+    /* choose a color */
+    color = ((frame - i) * 3) & 0xff;
+    if (color < 128)
+      color = color ^ 0xff;
+
+    /* draw the character */
+    if (big) {
+      cursor -= bpt;
+      cursor = bigtext(cursor, bpl, chmap[ch], color);
+      cursor += bpt;
+    } else {
+      cursor = normaltext(cursor, bpl, chmap[ch], color);
+    }
+  }
+
+  /* increment row by the height of this text row */
+  row += (hasbig ? textheight * 2 : textheight);
 }
 
 /* Convert time in ms to useful string */
-void convert_ms_to_timestamp(char *buf, int time)
-{
-    int m = (time / 1000 / 60);
-    int s = (time / 1000) % 60;
-    sprintf(buf, "%d:%d", m, s);
+void convert_ms_to_timestamp(char *buf, int time) {
+  int m = (time / 1000 / 60);
+  int s = (time / 1000) % 60;
+  sprintf(buf, "%d:%d", m, s);
 }
 
 /* Draw text into an image.  */
-void textdraw(unsigned char *img, int height, int bpl, char *side, char *text)
-{
-    int max, twidth;
+void textdraw(unsigned char *img, int height, int bpl, char *side, char *text) {
+  int max, twidth;
 
-    /* parse the font table, if necessary */
-    textinit();
+  /* parse the font table, if necessary */
+  textinit();
 
-    /* initialize */
-    frame++;
-    row = 0;
-    big = FALSE;
-    textbg = (*config.overall_effect == 'B' ? 0x80 : 0);
+  /* initialize */
+  frame++;
+  row = 0;
+  big = FALSE;
+  textbg = (*config.overall_effect == 'B' ? 0x80 : 0);
 
-    /* for each row of text... */
-    while (text)
-    {
-        /* find out how much can fit on this row */
-        max = fitwords(bpl - 3, text, &twidth);
+  /* for each row of text... */
+  while (text) {
+    /* find out how much can fit on this row */
+    max = fitwords(bpl - 3, text, &twidth);
 
-        /* draw it */
-        textdrawrow(img, height, bpl, side, text, max, twidth);
+    /* draw it */
+    textdrawrow(img, height, bpl, side, text, max, twidth);
 
-        /* move to start of next row */
-        text += max;
-        while (isspace(*text))
-            text++;
-    }
+    /* move to start of next row */
+    text += max;
+    while (isspace(*text))
+      text++;
+  }
 }
-

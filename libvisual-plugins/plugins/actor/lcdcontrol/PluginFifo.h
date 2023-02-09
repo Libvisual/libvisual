@@ -33,35 +33,34 @@
 
 namespace LCD {
 
-class PluginFifo{
+class PluginFifo {
 
-    typedef struct _FifoData {
-        char *path;
-        int input;
-        int created;
-    } FifoData;
-    
-    FifoData fd;
-    char msg[FIFO_BUFFER_SIZE];
-    char fifopath[1024];
+  typedef struct _FifoData {
+    char *path;
+    int input;
+    int created;
+  } FifoData;
 
-    void ConfigureFifo();
-    void RemoveFifo();
-    void CloseFifo();
-    int MakeFifo();
-    int CheckFifo();
-    int OpenFifo();
-    void StartFifo();
+  FifoData fd;
+  char msg[FIFO_BUFFER_SIZE];
+  char fifopath[1024];
 
-    public:
-    PluginFifo(lua *script);
-    ~PluginFifo();
+  void ConfigureFifo();
+  void RemoveFifo();
+  void CloseFifo();
+  int MakeFifo();
+  int CheckFifo();
+  int OpenFifo();
+  void StartFifo();
 
-    std::string Fiforead();
-    int Test(char *foo);
+public:
+  PluginFifo(lua *script);
+  ~PluginFifo();
 
+  std::string Fiforead();
+  int Test(char *foo);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

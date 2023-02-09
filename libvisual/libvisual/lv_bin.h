@@ -35,10 +35,7 @@
  * @{
  */
 
-typedef enum {
-	VISUAL_BIN_DEPTH_LOWEST,
-	VISUAL_BIN_DEPTH_HIGHEST
-} VisBinDepth;
+typedef enum { VISUAL_BIN_DEPTH_LOWEST, VISUAL_BIN_DEPTH_HIGHEST } VisBinDepth;
 
 #ifdef __cplusplus
 
@@ -47,68 +44,65 @@ typedef enum {
 
 namespace LV {
 
-  class LV_API Bin
-  {
-  public:
+class LV_API Bin {
+public:
+  Bin();
 
-	  Bin ();
+  Bin(Bin const &) = delete;
 
-	  Bin (Bin const&) = delete;
+  ~Bin();
 
-	  ~Bin ();
+  Bin &operator=(Bin const &) = delete;
 
-	  Bin& operator= (Bin const&) = delete;
+  void realize();
 
-	  void realize ();
+  ActorPtr const &get_actor() const;
+  InputPtr const &get_input() const;
+  MorphPtr const &get_morph() const;
 
-	  ActorPtr const& get_actor () const;
-	  InputPtr const& get_input () const;
-	  MorphPtr const& get_morph () const;
+  void set_morph(std::string const &morph_name);
 
-	  void set_morph (std::string const& morph_name);
+  bool connect(std::string const &actor_name, std::string const &input_name);
 
-	  bool connect (std::string const& actor_name, std::string const& input_name);
+  void sync(bool noevent);
 
-	  void sync (bool noevent);
+  void set_video(VideoPtr const &video);
 
-	  void set_video (VideoPtr const& video);
+  void set_supported_depth(VisVideoDepth depthflag);
 
-	  void set_supported_depth (VisVideoDepth depthflag);
+  VisVideoDepth get_supported_depth() const;
 
-      VisVideoDepth get_supported_depth () const;
+  void set_preferred_depth(VisBinDepth depthpreferred);
 
-	  void set_preferred_depth (VisBinDepth depthpreferred);
+  void set_depth(VisVideoDepth depth);
 
-	  void set_depth (VisVideoDepth depth);
+  VisVideoDepth get_depth() const;
 
-	  VisVideoDepth get_depth () const;
+  bool depth_changed();
 
-	  bool depth_changed ();
+  Palette const &get_palette() const;
 
-	  Palette const& get_palette () const;
+  void switch_actor(std::string const &actname);
 
-	  void switch_actor (std::string const& actname);
+  void switch_finalize();
 
-	  void switch_finalize ();
+  void use_morph(bool use);
 
-	  void use_morph (bool use);
+  void switch_set_time(Time const &time);
 
-	  void switch_set_time (Time const& time);
+  void run();
 
-	  void run ();
+private:
+  class Impl;
 
-  private:
+  const std::unique_ptr<Impl> m_impl;
 
-	  class Impl;
+  // FIXME: Remove
+  bool connect(ActorPtr const &actor, InputPtr const &input);
+  void switch_actor(ActorPtr const &actor);
+};
 
-      const std::unique_ptr<Impl> m_impl;
-
-      // FIXME: Remove
-	  bool connect (ActorPtr const& actor, InputPtr const& input);
-	  void switch_actor (ActorPtr const& actor);
-  };
-
-} // LV namespace
+} // namespace LV
 
 #endif /* __cplusplus */
 
@@ -121,38 +115,41 @@ struct _VisBin;
 
 LV_BEGIN_DECLS
 
-LV_API VisBin *visual_bin_new (void);
-LV_API void    visual_bin_free (VisBin *bin);
+LV_API VisBin *visual_bin_new(void);
+LV_API void visual_bin_free(VisBin *bin);
 
-LV_API void visual_bin_realize (VisBin *bin);
+LV_API void visual_bin_realize(VisBin *bin);
 
-LV_API VisActor *visual_bin_get_actor (VisBin *bin);
-LV_API VisInput *visual_bin_get_input (VisBin *bin);
+LV_API VisActor *visual_bin_get_actor(VisBin *bin);
+LV_API VisInput *visual_bin_get_input(VisBin *bin);
 
-LV_API void      visual_bin_set_morph (VisBin *bin, const char *morphname);
-LV_API VisMorph *visual_bin_get_morph (VisBin *bin);
+LV_API void visual_bin_set_morph(VisBin *bin, const char *morphname);
+LV_API VisMorph *visual_bin_get_morph(VisBin *bin);
 
-LV_API void visual_bin_connect (VisBin *bin, const char *actname, const char *inname);
+LV_API void visual_bin_connect(VisBin *bin, const char *actname,
+                               const char *inname);
 
-LV_API void visual_bin_sync (VisBin *bin, int noevent);
+LV_API void visual_bin_sync(VisBin *bin, int noevent);
 
-LV_API void visual_bin_set_video (VisBin *bin, VisVideo *video);
+LV_API void visual_bin_set_video(VisBin *bin, VisVideo *video);
 
-LV_API void          visual_bin_set_supported_depth (VisBin *bin, VisVideoDepth depthflag);
-LV_API VisVideoDepth visual_bin_get_supported_depth (VisBin *bin);
-LV_API void          visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depthpreferred);
-LV_API void          visual_bin_set_depth (VisBin *bin, int depth);
-LV_API VisVideoDepth visual_bin_get_depth (VisBin *bin);
+LV_API void visual_bin_set_supported_depth(VisBin *bin,
+                                           VisVideoDepth depthflag);
+LV_API VisVideoDepth visual_bin_get_supported_depth(VisBin *bin);
+LV_API void visual_bin_set_preferred_depth(VisBin *bin,
+                                           VisBinDepth depthpreferred);
+LV_API void visual_bin_set_depth(VisBin *bin, int depth);
+LV_API VisVideoDepth visual_bin_get_depth(VisBin *bin);
 
-LV_API int visual_bin_depth_changed (VisBin *bin);
+LV_API int visual_bin_depth_changed(VisBin *bin);
 
-LV_API const VisPalette* visual_bin_get_palette (VisBin *bin);
+LV_API const VisPalette *visual_bin_get_palette(VisBin *bin);
 
-LV_API void visual_bin_switch_actor (VisBin *bin, const char *name);
-LV_API void visual_bin_switch_finalize (VisBin *bin);
-LV_API void visual_bin_switch_set_time (VisBin *bin, long sec, long usec);
+LV_API void visual_bin_switch_actor(VisBin *bin, const char *name);
+LV_API void visual_bin_switch_finalize(VisBin *bin);
+LV_API void visual_bin_switch_set_time(VisBin *bin, long sec, long usec);
 
-LV_API void visual_bin_run (VisBin *bin);
+LV_API void visual_bin_run(VisBin *bin);
 
 LV_END_DECLS
 

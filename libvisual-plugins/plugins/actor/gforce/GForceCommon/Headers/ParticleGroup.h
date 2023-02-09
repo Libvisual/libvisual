@@ -3,30 +3,26 @@
 
 #include "WaveShape.h"
 
-
 class ParticleGroup : public WaveShape, public nodeClass {
 
-	public:
+public:
+  ParticleGroup(float *inTPtr, ExprUserFcn **inMagFcn);
 
+  void Load(ArgList &inArgs);
 
-								ParticleGroup( float* inTPtr, ExprUserFcn** inMagFcn );
+  void SetDuration(float inSecs) { mEndTime = *mTPtr + inSecs; }
+  inline bool IsExpired() { return *mTPtr > mEndTime; }
 
-		void					Load( ArgList& inArgs );
+  void DrawGroup(PixPort &inDest);
 
-		void					SetDuration( float inSecs )							{ mEndTime = *mTPtr + inSecs;	}
-		inline bool				IsExpired()											{ return *mTPtr > mEndTime;	}
+  UtilStr mTitle;
 
-		void					DrawGroup( PixPort& inDest );
+protected:
+  const float *mTPtr;
 
-		UtilStr					mTitle;
-
-	protected:
-		const float*			mTPtr;
-
-		float					mID, mNumInstances;
-		float					mEndTime, mStartTime;
-		float					mFadeTime;
+  float mID, mNumInstances;
+  float mEndTime, mStartTime;
+  float mFadeTime;
 };
 
 #endif
-

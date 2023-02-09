@@ -4,36 +4,27 @@
 #include <string>
 
 namespace LV {
-  namespace Tools {
+namespace Tools {
 
-    // Test interface
-    class Benchmark
-    {
-    public:
+// Test interface
+class Benchmark {
+public:
+  std::string const &get_name() const { return m_name; }
 
-        std::string const& get_name () const
-        {
-            return m_name;
-        }
+  virtual void operator()(unsigned int max_runs) = 0;
 
-        virtual void operator() (unsigned int max_runs) = 0;
+  virtual ~Benchmark() {}
 
-        virtual ~Benchmark () {}
+protected:
+  explicit Benchmark(std::string const &name) : m_name(name) {}
 
-    protected:
+private:
+  std::string m_name;
+};
 
-        explicit Benchmark (std::string const& name)
-            : m_name (name)
-        {}
+void run_benchmark(Benchmark &benchmark, unsigned int max_runs);
 
-    private:
-
-        std::string m_name;
-    };
-
-    void run_benchmark (Benchmark& benchmark, unsigned int max_runs);
-
-  } // Tools namespace
-} // LV namespace
+} // namespace Tools
+} // namespace LV
 
 #endif // _LV_TOOLS_BENCHMARK_HPP

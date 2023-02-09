@@ -20,7 +20,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with LCDControl.  If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 
 #ifndef _QPRINTF_H_
 #define _QPRINTF_H_

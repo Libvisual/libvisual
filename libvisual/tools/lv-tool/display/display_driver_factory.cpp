@@ -35,57 +35,50 @@
 
 typedef std::unordered_map<std::string, DisplayDriverCreator> CreatorMap;
 
-class DisplayDriverFactory::Impl
-{
+class DisplayDriverFactory::Impl {
 public:
-
-    CreatorMap creators;
+  CreatorMap creators;
 };
 
-DisplayDriverFactory::DisplayDriverFactory ()
-    : m_impl (new Impl)
-{
-    add_driver ("stdout", stdout_driver_new);
+DisplayDriverFactory::DisplayDriverFactory() : m_impl(new Impl) {
+  add_driver("stdout", stdout_driver_new);
 #if defined(HAVE_SDL)
-    add_driver ("sdl", sdl_driver_new);
-    add_driver ("stdout_sdl", stdout_sdl_driver_new);
+  add_driver("sdl", sdl_driver_new);
+  add_driver("stdout_sdl", stdout_sdl_driver_new);
 #endif
 }
 
-DisplayDriverFactory::~DisplayDriverFactory ()
-{
-    // nothing to do
+DisplayDriverFactory::~DisplayDriverFactory() {
+  // nothing to do
 }
 
-void DisplayDriverFactory::add_driver (std::string const& name, Creator const& creator)
-{
-    m_impl->creators[name] = creator;
+void DisplayDriverFactory::add_driver(std::string const &name,
+                                      Creator const &creator) {
+  m_impl->creators[name] = creator;
 }
 
-DisplayDriver* DisplayDriverFactory::make (std::string const& name, Display& display)
-{
-    auto entry = m_impl->creators.find (name);
+DisplayDriver *DisplayDriverFactory::make(std::string const &name,
+                                          Display &display) {
+  auto entry = m_impl->creators.find(name);
 
-    if (entry == m_impl->creators.end ()) {
-        return nullptr;
-    }
+  if (entry == m_impl->creators.end()) {
+    return nullptr;
+  }
 
-    return entry->second (display);
+  return entry->second(display);
 }
 
-bool DisplayDriverFactory::has_driver (std::string const& name) const
-{
-    return (m_impl->creators.find (name) != m_impl->creators.end ());
+bool DisplayDriverFactory::has_driver(std::string const &name) const {
+  return (m_impl->creators.find(name) != m_impl->creators.end());
 }
 
-DisplayDriverList DisplayDriverFactory::get_driver_list () const
-{
-    DisplayDriverList list;
+DisplayDriverList DisplayDriverFactory::get_driver_list() const {
+  DisplayDriverList list;
 
-    list.reserve (m_impl->creators.size ());
+  list.reserve(m_impl->creators.size());
 
-    for (auto creator : m_impl->creators)
-        list.push_back (creator.first);
+  for (auto creator : m_impl->creators)
+    list.push_back(creator.first);
 
-    return list;
+  return list;
 }

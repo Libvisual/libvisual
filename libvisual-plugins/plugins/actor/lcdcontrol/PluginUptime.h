@@ -32,20 +32,20 @@ namespace LCD {
 
 class PluginUptime {
 
-    int fd;
-    double uptime;
-    struct timeval last_value;
-    double GetUptime();
+  int fd;
+  double uptime;
+  struct timeval last_value;
+  double GetUptime();
 
-    public:
-    PluginUptime(lua *script);
-    PluginUptime();
-    ~PluginUptime();
+public:
+  PluginUptime(lua *script);
+  PluginUptime();
+  ~PluginUptime();
 
-    double Uptime();
-    std::string Uptime(std::string format);
+  double Uptime();
+  std::string Uptime(std::string format);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

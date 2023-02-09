@@ -9,52 +9,45 @@
 
 namespace LV {
 
-  class Module;
+class Module;
 
-  typedef IntrusivePtr<Module> ModulePtr;
+typedef IntrusivePtr<Module> ModulePtr;
 
-  class LV_API Module
-  {
-  public:
+class LV_API Module {
+public:
+  static ModulePtr load(std::string const &path);
 
-      static ModulePtr load (std::string const& path);
+  Module(Module const &) = delete;
 
-      Module (Module const&) = delete;
+  Module &operator=(Module const &) = delete;
 
-      Module& operator= (Module const&) = delete;
+  ~Module();
 
-      ~Module ();
+  void *get_symbol(std::string const &name);
 
-      void* get_symbol (std::string const& name);
+  static std::string const &path_suffix();
 
-      static std::string const& path_suffix ();
+private:
+  class Impl;
+  const std::unique_ptr<Impl> m_impl;
 
-  private:
+  unsigned int m_ref_count;
 
-      class Impl;
-      const std::unique_ptr<Impl> m_impl;
+  explicit Module(std::string const &path);
 
-      unsigned int m_ref_count;
+  friend void intrusive_ptr_add_ref(Module *module);
+  friend void intrusive_ptr_release(Module *module);
+};
 
-      explicit Module (std::string const& path);
+inline void intrusive_ptr_add_ref(Module *module) { module->m_ref_count++; }
 
-      friend void intrusive_ptr_add_ref (Module* module);
-      friend void intrusive_ptr_release (Module* module);
-  };
-
-  inline void intrusive_ptr_add_ref (Module* module)
-  {
-      module->m_ref_count++;
+inline void intrusive_ptr_release(Module *module) {
+  module->m_ref_count--;
+  if (module->m_ref_count == 0) {
+    delete module;
   }
+}
 
-  inline void intrusive_ptr_release (Module* module)
-  {
-      module->m_ref_count--;
-      if (module->m_ref_count == 0) {
-          delete module;
-      }
-  }
-
-} // LV namespace
+} // namespace LV
 
 #endif // _LV_MODULE_HPP

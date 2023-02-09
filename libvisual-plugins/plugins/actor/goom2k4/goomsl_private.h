@@ -49,81 +49,81 @@
 /* }}} */
 
 typedef struct _ConstIntNodeType { /* {{{ */
-    int val;
-} ConstIntNodeType; /* }}} */
+  int val;
+} ConstIntNodeType;                  /* }}} */
 typedef struct _ConstFloatNodeType { /* {{{ */
-    float val;
-} ConstFloatNodeType; /* }}} */
+  float val;
+} ConstFloatNodeType;              /* }}} */
 typedef struct _ConstPtrNodeType { /* {{{ */
-    int id;
-} ConstPtrNodeType; /* }}} */
+  int id;
+} ConstPtrNodeType;           /* }}} */
 typedef struct _OprNodeType { /* {{{ */
-    int type;
-    int nbOp;
-    struct _NODE_TYPE *op[3]; /* maximal number of operand needed */
-    struct _NODE_TYPE *next;
-} OprNodeType; /* }}} */
+  int type;
+  int nbOp;
+  struct _NODE_TYPE *op[3]; /* maximal number of operand needed */
+  struct _NODE_TYPE *next;
+} OprNodeType;              /* }}} */
 typedef struct _NODE_TYPE { /* {{{ */
-    int type;
-    char *str;
-    GoomHash *vnamespace;
-    int line_number;
-    union {
-        ConstIntNodeType constInt;
-        ConstFloatNodeType constFloat;
-        ConstPtrNodeType constPtr;
-        OprNodeType opr;
-    } unode;
-} NodeType; /* }}} */
-typedef struct _INSTRUCTION_DATA { /* {{{ */
-  
+  int type;
+  char *str;
+  GoomHash *vnamespace;
+  int line_number;
   union {
-    void  *var;
-    int   *var_int;
-    int   *var_ptr;
+    ConstIntNodeType constInt;
+    ConstFloatNodeType constFloat;
+    ConstPtrNodeType constPtr;
+    OprNodeType opr;
+  } unode;
+} NodeType;                        /* }}} */
+typedef struct _INSTRUCTION_DATA { /* {{{ */
+
+  union {
+    void *var;
+    int *var_int;
+    int *var_ptr;
     float *var_float;
-    int    jump_offset;
+    int jump_offset;
     struct _ExternalFunctionStruct *external_function;
   } udest;
 
   union {
-    void  *var;
-    int   *var_int;
-    int   *var_ptr;
+    void *var;
+    int *var_int;
+    int *var_ptr;
     float *var_float;
-    int    value_int;
-    int    value_ptr;
-    float  value_float;
+    int value_int;
+    int value_ptr;
+    float value_float;
   } usrc;
 } InstructionData;
 /* }}} */
 typedef struct _INSTRUCTION { /* {{{ */
 
-    int id;
-    InstructionData data;
-    GoomSL *parent;
-    const char *name; /* name of the instruction */
+  int id;
+  InstructionData data;
+  GoomSL *parent;
+  const char *name; /* name of the instruction */
 
-    char     **params; /* parametres de l'instruction */
-    GoomHash **vnamespace;
-    int       *types;  /* type des parametres de l'instruction */
-    int cur_param;
-    int nb_param;
+  char **params; /* parametres de l'instruction */
+  GoomHash **vnamespace;
+  int *types; /* type des parametres de l'instruction */
+  int cur_param;
+  int nb_param;
 
-    int address;
-    char *jump_label;
-    char *nop_label;
+  int address;
+  char *jump_label;
+  char *nop_label;
 
-    int line_number;
+  int line_number;
 
 } Instruction;
 /* }}} */
 typedef struct _INSTRUCTION_FLOW { /* {{{ */
 
-    Instruction **instr;
-    int number;
-    int tabsize;
-    GoomHash *labels;
+  Instruction **instr;
+  int number;
+  int tabsize;
+  GoomHash *labels;
 } InstructionFlow;
 /* }}} */
 typedef struct _FAST_INSTRUCTION { /* {{{ */
@@ -145,15 +145,15 @@ typedef struct _ExternalFunctionStruct { /* {{{ */
 } ExternalFunctionStruct;
 /* }}} */
 typedef struct _Block {
-  int    data;
-  int    size;
+  int data;
+  int size;
 } Block;
 typedef struct _GSL_StructField { /* {{{ */
-  int  type;
+  int type;
   char name[256];
-  int  offsetInStruct; /* Where this field is stored... */
+  int offsetInStruct; /* Where this field is stored... */
 } GSL_StructField;
- /* }}} */
+/* }}} */
 typedef struct _GSL_Struct { /* {{{ */
   int nbFields;
   GSL_StructField *fields[64];
@@ -161,41 +161,42 @@ typedef struct _GSL_Struct { /* {{{ */
   Block iBlock[64];
   Block fBlock[64];
 } GSL_Struct;
- /* }}} */
+/* }}} */
 struct _GoomSL { /* {{{ */
-    int num_lines;
-    Instruction *instr;     /* instruction en cours de construction */
+  int num_lines;
+  Instruction *instr; /* instruction en cours de construction */
 
-    InstructionFlow     *iflow;  /* flow d'instruction 'normal' */
-    FastInstructionFlow *fastiflow; /* flow d'instruction optimise */
-    
-    GoomHash *vars;         /* table de variables */
-    int currentNS;
-    GoomHash *namespaces[16];
-    
-    GoomHash *functions;    /* table des fonctions externes */
+  InstructionFlow *iflow;         /* flow d'instruction 'normal' */
+  FastInstructionFlow *fastiflow; /* flow d'instruction optimise */
 
-    GoomHeap *data_heap; /* GSL Heap-like memory space */
-    
-    int nbStructID;
-    GoomHash   *structIDS;
-    GSL_Struct **gsl_struct;
-    int gsl_struct_size;
-    
-    int    nbPtr;
-    int    ptrArraySize;
-    void **ptrArray;
-    
-    int compilationOK;
+  GoomHash *vars; /* table de variables */
+  int currentNS;
+  GoomHash *namespaces[16];
+
+  GoomHash *functions; /* table des fonctions externes */
+
+  GoomHeap *data_heap; /* GSL Heap-like memory space */
+
+  int nbStructID;
+  GoomHash *structIDS;
+  GSL_Struct **gsl_struct;
+  int gsl_struct_size;
+
+  int nbPtr;
+  int ptrArraySize;
+  void **ptrArray;
+
+  int compilationOK;
 #ifdef USE_JITC_X86
-    JitcX86Env *jitc;
-    JitcFunc    jitc_func;
+  JitcX86Env *jitc;
+  JitcFunc jitc_func;
 #endif
 }; /* }}} */
 
 extern GoomSL *currentGoomSL;
 
-Instruction *gsl_instr_init(GoomSL *parent, const char *name, int id, int nb_param, int line_number);
+Instruction *gsl_instr_init(GoomSL *parent, const char *name, int id,
+                            int nb_param, int line_number);
 void gsl_instr_add_param(Instruction *_this, char *param, int type);
 void gsl_instr_set_namespace(Instruction *_this, GoomHash *ns);
 
@@ -215,37 +216,36 @@ void gsl_commit_compilation(void);
 
 #define FIRST_RESERVED 0x80000
 
-#define TYPE_INTEGER  0x90001
-#define TYPE_FLOAT    0x90002
-#define TYPE_VAR      0x90003
-#define TYPE_PTR      0x90004
-#define TYPE_LABEL    0x90005
+#define TYPE_INTEGER 0x90001
+#define TYPE_FLOAT 0x90002
+#define TYPE_VAR 0x90003
+#define TYPE_PTR 0x90004
+#define TYPE_LABEL 0x90005
 
 #define TYPE_OP_EQUAL 6
-#define TYPE_IVAR     0xa0001
-#define TYPE_FVAR     0xa0002
-#define TYPE_PVAR     0xa0003
-#define TYPE_SVAR     0xa0004
+#define TYPE_IVAR 0xa0001
+#define TYPE_FVAR 0xa0002
+#define TYPE_PVAR 0xa0003
+#define TYPE_SVAR 0xa0004
 
-#define INSTR_JUMP     6
-#define INSTR_JZERO    29
-#define INSTR_CALL     36 
-#define INSTR_RET      37
+#define INSTR_JUMP 6
+#define INSTR_JZERO 29
+#define INSTR_CALL 36
+#define INSTR_RET 37
 #define INSTR_EXT_CALL 38
-#define INSTR_JNZERO   40
+#define INSTR_JNZERO 40
 
-#define INSTR_SET     0x80001
-#define INSTR_INT     0x80002
-#define INSTR_FLOAT   0x80003
-#define INSTR_PTR     0x80004
-#define INSTR_LABEL   0x80005
+#define INSTR_SET 0x80001
+#define INSTR_INT 0x80002
+#define INSTR_FLOAT 0x80003
+#define INSTR_PTR 0x80004
+#define INSTR_LABEL 0x80005
 #define INSTR_ISLOWER 0x80006
-#define INSTR_ADD     0x80007
-#define INSTR_MUL     0x80008
-#define INSTR_DIV     0x80009
-#define INSTR_SUB     0x80010
+#define INSTR_ADD 0x80007
+#define INSTR_MUL 0x80008
+#define INSTR_DIV 0x80009
+#define INSTR_SUB 0x80010
 #define INSTR_ISEQUAL 0x80011
-#define INSTR_NOT     0x80012
-
+#define INSTR_NOT 0x80012
 
 #endif

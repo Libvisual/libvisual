@@ -23,68 +23,64 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-//#include <jni.h>
+// #include <jni.h>
 #include <libvisual/libvisual.h>
 
 #include "luascript.h"
 #include "Evaluator.h"
 #include "SpecialChar.h"
-//#include "CPtr.h"
+// #include "CPtr.h"
 #include "debug.h"
 
 using namespace LCD;
 
-Evaluator::Evaluator()
-{
-    mScript = new lua();
-    mCpuinfo = new PluginCpuinfo(mScript);
-    mLoadavg = new PluginLoadavg(mScript);
-    mProcStat = new PluginProcStat(mScript);
-    mUptime = new PluginUptime(mScript);
-    mFPS = new PluginFPS(mScript);
-    mUname = new PluginUname(mScript);
-    mNetinfo = new PluginNetinfo(mScript);
-    mNetDev = new PluginNetDev(mScript);
-    mMeminfo = new PluginMeminfo(mScript);
-    mStatfs = new PluginStatfs(mScript);
-    mDiskstats = new PluginDiskstats(mScript);
-    mFifo = new PluginFifo(mScript);
+Evaluator::Evaluator() {
+  mScript = new lua();
+  mCpuinfo = new PluginCpuinfo(mScript);
+  mLoadavg = new PluginLoadavg(mScript);
+  mProcStat = new PluginProcStat(mScript);
+  mUptime = new PluginUptime(mScript);
+  mFPS = new PluginFPS(mScript);
+  mUname = new PluginUname(mScript);
+  mNetinfo = new PluginNetinfo(mScript);
+  mNetDev = new PluginNetDev(mScript);
+  mMeminfo = new PluginMeminfo(mScript);
+  mStatfs = new PluginStatfs(mScript);
+  mDiskstats = new PluginDiskstats(mScript);
+  mFifo = new PluginFifo(mScript);
 }
 
-Evaluator::~Evaluator()
-{
-    delete mScript;
-    delete mCpuinfo;
-    delete mLoadavg;
-    delete mProcStat;
-    delete mUptime;
-    delete mFPS;
-    delete mUname;
-    delete mNetinfo;
-    delete mNetDev;
-    delete mStatfs;
-    delete mDiskstats;
-    delete mFifo;
+Evaluator::~Evaluator() {
+  delete mScript;
+  delete mCpuinfo;
+  delete mLoadavg;
+  delete mProcStat;
+  delete mUptime;
+  delete mFPS;
+  delete mUname;
+  delete mNetinfo;
+  delete mNetDev;
+  delete mStatfs;
+  delete mDiskstats;
+  delete mFifo;
 }
 
-std::string Evaluator::Eval(std::string str, std::string name)
-{
-    std::string val = "<eval error>";
+std::string Evaluator::Eval(std::string str, std::string name) {
+  std::string val = "<eval error>";
 
-    try {
-        mScript->exec("function __wrap__() " + str + " end; __out__ = __wrap__() or '0'");
-        val = mScript->get_variable<lua::string_arg_t>("__out__").value();
-    } catch (lua::exception &e)
-    {
-        visual_log(VISUAL_LOG_ERROR, "(%s) Lua error: %s, line: %d (%s)", name.c_str(), e.error().c_str(), e.line(), str.c_str());
-    }
-    return val;
-
+  try {
+    mScript->exec("function __wrap__() " + str +
+                  " end; __out__ = __wrap__() or '0'");
+    val = mScript->get_variable<lua::string_arg_t>("__out__").value();
+  } catch (lua::exception &e) {
+    visual_log(VISUAL_LOG_ERROR, "(%s) Lua error: %s, line: %d (%s)",
+               name.c_str(), e.error().c_str(), e.line(), str.c_str());
+  }
+  return val;
 }
 
-std::string Evaluator::Eval(std::string str)
-{
-    return Eval(str, "LCD::Evaluator");
+std::string Evaluator::Eval(std::string str) {
+  return Eval(str, "LCD::Evaluator");
 }
 
 /////////////////////// JNI glue
@@ -92,8 +88,9 @@ std::string Evaluator::Eval(std::string str)
 
 extern "C" {
 
-JNIEXPORT jstring JNICALL Java_com_starlon_libscriptable_UtilsEvaluator_evaluate(
-    JNIEnv *env, jclass clazz, jobject obj, jstring str)
+JNIEXPORT jstring JNICALL
+Java_com_starlon_libscriptable_UtilsEvaluator_evaluate( JNIEnv *env, jclass
+clazz, jobject obj, jstring str)
 {
     Evaluator *eval = getObjectFromCPtr<Evaluator *>( env, obj );
 
@@ -106,8 +103,9 @@ JNIEXPORT jstring JNICALL Java_com_starlon_libscriptable_UtilsEvaluator_evaluate
     return env->NewStringUTF(val.c_str());
 }
 
-JNIEXPORT jobject JNICALL Java_com_starlon_libscriptable_UtilsEvaluator_evaluatorNew(
-    JNIEnv *env, jclass clazz)
+JNIEXPORT jobject JNICALL
+Java_com_starlon_libscriptable_UtilsEvaluator_evaluatorNew( JNIEnv *env, jclass
+clazz)
 {
     std::set_terminate(std::abort);
 
@@ -125,13 +123,15 @@ JNIEXPORT jobject JNICALL Java_com_starlon_libscriptable_UtilsEvaluator_evaluato
 
     if (obj)
     {
-        env->SetLongField( obj, env->GetFieldID( tempClass, "peer", "J" ), (jlong)eval);
+        env->SetLongField( obj, env->GetFieldID( tempClass, "peer", "J" ),
+(jlong)eval);
     }
     return obj;
 }
 
-JNIEXPORT void JNICALL Java_com_starlon_libscriptable_UtilsEvaluator_evaluatorDel(
-    JNIEnv *env, jclass clazz, jobject obj)
+JNIEXPORT void JNICALL
+Java_com_starlon_libscriptable_UtilsEvaluator_evaluatorDel( JNIEnv *env, jclass
+clazz, jobject obj)
 {
     Evaluator *eval = getObjectFromCPtr<Evaluator *>(env, obj);
 

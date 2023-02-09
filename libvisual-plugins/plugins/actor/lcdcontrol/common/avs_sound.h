@@ -1,5 +1,5 @@
 /* Libvisual-AVS - Advanced visual studio for libvisual
- * 
+ *
  * Copyright (C) 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -31,19 +31,20 @@ extern "C" {
 #endif /* __cplusplus */
 
 typedef enum {
-	AVS_SOUND_SOURCE_TYPE_SCOPE,
-	AVS_SOUND_SOURCE_TYPE_SPECTRUM
+  AVS_SOUND_SOURCE_TYPE_SCOPE,
+  AVS_SOUND_SOURCE_TYPE_SPECTRUM
 } AVSSoundSourceType;
 
 typedef enum {
-	AVS_SOUND_CHANNEL_TYPE_LEFT,
-	AVS_SOUND_CHANNEL_TYPE_RIGHT,
-	AVS_SOUND_CHANNEL_TYPE_CENTER
+  AVS_SOUND_CHANNEL_TYPE_LEFT,
+  AVS_SOUND_CHANNEL_TYPE_RIGHT,
+  AVS_SOUND_CHANNEL_TYPE_CENTER
 } AVSSoundChannelType;
 
 /* Prototypes */
-//short avs_sound_get_from_source (VisAudio *audio, AVSSoundSourceType source, AVSSoundChannelType channel, int index);
-int lvavs_sound_get_from_source (VisAudio *audio, float ***data);
+// short avs_sound_get_from_source (VisAudio *audio, AVSSoundSourceType source,
+// AVSSoundChannelType channel, int index);
+int lvavs_sound_get_from_source(VisAudio *audio, float ***data);
 
 #ifdef __cplusplus
 }

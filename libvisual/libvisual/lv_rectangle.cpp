@@ -28,92 +28,91 @@
 
 namespace LV {
 
-  bool Rect::intersects (Rect const& r) const
-  {
-      if (x > (r.x + r.width - 1))
-          return false;
+bool Rect::intersects(Rect const &r) const {
+  if (x > (r.x + r.width - 1))
+    return false;
 
-      if (y > (r.y + r.height - 1))
-          return false;
+  if (y > (r.y + r.height - 1))
+    return false;
 
-      if (r.x > (x + width - 1))
-          return false;
+  if (r.x > (x + width - 1))
+    return false;
 
-      if (r.y > (y + height - 1))
-          return false;
+  if (r.y > (y + height - 1))
+    return false;
 
-      return true;
+  return true;
+}
+
+bool Rect::contains(Rect const &r) const {
+  if (r.x < x)
+    return false;
+
+  if (r.y < y)
+    return false;
+
+  if ((r.x + r.width) > (x + width))
+    return false;
+
+  if ((r.y + r.height) > (y + height))
+    return false;
+
+  return true;
+}
+
+Rect Rect::clip(Rect const &r) const {
+  // Return an empty rectangle
+  if (!intersects(r)) {
+    return Rect();
   }
 
-  bool Rect::contains (Rect const& r) const
-  {
-      if (r.x < x)
-          return false;
+  auto result = r;
 
-      if (r.y < y)
-          return false;
-
-      if ((r.x + r.width) > (x + width))
-          return false;
-
-      if ((r.y + r.height) > (y + height))
-          return false;
-
-      return true;
+  // Left, Upper boundries
+  if (r.x < x) {
+    result.width = r.width - (x - r.x);
+    result.x = x;
   }
 
-  Rect Rect::clip (Rect const& r) const
-  {
-      // Return an empty rectangle
-      if (!intersects (r)) {
-          return Rect ();
-      }
-
-      auto result = r;
-
-      // Left, Upper boundries
-      if (r.x < x) {
-          result.width = r.width - (x - r.x);
-          result.x = x;
-      }
-
-      if (r.y < y) {
-          result.height = r.height - (y - r.y);
-          result.y = y;
-      }
-
-      // Right, Lower boundries
-      if (result.x + result.width > width)
-          result.width = width - result.x;
-
-      if (result.y + result.height > height)
-          result.height = height - result.y;
-
-      return result;
+  if (r.y < y) {
+    result.height = r.height - (y - r.y);
+    result.y = y;
   }
 
-  void Rect::denormalize_points (float const* fxlist, float const* fylist, int32_t *xlist, int32_t *ylist, unsigned int size) const
-  {
-      visual_return_if_fail (fxlist != nullptr);
-      visual_return_if_fail (fylist != nullptr);
-      visual_return_if_fail (xlist  != nullptr);
-      visual_return_if_fail (ylist  != nullptr);
-      visual_return_if_fail (size > 0);
+  // Right, Lower boundries
+  if (result.x + result.width > width)
+    result.width = width - result.x;
 
-      visual_math_simd_denorm_floats_to_int32s (xlist, fxlist, width, size);
-      visual_math_simd_denorm_floats_to_int32s (ylist, fylist, height, size);
-  }
+  if (result.y + result.height > height)
+    result.height = height - result.y;
 
-  void Rect::denormalize_points_neg (float const* fxlist, float const* fylist, int32_t *xlist, int32_t *ylist, unsigned int size) const
-  {
-      visual_return_if_fail (fxlist != nullptr);
-      visual_return_if_fail (fylist != nullptr);
-      visual_return_if_fail (xlist  != nullptr);
-      visual_return_if_fail (ylist  != nullptr);
-      visual_return_if_fail (size > 0);
+  return result;
+}
 
-      visual_math_simd_denorm_neg_floats_to_int32s (xlist, fxlist, size, width);
-      visual_math_simd_denorm_neg_floats_to_int32s (ylist, fylist, size, height);
-  }
+void Rect::denormalize_points(float const *fxlist, float const *fylist,
+                              int32_t *xlist, int32_t *ylist,
+                              unsigned int size) const {
+  visual_return_if_fail(fxlist != nullptr);
+  visual_return_if_fail(fylist != nullptr);
+  visual_return_if_fail(xlist != nullptr);
+  visual_return_if_fail(ylist != nullptr);
+  visual_return_if_fail(size > 0);
 
-} // LV namespace
+  visual_math_simd_denorm_floats_to_int32s(xlist, fxlist, width, size);
+  visual_math_simd_denorm_floats_to_int32s(ylist, fylist, height, size);
+}
+
+void Rect::denormalize_points_neg(float const *fxlist, float const *fylist,
+                                  int32_t *xlist, int32_t *ylist,
+                                  unsigned int size) const {
+  visual_return_if_fail(fxlist != nullptr);
+  visual_return_if_fail(fylist != nullptr);
+  visual_return_if_fail(xlist != nullptr);
+  visual_return_if_fail(ylist != nullptr);
+  visual_return_if_fail(size > 0);
+
+  visual_math_simd_denorm_neg_floats_to_int32s(xlist, fxlist, size, width);
+  visual_math_simd_denorm_neg_floats_to_int32s(ylist, fylist, size, height);
+}
+
+} // namespace LV

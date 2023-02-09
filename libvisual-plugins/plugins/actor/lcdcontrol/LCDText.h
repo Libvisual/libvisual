@@ -42,62 +42,60 @@ class LCDCore;
 
 class LCDGraphic;
 
-class LCDText: public LCDBase {
-    std::string transition_layout_;
-    public:
-    unsigned char **LayoutFB;
-    unsigned char **TransitionFB;
-    unsigned char *DisplayFB;
-    void (*TextRealBlit) (LCDText *obj, int row, int col,
-        unsigned char *data, int len);
-    void (*TextRealDefChar) (LCDText *obj, const int ascii, 
-        SpecialChar matrix);
-    std::vector<SpecialChar> special_chars;
-    int GOTO_COST;
-    int CHARS;
-    int CHAR0;
-    int transition_tick_;
-    bool transitioning_;
-    double tentacle_move_;
-    LCDCore *visitor_;
-    LCDText(LCDCore *visitor);
-    virtual ~LCDText();
-    void TextInit(int rows, int cols, int yres, 
-        int xres, int _goto, int chars, int char0,
-        int layers);
-    void TextBlit(int row, int col, int  height, 
-        int width);
-    int ResizeLCD(int rows, int cols);
-    void CleanBuffer(unsigned char **buf);
-    void TextClear();
-    void TextClearChars();
-    bool TextAddChar(SpecialChar ch);
-    void TextGreet();
-    void Transition();
-    void TransitionLeftRight();
-    void TransitionUpDown();
-    void TransitionTentacle();
-    void TransitionCheckerBoard();
+class LCDText : public LCDBase {
+  std::string transition_layout_;
 
-    bool IsTransitioning() { return transitioning_; }
-    void SignalTransitionStart(std::string layout) { 
-        CleanBuffer(LayoutFB);
-        TextBlit(0, 0, LROWS, LCOLS);
-        transitioning_ = true; transition_layout_ = layout;
-    }
-    void SignalTransitionEnd() { }
-    std::string GetTransitionLayout() { return transition_layout_; }
+public:
+  unsigned char **LayoutFB;
+  unsigned char **TransitionFB;
+  unsigned char *DisplayFB;
+  void (*TextRealBlit)(LCDText *obj, int row, int col, unsigned char *data,
+                       int len);
+  void (*TextRealDefChar)(LCDText *obj, const int ascii, SpecialChar matrix);
+  std::vector<SpecialChar> special_chars;
+  int GOTO_COST;
+  int CHARS;
+  int CHAR0;
+  int transition_tick_;
+  bool transitioning_;
+  double tentacle_move_;
+  LCDCore *visitor_;
+  LCDText(LCDCore *visitor);
+  virtual ~LCDText();
+  void TextInit(int rows, int cols, int yres, int xres, int _goto, int chars,
+                int char0, int layers);
+  void TextBlit(int row, int col, int height, int width);
+  int ResizeLCD(int rows, int cols);
+  void CleanBuffer(unsigned char **buf);
+  void TextClear();
+  void TextClearChars();
+  bool TextAddChar(SpecialChar ch);
+  void TextGreet();
+  void Transition();
+  void TransitionLeftRight();
+  void TransitionUpDown();
+  void TransitionTentacle();
+  void TransitionCheckerBoard();
 
-    // Slots
-    void TextSetSpecialChars();
-    void LayoutChangeBefore();
-    void LayoutChangeAfter();
-    void TextSpecialCharChanged(int ch);
-    void ChangeLayout() {}
-    void LayoutTransition() {}
-    void TransitionFinished() {}
-    void KeypadEvent(int k) {}
+  bool IsTransitioning() { return transitioning_; }
+  void SignalTransitionStart(std::string layout) {
+    CleanBuffer(LayoutFB);
+    TextBlit(0, 0, LROWS, LCOLS);
+    transitioning_ = true;
+    transition_layout_ = layout;
+  }
+  void SignalTransitionEnd() {}
+  std::string GetTransitionLayout() { return transition_layout_; }
 
+  // Slots
+  void TextSetSpecialChars();
+  void LayoutChangeBefore();
+  void LayoutChangeAfter();
+  void TextSpecialCharChanged(int ch);
+  void ChangeLayout() {}
+  void LayoutTransition() {}
+  void TransitionFinished() {}
+  void KeypadEvent(int k) {}
 };
 
 void TextDraw(WidgetText *w);
@@ -112,6 +110,6 @@ void TextBignumsDraw(WidgetBignums *w);
 
 void TextFPSDraw(WidgetFPS *w);
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

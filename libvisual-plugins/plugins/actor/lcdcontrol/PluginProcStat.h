@@ -32,26 +32,25 @@ namespace LCD {
 
 class PluginProcStat {
 
-    HASH Stat;
-    FILE *stream;
+  HASH Stat;
+  FILE *stream;
 
-    void HashPut1(const char *key1, const char *val);
-    void HashPut2(const char *key1, const char *key2,
-        const char *val);
-    void HashPut3(const char *key1, const char *key2,
-        const char *key3, const char *val);
-    int ParseProcStat();
+  void HashPut1(const char *key1, const char *val);
+  void HashPut2(const char *key1, const char *key2, const char *val);
+  void HashPut3(const char *key1, const char *key2, const char *key3,
+                const char *val);
+  int ParseProcStat();
 
-    public:
-        PluginProcStat(lua *script);
-        ~PluginProcStat();
+public:
+  PluginProcStat(lua *script);
+  ~PluginProcStat();
 
-        std::string ProcStat(std::string arg1);
-        double ProcStat(std::string arg1, double arg2);
-        double Cpu(std::string arg1, int arg2);
-        double Disk(std::string arg1, std::string arg2, double arg3);
+  std::string ProcStat(std::string arg1);
+  double ProcStat(std::string arg1, double arg2);
+  double Cpu(std::string arg1, int arg2);
+  double Disk(std::string arg1, std::string arg2, double arg3);
 };
 
-}; // End namespace
+}; // namespace LCD
 
 #endif

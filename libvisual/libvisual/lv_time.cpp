@@ -28,104 +28,69 @@
 
 namespace LV {
 
-  class Timer::Impl
-  {
-  public:
+class Timer::Impl {
+public:
+  Time start;
+  Time end;
+  bool active;
+};
 
-    Time start;
-    Time end;
-    bool active;
-  };
+Time Time::now() { return TimeSystem::now(); }
 
-  Time Time::now ()
-  {
-      return TimeSystem::now ();
-  }
+void Time::usleep(uint64_t usecs) { TimeSystem::usleep(usecs); }
 
-  void Time::usleep (uint64_t usecs)
-  {
-      TimeSystem::usleep (usecs);
-  }
+Timer::Timer() : m_impl(new Impl) { reset(); }
 
-  Timer::Timer ()
-      : m_impl (new Impl)
-  {
-      reset ();
-  }
+Timer::~Timer() {
+  // empty
+}
 
-  Timer::~Timer ()
-  {
-      // empty
-  }
+Timer::Timer(Timer const &rhs) : m_impl{new Impl(*rhs.m_impl)} {
+  // nothing
+}
 
-  Timer::Timer (Timer const& rhs)
-      : m_impl {new Impl (*rhs.m_impl)}
-  {
-      // nothing
-  }
+Timer::Timer(Timer &&rhs) : m_impl{std::move(rhs.m_impl)} {
+  // nothing
+}
 
-  Timer::Timer (Timer&& rhs)
-      : m_impl {std::move (rhs.m_impl)}
-  {
-      // nothing
-  }
+Timer &Timer::operator=(Timer const &rhs) {
+  *m_impl = *rhs.m_impl;
+  return *this;
+}
 
-  Timer& Timer::operator= (Timer const& rhs)
-  {
-      *m_impl = *rhs.m_impl;
-      return *this;
-  }
+Timer &Timer::operator=(Timer &&rhs) {
+  m_impl.swap(rhs.m_impl);
+  return *this;
+}
 
-  Timer& Timer::operator= (Timer&& rhs)
-  {
-      m_impl.swap (rhs.m_impl);
-      return *this;
-  }
+void Timer::reset() {
+  m_impl->start = m_impl->end = Time();
+  m_impl->active = false;
+}
 
-  void Timer::reset ()
-  {
-      m_impl->start = m_impl->end = Time ();
-      m_impl->active = false;
-  }
+bool Timer::is_active() const { return m_impl->active; }
 
-  bool Timer::is_active () const
-  {
-      return m_impl->active;
-  }
+void Timer::start() {
+  m_impl->start = Time::now();
+  m_impl->active = true;
+}
 
-  void Timer::start ()
-  {
-      m_impl->start  = Time::now ();
-      m_impl->active = true;
-  }
+void Timer::stop() {
+  m_impl->end = Time::now();
+  m_impl->active = false;
+}
 
-  void Timer::stop ()
-  {
-      m_impl->end    = Time::now ();
-      m_impl->active = false;
-  }
+Time Timer::get_start_time() const { return m_impl->start; }
 
-  Time Timer::get_start_time () const
-  {
-      return m_impl->start;
-  }
+Time Timer::get_end_time() const { return m_impl->end; }
 
-  Time Timer::get_end_time () const
-  {
-      return m_impl->end;
-  }
+Time Timer::elapsed() const {
+  if (is_active())
+    return Time::now() - m_impl->start;
+  else
+    return m_impl->end - m_impl->start;
+}
 
-  Time Timer::elapsed () const
-  {
-      if (is_active ())
-          return Time::now () - m_impl->start;
-      else
-          return m_impl->end - m_impl->start;
-  }
+bool Timer::is_past(Time const &age) const { return elapsed() > age; }
 
-  bool Timer::is_past (Time const& age) const
-  {
-      return elapsed () > age;
-  }
-
-} // LV namespace
+} // namespace LV

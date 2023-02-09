@@ -43,34 +43,34 @@
 namespace LCD {
 
 class Evaluator {
-    private:
-    lua *mScript;
-    PluginCpuinfo *mCpuinfo;
-    PluginLoadavg *mLoadavg;
-    PluginProcStat *mProcStat;
-    PluginUptime  *mUptime;
-    PluginFPS *mFPS;
-    PluginUname *mUname;
-    PluginNetinfo *mNetinfo;
-    PluginNetDev *mNetDev;
-    PluginMeminfo *mMeminfo;
-    PluginStatfs *mStatfs;
-    PluginDiskstats *mDiskstats;
-    PluginFifo *mFifo;
+private:
+  lua *mScript;
+  PluginCpuinfo *mCpuinfo;
+  PluginLoadavg *mLoadavg;
+  PluginProcStat *mProcStat;
+  PluginUptime *mUptime;
+  PluginFPS *mFPS;
+  PluginUname *mUname;
+  PluginNetinfo *mNetinfo;
+  PluginNetDev *mNetDev;
+  PluginMeminfo *mMeminfo;
+  PluginStatfs *mStatfs;
+  PluginDiskstats *mDiskstats;
+  PluginFifo *mFifo;
 
-    public:
-    Evaluator();
-    virtual ~Evaluator();
-    virtual std::string Eval(std::string str, std::string name);
-    virtual std::string Eval(std::string str);
-/*
-    void AddAccessor(std::string name, QScriptValue (*func)(QScriptContext *ctx, 
-        QScriptEngine *eng), QFlags<QScriptValue::PropertyFlag>);
-    void AddValue(std::string, QScriptValue val);
-    QScriptEngine *GetEngine() { return engine_; };
-*/
+public:
+  Evaluator();
+  virtual ~Evaluator();
+  virtual std::string Eval(std::string str, std::string name);
+  virtual std::string Eval(std::string str);
+  /*
+      void AddAccessor(std::string name, QScriptValue (*func)(QScriptContext
+     *ctx, QScriptEngine *eng), QFlags<QScriptValue::PropertyFlag>); void
+     AddValue(std::string, QScriptValue val); QScriptEngine *GetEngine() {
+     return engine_; };
+  */
 };
 
-};
+}; // namespace LCD
 
 #endif

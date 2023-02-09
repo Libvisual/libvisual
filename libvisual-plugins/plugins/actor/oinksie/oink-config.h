@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -27,11 +28,11 @@
 #include "oinksie.h"
 
 /* random config sets */
-void _oink_config_random_blurmode (OinksiePrivate *priv);
-void _oink_config_random_scopemode (OinksiePrivate *priv);
-void _oink_config_random_backgroundmode (OinksiePrivate *priv);
-void _oink_config_random_beatdots (OinksiePrivate *priv);
-void _oink_config_random_scopestereo (OinksiePrivate *priv);
-void _oink_config_random_palfunky (OinksiePrivate *priv);
+void _oink_config_random_blurmode(OinksiePrivate *priv);
+void _oink_config_random_scopemode(OinksiePrivate *priv);
+void _oink_config_random_backgroundmode(OinksiePrivate *priv);
+void _oink_config_random_beatdots(OinksiePrivate *priv);
+void _oink_config_random_scopestereo(OinksiePrivate *priv);
+void _oink_config_random_palfunky(OinksiePrivate *priv);
 
 #endif /* _OINK_CONFIG_H */

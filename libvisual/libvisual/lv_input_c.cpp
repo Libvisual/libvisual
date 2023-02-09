@@ -25,87 +25,78 @@
 #include "lv_input.h"
 #include "lv_plugin_registry.h"
 
-
 namespace {
 
-  LV::PluginList const&
-  get_input_plugin_list ()
-  {
-      return LV::PluginRegistry::instance()->get_plugins_by_type (VISUAL_PLUGIN_TYPE_INPUT);
-  }
+LV::PluginList const &get_input_plugin_list() {
+  return LV::PluginRegistry::instance()->get_plugins_by_type(
+      VISUAL_PLUGIN_TYPE_INPUT);
+}
 
 } // anonymous namespace
 
-VisInput *visual_input_new (const char *name)
-{
-    auto self = LV::Input::load (name);
-    if (self) {
-        LV::intrusive_ptr_add_ref (self.get ());
-    }
+VisInput *visual_input_new(const char *name) {
+  auto self = LV::Input::load(name);
+  if (self) {
+    LV::intrusive_ptr_add_ref(self.get());
+  }
 
-    return self.get ();
+  return self.get();
 }
 
-void visual_input_ref (VisInput *self)
-{
-    visual_return_if_fail (self != nullptr);
+void visual_input_ref(VisInput *self) {
+  visual_return_if_fail(self != nullptr);
 
-    LV::intrusive_ptr_add_ref (self);
+  LV::intrusive_ptr_add_ref(self);
 }
 
-void visual_input_unref (VisInput *self)
-{
-    visual_return_if_fail (self != nullptr);
+void visual_input_unref(VisInput *self) {
+  visual_return_if_fail(self != nullptr);
 
-    LV::intrusive_ptr_release (self);
+  LV::intrusive_ptr_release(self);
 }
 
-int visual_input_realize (VisInput *self)
-{
-    visual_return_val_if_fail (self != nullptr, FALSE);
+int visual_input_realize(VisInput *self) {
+  visual_return_val_if_fail(self != nullptr, FALSE);
 
-    return self->realize ();
+  return self->realize();
 }
 
-int visual_input_run (VisInput *self)
-{
-    visual_return_val_if_fail (self != nullptr, FALSE);
+int visual_input_run(VisInput *self) {
+  visual_return_val_if_fail(self != nullptr, FALSE);
 
-    return self->run ();
+  return self->run();
 }
 
-VisPluginData *visual_input_get_plugin (VisInput *self)
-{
-    visual_return_val_if_fail (self != nullptr, nullptr);
+VisPluginData *visual_input_get_plugin(VisInput *self) {
+  visual_return_val_if_fail(self != nullptr, nullptr);
 
-    return self->get_plugin ();
+  return self->get_plugin();
 }
 
-VisAudio *visual_input_get_audio (VisInput *self)
-{
-    visual_return_val_if_fail (self != nullptr, nullptr);
+VisAudio *visual_input_get_audio(VisInput *self) {
+  visual_return_val_if_fail(self != nullptr, nullptr);
 
-    return const_cast<VisAudio *> (&self->get_audio ());
+  return const_cast<VisAudio *>(&self->get_audio());
 }
 
-void visual_input_set_callback (VisInput *self, VisInputUploadCallbackFunc callback, void *user_data)
-{
-    using namespace std::placeholders;
+void visual_input_set_callback(VisInput *self,
+                               VisInputUploadCallbackFunc callback,
+                               void *user_data) {
+  using namespace std::placeholders;
 
-    visual_return_if_fail (self != nullptr);
-    visual_return_if_fail (callback);
+  visual_return_if_fail(self != nullptr);
+  visual_return_if_fail(callback);
 
-    auto get_audio_ptr = [=] (LV::Audio& audio) { return &audio; };
+  auto get_audio_ptr = [=](LV::Audio &audio) { return &audio; };
 
-    self->set_callback (std::bind (callback, self, std::bind (get_audio_ptr, _1), user_data));
+  self->set_callback(
+      std::bind(callback, self, std::bind(get_audio_ptr, _1), user_data));
 }
 
-const char *visual_input_get_next_by_name (const char *name)
-{
-    return LV::plugin_get_next_by_name (get_input_plugin_list (), name);
+const char *visual_input_get_next_by_name(const char *name) {
+  return LV::plugin_get_next_by_name(get_input_plugin_list(), name);
 }
 
-const char *visual_input_get_prev_by_name (const char *name)
-{
-    return LV::plugin_get_prev_by_name (get_input_plugin_list (), name);
+const char *visual_input_get_prev_by_name(const char *name) {
+  return LV::plugin_get_prev_by_name(get_input_plugin_list(), name);
 }

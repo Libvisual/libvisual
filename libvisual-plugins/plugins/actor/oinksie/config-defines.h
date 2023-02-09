@@ -1,6 +1,7 @@
 /* Libvisual-plugins - Standard plugins for libvisual
- * 
- * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit <ds@nerds-incorporated.org>
+ *
+ * Copyright (C) 2002, 2003, 2004, 2005, 2006 Dennis Smit
+ * <ds@nerds-incorporated.org>
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
  *
@@ -24,9 +25,9 @@
 #ifndef _OINK_CONFIG_DEFINES_H
 #define _OINK_CONFIG_DEFINES_H
 
-#define CONFIG_BLURMODES	2
-#define CONFIG_MUSICMOODS	3
-#define CONFIG_SCOPEMODES	8
-#define CONFIG_BACKGROUNDMODES	6
+#define CONFIG_BLURMODES 2
+#define CONFIG_MUSICMOODS 3
+#define CONFIG_SCOPEMODES 8
+#define CONFIG_BACKGROUNDMODES 6
 
 #endif /* _OINK_CONFIG_DEFINES_H */

@@ -33,69 +33,55 @@ class DisplayDriver;
 
 class Display {
 public:
+  explicit Display(std::string const &driver_name);
 
-    explicit Display (std::string const& driver_name);
+  Display(Display const &) = delete;
 
-    Display (Display const&) = delete;
+  ~Display();
 
-    ~Display ();
+  Display &operator=(Display const &) = delete;
 
-    Display& operator= (Display const&) = delete;
+  LV::VideoPtr create(VisVideoDepth depth,
+                      VisVideoAttrOptions const *vidoptions, unsigned int width,
+                      unsigned int height, bool resizable = true);
 
-    LV::VideoPtr create (VisVideoDepth depth,
-                         VisVideoAttrOptions const* vidoptions,
-                         unsigned int width,
-                         unsigned int height,
-                         bool resizable = true);
+  void close();
 
-    void close ();
+  void lock();
 
-    void lock ();
+  void unlock();
 
-    void unlock ();
+  void update_all();
 
-    void update_all ();
+  void update_rect(LV::Rect const &rect);
 
-    void update_rect (LV::Rect const& rect);
+  LV::VideoPtr get_video() const;
 
-    LV::VideoPtr get_video () const;
+  void set_title(std::string const &title);
 
-    void set_title(std::string const& title);
+  bool is_fullscreen() const;
 
-    bool is_fullscreen () const;
+  void set_fullscreen(bool fullscreen, bool autoscale);
 
-    void set_fullscreen (bool fullscreen, bool autoscale);
-
-    void drain_events (VisEventQueue& eventqueue);
+  void drain_events(VisEventQueue &eventqueue);
 
 private:
-
-    class Impl;
-    const std::unique_ptr<Impl> m_impl;
+  class Impl;
+  const std::unique_ptr<Impl> m_impl;
 };
 
-class DisplayLock
-{
+class DisplayLock {
 public:
+  DisplayLock(Display &display) : m_display(display) { m_display.lock(); }
 
-    DisplayLock (Display& display)
-        : m_display (display)
-    {
-        m_display.lock ();
-    }
+  ~DisplayLock() { m_display.unlock(); }
 
-    ~DisplayLock ()
-    {
-        m_display.unlock ();
-    }
+  DisplayLock(DisplayLock &) = delete;
 
-    DisplayLock (DisplayLock&) = delete;
-
-    DisplayLock& operator= (DisplayLock&) = delete;
+  DisplayLock &operator=(DisplayLock &) = delete;
 
 private:
-
-    Display& m_display;
+  Display &m_display;
 };
 
 #endif // _LV_TOOL_DISPLAY_HPP

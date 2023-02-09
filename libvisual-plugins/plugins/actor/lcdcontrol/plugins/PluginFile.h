@@ -32,11 +32,11 @@ class Evaluator;
 
 class PluginFile {
 
-    void Connect(Evaluator *visitor);
-    void Disconnect() {}
+  void Connect(Evaluator *visitor);
+  void Disconnect() {}
 
-    std::string Readline(std::string arg1, int arg2);
+  std::string Readline(std::string arg1, int arg2);
 };
 
-}; // End namespace
+}; // namespace LCD
 #endif

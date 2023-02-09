@@ -42,140 +42,138 @@
 
 namespace LV {
 
-  class Param;
+class Param;
 
-  class LV_API ParamList
-  {
-  public:
+class LV_API ParamList {
+public:
+  /**
+   * Creates a new empty ParamList.
+   */
+  ParamList();
 
-      /**
-       * Creates a new empty ParamList.
-       */
-      ParamList ();
+  /**
+   * Creates a new ParamList with entries drawn from an initializer list.
+   */
+  ParamList(std::initializer_list<Param *> params);
 
-      /**
-       * Creates a new ParamList with entries drawn from an initializer list.
-       */
-      ParamList (std::initializer_list<Param*> params);
+  /**
+   * Move constructor
+   */
+  ParamList(ParamList &&list);
 
-      /**
-       * Move constructor
-       */
-      ParamList (ParamList&& list);
+  /** Destructor */
+  ~ParamList();
 
-      /** Destructor */
-      ~ParamList ();
+  /**
+   * Adds a new parameter entry.
+   *
+   * @param param Parameter to add
+   */
+  void add(Param &&param);
 
-      /**
-       * Adds a new parameter entry.
-       *
-       * @param param Parameter to add
-       */
-      void add (Param&& param);
+  /**
+   * Adds a new parameter entry.
+   *
+   * @note Entry will be managed and automatically freed.
+   *
+   * @param param Parameter to add
+   */
+  void add(Param *param);
 
-      /**
-       * Adds a new parameter entry.
-       *
-       * @note Entry will be managed and automatically freed.
-       *
-       * @param param Parameter to add
-       */
-      void add (Param* param);
+  /**
+   * Adds a list of parameters.
+   *
+   * @param params List of parameters
+   */
+  template <class Container> void add(Container const &params) {
+    for (auto const &param : params) {
+      add(param);
+    }
+  }
 
-      /**
-       * Adds a list of parameters.
-       *
-       * @param params List of parameters
-       */
-      template <class Container>
-      void add (Container const& params)
-      {
-          for (auto const& param : params) {
-              add (param);
-          }
-      }
+  /**
+   * Removes a parameter by name.
+   *
+   * @param name Name of parameter to remove
+   *
+   * @return true on success, false otherwise
+   */
+  bool remove(std::string const &name);
 
-      /**
-       * Removes a parameter by name.
-       *
-       * @param name Name of parameter to remove
-       *
-       * @return true on success, false otherwise
-       */
-      bool remove (std::string const& name);
+  /**
+   * Returns a parameter by name
+   *
+   * @param name Name of parameter to return
+   *
+   * @return Parameter of the given name, or nullptr if no such
+   *         parameter exists
+   */
+  Param *get(std::string const &name) const;
 
-      /**
-       * Returns a parameter by name
-       *
-       * @param name Name of parameter to return
-       *
-       * @return Parameter of the given name, or nullptr if no such
-       *         parameter exists
-       */
-      Param* get (std::string const& name) const;
+  /**
+   * Sets the event queue.
+   *
+   * @param event_queue Event queue to hook send parameter update events to
+   */
+  void set_event_queue(EventQueue &event_queue);
 
-      /**
-       * Sets the event queue.
-       *
-       * @param event_queue Event queue to hook send parameter update events to
-       */
-      void set_event_queue (EventQueue& event_queue);
+  /**
+   * Returns the event queue.
+   *
+   * @see set_event_queue()
+   *
+   * @return Event queue if set, nullptr otherwise
+   */
+  EventQueue *get_event_queue() const;
 
-      /**
-       * Returns the event queue.
-       *
-       * @see set_event_queue()
-       *
-       * @return Event queue if set, nullptr otherwise
-       */
-      EventQueue* get_event_queue () const;
+private:
+  class Impl;
+  std::unique_ptr<Impl> m_impl;
+};
 
-  private:
+} // namespace LV
 
-      class Impl;
-      std::unique_ptr<Impl> m_impl;
-  };
-
-} // LV namespace
-
-typedef LV::Param     VisParam;
+typedef LV::Param VisParam;
 typedef LV::ParamList VisParamList;
 
 #else
 
-typedef struct _VisParam     VisParam;
+typedef struct _VisParam VisParam;
 typedef struct _VisParamList VisParamList;
 
 #endif
 
-#define VISUAL_PARAM(obj)       ((VisParam *) (obj))
-#define VISUAL_PARAM_LIST(obj)  ((VisParamList *) (obj))
+#define VISUAL_PARAM(obj) ((VisParam *)(obj))
+#define VISUAL_PARAM_LIST(obj) ((VisParamList *)(obj))
 
-typedef int  (*VisParamValidateFunc) (VisParamValue *value, void *priv);
-typedef void (*VisParamChangedFunc)  (VisParam *param, void *priv);
-typedef void (*VisDestroyFunc)       (void *data);
+typedef int (*VisParamValidateFunc)(VisParamValue *value, void *priv);
+typedef void (*VisParamChangedFunc)(VisParam *param, void *priv);
+typedef void (*VisDestroyFunc)(void *data);
 
 LV_BEGIN_DECLS
 
 /* VisClosure API */
 
-LV_API VisClosure *visual_closure_new  (void *func, void *data, VisDestroyFunc destroy_func);
-LV_API void        visual_closure_free (VisClosure *self);
+LV_API VisClosure *visual_closure_new(void *func, void *data,
+                                      VisDestroyFunc destroy_func);
+LV_API void visual_closure_free(VisClosure *self);
 
 /* VisParamList API */
 
-LV_API VisParamList *visual_param_list_new  (void);
-LV_API void          visual_param_list_free (VisParamList *self);
+LV_API VisParamList *visual_param_list_new(void);
+LV_API void visual_param_list_free(VisParamList *self);
 
-LV_API void         visual_param_list_add         (VisParamList *list, VisParam *param);
-LV_API void         visual_param_list_add_array   (VisParamList *list, VisParam **params, unsigned int nparams);
-LV_API void         visual_param_list_add_many    (VisParamList *list, ...);
-LV_API VisParam **  visual_param_list_get_entries (VisParamList *list);
-LV_API int          visual_param_list_remove      (VisParamList *list, const char *name);
-LV_API VisParam *   visual_param_list_get         (VisParamList *list, const char *name);
+LV_API void visual_param_list_add(VisParamList *list, VisParam *param);
+LV_API void visual_param_list_add_array(VisParamList *list, VisParam **params,
+                                        unsigned int nparams);
+LV_API void visual_param_list_add_many(VisParamList *list, ...);
+LV_API VisParam **visual_param_list_get_entries(VisParamList *list);
+LV_API int visual_param_list_remove(VisParamList *list, const char *name);
+LV_API VisParam *visual_param_list_get(VisParamList *list, const char *name);
 
-LV_API void           visual_param_list_set_event_queue (VisParamList *list, VisEventQueue *eventqueue);
-LV_API VisEventQueue *visual_param_list_get_event_queue (VisParamList *list);
+LV_API void visual_param_list_set_event_queue(VisParamList *list,
+                                              VisEventQueue *eventqueue);
+LV_API VisEventQueue *visual_param_list_get_event_queue(VisParamList *list);
 
 /* VisParam API */
 
@@ -190,18 +188,16 @@ LV_API VisEventQueue *visual_param_list_get_event_queue (VisParamList *list);
  *
  * @return A newly allocated VisParam
  */
-LV_API VisParam *visual_param_new (const char * name,
-                                   const char * description,
-                                   VisParamType type,
-                                   void *       default_value,
-                                   VisClosure * validator);
+LV_API VisParam *visual_param_new(const char *name, const char *description,
+                                  VisParamType type, void *default_value,
+                                  VisClosure *validator);
 
 /**
  * Frees a parameter entry.
  *
  * @param param Param to free
  */
-LV_API void visual_param_free (VisParam *param);
+LV_API void visual_param_free(VisParam *param);
 
 /**
  * Adds a change notification callback.
@@ -211,34 +207,35 @@ LV_API void visual_param_free (VisParam *param);
  * @param data         Additional data to be passed to callback
  * @param destroy_func Function called to destroy data (may be NULL)
  */
-LV_API VisClosure *visual_param_add_callback (VisParam *          param,
-                                              VisParamChangedFunc func,
-                                              void *              data,
-                                              VisDestroyFunc      destroy_func);
+LV_API VisClosure *visual_param_add_callback(VisParam *param,
+                                             VisParamChangedFunc func,
+                                             void *data,
+                                             VisDestroyFunc destroy_func);
 
 /**
  * Removes a change notification callback.
  *
  * @param param   VisParam object to remove callback from
- * @param closure The closure pointer that was given by the visual_param_add_callback().
+ * @param closure The closure pointer that was given by the
+ * visual_param_add_callback().
  *
  * @return TRUE on successful removal, FALSE otherwise
  */
-LV_API int visual_param_remove_callback (VisParam *param, VisClosure *closure);
+LV_API int visual_param_remove_callback(VisParam *param, VisClosure *closure);
 
 /**
  * Notifies all callbacks.
  *
  * @param param VisParam object
  */
-LV_API void visual_param_notify_callbacks (VisParam *param);
+LV_API void visual_param_notify_callbacks(VisParam *param);
 
 /**
  * Emits an event in the eventqueue of the parent VisParamList
  *
  * @param param VisParam object that has changed.
  */
-LV_API void visual_param_changed (VisParam *param);
+LV_API void visual_param_changed(VisParam *param);
 
 /**
  * Determines if the VisParam is of a given name.
@@ -248,55 +245,55 @@ LV_API void visual_param_changed (VisParam *param);
  *
  * @return TRUE if name matches, FALSE otherwise
  */
-LV_API int visual_param_has_name (VisParam *param, const char *name);
+LV_API int visual_param_has_name(VisParam *param, const char *name);
 
-LV_API const char * visual_param_get_name        (VisParam *param);
-LV_API VisParamType visual_param_get_type        (VisParam *param);
-LV_API const char * visual_param_get_description (VisParam *param);
+LV_API const char *visual_param_get_name(VisParam *param);
+LV_API VisParamType visual_param_get_type(VisParam *param);
+LV_API const char *visual_param_get_description(VisParam *param);
 
-LV_API void visual_param_set_value         (VisParam *param, VisParamValue *value);
-LV_API void visual_param_set_value_bool    (VisParam *param, int boolean);
-LV_API void visual_param_set_value_integer (VisParam *param, int integer);
-LV_API void visual_param_set_value_float   (VisParam *param, float flt);
-LV_API void visual_param_set_value_double  (VisParam *param, double dbl);
-LV_API void visual_param_set_value_string  (VisParam *param, const char *string);
-LV_API void visual_param_set_value_color   (VisParam *param, VisColor *color);
-LV_API void visual_param_set_value_palette (VisParam *param, VisPalette *pal);
+LV_API void visual_param_set_value(VisParam *param, VisParamValue *value);
+LV_API void visual_param_set_value_bool(VisParam *param, int boolean);
+LV_API void visual_param_set_value_integer(VisParam *param, int integer);
+LV_API void visual_param_set_value_float(VisParam *param, float flt);
+LV_API void visual_param_set_value_double(VisParam *param, double dbl);
+LV_API void visual_param_set_value_string(VisParam *param, const char *string);
+LV_API void visual_param_set_value_color(VisParam *param, VisColor *color);
+LV_API void visual_param_set_value_palette(VisParam *param, VisPalette *pal);
 
-LV_API int         visual_param_get_value_bool    (VisParam *param);
-LV_API int         visual_param_get_value_integer (VisParam *param);
-LV_API float       visual_param_get_value_float   (VisParam *param);
-LV_API double      visual_param_get_value_double  (VisParam *param);
-LV_API const char *visual_param_get_value_string  (VisParam *param);
-LV_API VisColor *  visual_param_get_value_color   (VisParam *param);
-LV_API VisPalette *visual_param_get_value_palette (VisParam *param);
+LV_API int visual_param_get_value_bool(VisParam *param);
+LV_API int visual_param_get_value_integer(VisParam *param);
+LV_API float visual_param_get_value_float(VisParam *param);
+LV_API double visual_param_get_value_double(VisParam *param);
+LV_API const char *visual_param_get_value_string(VisParam *param);
+LV_API VisColor *visual_param_get_value_color(VisParam *param);
+LV_API VisPalette *visual_param_get_value_palette(VisParam *param);
 
 /* Type-safe variants of visual_param_new() */
 
-#define _LV_DEFINE_PARAM_NEW(func,ctype,type,marshal) \
-  static inline VisParam *visual_param_new_##func (const char *name,          \
-                                                   const char *description,   \
-                                                   ctype       default_value, \
-                                                   VisClosure *validator)     \
-  { return visual_param_new (name, description, VISUAL_PARAM_TYPE_##type, _LV_PARAM_MARSHAL_##marshal (default_value), validator); }
+#define _LV_DEFINE_PARAM_NEW(func, ctype, type, marshal)                       \
+  static inline VisParam *visual_param_new_##func(                             \
+      const char *name, const char *description, ctype default_value,          \
+      VisClosure *validator) {                                                 \
+    return visual_param_new(name, description, VISUAL_PARAM_TYPE_##type,       \
+                            _LV_PARAM_MARSHAL_##marshal(default_value),        \
+                            validator);                                        \
+  }
 
-_LV_DEFINE_PARAM_NEW (bool   , int               , BOOL   , INTEGER)
-_LV_DEFINE_PARAM_NEW (integer, int               , INTEGER, INTEGER)
-_LV_DEFINE_PARAM_NEW (float  , float             , FLOAT  , FLOAT)
-_LV_DEFINE_PARAM_NEW (double , double            , DOUBLE , DOUBLE)
-_LV_DEFINE_PARAM_NEW (string , const char *      , STRING , POINTER)
-_LV_DEFINE_PARAM_NEW (color  , const VisColor *  , COLOR  , POINTER)
-_LV_DEFINE_PARAM_NEW (palette, const VisPalette *, PALETTE, POINTER)
+_LV_DEFINE_PARAM_NEW(bool, int, BOOL, INTEGER)
+_LV_DEFINE_PARAM_NEW(integer, int, INTEGER, INTEGER)
+_LV_DEFINE_PARAM_NEW(float, float, FLOAT, FLOAT)
+_LV_DEFINE_PARAM_NEW(double, double, DOUBLE, DOUBLE)
+_LV_DEFINE_PARAM_NEW(string, const char *, STRING, POINTER)
+_LV_DEFINE_PARAM_NEW(color, const VisColor *, COLOR, POINTER)
+_LV_DEFINE_PARAM_NEW(palette, const VisPalette *, PALETTE, POINTER)
 
-static inline VisParam *visual_param_new_color_rgb (const char *name,
-                                                    const char *description,
-                                                    uint8_t     red,
-                                                    uint8_t     green,
-                                                    uint8_t     blue,
-                                                    VisClosure *validator)
-{
-    VisColor color = { red, green, blue, 255 };
-    return visual_param_new_color (name, description, &color, validator);
+static inline VisParam *visual_param_new_color_rgb(const char *name,
+                                                   const char *description,
+                                                   uint8_t red, uint8_t green,
+                                                   uint8_t blue,
+                                                   VisClosure *validator) {
+  VisColor color = {red, green, blue, 255};
+  return visual_param_new_color(name, description, &color, validator);
 }
 
 LV_END_DECLS

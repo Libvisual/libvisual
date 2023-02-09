@@ -52,15 +52,15 @@
 #endif
 
 #if (defined(_MSC_VER) || defined(__MINGW32__)) && defined(BUILD_GLU32)
-# undef GLAPI
-# define GLAPI __declspec(dllexport)
+#undef GLAPI
+#define GLAPI __declspec(dllexport)
 #elif (defined(_MSC_VER) || defined(__MINGW32__)) && defined(_DLL)
 /* tag specifying we're building for DLL runtime support */
-# undef GLAPI
-# define GLAPI __declspec(dllimport)
+#undef GLAPI
+#define GLAPI __declspec(dllimport)
 #elif !defined(GLAPI)
 /* for use with static link lib build of Win32 edition only */
-# define GLAPI extern
+#define GLAPI extern
 #endif /* _STATIC_MESA support */
 
 #ifdef USE_OPENGL_ES
@@ -74,13 +74,29 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-GLAPI void GLAPIENTRY gluLookAt (_GL_REAL eyeX, _GL_REAL eyeY, _GL_REAL eyeZ, _GL_REAL centerX, _GL_REAL centerY, _GL_REAL centerZ, _GL_REAL upX, _GL_REAL upY, _GL_REAL upZ);
-GLAPI void GLAPIENTRY gluOrtho2D (_GL_REAL left, _GL_REAL right, _GL_REAL bottom, _GL_REAL top);
-GLAPI void GLAPIENTRY gluPerspective (_GL_REAL fovy, _GL_REAL aspect, _GL_REAL zNear, _GL_REAL zFar);
-GLAPI void GLAPIENTRY gluPickMatrix (_GL_REAL x, _GL_REAL y, _GL_REAL delX, _GL_REAL delY, GLint *viewport);
-GLAPI GLint GLAPIENTRY gluProject (_GL_REAL objX, _GL_REAL objY, _GL_REAL objZ, const _GL_REAL *model, const _GL_REAL *proj, const GLint *view, _GL_REAL* winX, _GL_REAL* winY, _GL_REAL* winZ);
-GLAPI GLint GLAPIENTRY gluUnProject (_GL_REAL winX, _GL_REAL winY, _GL_REAL winZ, const _GL_REAL *model, const _GL_REAL *proj, const GLint *view, _GL_REAL* objX, _GL_REAL* objY, _GL_REAL* objZ);
-GLAPI GLint GLAPIENTRY gluUnProject4 (_GL_REAL winX, _GL_REAL winY, _GL_REAL winZ, _GL_REAL clipW, const _GL_REAL *model, const _GL_REAL *proj, const GLint *view, _GL_CLAMP_REAL nearVal, _GL_CLAMP_REAL farVal, _GL_REAL* objX, _GL_REAL* objY, _GL_REAL* objZ, _GL_REAL* objW);
+GLAPI void GLAPIENTRY gluLookAt(_GL_REAL eyeX, _GL_REAL eyeY, _GL_REAL eyeZ,
+                                _GL_REAL centerX, _GL_REAL centerY,
+                                _GL_REAL centerZ, _GL_REAL upX, _GL_REAL upY,
+                                _GL_REAL upZ);
+GLAPI void GLAPIENTRY gluOrtho2D(_GL_REAL left, _GL_REAL right, _GL_REAL bottom,
+                                 _GL_REAL top);
+GLAPI void GLAPIENTRY gluPerspective(_GL_REAL fovy, _GL_REAL aspect,
+                                     _GL_REAL zNear, _GL_REAL zFar);
+GLAPI void GLAPIENTRY gluPickMatrix(_GL_REAL x, _GL_REAL y, _GL_REAL delX,
+                                    _GL_REAL delY, GLint *viewport);
+GLAPI GLint GLAPIENTRY gluProject(_GL_REAL objX, _GL_REAL objY, _GL_REAL objZ,
+                                  const _GL_REAL *model, const _GL_REAL *proj,
+                                  const GLint *view, _GL_REAL *winX,
+                                  _GL_REAL *winY, _GL_REAL *winZ);
+GLAPI GLint GLAPIENTRY gluUnProject(_GL_REAL winX, _GL_REAL winY, _GL_REAL winZ,
+                                    const _GL_REAL *model, const _GL_REAL *proj,
+                                    const GLint *view, _GL_REAL *objX,
+                                    _GL_REAL *objY, _GL_REAL *objZ);
+GLAPI GLint GLAPIENTRY
+gluUnProject4(_GL_REAL winX, _GL_REAL winY, _GL_REAL winZ, _GL_REAL clipW,
+              const _GL_REAL *model, const _GL_REAL *proj, const GLint *view,
+              _GL_CLAMP_REAL nearVal, _GL_CLAMP_REAL farVal, _GL_REAL *objX,
+              _GL_REAL *objY, _GL_REAL *objZ, _GL_REAL *objW);
 
 #ifdef __cplusplus
 }

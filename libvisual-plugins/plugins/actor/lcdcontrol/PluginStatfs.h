@@ -30,12 +30,12 @@
 namespace LCD {
 
 class PluginStatfs {
-    public:
-    double Statfs(std::string arg1, std::string arg2);
-    PluginStatfs(lua *script);
-    PluginStatfs();
-    ~PluginStatfs();
+public:
+  double Statfs(std::string arg1, std::string arg2);
+  PluginStatfs(lua *script);
+  PluginStatfs();
+  ~PluginStatfs();
 };
 
-}; // End namespace
+}; // namespace LCD
 #endif
