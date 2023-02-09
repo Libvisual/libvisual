@@ -129,9 +129,9 @@ LV_BEGIN_DECLS
 
 LV_NODISCARD LV_API VisPalette *visual_palette_new (unsigned int ncolors);
 
-LV_API void visual_palette_free (VisPalette *palette);
+LV_NODISCARD LV_API VisPalette *visual_palette_clone (VisPalette *self);
 
-LV_API VisPalette *visual_palette_clone (VisPalette *self);
+LV_API void visual_palette_free (VisPalette *palette);
 
 LV_API void visual_palette_copy (VisPalette *dest, VisPalette *src);
 

@@ -250,8 +250,9 @@ LV_API void visual_usleep (uint64_t usecs);
 
 LV_API void visual_time_set_from_msecs (VisTime *time_, uint64_t msecs);
 
-LV_API VisTimer *visual_timer_new  (void);
-LV_API void      visual_timer_free (VisTimer *timer);
+LV_NODISCARD LV_API VisTimer *visual_timer_new (void);
+
+LV_API void visual_timer_free (VisTimer *timer);
 
 LV_API void visual_timer_reset     (VisTimer *timer);
 LV_API void visual_timer_start     (VisTimer *timer);
