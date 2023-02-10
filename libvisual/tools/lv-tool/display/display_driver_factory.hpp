@@ -46,7 +46,7 @@ public:
 	    return m_instance;
     }
 
-    DisplayDriver* make (std::string const& name, Display& display);
+    std::unique_ptr<DisplayDriver> make (std::string const& name, Display& display);
 
     void add_driver (std::string const& name, Creator const& creator);
 

@@ -25,6 +25,7 @@
 #include "display.hpp"
 #include "display_driver_factory.hpp"
 #include <libvisual/libvisual.h>
+#include <utility>
 #include <stdexcept>
 #include <string>
 
@@ -34,8 +35,8 @@ public:
 
     std::unique_ptr<DisplayDriver> driver;
 
-    Impl ()
-        : driver (nullptr)
+    Impl (std::unique_ptr<DisplayDriver> driver_)
+        : driver {std::move (driver_)}
     {}
 
     ~Impl ()
@@ -43,10 +44,8 @@ public:
 };
 
 Display::Display (std::string const& driver_name)
-  : m_impl (new Impl)
+    : m_impl {new Impl {DisplayDriverFactory::instance().make (driver_name, *this)}}
 {
-    m_impl->driver.reset (DisplayDriverFactory::instance().make (driver_name, *this));
-
     if (!m_impl->driver) {
         throw std::runtime_error ("Failed to load display driver '" + driver_name + "'. Valid driver set? (\"--driver\" parameter)");
     }
