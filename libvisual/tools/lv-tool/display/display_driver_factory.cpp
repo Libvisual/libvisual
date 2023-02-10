@@ -62,7 +62,7 @@ void DisplayDriverFactory::add_driver (std::string const& name, Creator const& c
     m_impl->creators[name] = creator;
 }
 
-DisplayDriver* DisplayDriverFactory::make (std::string const& name, Display& display)
+std::unique_ptr<DisplayDriver> DisplayDriverFactory::make (std::string const& name, Display& display)
 {
     auto entry = m_impl->creators.find (name);
 
@@ -70,7 +70,7 @@ DisplayDriver* DisplayDriverFactory::make (std::string const& name, Display& dis
         return nullptr;
     }
 
-    return entry->second (display);
+    return std::unique_ptr<DisplayDriver> {entry->second (display)};
 }
 
 bool DisplayDriverFactory::has_driver (std::string const& name) const
