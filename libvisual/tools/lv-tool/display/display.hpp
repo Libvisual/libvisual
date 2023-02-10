@@ -31,7 +31,8 @@
 
 class DisplayDriver;
 
-class Display {
+class Display final
+{
 public:
 
     explicit Display (std::string const& driver_name);
@@ -74,7 +75,7 @@ private:
     const std::unique_ptr<Impl> m_impl;
 };
 
-class DisplayLock
+class DisplayLock final
 {
 public:
 

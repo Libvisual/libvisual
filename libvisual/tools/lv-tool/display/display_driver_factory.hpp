@@ -34,7 +34,7 @@ typedef std::function<DisplayDriver* (Display& display)> DisplayDriverCreator;
 
 typedef std::vector<std::string> DisplayDriverList;
 
-class DisplayDriverFactory
+class DisplayDriverFactory final
 {
 public:
 

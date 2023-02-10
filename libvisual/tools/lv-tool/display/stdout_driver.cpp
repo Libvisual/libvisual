@@ -36,7 +36,7 @@
 
 namespace {
 
-  class StdoutDriver
+  class StdoutDriver final
       : public DisplayDriver
   {
   public:
@@ -46,16 +46,16 @@ namespace {
           (void)display;
       }
 
-      virtual ~StdoutDriver ()
+      ~StdoutDriver () override
       {
           close ();
       }
 
-      virtual LV::VideoPtr create (VisVideoDepth depth,
-                                   VisVideoAttrOptions const* vidoptions,
-                                   unsigned int width,
-                                   unsigned int height,
-                                   bool resizable)
+      LV::VideoPtr create (VisVideoDepth depth,
+                           VisVideoAttrOptions const* vidoptions,
+                           unsigned int width,
+                           unsigned int height,
+                           bool resizable) override
       {
           (void)vidoptions;
           (void)resizable;
@@ -71,27 +71,27 @@ namespace {
           return m_screen_video;
       }
 
-      virtual void close ()
+      void close () override
       {
           m_screen_video.reset ();
       }
 
-      virtual void lock ()
+      void lock () override
       {
           // nothing to do
       }
 
-      virtual void unlock ()
+      void unlock () override
       {
           // nothing to do
       }
 
-      virtual bool is_fullscreen () const
+      bool is_fullscreen () const override
       {
           return false;
       }
 
-      virtual void set_fullscreen (bool fullscreen, bool autoscale)
+      void set_fullscreen (bool fullscreen, bool autoscale) override
       {
           (void)fullscreen;
           (void)autoscale;
@@ -99,19 +99,19 @@ namespace {
           // nothing to do
       }
 
-      virtual LV::VideoPtr get_video () const
+      LV::VideoPtr get_video () const override
       {
           return m_screen_video;
       }
 
-      virtual void set_title(std::string const& title)
+      void set_title(std::string const& title) override
       {
           (void)title;
 
           // nothing to do
       }
 
-      virtual void update_rect (LV::Rect const& rect)
+      void update_rect (LV::Rect const& rect) override
       {
           (void)rect;
 
@@ -119,7 +119,7 @@ namespace {
               visual_log (VISUAL_LOG_ERROR, "Failed to write pixels to stdout");
       }
 
-      virtual void drain_events (VisEventQueue& eventqueue)
+      void drain_events (VisEventQueue& eventqueue) override
       {
           (void)eventqueue;
 

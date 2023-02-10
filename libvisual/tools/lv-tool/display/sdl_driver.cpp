@@ -55,7 +55,7 @@ namespace {
 
   void get_nearest_resolution (int& width, int& height);
 
-  class SDLDriver
+  class SDLDriver final
       : public DisplayDriver
   {
   public:
@@ -72,16 +72,16 @@ namespace {
           , m_running         (false)
       {}
 
-      virtual ~SDLDriver ()
+      ~SDLDriver () override
       {
           close ();
       }
 
-      virtual LV::VideoPtr create (VisVideoDepth depth,
-                                   VisVideoAttrOptions const* vidoptions,
-                                   unsigned int width,
-                                   unsigned int height,
-                                   bool resizable)
+      LV::VideoPtr create (VisVideoDepth depth,
+                           VisVideoAttrOptions const* vidoptions,
+                           unsigned int width,
+                           unsigned int height,
+                           bool resizable) override
       {
 
           int videoflags = 0;
@@ -151,7 +151,7 @@ namespace {
           return m_screen_video;
       }
 
-      virtual void close ()
+      void close () override
       {
           if (!m_running)
               return;
@@ -163,24 +163,24 @@ namespace {
           m_running = false;
       }
 
-      virtual void lock ()
+      void lock () override
       {
           if (SDL_MUSTLOCK (m_screen))
               SDL_LockSurface (m_screen);
       }
 
-      virtual void unlock ()
+      void unlock () override
       {
           if (SDL_MUSTLOCK (m_screen) == SDL_TRUE)
               SDL_UnlockSurface (m_screen);
       }
 
-      virtual bool is_fullscreen () const
+      bool is_fullscreen () const override
       {
           return m_screen->flags & SDL_FULLSCREEN;
       }
 
-      virtual void set_fullscreen (bool fullscreen, bool autoscale)
+      void set_fullscreen (bool fullscreen, bool autoscale) override
       {
           if (fullscreen) {
               if (!(m_screen->flags & SDL_FULLSCREEN)) {
@@ -211,17 +211,17 @@ namespace {
           }
       }
 
-      virtual LV::VideoPtr get_video () const
+      LV::VideoPtr get_video () const override
       {
           return m_screen_video;
       }
 
-      virtual void set_title(std::string const& title)
+      void set_title(std::string const& title) override
       {
           SDL_WM_SetCaption (title.c_str(), nullptr);
       }
 
-      virtual void update_rect (LV::Rect const& rect)
+      void update_rect (LV::Rect const& rect) override
       {
           if (m_screen->format->BitsPerPixel == 8) {
               auto const& pal = m_display.get_video ()->get_palette ();
@@ -246,7 +246,7 @@ namespace {
               SDL_UpdateRect (m_screen, rect.x, rect.y, rect.width, rect.height);
       }
 
-      virtual void drain_events (VisEventQueue& eventqueue)
+      void drain_events (VisEventQueue& eventqueue) override
       {
           // Visible or not
 

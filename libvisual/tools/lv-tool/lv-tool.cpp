@@ -90,7 +90,7 @@ namespace {
   };
 
   /** Class to manage LV's lifecycle */
-  class Libvisual
+  class Libvisual final
   {
   public:
 
