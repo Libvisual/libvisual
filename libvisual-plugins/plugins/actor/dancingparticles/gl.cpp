@@ -88,11 +88,11 @@ extern int mingloudness ;
 
 void draw_gl(void)
 {
-  static float r=0, SIZE=1;
+  static float SIZE=1;
 
   float Size =(p.size + p.sizeloudness * gloudness)/2;
   SIZE = (SIZE +3*Size) /4;
-  r++;
+
   glClearColor(0,0,0,0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

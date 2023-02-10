@@ -1,7 +1,7 @@
 #include <string.h>
 #include <libvisual/libvisual.h>
 #include "etoile.h"
-#include "t1font.h"
+#include "font.h"
 
 
 // or why use lex when..
@@ -96,7 +96,7 @@ int load_parameters(const char * filename)
   char buf[1024];
   char *ptr, *word;
   const char *err;
-  int line = 1, mode = 0;
+  int mode = 0;
 
   char *oldlocal = setlocale (LC_NUMERIC, "C");
 
@@ -209,7 +209,7 @@ int load_parameters(const char * filename)
 		}
 	    }
 	}
-      fgets(buf,1024, f);line++;
+      fgets(buf,1024, f);
     }
   if(mode == 1)
     {

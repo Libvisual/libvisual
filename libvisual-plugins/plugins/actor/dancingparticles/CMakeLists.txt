@@ -7,13 +7,13 @@ SET(SOURCES
   gl.cpp
   parameters.cpp
   signal.cpp
-  t1font.cpp
+  font.cpp
 )
 
 LV_BUILD_ACTOR_PLUGIN(dancingparticles
   SOURCES      ${SOURCES}
   COMPILE_DEFS DATA_DIR="${DANCINGPARTICLES_DATA_DIR}"
-  LINK_LIBS    OpenGL::GL OpenGL::GLU T1lib::T1lib m
+  LINK_LIBS    OpenGL::GL OpenGL::GLU Freetype::Freetype m
 )
 
 SET(DATA_FILES

@@ -169,9 +169,9 @@ IF(ENABLE_ALSA)
 ENDIF()
 
 IF(ENABLE_DANCINGPARTICLES)
-  FIND_PACKAGE(T1lib)
-  IF(NOT T1LIB_FOUND)
-    MESSAGE(WARNING "T1lib not found. The Dancing Particles plugin will not be built.")
+  FIND_PACKAGE(Freetype)
+  IF(NOT FREETYPE_FOUND)
+    MESSAGE(WARNING "FreeType not found. The Dancing Particles plugin will not be built.")
     SET(ENABLE_DANCINGPARTICLES no)
   ENDIF()
 
