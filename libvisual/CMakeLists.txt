@@ -51,6 +51,12 @@ SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED on)
 SET(CMAKE_CXX_EXTENSIONS off)
 
+# MSVC needs an additional flag to define the right values for __cplusplus.
+# CMake couldn't be bothered to do this automatically, so we'll do it ourselves.
+IF(MSVC)
+  ADD_COMPILE_OPTIONS(/Zc:__cplusplus)
+ENDIF()
+
 # Check for Unix specific functions
 # TODO: Generate error when a required header is missing
 CHECK_INCLUDE_FILE(unistd.h    HAVE_UNISTD_H)
