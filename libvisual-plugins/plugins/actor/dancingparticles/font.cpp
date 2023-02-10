@@ -76,6 +76,9 @@ void destroyFontRasterizer()
     {
       FT_Done_FreeType(ftLibrary);
       ftLibrary = nullptr;
+
+      // Already released by FT_Done_FreeType().
+      ftFace = nullptr;
     }
 }
 
