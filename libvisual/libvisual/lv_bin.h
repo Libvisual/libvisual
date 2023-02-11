@@ -43,7 +43,7 @@ typedef enum {
 #ifdef __cplusplus
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 namespace LV {
 
@@ -65,9 +65,9 @@ namespace LV {
 	  InputPtr const& get_input () const;
 	  MorphPtr const& get_morph () const;
 
-	  void set_morph (std::string const& morph_name);
+	  void set_morph (std::string_view morph_name);
 
-	  bool connect (std::string const& actor_name, std::string const& input_name);
+	  bool connect (std::string_view actor_name, std::string_view input_name);
 
 	  void sync (bool noevent);
 
@@ -87,7 +87,7 @@ namespace LV {
 
 	  Palette const& get_palette () const;
 
-	  void switch_actor (std::string const& actname);
+	  void switch_actor (std::string_view actname);
 
 	  void switch_finalize ();
 

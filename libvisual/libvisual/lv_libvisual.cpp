@@ -107,7 +107,7 @@ namespace LV
       m_instance.reset (new System {argc, argv});
   }
 
-  std::string System::get_version () const
+  std::string_view System::get_version () const
   {
       return VISUAL_VERSION " (" LV_REVISION ")";
   }
@@ -138,7 +138,7 @@ namespace LV
       (void)argc;
       (void)argv;
 
-      visual_log (VISUAL_LOG_INFO, "Starting Libvisual %s", get_version ().c_str ());
+      visual_log (VISUAL_LOG_INFO, "Starting Libvisual %s", std::string {get_version ()}.c_str ());
 
 #if ENABLE_NLS
       bindtextdomain (GETTEXT_PACKAGE, LOCALE_DIR);

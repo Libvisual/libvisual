@@ -135,7 +135,7 @@ namespace LV {
       }
   }
 
-  PluginRef const* PluginRegistry::find_plugin (PluginType type, std::string const& name) const
+  PluginRef const* PluginRegistry::find_plugin (PluginType type, std::string_view name) const
   {
       for (auto const& plugin : get_plugins_by_type (type)) {
           if (name == plugin.info->plugname) {
@@ -146,7 +146,7 @@ namespace LV {
       return nullptr;
   }
 
-  bool PluginRegistry::has_plugin (PluginType type, std::string const& name) const
+  bool PluginRegistry::has_plugin (PluginType type, std::string_view name) const
   {
       return find_plugin (type, name) != nullptr;
   }
@@ -162,7 +162,7 @@ namespace LV {
       return match->second;
   }
 
-  VisPluginInfo const* PluginRegistry::get_plugin_info (PluginType type, std::string const& name) const
+  VisPluginInfo const* PluginRegistry::get_plugin_info (PluginType type, std::string_view name) const
   {
       auto ref = find_plugin (type, name);
 

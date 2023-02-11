@@ -74,14 +74,14 @@ namespace LV {
       return actor_plugin ? actor_plugin->vidoptions.depth : VISUAL_VIDEO_DEPTH_NONE;
   }
 
-  bool Actor::available(std::string const& name) {
+  bool Actor::available(std::string_view name) {
       return LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_ACTOR, name);
   }
 
-  ActorPtr Actor::load (std::string const& name)
+  ActorPtr Actor::load (std::string_view name)
   {
       try {
-          return {new Actor (name), false};
+          return {new Actor {name}, false};
       }
       catch (std::exception& error) {
           visual_log (VISUAL_LOG_ERROR, "%s", error.what ());
@@ -89,7 +89,7 @@ namespace LV {
       }
   }
 
-  Actor::Actor (std::string const& name)
+  Actor::Actor (std::string_view name)
       : m_impl      {new Impl}
       , m_ref_count {1}
   {
@@ -97,7 +97,7 @@ namespace LV {
           throw std::runtime_error {"Actor plugin not found"};
       }
 
-      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, name.c_str ());
+      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_ACTOR, std::string {name}.c_str ());
       if (!m_impl->plugin) {
           throw std::runtime_error {"Failed to load actor plugin"};
       }

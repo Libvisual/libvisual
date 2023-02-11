@@ -8,7 +8,7 @@
 
 #include <libvisual/lv_singleton.hpp>
 #include <libvisual/lv_plugin.h>
-#include <string>
+#include <string_view>
 #include <memory>
 
 namespace LV {
@@ -39,7 +39,7 @@ namespace LV {
        */
       void add_path (std::string const& path);
 
-      PluginRef const* find_plugin (PluginType type, std::string const& name) const;
+      PluginRef const* find_plugin (PluginType type, std::string_view name) const;
 
       /**
        * Checks if a plugin is available.
@@ -49,7 +49,7 @@ namespace LV {
        *
        * @return Returns true if plugin is available, false otherwise
        */
-      bool has_plugin (PluginType type, std::string const& name) const;
+      bool has_plugin (PluginType type, std::string_view name) const;
 
       /**
        * Returns the list of all available plugins.
@@ -75,7 +75,7 @@ namespace LV {
        *
        * @return Plugin information
        */
-      VisPluginInfo const* get_plugin_info (PluginType type, std::string const& name) const;
+      VisPluginInfo const* get_plugin_info (PluginType type, std::string_view name) const;
 
   private:
 

@@ -37,8 +37,8 @@
 #ifdef __cplusplus
 
 #include <libvisual/lv_intrusive_ptr.hpp>
-#include <string>
 #include <memory>
+#include <string_view>
 
 namespace LV
 {
@@ -59,7 +59,7 @@ namespace LV
        *
        * @return True if an actor plugin by that name is available, else false
        */
-      static bool available (std::string const& name);
+      static bool available (std::string_view name);
 
       /**
        * Creates a new Actor with a plugin of a given name.
@@ -70,7 +70,7 @@ namespace LV
        *
        * @return New actor, or nullptr if plugin failed to load
        */
-      static ActorPtr load (std::string const& name);
+      static ActorPtr load (std::string_view name);
 
       Actor (Actor const&) = delete;
 
@@ -165,7 +165,7 @@ namespace LV
 
       mutable unsigned int m_ref_count;
 
-      explicit Actor (std::string const& name);
+      explicit Actor (std::string_view name);
   };
 
   inline void intrusive_ptr_add_ref (Actor const* actor)

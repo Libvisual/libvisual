@@ -39,6 +39,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <string_view>
 
 namespace LV {
 
@@ -102,7 +103,7 @@ namespace LV {
        *
        * @return true on success, false otherwise
        */
-      bool remove (std::string const& name);
+      bool remove (std::string_view name);
 
       /**
        * Returns a parameter by name
@@ -112,7 +113,7 @@ namespace LV {
        * @return Parameter of the given name, or nullptr if no such
        *         parameter exists
        */
-      Param* get (std::string const& name) const;
+      Param* get (std::string_view name) const;
 
       /**
        * Sets the event queue.

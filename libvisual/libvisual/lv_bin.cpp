@@ -151,7 +151,7 @@ namespace LV {
       return m_impl->input;
   }
 
-  void Bin::set_morph (std::string const& morph_name)
+  void Bin::set_morph (std::string_view morph_name)
   {
       m_impl->morph = Morph::load (morph_name);
       visual_return_if_fail (m_impl->morph);
@@ -190,7 +190,7 @@ namespace LV {
       return true;
   }
 
-  bool Bin::connect (std::string const& actor_name, std::string const& input_name)
+  bool Bin::connect (std::string_view actor_name, std::string_view input_name)
   {
       // Create the actor
       auto actor = Actor::load (actor_name);
@@ -362,10 +362,13 @@ namespace LV {
           return *m_impl->actor->get_palette ();
   }
 
-  void Bin::switch_actor (std::string const& actor_name)
+  void Bin::switch_actor (std::string_view actor_name)
   {
+      // FIXME: This is needed because visual_log() takes only null-terminated C strings.
+      std::string actor_name_str {actor_name};
+
       visual_log (VISUAL_LOG_DEBUG, "switching to a new actor: %s, old actor: %s",
-				  actor_name.c_str (), visual_plugin_get_info (m_impl->actor->get_plugin ())->plugname);
+				  actor_name_str.c_str (), visual_plugin_get_info (m_impl->actor->get_plugin ())->plugname);
 
       if (m_impl->actmorph) {
           m_impl->actmorph.reset ();

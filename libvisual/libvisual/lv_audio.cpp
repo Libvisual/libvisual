@@ -44,13 +44,13 @@ namespace LV {
   {
   public:
 
-      typedef std::unordered_map<std::string, AudioChannelPtr> ChannelList;
+      using ChannelList = std::unordered_map<std::string, AudioChannelPtr>;
 
       ChannelList channels;
 
-      void upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp);
+      void upload_to_channel (std::string_view name, BufferConstPtr const& samples, Time const& timestamp);
 
-      AudioChannel* get_channel (std::string const& name) const;
+      AudioChannel* get_channel (std::string_view name) const;
   };
 
   class AudioChannel
@@ -60,7 +60,7 @@ namespace LV {
       std::string name;
       AudioStream stream;
 
-      explicit AudioChannel (std::string const& name);
+      explicit AudioChannel (std::string_view name);
 
       ~AudioChannel ();
 
@@ -88,22 +88,26 @@ namespace LV {
 
   } // anonymous
 
-  void Audio::Impl::upload_to_channel (std::string const& name, BufferConstPtr const& samples, Time const& timestamp)
+  void Audio::Impl::upload_to_channel (std::string_view name, BufferConstPtr const& samples, Time const& timestamp)
   {
+      std::string name_str {name};
+
       if (!get_channel (name)) {
-          channels[name] = std::make_unique<AudioChannel> (name);
+          channels[name_str] = std::make_unique<AudioChannel> (name);
       }
 
-      channels[name]->add_samples (samples, timestamp);
+      channels[name_str]->add_samples (samples, timestamp);
   }
 
-  AudioChannel* Audio::Impl::get_channel (std::string const& name) const
+  AudioChannel* Audio::Impl::get_channel (std::string_view name) const
   {
-      auto entry = channels.find (name);
+      std::string name_str {name};
+
+      auto entry = channels.find (name_str);
       return entry != channels.end () ? entry->second.get () : nullptr;
   }
 
-  AudioChannel::AudioChannel (std::string const& name_)
+  AudioChannel::AudioChannel (std::string_view name_)
       : name (name_)
   {}
 
@@ -140,7 +144,7 @@ namespace LV {
       return *this;
   }
 
-  bool Audio::get_sample (BufferPtr const& buffer, std::string const& channel_name)
+  bool Audio::get_sample (BufferPtr const& buffer, std::string_view channel_name)
   {
       auto channel = m_impl->get_channel (channel_name);
 
@@ -220,7 +224,7 @@ namespace LV {
       }
   }
 
-  void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised)
+  void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string_view channel_name, bool normalised)
   {
       auto sample = Buffer::create (samplelen);
 
@@ -230,7 +234,7 @@ namespace LV {
           buffer->fill (0);
   }
 
-  void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised, float multiplier)
+  void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string_view channel_name, bool normalised, float multiplier)
   {
       auto spectrum {Buffer::create (buffer->get_size ())};
       get_spectrum (spectrum, samplelen, channel_name, normalised);
@@ -314,7 +318,7 @@ namespace LV {
   void Audio::input (BufferPtr const&         buffer,
                      VisAudioSampleRateType   rate,
                      VisAudioSampleFormatType format,
-                     std::string const&       channel_name)
+                     std::string_view         channel_name)
   {
       (void)rate;
 

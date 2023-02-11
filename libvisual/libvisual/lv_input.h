@@ -37,6 +37,7 @@
 #include <libvisual/lv_intrusive_ptr.hpp>
 #include <functional>
 #include <memory>
+#include <string_view>
 
 namespace LV {
 
@@ -55,7 +56,7 @@ namespace LV {
        *
        * @return True if an input plugin by that name is available, else false
        */
-      static bool available (std::string const& name);
+      static bool available (std::string_view name);
 
       /**
        * Creates a new Input with a plugin of a given name.
@@ -64,7 +65,7 @@ namespace LV {
        *
        * @return A new Input, or nullptr on failure.
        */
-      static InputPtr load (std::string const& name);
+      static InputPtr load (std::string_view name);
 
       ~Input ();
 
@@ -116,7 +117,7 @@ namespace LV {
 
       mutable unsigned int m_ref_count;
 
-      explicit Input (std::string const& name);
+      explicit Input (std::string_view name);
   };
 
   inline void intrusive_ptr_add_ref (Input const* input)

@@ -63,7 +63,7 @@ namespace LV {
        *
        * @return version string
        */
-      std::string get_version () const;
+      std::string_view get_version () const;
 
       /**
        * Returns the Libvisual API verison.

@@ -90,7 +90,7 @@ namespace LV
   {
   public:
 
-      typedef std::map<std::string, std::unique_ptr<Param>> Entries;
+      using Entries = std::map<std::string, std::unique_ptr<Param>, std::less<>>;
 
       Entries     entries;
       EventQueue* event_queue;
@@ -188,7 +188,7 @@ namespace LV
       m_impl->entries.emplace (param->name, std::unique_ptr<Param> {param});
   }
 
-  bool ParamList::remove (std::string const& name)
+  bool ParamList::remove (std::string_view name)
   {
       auto entry = m_impl->entries.find (name);
       if (entry != m_impl->entries.end ()) {
@@ -199,7 +199,7 @@ namespace LV
       return false;
   }
 
-  Param* ParamList::get (std::string const& name) const
+  Param* ParamList::get (std::string_view name) const
   {
       auto entry = m_impl->entries.find (name);
       if (entry != m_impl->entries.end ()) {

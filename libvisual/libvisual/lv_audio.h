@@ -66,7 +66,7 @@ typedef enum {
 #ifdef __cplusplus
 
 #include <memory>
-#include <string>
+#include <string_view>
 #include <cstdarg>
 
 namespace LV {
@@ -114,7 +114,7 @@ namespace LV {
        *
        * @return true if successful, false if channel does not exist
        */
-      bool get_sample (BufferPtr const& buffer, std::string const& channel_name);
+      bool get_sample (BufferPtr const& buffer, std::string_view channel_name);
 
       /**
        * Returns samples downmixed by averaging a set of channels.
@@ -153,9 +153,9 @@ namespace LV {
        * @param channel_name name of channel
        * @param normalised   normalise ampltitudes to [0.0, 1.0]
        */
-      void get_spectrum (BufferPtr const& buffer, std::size_t sample_count, std::string const& channel_name, bool normalised);
+      void get_spectrum (BufferPtr const& buffer, std::size_t sample_count, std::string_view channel_name, bool normalised);
 
-      void get_spectrum (BufferPtr const& buffer, std::size_t sample_count, std::string const& channel_name, bool normalised, float multiplier);
+      void get_spectrum (BufferPtr const& buffer, std::size_t sample_count, std::string_view channel_name, bool normalised, float multiplier);
 
       /**
        * Returns the amplitude spectrum of a set of samples.
@@ -196,7 +196,7 @@ namespace LV {
       void input (BufferPtr const& buffer,
                   VisAudioSampleRateType rate,
                   VisAudioSampleFormatType format,
-                  std::string const& channel_name);
+                  std::string_view channel_name);
 
   private:
 
