@@ -34,9 +34,9 @@ namespace
       actual->blit (source, 0, 0, true);
 
       for (int y = 0; y < test_height; y++) {
-          auto source_pixel = static_cast<uint8_t const*> (source->get_pixel_ptr (y, 0));
-          auto target_pixel = static_cast<uint8_t const*> (target->get_pixel_ptr (y, 0));
-          auto actual_pixel = static_cast<uint8_t const*> (actual->get_pixel_ptr (y, 0));
+          auto source_pixel = static_cast<uint8_t const*> (source->get_pixel_ptr (0, y));
+          auto target_pixel = static_cast<uint8_t const*> (target->get_pixel_ptr (0, y));
+          auto actual_pixel = static_cast<uint8_t const*> (actual->get_pixel_ptr (0, y));
 
           for (int x = 0; x < test_width; x++) {
               LV_TEST_ASSERT (actual_pixel[3] == target_pixel[3]);
