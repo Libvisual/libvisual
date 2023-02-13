@@ -74,7 +74,7 @@ namespace LV {
       m_song_name = name;
   }
 
-  std::string_view SongInfo::get_simple_name () const
+  std::string const& SongInfo::get_simple_name () const
   {
       return m_song_name;
   }
@@ -84,7 +84,7 @@ namespace LV {
       m_artist = artist;
   }
 
-  std::string SongInfo::get_artist () const
+  std::string const& SongInfo::get_artist () const
   {
       return m_artist;
   }
@@ -94,7 +94,7 @@ namespace LV {
       m_album = album;
   }
 
-  std::string SongInfo::get_album () const
+  std::string const& SongInfo::get_album () const
   {
       return m_album;
   }
@@ -104,7 +104,7 @@ namespace LV {
       m_song = song;
   }
 
-  std::string SongInfo::get_song () const
+  std::string const& SongInfo::get_song () const
   {
       return m_song;
   }

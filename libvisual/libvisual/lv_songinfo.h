@@ -48,6 +48,7 @@ typedef enum {
 
 #ifdef __cplusplus
 
+#include <string>
 #include <string_view>
 
 namespace LV {
@@ -102,7 +103,7 @@ namespace LV {
        *
        * @return name
        */
-      std::string_view get_simple_name () const;
+      std::string const& get_simple_name () const;
 
       /**
        * Sets the length of a song.
@@ -140,7 +141,7 @@ namespace LV {
        */
       void set_artist (std::string_view artist);
 
-      std::string get_artist () const;
+      std::string const& get_artist () const;
 
       /**
        * Sets the album name.
@@ -151,7 +152,7 @@ namespace LV {
        */
       void set_album (std::string_view album);
 
-      std::string get_album () const;
+      std::string const& get_album () const;
 
       /**
        * Sets the song name.
@@ -162,7 +163,7 @@ namespace LV {
        */
       void set_song (std::string_view name);
 
-      std::string get_song () const;
+      std::string const& get_song () const;
 
       /**
        * Sets the cover art.

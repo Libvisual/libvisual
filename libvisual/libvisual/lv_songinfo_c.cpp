@@ -94,7 +94,7 @@ extern "C" {
   {
       visual_return_val_if_fail (self != nullptr, nullptr);
 
-      return LV::string_to_c (std::string {self->get_simple_name ()});
+      return LV::string_to_c (self->get_simple_name ());
   }
 
   void visual_songinfo_set_artist (VisSongInfo *self, const char *artist)
