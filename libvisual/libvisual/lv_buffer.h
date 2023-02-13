@@ -250,9 +250,9 @@ struct _VisBuffer;
 
 LV_BEGIN_DECLS
 
-LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own);
-LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
-LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
+LV_NODISCARD LV_API VisBuffer *visual_buffer_new_wrap_data (void *data, visual_size_t size, int own);
+LV_NODISCARD LV_API VisBuffer *visual_buffer_new_allocate  (visual_size_t size);
+LV_NODISCARD LV_API VisBuffer *visual_buffer_clone (VisBuffer *source);
 
 LV_API void *visual_buffer_get_data (VisBuffer *buffer);
 LV_API void *visual_buffer_get_data_offset (VisBuffer *buffer, visual_size_t offset);

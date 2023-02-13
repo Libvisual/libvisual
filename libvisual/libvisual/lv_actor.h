@@ -248,11 +248,11 @@ LV_API const char *visual_actor_get_next_by_name_nogl (const char *name);
 LV_API const char *visual_actor_get_prev_by_name      (const char *name);
 LV_API const char *visual_actor_get_next_by_name      (const char *name);
 
-LV_API VisActor *visual_actor_new     (const char *name);
-LV_API int       visual_actor_realize (VisActor *actor);
-LV_API void      visual_actor_run     (VisActor *actor, VisAudio *audio);
-LV_API void      visual_actor_ref     (VisActor *actor);
-LV_API void      visual_actor_unref   (VisActor *actor);
+LV_NODISCARD LV_API VisActor *visual_actor_new (const char *name);
+LV_API int  visual_actor_realize (VisActor *actor);
+LV_API void visual_actor_run     (VisActor *actor, VisAudio *audio);
+LV_API void visual_actor_ref     (VisActor *actor);
+LV_API void visual_actor_unref   (VisActor *actor);
 
 LV_API VisSongInfo *visual_actor_get_songinfo (VisActor *actor);
 LV_API VisPalette  *visual_actor_get_palette  (VisActor *actor);

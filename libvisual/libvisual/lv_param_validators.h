@@ -23,7 +23,7 @@ typedef struct _VisClosure VisClosure;
 
 LV_BEGIN_DECLS
 
-LV_API VisClosure *visual_param_in_range (VisParamType type, void *lower, void *upper);
+LV_NODISCARD LV_API VisClosure *visual_param_in_range (VisParamType type, void *lower, void *upper);
 
 #define _LV_DEFINE_PARAM_IN_RANGE(func,ctype,type,marshal) \
     static inline VisClosure *visual_param_in_range_##func (ctype lower, ctype upper) { \

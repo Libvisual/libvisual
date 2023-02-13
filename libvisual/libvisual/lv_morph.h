@@ -262,9 +262,10 @@ LV_API const char *visual_morph_get_next_by_name (const char *name);
  */
 LV_API const char *visual_morph_get_prev_by_name (const char *name);
 
-LV_API VisMorph *visual_morph_new   (const char *name);
-LV_API void      visual_morph_ref   (VisMorph *morph);
-LV_API void      visual_morph_unref (VisMorph *morph);
+LV_NODISCARD LV_API VisMorph *visual_morph_new (const char *name);
+
+LV_API void visual_morph_ref   (VisMorph *morph);
+LV_API void visual_morph_unref (VisMorph *morph);
 
 LV_API VisPluginData       *visual_morph_get_plugin                  (VisMorph *morph);
 LV_API VisVideoDepth        visual_morph_get_supported_depths        (VisMorph *morph);

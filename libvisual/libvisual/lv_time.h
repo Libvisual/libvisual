@@ -24,6 +24,7 @@
 #ifndef _LV_TIME_H
 #define _LV_TIME_H
 
+#include <libvisual/lv_defines.h>
 #include <libvisual/lv_types.h>
 #include <time.h>
 
@@ -227,11 +228,12 @@ struct _VisTimer;
 
 LV_BEGIN_DECLS
 
-LV_API VisTime *visual_time_new             (void);
-LV_API VisTime *visual_time_new_now         (void);
-LV_API VisTime *visual_time_new_with_values (long sec, long nsec);
-LV_API VisTime *visual_time_clone           (VisTime *src);
-LV_API void     visual_time_free            (VisTime *time_);
+LV_NODISCARD LV_API VisTime *visual_time_new             (void);
+LV_NODISCARD LV_API VisTime *visual_time_new_now         (void);
+LV_NODISCARD LV_API VisTime *visual_time_new_with_values (long sec, long nsec);
+LV_NODISCARD LV_API VisTime *visual_time_clone           (VisTime *src);
+
+LV_API void visual_time_free (VisTime *time_);
 
 LV_API void visual_time_set     (VisTime *time_, long sec, long usec);
 LV_API void visual_time_copy    (VisTime *dest, VisTime *src);
@@ -248,8 +250,9 @@ LV_API void visual_usleep (uint64_t usecs);
 
 LV_API void visual_time_set_from_msecs (VisTime *time_, uint64_t msecs);
 
-LV_API VisTimer *visual_timer_new  (void);
-LV_API void      visual_timer_free (VisTimer *timer);
+LV_NODISCARD LV_API VisTimer *visual_timer_new (void);
+
+LV_API void visual_timer_free (VisTimer *timer);
 
 LV_API void visual_timer_reset     (VisTimer *timer);
 LV_API void visual_timer_start     (VisTimer *timer);

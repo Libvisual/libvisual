@@ -121,8 +121,9 @@ struct _VisBin;
 
 LV_BEGIN_DECLS
 
-LV_API VisBin *visual_bin_new (void);
-LV_API void    visual_bin_free (VisBin *bin);
+LV_NODISCARD LV_API VisBin *visual_bin_new (void);
+
+LV_API void visual_bin_free (VisBin *bin);
 
 LV_API void visual_bin_realize (VisBin *bin);
 

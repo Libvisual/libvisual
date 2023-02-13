@@ -147,9 +147,10 @@ struct _VisColor
 };
 #endif
 
-LV_API VisColor *visual_color_new   (void);
-LV_API VisColor *visual_color_clone (VisColor *color);
-LV_API void      visual_color_free  (VisColor *color);
+LV_NODISCARD LV_API VisColor *visual_color_new   (void);
+LV_NODISCARD LV_API VisColor *visual_color_clone (VisColor *color);
+
+LV_API void visual_color_free (VisColor *color);
 
 LV_API int visual_color_compare (VisColor *src1, VisColor *src2);
 

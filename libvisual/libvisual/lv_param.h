@@ -159,13 +159,15 @@ LV_BEGIN_DECLS
 
 /* VisClosure API */
 
-LV_API VisClosure *visual_closure_new  (void *func, void *data, VisDestroyFunc destroy_func);
-LV_API void        visual_closure_free (VisClosure *self);
+LV_NODISCARD LV_API VisClosure *visual_closure_new (void *func, void *data, VisDestroyFunc destroy_func);
+
+LV_API void visual_closure_free (VisClosure *self);
 
 /* VisParamList API */
 
-LV_API VisParamList *visual_param_list_new  (void);
-LV_API void          visual_param_list_free (VisParamList *self);
+LV_NODISCARD LV_API VisParamList *visual_param_list_new  (void);
+
+LV_API void visual_param_list_free (VisParamList *self);
 
 LV_API void         visual_param_list_add         (VisParamList *list, VisParam *param);
 LV_API void         visual_param_list_add_array   (VisParamList *list, VisParam **params, unsigned int nparams);
@@ -190,11 +192,11 @@ LV_API VisEventQueue *visual_param_list_get_event_queue (VisParamList *list);
  *
  * @return A newly allocated VisParam
  */
-LV_API VisParam *visual_param_new (const char * name,
-                                   const char * description,
-                                   VisParamType type,
-                                   void *       default_value,
-                                   VisClosure * validator);
+LV_NODISCARD LV_API VisParam *visual_param_new (const char * name,
+                                                const char * description,
+                                                VisParamType type,
+                                                void *       default_value,
+                                                VisClosure * validator);
 
 /**
  * Frees a parameter entry.
