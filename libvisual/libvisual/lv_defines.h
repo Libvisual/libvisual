@@ -78,7 +78,7 @@
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #  define LV_RESTRICT restrict
-#elif defined(__GNUC__) && __GNU__ >= 4
+#elif defined(__GNUC__) && __GNUC__ >= 4
 #  define LV_RESTRICT __restrict__
 #elif defined(_MSC_VER) && _MSC_VER >= 1600
 #  define LV_RESTRICT __restrict
