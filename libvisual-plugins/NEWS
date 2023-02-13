@@ -3,6 +3,53 @@ of Libvisual plugins.
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.4.2: 2023-03-20:
+
+New features
+* debug: Fix and reintegrate debug input plugin (#147)
+* gstreamer: Upgrade to GStreamer 1.x (#95, #194, #223)
+* mplayer: Make input plug-in functional (#158, #277)
+* portaudio: Add new PortAudio input plug-in (#196, #236, #240, #279)
+* pulseaudio: Add new PulseAudio input plug-in (#149)
+
+Removed features
+* esound: Drop ESounD/ESD input plugin (#148)
+
+Behavior bugfixes
+* alsa: Fix upload buffer size math (#154)
+* alsa: Open device "default" rather than "hw:0,0" (#154)
+* alsa: Reduce latency (#154)
+* corona: Fix heap-buffer-overflow (#263, #281)
+* gforce: Fix issues with object destruction (#216)
+* gforce: Fix font loading + install missing font file (#216)
+* infinite: Fix out-of-bounds access (#200, #205)
+* infinite: Fix effect loading for big-endian machines (#200)
+* lv_flower: Fix out-of-bounds access (#199)
+* lv_gltest: Base rotation on runtime not FPS (#153, #164)
+* lv_scope: Show silence as a solid line (#198)
+* oinksie: Fix out-of-bounds access (#209)
+
+Translation improvements
+* Improve translations (from Debian) (#156)
+
+Fixes related to compilation
+* Drop harmful AC_FUNC_MALLOC and AC_FUNC_REALLOC from configure.ac (#237)
+* Address Autotools warnings (#228)
+* Re-write autogen.sh based on autoreconf (#229)
+* Drop unused X11 and make OpenGL logic respect pkg-config (#188)
+* Compile and link against OpenGL and GLU in a more portable way (#278)
+* gdkpixbuf: Update to build with GTK 3.x (#183)
+* gforce: Fix compile error (#290)
+* Require a C++11 compiler (#276)
+
+Infrastructure work
+* Start covering Clang 17 (#231)
+* Enrich NEWS files with 0.4.1 pull request references (#227)
+* Add .gitignore files (#197)
+* Start covering build on macOS (#189, #262)
+* finespectrum: Remove off-build-system actor plugin (#207, #253)
+* Document 0.4.2 pull requests (#273)
+
 New in 0.4.1: 2022-12-05:
 
 Behavior bugfixes
