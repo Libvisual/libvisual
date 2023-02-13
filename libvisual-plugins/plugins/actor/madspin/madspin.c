@@ -34,8 +34,13 @@
 
 #include <time.h>
 
-#include <GL/gl.h>
-/*#include <GL/glu.h>*/
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
+#else
+# error neither GL/gl.h nor OpenGL/gl.h available
+#endif
 
 #include <libvisual/libvisual.h>
 

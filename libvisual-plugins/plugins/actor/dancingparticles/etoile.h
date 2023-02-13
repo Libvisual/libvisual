@@ -1,5 +1,13 @@
 #include <cmath>
-#include <GL/glu.h>
+
+#if defined(HAVE_GL_GLU_H)
+# include <GL/glu.h>
+#elif defined(HAVE_OPENGL_GLU_H)
+# include <OpenGL/glu.h>
+#else
+# error neither GL/glu.h nor OpenGL/glu.h available
+#endif
+
 #include <cstring>
 #include <iostream>
 
