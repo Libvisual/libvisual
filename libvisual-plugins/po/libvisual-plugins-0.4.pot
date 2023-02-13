@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.1\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-21 03:37+0100\n"
+"POT-Creation-Date: 2023-02-14 16:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -434,24 +434,24 @@ msgstr ""
 msgid "The jack server seems to have shutdown"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:98
+#: plugins/input/mplayer/input_mplayer.c:96
 msgid "Use data exported from MPlayer"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:99
+#: plugins/input/mplayer/input_mplayer.c:97
 msgid "This plugin uses data exported from 'mplayer -af export'"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:155
+#: plugins/input/mplayer/input_mplayer.c:153
 #, c-format
 msgid "Could not open file '%s': %s"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:166
+#: plugins/input/mplayer/input_mplayer.c:164
 msgid "No audio channel available"
 msgstr ""
 
-#: plugins/input/mplayer/input_mplayer.c:174
+#: plugins/input/mplayer/input_mplayer.c:172
 #, c-format
 msgid ""
 "Data in wrong format. It should be 2 channels with 512 16bit samples. There "
