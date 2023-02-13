@@ -27,6 +27,7 @@
 #include <memory>
 #include <list>
 #include <stdexcept>
+#include <string>
 #include <cstdarg>
 
 namespace LV

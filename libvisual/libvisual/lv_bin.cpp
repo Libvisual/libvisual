@@ -24,6 +24,7 @@
 #include "config.h"
 #include "lv_bin.h"
 #include "lv_common.h"
+#include <string>
 
 namespace LV {
 

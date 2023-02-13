@@ -8,6 +8,7 @@
 
 #include <libvisual/lv_singleton.hpp>
 #include <libvisual/lv_plugin.h>
+#include <string>
 #include <string_view>
 #include <memory>
 
