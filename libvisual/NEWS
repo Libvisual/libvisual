@@ -3,6 +3,37 @@ of Libvisual.
 
 These are only visible changes, for more details look at the ChangeLog.
 
+New in 0.4.2: 2023-03-20:
+
+New features
+* lv-tool-0.4: New standalone GUI tool + related man page (#150, #182,
+  #195, #201, #210, #213, #214, #219, #222, #232, #233, #239, #249, #254)
+
+Behavior bugfixes
+* Fix splitting of interleaved stereo (#152)
+* Fix ringbuffer infinite loop (#184)
+* Fix heap-use-after-free on pallete when switching actors (#214)
+* Fix code path that missed setting the video palette (#214)
+* Improve AltiVec detection for PPC/PPC64 Linux (#268)
+* examples: Improve depth handling in example simplesdl.c (#146)
+
+Fixes related to compilation
+* Stop using sdl-config and AM_PATH_SDL in configure.ac (#238)
+* Drop harmful AC_FUNC_MALLOC from configure.ac (#237)
+* Address Autotools warnings (#228)
+* Re-write autogen.sh based on autoreconf (#229)
+* Fix SDL header location with regard to pkg-config (#187)
+* Do not define HAVE_SCHED on macOS (#189)
+* Require a C++11 compiler (#276)
+
+Infrastructure work
+* Start covering Clang 17 (#231)
+* Enrich NEWS files with 0.4.1 pull request references (#227)
+* Add .gitignore files (#197)
+* Start covering build on macOS (#189, #262)
+* Document 0.4.2 pull requests (#273)
+* Make CI ensure that the lv-tool man page stays in sync (#232)
+
 New in 0.4.1: 2022-12-05:
 
 Behavior bugfixes
