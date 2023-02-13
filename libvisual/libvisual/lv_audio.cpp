@@ -25,6 +25,7 @@
 #include "lv_audio.h"
 #include "private/lv_audio_convert.hpp"
 #include "private/lv_audio_stream.hpp"
+#include "private/lv_string_hash.hpp"
 #include "lv_common.h"
 #include "lv_fourier.h"
 #include "lv_math.h"
@@ -44,7 +45,7 @@ namespace LV {
   {
   public:
 
-      using ChannelList = std::unordered_map<std::string, AudioChannelPtr>;
+      using ChannelList = std::unordered_map<std::string, AudioChannelPtr, StringHash, std::equal_to<>>;
 
       ChannelList channels;
 
@@ -90,20 +91,18 @@ namespace LV {
 
   void Audio::Impl::upload_to_channel (std::string_view name, BufferConstPtr const& samples, Time const& timestamp)
   {
-      std::string name_str {name};
+      auto entry {channels.find (name)};
 
-      if (!get_channel (name)) {
-          channels[name_str] = std::make_unique<AudioChannel> (name);
+      if (entry == channels.end ()) {
+          entry = channels.emplace (name, std::make_unique<AudioChannel> (name)).first;
       }
 
-      channels[name_str]->add_samples (samples, timestamp);
+      entry->second->add_samples (samples, timestamp);
   }
 
   AudioChannel* Audio::Impl::get_channel (std::string_view name) const
   {
-      std::string name_str {name};
-
-      auto entry = channels.find (name_str);
+      auto entry = channels.find (name);
       return entry != channels.end () ? entry->second.get () : nullptr;
   }
 
