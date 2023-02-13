@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-01-21 03:37+0100\n"
+"POT-Creation-Date: 2023-02-14 16:26+0100\n"
 "PO-Revision-Date: 2017-11-23 18:08:07+0200\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -470,26 +470,26 @@ msgstr "Eingabeschnittstellen konnten nicht verbunden werden."
 msgid "The jack server seems to have shutdown"
 msgstr "Der Jack-Server scheint heruntergefahren zu sein."
 
-#: plugins/input/mplayer/input_mplayer.c:98
+#: plugins/input/mplayer/input_mplayer.c:96
 msgid "Use data exported from MPlayer"
 msgstr "Vom Mplayer exportierte Daten werden benutzt."
 
-#: plugins/input/mplayer/input_mplayer.c:99
+#: plugins/input/mplayer/input_mplayer.c:97
 msgid "This plugin uses data exported from 'mplayer -af export'"
 msgstr ""
 "Diese Erweiterung verwendet per »mplayer -af export« exportierte Daten."
 
-#: plugins/input/mplayer/input_mplayer.c:155
+#: plugins/input/mplayer/input_mplayer.c:153
 #, c-format
 msgid "Could not open file '%s': %s"
 msgstr "Datei »%s« kann nicht geöffnet werden: %s"
 
-#: plugins/input/mplayer/input_mplayer.c:166
+#: plugins/input/mplayer/input_mplayer.c:164
 msgid "No audio channel available"
 msgstr "kein Audiokanal verfügbar"
 
 # https://de.wikipedia.org/wiki/Sampling_(Musik)#Audiosample
-#: plugins/input/mplayer/input_mplayer.c:174
+#: plugins/input/mplayer/input_mplayer.c:172
 #, c-format
 msgid ""
 "Data in wrong format. It should be 2 channels with 512 16bit samples. There "
