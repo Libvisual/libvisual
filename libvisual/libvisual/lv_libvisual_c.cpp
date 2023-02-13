@@ -6,8 +6,7 @@ extern "C" {
 
   const char *visual_get_version ()
   {
-      static std::string version {LV::System::instance ()->get_version ()};
-      return version.c_str ();
+      return LV::System::instance ()->get_version ().c_str ();
   }
 
   int visual_get_api_version ()
