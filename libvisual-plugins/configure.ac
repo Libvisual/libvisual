@@ -181,7 +181,7 @@ if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
   fi
 fi
 
-dnl OpenGL + GLX
+dnl OpenGL + GLU
 AC_ARG_ENABLE([opengl],
   AS_HELP_STRING([--disable-opengl],
     [Do not build actor plugins based using OpenGL/GLU @<:@default=enabled@:>@]),
@@ -189,8 +189,8 @@ AC_ARG_ENABLE([opengl],
   [ENABLE_OPENGL_ACTORS=yes])
 
 AS_IF([test "$ENABLE_OPENGL_ACTORS" = "yes"], [
-  PKG_CHECK_MODULES([GL], [gl], [HAVE_OPENGL="yes"], [HAVE_OPENGL="no"])
-  PKG_CHECK_MODULES([GLU], [glu], [HAVE_GLU="yes"], [HAVE_GLU="no"; HAVE_OPENGL="no"])
+  AX_CHECK_GL([HAVE_OPENGL="yes"], [HAVE_OPENGL="no"])
+  AX_CHECK_GLU([HAVE_GLU="yes"], [HAVE_GLU="no"; HAVE_OPENGL="no"])
   AS_IF([test "$HAVE_OPENGL" != "yes"], [
     AC_MSG_WARN([*** OpenGL and/or GLU have not been found, see above.
                         Actor plugins using OpenGL will not be built.])

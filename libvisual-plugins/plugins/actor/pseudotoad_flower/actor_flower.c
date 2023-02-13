@@ -32,8 +32,21 @@
 #include <math.h>
 #include <gettext.h>
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+#ifdef HAVE_GL_GL_H
+# include <GL/gl.h>
+#elif defined(HAVE_OPENGL_GL_H)
+# include <OpenGL/gl.h>
+#else
+# error neither GL/gl.h nor OpenGL/gl.h available
+#endif
+
+#if defined(HAVE_GL_GLU_H)
+# include <GL/glu.h>
+#elif defined(HAVE_OPENGL_GLU_H)
+# include <OpenGL/glu.h>
+#else
+# error neither GL/glu.h nor OpenGL/glu.h available
+#endif
 
 #include <libvisual/libvisual.h>
 

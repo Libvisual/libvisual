@@ -106,8 +106,6 @@ jobs:
             jack \
             libpng \
             luajit \
-            mesa \
-            mesa-glu \
             orc \
             pkg-config \
             portaudio \
