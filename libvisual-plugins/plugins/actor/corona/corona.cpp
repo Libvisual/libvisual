@@ -109,7 +109,7 @@ bool Corona::setUpSurface(int width, int height) {
 	m_real_image = (unsigned char *)calloc(1,width*height);
 	if (m_real_image == 0) return false;
 	m_image      = m_real_image + m_width * (m_real_height - m_height);
-	m_reflArray  = (int*)malloc((m_real_height - m_height) + m_width);
+	m_reflArray  = (int*)malloc((m_real_height - m_height) * sizeof(*m_reflArray));
 
 	// Allocate the delta-field memory, and initialise it
 	m_deltafield = (unsigned char**)malloc(m_width * m_height * sizeof(unsigned char*));
