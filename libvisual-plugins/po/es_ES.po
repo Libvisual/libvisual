@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Libvisual plugins 0.3.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-02-14 16:26+0100\n"
+"POT-Creation-Date: 2023-02-14 16:36+0100\n"
 "PO-Revision-Date: 2005-03-16 00:11-0300\n"
 "Last-Translator: Duilio Javier Protti <dprotti@users.sourceforge.net>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -504,11 +504,11 @@ msgstr "%d es un descriptor de archivo erróneo"
 msgid "Could not munmap() area %p+%d. %s"
 msgstr "No se puede munmap()-ear área %p+%d: %s"
 
-#: plugins/input/portaudio/input_portaudio.c:62
+#: plugins/input/portaudio/input_portaudio.c:61
 msgid "PortAudio capture plugin"
 msgstr "Plugin de captura de audio PortAudio"
 
-#: plugins/input/portaudio/input_portaudio.c:63
+#: plugins/input/portaudio/input_portaudio.c:62
 msgid "Use this plugin to capture PCM data from the PortAudio record device"
 msgstr ""
 "Use este plugin para capturar datos PCM del dispositivo de grabación "
