@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvisual-plugins 0.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
-"POT-Creation-Date: 2023-02-14 16:36+0100\n"
+"POT-Creation-Date: 2023-02-14 16:48+0100\n"
 "PO-Revision-Date: 2017-11-23 18:08:07+0200\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -293,7 +293,7 @@ msgstr "Libvisual-Analyseerweiterung"
 msgid "A nice simple spectrum analyzer plugin."
 msgstr "eine schicke einfache Spektrumanalyseerweiterung"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:92
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:105
 msgid ""
 "Original by:  Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front "
 "Technologies, Port by: Dennis Smit <ds@nerds-incorporated.org>"
@@ -301,16 +301,16 @@ msgstr ""
 "Original von: Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson und 4Front "
 "Technologies, Portierung durch: Dennis Smit <ds@nerds-incorporated.org>"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:94
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:107
 msgid "Libvisual GL analyzer plugin"
 msgstr "Libvisual-GL-Analysiererweiterung"
 
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:95
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:108
 msgid "This plugin shows an openGL bar analyzer like the xmms one"
 msgstr "Diese Erweiterung zeigt ein OpenGL-Balkenanalyse wie die von XMMS."
 
 # FIXME s/Transparant/Transparent/
-#: plugins/actor/lv_gltest/actor_lv_gltest.c:141
+#: plugins/actor/lv_gltest/actor_lv_gltest.c:154
 msgid "Transparant bars"
 msgstr "durchsichtige Balken"
 
@@ -323,7 +323,7 @@ msgid "This is a test plugin that'll display a simple scope"
 msgstr ""
 "Dies ist eine Testerweiterung, die eine einfache Bandbreite anzeigen wird."
 
-#: plugins/actor/madspin/madspin.c:97
+#: plugins/actor/madspin/madspin.c:102
 msgid ""
 "Original by: Andrew Birck <birck@uiuc.edu>, Port by: Dennis Smit <ds@nerds-"
 "incorporated.org>"
@@ -331,24 +331,24 @@ msgstr ""
 "Original von: Andrew Birck <birck@uiuc.edu>, Portierung durch: Dennis Smit "
 "<ds@nerds-incorporated.org>"
 
-#: plugins/actor/madspin/madspin.c:99
+#: plugins/actor/madspin/madspin.c:104
 msgid "Libvisual madspin plugin"
 msgstr "Libvisual-Madspin-Erweiterung"
 
-#: plugins/actor/madspin/madspin.c:100
+#: plugins/actor/madspin/madspin.c:105
 msgid "This plugin shows a nifty visual effect using openGL"
 msgstr ""
 "Diese Erweiterung zeigt einen eleganten optischen Effekt mittels OpenGL."
 
-#: plugins/actor/madspin/madspin.c:164
+#: plugins/actor/madspin/madspin.c:169
 msgid "Number of stars:"
 msgstr "Anzahl der Sterne:"
 
-#: plugins/actor/madspin/madspin.c:165
+#: plugins/actor/madspin/madspin.c:170
 msgid "Speed:"
 msgstr "Geschwindigkeit:"
 
-#: plugins/actor/pseudotoad_flower/actor_flower.c:78
+#: plugins/actor/pseudotoad_flower/actor_flower.c:91
 msgid ""
 "Original by: Antti Silvast <asilvast@iki.fi>, Port by: Dennis Smit <ds@nerds-"
 "incorporated.org>"
@@ -356,11 +356,11 @@ msgstr ""
 "Original von: Antti Silvast <asilvast@iki.fi>, Portierung durch: Dennis Smit "
 "<ds@nerds-incorporated.org>"
 
-#: plugins/actor/pseudotoad_flower/actor_flower.c:80
+#: plugins/actor/pseudotoad_flower/actor_flower.c:93
 msgid "Libvisual yellow rose of texas port"
 msgstr "gelbe Rose von Texas-Portierung von Libvisual"
 
-#: plugins/actor/pseudotoad_flower/actor_flower.c:81
+#: plugins/actor/pseudotoad_flower/actor_flower.c:94
 msgid "This renders an awesome responsive flower"
 msgstr "Dies berechnet eine tolle ansprechende Blume"
 
