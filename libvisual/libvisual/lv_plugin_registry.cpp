@@ -79,17 +79,18 @@ namespace LV {
       return ref;
   }
 
-  template <>
-  LV_API PluginRegistry* Singleton<PluginRegistry>::m_instance = nullptr;
-
   void PluginRegistry::init ()
   {
-      if (!m_instance)
-          m_instance = new PluginRegistry;
+      if (m_instance) {
+          visual_log (VISUAL_LOG_WARNING, "Attempt to initialize plugin registry a second time.");
+          return;
+      }
+
+      m_instance.reset (new PluginRegistry {});
   }
 
   PluginRegistry::PluginRegistry ()
-      : m_impl (new Impl)
+      : m_impl {std::make_unique<Impl> ()}
   {
       visual_log (VISUAL_LOG_DEBUG, "Initializing plugin registry");
 

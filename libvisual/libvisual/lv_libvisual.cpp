@@ -97,17 +97,14 @@ namespace LV
       };
   }
 
-  template <>
-  LV_API System* Singleton<System>::m_instance = nullptr;
-
   void System::init (int& argc, char**& argv)
   {
       if (m_instance) {
-          visual_log (VISUAL_LOG_WARNING, "Attempt to initialize LV a second time");
+          visual_log (VISUAL_LOG_WARNING, "Attempt to initialize LV a second time.");
           return;
       }
 
-      m_instance = new System (argc, argv);
+      m_instance.reset (new System {argc, argv});
   }
 
   std::string System::get_version () const
@@ -136,7 +133,7 @@ namespace LV
   }
 
   System::System (int& argc, char**& argv)
-      : m_impl(new Impl)
+      : m_impl {std::make_unique<Impl> ()}
   {
       (void)argc;
       (void)argv;

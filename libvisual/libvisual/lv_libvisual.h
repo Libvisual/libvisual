@@ -41,11 +41,7 @@
 //! Libvisual namespace
 namespace LV {
 
-  class LV_API System;
-  template <>
-  LV_API System* Singleton<System>::m_instance;
-
-  class LV_API System
+  class LV_API System final
       : public Singleton<System>
   {
   public:
@@ -60,7 +56,7 @@ namespace LV {
 
       System (System const&) = delete;
 
-      virtual ~System ();
+      ~System () override;
 
       /**
        * Returns the Libvisual version.

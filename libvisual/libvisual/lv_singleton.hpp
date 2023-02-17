@@ -1,6 +1,8 @@
 #ifndef _LV_SINGLETON_HPP
 #define _LV_SINGLETON_HPP
 
+#include <memory>
+
 namespace LV {
 
   //! Singleton class template.
@@ -24,23 +26,26 @@ namespace LV {
       //! Returns the singleton instance
       //!
       //! @return singleton instance
-      static T* instance () {
-          return m_instance;
+      static T* instance ()
+      {
+          return m_instance.get ();
       }
 
       //! Destroys the singleton instance
       static void destroy ()
       {
-          delete m_instance;
-          m_instance = nullptr;
+          m_instance.reset ();
       }
 
   protected:
 
-      static T* m_instance;
+      static std::unique_ptr<T> m_instance;
 
       Singleton () = default;
   };
+
+  template <class T>
+  std::unique_ptr<T> Singleton<T>::m_instance {};
 
 } // LV namespace
 
