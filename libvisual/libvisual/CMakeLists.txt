@@ -63,10 +63,10 @@ SET(libvisual_SOURCES
   lv_cpu.c
   lv_error.c
   lv_gl.c
-  lv_alpha_blend.c
   lv_util.c
 
   lv_actor.cpp
+  lv_alpha_blend.cpp
   lv_audio.cpp
   lv_bin.cpp
   lv_buffer.cpp
