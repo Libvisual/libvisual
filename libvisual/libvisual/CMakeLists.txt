@@ -62,7 +62,6 @@ SET(libvisual_SOURCES
   lv_param_validators.c
   lv_cpu.c
   lv_error.c
-  lv_math.c
   lv_gl.c
   lv_alpha_blend.c
   lv_util.c
@@ -76,6 +75,7 @@ SET(libvisual_SOURCES
   lv_fourier.cpp
   lv_input.cpp
   lv_libvisual.cpp
+  lv_math.cpp
   lv_morph.cpp
   lv_param.cpp
   lv_plugin.cpp
