@@ -30,13 +30,31 @@
 
 #ifdef __cplusplus
 
-#include <algorithm>
+#include <concepts>
+#include <cstdint>
+#include <span>
 
-namespace LV {
+namespace LV::Math {
 
-  // empty at the moment
+  LV_API void simd_add (std::span<float> dst, std::span<float const> src, float adder);
 
-} // LV namespce
+  LV_API void simd_mul (std::span<float> dst, std::span<float const> src1, std::span<float const> src2);
+  LV_API void simd_mul (std::span<float> dst, std::span<float const> src, float k);
+  LV_API void simd_mul (std::span<std::int32_t> ints, std::span<float const> flts, float k);
+  LV_API void simd_mul (std::span<float> flts, std::span<std::int32_t const> ints, float k);
+
+  LV_API void simd_convert (std::span<int32_t> ints, std::span<float const> flts);
+  LV_API void simd_convert (std::span<float> flts, std::span<std::int32_t const> ints);
+
+  LV_API void simd_convert_denorm (std::span<std::int32_t> ints, std::span<float const> flts, float k);
+  LV_API void simd_convert_denorm_neg (std::span<std::int32_t> ints, std::span<float const> flts, float k);
+
+  LV_API void simd_sqrt (std::span<float> dst, std::span<float const> src);
+
+  LV_API void simd_complex_norm (std::span<float> dst, std::span<float const> real, std::span<float const> imag);
+  LV_API void simd_complex_scaled_norm (std::span<float> dst, std::span<float const> real, std::span<float const> imag, float k);
+
+} // LV::Math namespce
 
 #endif /* __cplusplus */
 
