@@ -28,6 +28,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+#include <x86intrin.h>
+#endif
+
 /* Standard C fallbacks */
 static void *mem_set16_c (void *dest, int c, visual_size_t n);
 static void *mem_set32_c (void *dest, int c, visual_size_t n);
@@ -35,11 +39,9 @@ static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitc
 
 /* x86 SIMD optimized versions */
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-static void *mem_set16_mmx (void *dest, int c, visual_size_t n);
-static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n);
+static void *mem_set16_simd_x86 (void *dest, int c, visual_size_t n);
 
-static void *mem_set32_mmx (void *dest, int c, visual_size_t n);
-static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n);
+static void *mem_set32_simd_x86 (void *dest, int c, visual_size_t n);
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 
 
@@ -58,20 +60,10 @@ void visual_mem_initialize ()
 	 * every time */
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-
-	if (visual_cpu_has_mmx ()) {
-		visual_mem_set16 = mem_set16_mmx;
-		visual_mem_set32 = mem_set32_mmx;
+	if (visual_cpu_has_sse ()) {
+		visual_mem_set16 = mem_set16_simd_x86;
+		visual_mem_set32 = mem_set32_simd_x86;
 	}
-
-	/* The k6-II and k6-III don't have mmx2, but of course can use the prefetch
-	 * facility that 3dnow provides. */
-
-	if (visual_cpu_has_mmx2 ()) {
-		visual_mem_set16 = mem_set16_mmx2;
-		visual_mem_set32 = mem_set32_mmx2;
-	}
-
 #endif /* VISUAL_ARCH_X86 || VISUAL_ARCH_X86_64 */
 }
 
@@ -120,9 +112,7 @@ static void *mem_set16_c (void *dest, int c, visual_size_t n)
 {
 	uint32_t *d = dest;
 	uint16_t *dc = dest;
-	uint32_t setflag32 =
-		(c & 0xffff) |
-		((c << 16) & 0xffff0000);
+	uint32_t setflag32 = (c & 0xffff) | ((c << 16) & 0xffff0000);
 	uint16_t setflag16 = c & 0xffff;
 
 	while (n >= 2) {
@@ -169,204 +159,72 @@ static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitc
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 
-static void *mem_set16_mmx (void *dest, int c, visual_size_t n)
+static void *mem_set16_simd_x86 (void *dest, int c, visual_size_t n)
 {
-	uint32_t *d = dest;
-	uint16_t *dc = dest;
-	uint32_t setflag32 =
-		(c & 0xffff) |
-		((c << 16) & 0xffff0000);
-	uint16_t setflag16 = c & 0xffff;
+	// FIXME: Do we need 'dest' to be aligned for this to be performing at optimal speed?
 
-	__asm __volatile
-		("\n\t movd (%0), %%mm0"
-		 "\n\t movd (%0), %%mm1"
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
+	const uint16_t copy    = c & 0xffff;
+	const uint32_t copy_2x = (copy & 0xffff) | ((copy << 16) & 0xffff0000);
+	const __m64    copy_4x = _mm_set_pi32 (copy_2x, copy_2x);
 
-	while (n >= 64) {
-		__asm __volatile
-			("\n\t movq %%mm0, (%0)"
-			 "\n\t movq %%mm1, 8(%0)"
-			 "\n\t movq %%mm2, 16(%0)"
-			 "\n\t movq %%mm3, 24(%0)"
-			 "\n\t movq %%mm4, 32(%0)"
-			 "\n\t movq %%mm5, 40(%0)"
-			 "\n\t movq %%mm6, 48(%0)"
-			 "\n\t movq %%mm7, 56(%0)"
-			 :: "r" (d) : "memory");
+	__m64 *m64_ptr = (__m64 *) dest;
 
-		d += 16;
-
-		n -= 32;
-	}
-
-	__asm __volatile
-		("\n\t emms");
-
-	while (n >= 2) {
-		*d++ = setflag32;
-		n -= 2;
-	}
-
-	dc = (uint16_t *) d;
-
-	while (n--)
-		*dc++ = setflag16;
-
-	return dest;
-}
-
-static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n)
-{
-	uint32_t *d = dest;
-	uint16_t *dc = dest;
-	uint32_t setflag32 =
-		(c & 0xffff) |
-		((c << 16) & 0xffff0000);
-	uint16_t setflag16 = c & 0xffff;
-
-	__asm __volatile
-		("\n\t movd (%0), %%mm0"
-		 "\n\t movd (%0), %%mm1"
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
-
+	// Copy 32 copies each iteration
 	while (n >= 32) {
-		__asm __volatile
-			("\n\t movntq %%mm0, (%0)"
-			 "\n\t movntq %%mm1, 8(%0)"
-			 "\n\t movntq %%mm2, 16(%0)"
-			 "\n\t movntq %%mm3, 24(%0)"
-			 "\n\t movntq %%mm4, 32(%0)"
-			 "\n\t movntq %%mm5, 40(%0)"
-			 "\n\t movntq %%mm6, 48(%0)"
-			 "\n\t movntq %%mm7, 56(%0)"
-			 :: "r" (d) : "memory");
-
-		d += 16;
-
+		_mm_stream_pi (m64_ptr, copy_4x);
+		_mm_stream_pi (m64_ptr + 1, copy_4x);
+		_mm_stream_pi (m64_ptr + 2, copy_4x);
+		_mm_stream_pi (m64_ptr + 3, copy_4x);
+		_mm_stream_pi (m64_ptr + 4, copy_4x);
+		_mm_stream_pi (m64_ptr + 5, copy_4x);
+		_mm_stream_pi (m64_ptr + 6, copy_4x);
+		_mm_stream_pi (m64_ptr + 7, copy_4x);
+		m64_ptr += 8;
 		n -= 32;
 	}
 
-	__asm __volatile
-		("\n\t emms");
+	uint32_t *uint32_ptr = (uint32_t *) m64_ptr;
 
 	while (n >= 2) {
-		*d++ = setflag32;
+		*uint32_ptr++ = copy_2x;
 		n -= 2;
 	}
 
-	dc = (uint16_t *) d;
+	uint16_t *uint16_ptr = (uint16_t *) uint32_ptr;
+	const uint16_t setflag16 = c & 0xffff;
 
 	while (n--)
-		*dc++ = setflag16;
+		*uint16_ptr++ = setflag16;
 
 	return dest;
 }
 
-static void *mem_set32_mmx (void *dest, int c, visual_size_t n)
+static void *mem_set32_simd_x86 (void *dest, int c, visual_size_t n)
 {
-	uint32_t *d = dest;
-	uint32_t setflag32 = c;
+	// FIXME: Do we need 'dest' to be aligned for this to be performing at optimal speed?
 
-	__asm __volatile
-		("\n\t movd (%0), %%mm0"
-		 "\n\t movd (%0), %%mm1"
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
+	const uint32_t copy = c;
+	const __m64    copy_2x = _mm_set_pi32 (copy, copy);
 
-	while (n >= 64) {
-		__asm __volatile
-			("\n\t movq %%mm0, (%0)"
-			 "\n\t movq %%mm1, 8(%0)"
-			 "\n\t movq %%mm2, 16(%0)"
-			 "\n\t movq %%mm3, 24(%0)"
-			 "\n\t movq %%mm4, 32(%0)"
-			 "\n\t movq %%mm5, 40(%0)"
-			 "\n\t movq %%mm6, 48(%0)"
-			 "\n\t movq %%mm7, 56(%0)"
-			 :: "r" (d) : "memory");
+	__m64 *m64_ptr = (__m64 *) dest;
 
-		d += 16;
-
+	// Copy 16 copies each iteration
+	while (n >= 16) {
+		_mm_stream_pi (m64_ptr, copy_2x);
+		_mm_stream_pi (m64_ptr + 1, copy_2x);
+		_mm_stream_pi (m64_ptr + 2, copy_2x);
+		_mm_stream_pi (m64_ptr + 3, copy_2x);
+		_mm_stream_pi (m64_ptr + 4, copy_2x);
+		_mm_stream_pi (m64_ptr + 5, copy_2x);
+		_mm_stream_pi (m64_ptr + 6, copy_2x);
+		_mm_stream_pi (m64_ptr + 7, copy_2x);
+		m64_ptr += 8;
 		n -= 16;
 	}
 
-	__asm __volatile
-		("\n\t emms");
-
+	uint32_t *uint32_ptr = (uint32_t *) m64_ptr;
 	while (n--)
-		*d++ = setflag32;
-
-	return dest;
-}
-
-static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
-{
-	uint32_t *d = dest;
-	uint32_t setflag32 = c;
-
-	__asm __volatile
-		("\n\t movd (%0), %%mm0"
-		 "\n\t movd (%0), %%mm1"
-		 "\n\t psllq $32, %%mm1"
-		 "\n\t por %%mm1, %%mm0"
-		 "\n\t movq %%mm0, %%mm2"
-		 "\n\t movq %%mm0, %%mm1"
-		 "\n\t movq %%mm2, %%mm3"
-		 "\n\t movq %%mm1, %%mm4"
-		 "\n\t movq %%mm0, %%mm5"
-		 "\n\t movq %%mm2, %%mm6"
-		 "\n\t movq %%mm1, %%mm7"
-		 :: "r" (&setflag32) : "memory");
-
-	while (n >= 64) {
-		__asm __volatile
-			("\n\t movntq %%mm0, (%0)"
-			 "\n\t movntq %%mm1, 8(%0)"
-			 "\n\t movntq %%mm2, 16(%0)"
-			 "\n\t movntq %%mm3, 24(%0)"
-			 "\n\t movntq %%mm4, 32(%0)"
-			 "\n\t movntq %%mm5, 40(%0)"
-			 "\n\t movntq %%mm6, 48(%0)"
-			 "\n\t movntq %%mm7, 56(%0)"
-			 :: "r" (d) : "memory");
-
-		d += 16;
-
-		n -= 16;
-	}
-
-	__asm __volatile
-		("\n\t emms");
-
-	while (n--)
-		*d++ = setflag32;
+		*uint32_ptr++ = copy;
 
 	return dest;
 }
