@@ -232,12 +232,14 @@ namespace LV {
 
   void Audio::get_spectrum (BufferPtr const& buffer, std::size_t samplelen, std::string const& channel_name, bool normalised, float multiplier)
   {
-      get_spectrum (buffer, samplelen, channel_name, normalised);
+      auto spectrum {Buffer::create (buffer->get_size ())};
+      get_spectrum (spectrum, samplelen, channel_name, normalised);
 
-      auto data = static_cast<float*> (buffer->get_data ());
-      std::size_t datasize = buffer->get_size () / sizeof (float);
+      auto result_ptr {static_cast<float*> (buffer->get_data ())};
+      auto spectrum_ptr {static_cast<float const*> (spectrum->get_data ())};
+      auto count {buffer->get_size () / sizeof (float)};
 
-      visual_math_simd_mul_floats_float (data, data, multiplier, datasize);
+      visual_math_simd_mul_floats_float (result_ptr, spectrum_ptr, multiplier, count);
   }
 
   void Audio::get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised)
@@ -255,12 +257,14 @@ namespace LV {
 
   void Audio::get_spectrum_for_sample (BufferPtr const& buffer, BufferConstPtr const& sample, bool normalised, float multiplier)
   {
-      get_spectrum_for_sample (buffer, sample, normalised);
+      auto spectrum {Buffer::create (buffer->get_size ())};
+      get_spectrum_for_sample (spectrum, sample, normalised);
 
-      auto data = static_cast<float*> (buffer->get_data ());
-      std::size_t datasize = buffer->get_size () / sizeof (float);
+      auto result_ptr {static_cast<float*> (buffer->get_data ())};
+      auto spectrum_ptr {static_cast<float const*> (spectrum->get_data ())};
+      auto count {buffer->get_size () / sizeof (float)};
 
-      visual_math_simd_mul_floats_float (data, data, multiplier, datasize);
+      visual_math_simd_mul_floats_float (result_ptr, spectrum_ptr, multiplier, count);
   }
 
   void Audio::normalise_spectrum (BufferPtr const& buffer)
