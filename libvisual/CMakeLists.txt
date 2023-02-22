@@ -134,6 +134,9 @@ IF(IS_SYSTEM_DIR STREQUAL "-1")
   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 ENDIF()
 
+# Resolve all external symbols when linking SOs.
+OPTION(ENABLE_SO_UNRESOLVED_SYMBOL_CHECKS "Enable resolution of external symbols when linking SOs" yes)
+
 # Compiler optimizations
 OPTION(ENABLE_EXTRA_OPTIMIZATIONS "Enable extra optimizations" no)
 IF(ENABLE_EXTRA_OPTIMIZATIONS)
