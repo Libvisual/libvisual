@@ -77,6 +77,9 @@ CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 # Assembly
 #AM_PROG_AS
 
+# Resolve all external symbols when linking SOs.
+OPTION(ENABLE_SO_UNRESOLVED_SYMBOL_CHECKS "Enable resolution of external symbols when linking SOs" yes)
+
 # Internationalization
 SET(GETTEXT_PACKAGE "libvisual-plugins-${LV_PLUGINS_VERSION_SUFFIX}")
 OPTION(ENABLE_NLS "Enable internationalization" yes)
