@@ -52,9 +52,12 @@ FUNCTION(LV_BUILD_PLUGIN PLUGIN_NAME PLUGIN_TYPE)
     ${PARSE_ARGS_LINK_OPTIONS}
   )
 
-  SET_TARGET_PROPERTIES(${SO_NAME} PROPERTIES
-    LINK_FLAGS -Wl,--unresolved-symbols,ignore-in-shared-libs
-  )
+  IF(ENABLE_SO_UNRESOLVED_SYMBOL_CHECKS)
+    TARGET_LINK_OPTIONS(${SO_NAME}
+      PRIVATE
+      -Wl,--unresolved-symbols,ignore-in-shared-libs
+    )
+  ENDIF()
 
   TARGET_LINK_LIBRARIES(${SO_NAME}
     PRIVATE
