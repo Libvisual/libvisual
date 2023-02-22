@@ -28,6 +28,8 @@
 #include <stdexcept>
 #include <string>
 
+using namespace std::string_literals;
+
 class Display::Impl
 {
 public:
@@ -42,13 +44,14 @@ public:
     {}
 };
 
-Display::Display (std::string const& driver_name)
+Display::Display (std::string_view driver_name)
   : m_impl (new Impl)
 {
     m_impl->driver.reset (DisplayDriverFactory::instance().make (driver_name, *this));
 
     if (!m_impl->driver) {
-        throw std::runtime_error ("Failed to load display driver '" + driver_name + "'. Valid driver set? (\"--driver\" parameter)");
+        std::string const driver_name_str {driver_name};
+        throw std::runtime_error {"Failed to load display driver '"s + driver_name_str + "'. Valid driver set? (\"--driver\" parameter)"};
     }
 }
 
@@ -80,9 +83,9 @@ void Display::close ()
     m_impl->driver->close ();
 }
 
-void Display::set_title(std::string const& title)
+void Display::set_title(std::string_view title)
 {
-    m_impl->driver->set_title(title);
+    m_impl->driver->set_title (title);
 }
 
 void Display::lock ()

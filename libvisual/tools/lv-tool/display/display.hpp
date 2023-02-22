@@ -27,7 +27,7 @@
 
 #include <libvisual/libvisual.h>
 #include <memory>
-#include <string>
+#include <string_view>
 
 class DisplayDriver;
 
@@ -35,7 +35,7 @@ class Display final
 {
 public:
 
-    explicit Display (std::string const& driver_name);
+    explicit Display (std::string_view driver_name);
 
     Display (Display const&) = delete;
 
@@ -61,7 +61,7 @@ public:
 
     LV::VideoPtr get_video () const;
 
-    void set_title(std::string const& title);
+    void set_title(std::string_view title);
 
     bool is_fullscreen () const;
 

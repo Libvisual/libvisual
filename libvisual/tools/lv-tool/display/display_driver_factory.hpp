@@ -28,6 +28,7 @@
 #include "display_driver.hpp"
 #include <memory>
 #include <functional>
+#include <string_view>
 #include <vector>
 
 typedef std::function<DisplayDriver* (Display& display)> DisplayDriverCreator;
@@ -46,11 +47,11 @@ public:
 	    return m_instance;
     }
 
-    DisplayDriver* make (std::string const& name, Display& display);
+    DisplayDriver* make (std::string_view name, Display& display);
 
-    void add_driver (std::string const& name, Creator const& creator);
+    void add_driver (std::string_view name, Creator const& creator);
 
-    bool has_driver (std::string const& name) const;
+    bool has_driver (std::string_view name) const;
 
     DisplayDriverList get_driver_list () const;
 

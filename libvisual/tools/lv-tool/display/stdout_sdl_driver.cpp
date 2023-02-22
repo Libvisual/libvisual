@@ -233,9 +233,10 @@ namespace {
           return m_screen_video;
       }
 
-      void set_title(std::string const& title) override
+      void set_title (std::string_view title) override
       {
-          SDL_WM_SetCaption (title.c_str(), nullptr);
+          std::string title_str {title};
+          SDL_WM_SetCaption (title_str.c_str (), nullptr);
       }
 
       void update_rect (LV::Rect const& rect) override

@@ -104,7 +104,7 @@ namespace {
           return m_screen_video;
       }
 
-      void set_title(std::string const& title) override
+      void set_title (std::string_view title) override
       {
           (void)title;
 
