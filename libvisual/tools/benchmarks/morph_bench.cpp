@@ -3,21 +3,25 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 #include <cstdlib>
 
 namespace {
+
+  using namespace std::string_literals;
 
   class MorphBench
       : public LV::Tools::Benchmark
   {
   public:
 
-      MorphBench (std::string const& morph_name, unsigned int width, unsigned int height, VisVideoDepth depth)
+      MorphBench (std::string_view morph_name, unsigned int width, unsigned int height, VisVideoDepth depth)
           : Benchmark { "MorphBench" }
           , m_morph { LV::Morph::load (morph_name) }
       {
           if (!m_morph) {
-              throw std::invalid_argument ("Cannot load morph " + morph_name);
+              throw std::invalid_argument {"Cannot load morph "s + std::string {morph_name}};
           }
 
           m_morph->realize ();

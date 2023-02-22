@@ -2,6 +2,7 @@
 #define _LV_TOOLS_BENCHMARK_HPP
 
 #include <string>
+#include <string_view>
 
 namespace LV {
   namespace Tools {
@@ -22,8 +23,8 @@ namespace LV {
 
     protected:
 
-        explicit Benchmark (std::string const& name)
-            : m_name (name)
+        explicit Benchmark (std::string_view name)
+            : m_name {name}
         {}
 
     private:

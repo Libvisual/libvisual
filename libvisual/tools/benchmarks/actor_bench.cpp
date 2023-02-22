@@ -3,7 +3,11 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 #include <cstdlib>
+
+using namespace std::string_literals;
 
 namespace {
 
@@ -12,7 +16,7 @@ namespace {
   {
   public:
 
-      ActorBench (std::string const& actor_name, unsigned int width, unsigned height, VisVideoDepth depth, bool forced_depth)
+      ActorBench (std::string_view actor_name, unsigned int width, unsigned height, VisVideoDepth depth, bool forced_depth)
           : Benchmark { "ActorBench" }
           , m_actor { LV::Actor::load (actor_name) }
       {
@@ -20,7 +24,7 @@ namespace {
           (void)height;
 
           if (!m_actor) {
-              throw std::invalid_argument ("Cannot load actor '" + actor_name);
+              throw std::invalid_argument {"Cannot load actor '"s + std::string {actor_name}};
           }
 
           m_actor->realize ();
