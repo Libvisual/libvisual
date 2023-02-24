@@ -46,8 +46,9 @@ namespace LV {
       auto src2_ptr = reinterpret_cast<rgb16_t const*> (src2.data ());
 
       auto size {static_cast<int> (std::min (dst.size (), src1.size ()))};
+      auto pixel_count {size / sizeof (rgb16_t)};
 
-      for (auto i = 0; i < size / sizeof (rgb16_t); i++) {
+      for (std::size_t i {0}; i < pixel_count; i++) {
           dst_ptr[i].r = (alpha * (src2_ptr[i].r - src1_ptr[i].r)) / 255 + src1_ptr[i].r;
           dst_ptr[i].g = (alpha * (src2_ptr[i].g - src1_ptr[i].g)) / 255 + src1_ptr[i].g;
           dst_ptr[i].b = (alpha * (src2_ptr[i].b - src1_ptr[i].b)) / 255 + src1_ptr[i].b;
