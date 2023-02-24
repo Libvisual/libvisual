@@ -40,8 +40,10 @@ void GF_Palette::Assign( const ArgList& inArgs ) {
 
 
 void GF_Palette::Evaluate( PixPalEntry outPalette[ 256 ] ) {
-	int i;
-	float H, S, V, inc = 1.0 / 255.0;
+	float H = 0.0;
+	float S = 0.0;
+	float V = 0.0;
+	float inc = 1.0 / 255.0;
 
 	*mIntensity = 0;
 
@@ -50,7 +52,7 @@ void GF_Palette::Evaluate( PixPalEntry outPalette[ 256 ] ) {
 	if ( ! mS_I_Dep )	S = mS.Evaluate();
 	if ( ! mV_I_Dep )	V = mV.Evaluate();
 
-	for ( i = 0; i < 256; i++, *mIntensity += inc ) {
+	for ( int i = 0; i < 256; i++, *mIntensity += inc ) {
 
 		// Don't reevaluate vars that are indep of i
 		if ( mH_I_Dep )		H = mH.Evaluate();

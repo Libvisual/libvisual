@@ -137,7 +137,7 @@
 		halfW = ( tw ) >> 1;
 
 		if ( tw < 12 ) {
-			const char* c_shape;
+			const char* c_shape = nullptr;
 			__circ( tw, c_shape )
 			for ( j = 0; j < tw; j++ ) {
 				c_x = c_shape[ j ];
