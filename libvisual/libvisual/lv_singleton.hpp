@@ -39,13 +39,10 @@ namespace LV {
 
   protected:
 
-      static std::unique_ptr<T> m_instance;
+      inline static std::unique_ptr<T> m_instance {};
 
       Singleton () = default;
   };
-
-  template <class T>
-  std::unique_ptr<T> Singleton<T>::m_instance {};
 
 } // LV namespace
 
