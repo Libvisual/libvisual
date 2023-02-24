@@ -50,7 +50,7 @@ short int CEgIStream::GetShort() {
 
 
 unsigned char CEgIStream::GetByte() {
-	unsigned char c;
+	unsigned char c = 0;
 
 	if ( mIsTied ) {
 		if ( mPos != 0 ) {
@@ -74,7 +74,7 @@ unsigned char CEgIStream::GetByte() {
 
 
 unsigned char CEgIStream::PeekByte() {
-	unsigned char c;
+	unsigned char c = 0;
 
 	if ( mIsTied ) {
 		if ( mPos != 0 )
