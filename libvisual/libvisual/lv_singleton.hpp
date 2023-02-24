@@ -31,6 +31,14 @@ namespace LV {
           return m_instance.get ();
       }
 
+      //! Returns the singleton instance as const.
+      //!
+      //! @return Singleton instance.
+      static T const* const_instance ()
+      {
+          return m_instance.get ();
+      }
+
       //! Destroys the singleton instance
       static void destroy ()
       {
