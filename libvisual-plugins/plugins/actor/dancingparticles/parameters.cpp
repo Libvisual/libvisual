@@ -105,9 +105,7 @@ int load_parameters(const char * filename)
     freeparams();
   p_parsed.name = 0;
 
-  fgets(buf,1024, f);
-
-  while(!feof(f))
+  while(fgets(buf,sizeof(buf),f))
     {
       ptr = buf;
       word = nextword(ptr);
@@ -209,7 +207,6 @@ int load_parameters(const char * filename)
 		}
 	    }
 	}
-      fgets(buf,1024, f);
     }
   if(mode == 1)
     {
