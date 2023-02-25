@@ -53,10 +53,10 @@ int PluginMeminfo::ParseMeminfo()
     }
 
     rewind(stream);
-    while (!feof(stream)) {
-        char buffer[256];
+
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), stream)) {
         char *c, *key, *val;
-        fgets(buffer, sizeof(buffer), stream);
         c = strchr(buffer, ':');
         if (c == NULL)
             continue;
