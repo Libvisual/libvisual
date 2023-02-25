@@ -16,15 +16,13 @@ namespace LV {
   typedef ::VisPluginType PluginType;
 
   class LV_API PluginRegistry;
-  template<>
-  LV_API PluginRegistry* Singleton<PluginRegistry>::m_instance;
 
   //! Manages the registry of plugins
   //!
   //! @note This is a singleton class. Its only instance must
   //!       be accessed via the instance() method.
   //!
-  class LV_API PluginRegistry
+  class LV_API PluginRegistry final
       : public Singleton<PluginRegistry>
   {
   public:
@@ -32,7 +30,7 @@ namespace LV {
       PluginRegistry (PluginRegistry const&) = delete;
 
       /** Destructor */
-      virtual ~PluginRegistry ();
+      ~PluginRegistry () override;
 
       /**
        * Adds an extra plugin search path.
