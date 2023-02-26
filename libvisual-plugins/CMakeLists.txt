@@ -45,6 +45,8 @@ SET(CMAKE_CXX_EXTENSIONS off)
 # Check for libvisual early so that users get told they have the wrong
 # dependencies as early in the process as possible.
 FIND_PACKAGE(Libvisual 0.5 REQUIRED)
+MESSAGE(STATUS "Plugins will be installed into ${LV_PLUGIN_DIR}")
+MESSAGE(STATUS "Plugin data will be installed into ${LV_PLUGIN_DATA_DIR}")
 
 # Check for pkg-config
 FIND_PACKAGE(PkgConfig REQUIRED)

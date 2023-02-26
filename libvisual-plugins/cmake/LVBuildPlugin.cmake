@@ -65,7 +65,7 @@ FUNCTION(LV_BUILD_PLUGIN PLUGIN_NAME PLUGIN_TYPE)
 
   TARGET_LINK_LIBRARIES(${SO_NAME}
     PRIVATE
-    Libvisual::Libvisual
+    Libvisual::libvisual
     Threads::Threads
     ${PARSED_ARGS_LINK_LIBS}
   )

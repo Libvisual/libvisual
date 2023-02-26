@@ -36,5 +36,5 @@ TARGET_INCLUDE_DIRECTORIES(gforce_common
 )
 
 TARGET_LINK_LIBRARIES(gforce_common
-  Libvisual::Libvisual
+  Libvisual::libvisual
 )
