@@ -1,8 +1,8 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=@CMAKE_INSTALL_PREFIX@
 libdir=@CMAKE_INSTALL_FULL_LIBDIR@
-includedir=@LV_INCLUDE_DIR_FULL@
-pluginsbasedir=@LV_PLUGIN_DIR_FULL@
+includedir=@LV_INCLUDE_FULL_DIR@
+pluginsbasedir=@LV_PLUGIN_FULL_DIR@
 datarootdir=@CMAKE_INSTALL_FULL_DATADIR@
 datadir=${datarootdir}
 localedir=@CMAKE_INSTALL_FULL_LOCALEDIR@
