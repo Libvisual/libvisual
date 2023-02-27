@@ -62,8 +62,8 @@ void loadepic2(const char *file)
     }
   numCenters2 = 0;
   totLength=0;
-  fgets(buf,255,f);
-  while(!feof(f))
+
+  while(fgets(buf,sizeof(buf),f))
     {
 
       if(buf[0]=='\\')
@@ -85,7 +85,6 @@ void loadepic2(const char *file)
 
 
 	}
-      fgets(buf,255,f);
     }
   fclose(f);
   if(!numCenters2)
