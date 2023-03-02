@@ -24,6 +24,7 @@
 #include "lv_audio.h"
 #include "lv_mem.h"
 #include <array>
+#include <concepts>
 #include <type_traits>
 #include <limits>
 
@@ -36,30 +37,26 @@ namespace {
       (std::is_signed_v<D> && std::is_signed_v<S>) ||
       (std::is_unsigned_v<D> && std::is_unsigned_v<S>);
 
-  template <typename T>
-  constexpr std::enable_if_t<std::is_signed_v<T>, T>
-  half_range ()
+  template <std::signed_integral T>
+  constexpr T half_range ()
   {
       return std::numeric_limits<T>::max ();
   }
 
-  template <typename T>
-  constexpr std::enable_if_t<std::is_unsigned_v<T>, T>
-  half_range ()
+  template <std::unsigned_integral T>
+  constexpr T half_range ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
   }
 
-  template <typename T>
-  constexpr std::enable_if_t<std::is_signed_v<T>, T>
-  zero ()
+  template <std::signed_integral T>
+  constexpr T zero ()
   {
       return 0;
   }
 
-  template <typename T>
-  constexpr std::enable_if_t<std::is_unsigned_v<T>, T>
-  zero ()
+  template <std::unsigned_integral T>
+  constexpr T zero ()
   {
       return std::numeric_limits<T>::max () / 2 + 1;
   }
@@ -81,9 +78,9 @@ namespace {
   }
 
   // signed->unsigned int conversion (same width)
-  template <typename D, typename S>
-  inline std::enable_if_t<std::is_unsigned_v<D> && std::is_signed_v<S> && sizeof(D) == sizeof(S)>
-  convert_sample_array (D* dst, S const* src, std::size_t count)
+  template <std::unsigned_integral D, std::signed_integral S>
+  requires (sizeof (D) == sizeof (S))
+  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       constexpr auto a {zero<D> ()};
 
@@ -97,9 +94,9 @@ namespace {
   }
 
   // unsigned->signed int conversion (same width)
-  template <typename D, typename S>
-  inline std::enable_if_t<std::is_signed_v<D> && std::is_unsigned_v<S> && sizeof(D) == sizeof(S)>
-  convert_sample_array (D* dst, S const* src, std::size_t count)
+  template <std::signed_integral D, std::unsigned_integral S>
+  requires (sizeof (D) == sizeof (S))
+  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       constexpr auto a {zero<S> ()};
 
@@ -113,9 +110,8 @@ namespace {
   }
 
   // int->float conversions
-  template <typename S>
-  inline std::enable_if_t<std::is_integral_v<S>>
-  convert_sample_array (float* dst, S const* src, std::size_t count)
+  template <std::integral S>
+  inline void convert_sample_array (float* dst, S const* src, std::size_t count)
   {
       constexpr float a {1.0 / float (half_range<S> ())};
       constexpr float b {-zero<S>() * a};
@@ -130,9 +126,8 @@ namespace {
   }
 
   // float->int conversions
-  template <typename D>
-  std::enable_if_t<std::is_integral_v<D>>
-  inline convert_sample_array (D* dst, float const* src, std::size_t count)
+  template <std::integral D>
+  inline void convert_sample_array (D* dst, float const* src, std::size_t count)
   {
       constexpr auto a {float (half_range<D> ())};
       constexpr auto b {zero<D> ()};
@@ -147,15 +142,15 @@ namespace {
   }
 
   // narrowing/widening int conversion (same signedness)
-  template <typename D, typename S>
-  inline std::enable_if_t<is_same_signedness_v<D, S> && sizeof(D) != sizeof(S)>
-  convert_sample_array (D* dst, S const* src, std::size_t count)
+  template <std::integral D, std::integral S>
+  requires (is_same_signedness_v<D, S> && sizeof (D) != sizeof (S))
+  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       constexpr auto shift {shifter<D, S> ()};
 
       auto src_end {src + count};
 
-      if constexpr (sizeof(S) > sizeof(D)) {
+      if constexpr (sizeof (S) > sizeof (D)) {
           // narrowing
           while (src != src_end) {
               *dst = *src >> shift;
@@ -173,16 +168,16 @@ namespace {
   }
 
   // narrowing/widening unsigned->signed int conversion
-  template <typename D, typename S>
-  inline std::enable_if_t<std::is_signed_v<D> && std::is_unsigned_v<S> && sizeof(D) != sizeof(S)>
-  convert_sample_array (D* dst, S const* src, std::size_t count)
+  template <std::signed_integral D, std::unsigned_integral S>
+  requires (sizeof (D) != sizeof (S))
+  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       constexpr auto a {zero<D>()};
       constexpr auto shift {shifter<D, S> ()};
 
       auto src_end {src + count};
 
-      if constexpr (sizeof(D) < sizeof(S)) {
+      if constexpr (sizeof (D) < sizeof (S)) {
           // narrowing
           while (src != src_end) {
               *dst = D(*src >> shift) - a;
@@ -200,16 +195,16 @@ namespace {
   }
 
   // narrowing/widening signed->unsigned int conversion
-  template <typename D, typename S>
-  inline std::enable_if_t<std::is_unsigned_v<D> && std::is_signed_v<S> && sizeof(D) != sizeof(S)>
-  convert_sample_array (D* dst, S const* src, std::size_t count)
+  template <std::unsigned_integral D, std::signed_integral S>
+  requires (sizeof (D) != sizeof (S))
+  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
   {
       constexpr auto a {zero<D>()};
       constexpr auto shift {shifter<D, S> ()};
 
       auto src_end {src + count};
 
-      if constexpr (sizeof(D) < sizeof(S)) {
+      if constexpr (sizeof (D) < sizeof (S)) {
           // narrowing
           while (src != src_end) {
               *dst = D(*src >> shift) + a;
@@ -324,7 +319,7 @@ namespace {
   template <typename T>
   void deinterleave_stereo (void* dest1, void* dest2, void const* src, std::size_t size)
   {
-      deinterleave_stereo_sample_array (static_cast<T*> (dest1), static_cast<T*> (dest2), static_cast<T const*> (src), size / sizeof(T));
+      deinterleave_stereo_sample_array (static_cast<T*> (dest1), static_cast<T*> (dest2), static_cast<T const*> (src), size / sizeof (T));
   }
 
   constexpr std::array deinterleave_stereo_func_table {
