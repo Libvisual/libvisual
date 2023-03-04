@@ -140,8 +140,7 @@ static void *mem_set16_c (void *dest, int c, visual_size_t n)
 void *mem_set16_x86_sse2 (void *dest, int c, size_t n)
 {
 	const uint16_t copy    = c & 0xffff;
-	const uint32_t copy_2x = copy | (copy << 16);
-	const __m128i  copy_4x = _mm_set_epi32 (copy_2x, copy_2x, copy_2x, copy_2x);
+	const __m128i  copy_4x = _mm_set_epi16 (copy, copy, copy, copy, copy, copy, copy, copy);
 
 	__m128i *m128i_ptr = (__m128i *) dest;
 
