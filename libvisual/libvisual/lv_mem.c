@@ -29,7 +29,11 @@
 #include <string.h>
 
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
-#include <x86intrin.h>
+#  if defined(__GNUC__)
+#    include <x86intrin.h>
+#  elif defined(_MSC_VER)
+#    include <intrin.h>
+#  endif
 #endif
 
 /* Standard C fallbacks */
