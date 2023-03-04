@@ -26,6 +26,7 @@
 #include "lv_common.h"
 #include "lv_plugin_registry.h"
 #include <stdexcept>
+#include <string>
 
 namespace LV {
 
@@ -60,11 +61,11 @@ namespace LV {
       return static_cast<VisInputPlugin*> (visual_plugin_get_info (plugin)->plugin);
   }
 
-  bool Input::available(std::string const& name) {
+  bool Input::available(std::string_view name) {
       return LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_INPUT, name);
   }
 
-  InputPtr Input::load (std::string const& name)
+  InputPtr Input::load (std::string_view name)
   {
       try {
           return {new Input{name}, false};
@@ -75,7 +76,7 @@ namespace LV {
       }
   }
 
-  Input::Input (std::string const& name)
+  Input::Input (std::string_view name)
       : m_impl      {new Impl}
       , m_ref_count {1}
   {
@@ -83,7 +84,7 @@ namespace LV {
           throw std::runtime_error {"Input plugin not found"};
       }
 
-      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_INPUT, name.c_str ());
+      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_INPUT, std::string {name}.c_str ());
       if (!m_impl->plugin) {
           throw std::runtime_error {"Failed to load input plugin"};
       }

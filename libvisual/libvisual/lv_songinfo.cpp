@@ -69,42 +69,42 @@ namespace LV {
       return m_elapsed;
   }
 
-  void SongInfo::set_simple_name (std::string const& name)
+  void SongInfo::set_simple_name (std::string_view name)
   {
       m_song_name = name;
   }
 
-  std::string SongInfo::get_simple_name () const
+  std::string const& SongInfo::get_simple_name () const
   {
       return m_song_name;
   }
 
-  void SongInfo::set_artist (std::string const& artist)
+  void SongInfo::set_artist (std::string_view artist)
   {
       m_artist = artist;
   }
 
-  std::string SongInfo::get_artist () const
+  std::string const& SongInfo::get_artist () const
   {
       return m_artist;
   }
 
-  void SongInfo::set_album (std::string const& album)
+  void SongInfo::set_album (std::string_view album)
   {
       m_album = album;
   }
 
-  std::string SongInfo::get_album () const
+  std::string const& SongInfo::get_album () const
   {
       return m_album;
   }
 
-  void SongInfo::set_song (std::string const& song)
+  void SongInfo::set_song (std::string_view song)
   {
       m_song = song;
   }
 
-  std::string SongInfo::get_song () const
+  std::string const& SongInfo::get_song () const
   {
       return m_song;
   }

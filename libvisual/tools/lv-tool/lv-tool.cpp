@@ -32,8 +32,9 @@
 #include <atomic>
 #include <stdexcept>
 #include <iostream>
-#include <unordered_set>
 #include <string>
+#include <string_view>
+#include <unordered_set>
 #include <cstdio>
 #include <cstdlib>
 #include <csignal>
@@ -211,8 +212,9 @@ namespace {
   }
 
   /** print commandline help */
-  void print_help(std::string const& name)
+  void print_help (std::string_view name)
   {
+      std::string const name_str {name};
       printf("Usage: %s [options]\n\n"
                   "Valid options:\n"
                   "\t--help\t\t\t-h\t\tThis help text\n"
@@ -230,7 +232,7 @@ namespace {
                   "\t--switch <n>\t\t-S <n>\t\tSwitch actor after n frames.\n"
                   "\t--exclude <actors>\t-x <actors>\tProvide a list of actors to exclude.\n"
                   "\n",
-                  name.c_str (),
+                  name_str.c_str (),
                   width, height,
                   driver_name.c_str (),
                   input_name.c_str (),
@@ -244,7 +246,6 @@ namespace {
         {
             printf("\t%s\n", driver_name.c_str());
         }
-
   }
 
 

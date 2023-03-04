@@ -37,6 +37,8 @@
 
 #include "gettext.h"
 
+#include <string>
+
 extern "C" {
   void visual_cpu_initialize (void);
   void visual_mem_initialize (void);
@@ -107,9 +109,10 @@ namespace LV
       m_instance.reset (new System {argc, argv});
   }
 
-  std::string System::get_version () const
+  std::string const& System::get_version () const
   {
-      return VISUAL_VERSION " (" LV_REVISION ")";
+      static std::string const version_str {VISUAL_VERSION " (" LV_REVISION ")"};
+      return version_str;
   }
 
   int System::get_api_version () const

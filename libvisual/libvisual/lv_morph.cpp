@@ -26,6 +26,7 @@
 #include "lv_plugin_registry.h"
 #include <algorithm>
 #include <stdexcept>
+#include <string>
 
 namespace LV {
 
@@ -74,11 +75,11 @@ namespace LV {
       return m_impl->plugin;
   }
 
-  bool Morph::available(std::string const& name) {
+  bool Morph::available(std::string_view name) {
       return LV::PluginRegistry::instance()->has_plugin (VISUAL_PLUGIN_TYPE_MORPH, name);
   }
 
-  MorphPtr Morph::load (std::string const& name)
+  MorphPtr Morph::load (std::string_view name)
   {
       try {
           return {new Morph {name}, false};
@@ -90,7 +91,7 @@ namespace LV {
       }
   }
 
-  Morph::Morph (std::string const& name)
+  Morph::Morph (std::string_view name)
       : m_impl      (new Impl)
       , m_ref_count (1)
   {
@@ -98,7 +99,7 @@ namespace LV {
           throw std::runtime_error {"Morph plugin not found"};
       }
 
-      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_MORPH, name.c_str ());
+      m_impl->plugin = visual_plugin_load (VISUAL_PLUGIN_TYPE_MORPH, std::string {name}.c_str ());
       if (!m_impl->plugin) {
           throw std::runtime_error {"Failed to load morph plugin"};
       }

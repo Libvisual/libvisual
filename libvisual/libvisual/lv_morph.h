@@ -37,8 +37,8 @@
 #ifdef __cplusplus
 
 #include <libvisual/lv_intrusive_ptr.hpp>
-#include <string>
 #include <memory>
+#include <string_view>
 
 namespace LV {
 
@@ -58,7 +58,7 @@ namespace LV {
        *
        * @return True if a morph plugin by that name is available, else false
        */
-      static bool available (std::string const& name);
+      static bool available (std::string_view name);
 
       /**
        * Creates a new Morph wit a plugin of a given name.
@@ -69,7 +69,7 @@ namespace LV {
        *
        * @return New morph, or nullptr if plugin failed to load
        */
-      static MorphPtr load (std::string const& name);
+      static MorphPtr load (std::string_view name);
 
       Morph (Morph const& morph) = delete;
 
@@ -162,7 +162,7 @@ private:
 
       mutable unsigned int m_ref_count;
 
-      explicit Morph (std::string const& name);
+      explicit Morph (std::string_view name);
   };
 
   inline void intrusive_ptr_add_ref (Morph const* morph)

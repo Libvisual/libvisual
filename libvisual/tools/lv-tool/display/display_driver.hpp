@@ -25,7 +25,7 @@
 #ifndef _LV_TOOL_DISPLAY_DRIVER_HPP
 #define _LV_TOOL_DISPLAY_DRIVER_HPP
 
-#include <string>
+#include <string_view>
 #include <libvisual/libvisual.h>
 
 class Display;
@@ -55,7 +55,7 @@ public:
 
     virtual LV::VideoPtr get_video () const = 0;
 
-    virtual void set_title(std::string const& title) = 0;
+    virtual void set_title (std::string_view title) = 0;
 
     virtual ~DisplayDriver () {}
 };
