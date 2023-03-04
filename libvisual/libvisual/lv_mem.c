@@ -140,15 +140,15 @@ static void *mem_set16_c (void *dest, int c, visual_size_t n)
 void *mem_set16_x86_sse2 (void *dest, int c, size_t n)
 {
 	const uint16_t copy    = c & 0xffff;
-	const __m128i  copy_4x = _mm_set_epi16 (copy, copy, copy, copy, copy, copy, copy, copy);
+	const __m128i  copy_8x = _mm_set_epi16 (copy, copy, copy, copy, copy, copy, copy, copy);
 
 	__m128i *m128i_ptr = (__m128i *) dest;
 
 	while (n >= 32) {
-		_mm_storeu_si128 (m128i_ptr, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 1, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 2, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 3, copy_4x);
+		_mm_storeu_si128 (m128i_ptr, copy_8x);
+		_mm_storeu_si128 (m128i_ptr + 1, copy_8x);
+		_mm_storeu_si128 (m128i_ptr + 2, copy_8x);
+		_mm_storeu_si128 (m128i_ptr + 3, copy_8x);
 		n -= 32;
 		m128i_ptr += 4;
 	}
