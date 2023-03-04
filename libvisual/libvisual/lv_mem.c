@@ -1,6 +1,6 @@
 /* Libvisual - The audio visualisation framework.
  *
- * Copyright (C) 2012      Libvisual team
+ * Copyright (C) 2012-2023 Libvisual team
  *               2004-2006 Dennis Smit
  *
  * Authors: Dennis Smit <ds@nerds-incorporated.org>
@@ -28,10 +28,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+#include <x86intrin.h>
+#endif
+
 /* Standard C fallbacks */
 static void *mem_set16_c (void *dest, int c, visual_size_t n);
 static void *mem_set32_c (void *dest, int c, visual_size_t n);
 static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int width, int rows);
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+static void *mem_set16_x86_sse2 (void *dest, int c, size_t n);
+static void *mem_set32_x86_sse2 (void *dest, int c, size_t n);
+#endif
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 VisMemCopyFunc visual_mem_copy = memcpy;
@@ -44,7 +53,14 @@ VisMemSet32Func visual_mem_set32 = mem_set32_c;
 
 void visual_mem_initialize ()
 {
-    /* Nothing to do */
+	/* Select optimized routines for selected CPU architectures. */
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+	if (visual_cpu_has_sse2 ()) {
+		visual_mem_set16 = mem_set16_x86_sse2;
+		visual_mem_set32 = mem_set32_x86_sse2;
+	}
+#endif
 }
 
 void *visual_mem_malloc (visual_size_t nbytes)
@@ -116,6 +132,37 @@ static void *mem_set16_c (void *dest, int c, visual_size_t n)
 	return dest;
 }
 
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+void *mem_set16_x86_sse2 (void *dest, int c, size_t n)
+{
+	const uint16_t copy    = c & 0xffff;
+	const uint32_t copy_2x = copy | (copy << 16);
+	const __m128i  copy_4x = _mm_set_epi32 (copy_2x, copy_2x, copy_2x, copy_2x);
+
+	__m128i *m128i_ptr = (__m128i *) dest;
+
+	while (n >= 64) {
+		_mm_storeu_si128 (m128i_ptr, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 1, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 2, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 3, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 4, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 5, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 6, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 7, copy_4x);
+		n -= 64;
+		m128i_ptr += 8;
+	}
+
+	uint16_t *uint16_ptr = (uint16_t *) m128i_ptr;
+	while (n--) {
+		*uint16_ptr++ = copy;
+	}
+
+	return dest;
+}
+#endif /* defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
+
 static void *mem_set32_c (void *dest, int c, visual_size_t n)
 {
 	uint64_t *u64_ptr = dest;
@@ -143,6 +190,35 @@ static void *mem_set32_c (void *dest, int c, visual_size_t n)
 
 	return dest;
 }
+
+#if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
+static void *mem_set32_x86_sse2 (void *dest, int c, size_t n)
+{
+	const uint32_t copy    = c;
+	const __m128i  copy_4x = _mm_set_epi32 (copy, copy, copy, copy);
+
+	__m128i *m128i_ptr = (__m128i *) dest;
+	while (n >= 32) {
+		_mm_storeu_si128 (m128i_ptr, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 1, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 2, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 3, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 4, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 5, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 6, copy_4x);
+		_mm_storeu_si128 (m128i_ptr + 7, copy_4x);
+		n -= 32;
+		m128i_ptr += 8;
+	}
+
+	uint32_t *uint32_ptr = (uint32_t *) m128i_ptr;
+	while (n--) {
+		*uint32_ptr++ = copy;
+	}
+
+	return dest;
+}
+#endif /* defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64) */
 
 static void *mem_copy_pitch_c (void *dest, const void *src, int pitch1, int pitch2, int row_bytes, int rows)
 {
