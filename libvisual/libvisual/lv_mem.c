@@ -141,17 +141,13 @@ void *mem_set16_x86_sse2 (void *dest, int c, size_t n)
 
 	__m128i *m128i_ptr = (__m128i *) dest;
 
-	while (n >= 64) {
+	while (n >= 32) {
 		_mm_storeu_si128 (m128i_ptr, copy_4x);
 		_mm_storeu_si128 (m128i_ptr + 1, copy_4x);
 		_mm_storeu_si128 (m128i_ptr + 2, copy_4x);
 		_mm_storeu_si128 (m128i_ptr + 3, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 4, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 5, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 6, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 7, copy_4x);
-		n -= 64;
-		m128i_ptr += 8;
+		n -= 32;
+		m128i_ptr += 4;
 	}
 
 	uint16_t *uint16_ptr = (uint16_t *) m128i_ptr;
@@ -198,17 +194,13 @@ static void *mem_set32_x86_sse2 (void *dest, int c, size_t n)
 	const __m128i  copy_4x = _mm_set_epi32 (copy, copy, copy, copy);
 
 	__m128i *m128i_ptr = (__m128i *) dest;
-	while (n >= 32) {
+	while (n >= 16) {
 		_mm_storeu_si128 (m128i_ptr, copy_4x);
 		_mm_storeu_si128 (m128i_ptr + 1, copy_4x);
 		_mm_storeu_si128 (m128i_ptr + 2, copy_4x);
 		_mm_storeu_si128 (m128i_ptr + 3, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 4, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 5, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 6, copy_4x);
-		_mm_storeu_si128 (m128i_ptr + 7, copy_4x);
-		n -= 32;
-		m128i_ptr += 8;
+		n -= 16;
+		m128i_ptr += 4;
 	}
 
 	uint32_t *uint32_ptr = (uint32_t *) m128i_ptr;
