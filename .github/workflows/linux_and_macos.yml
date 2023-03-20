@@ -15,20 +15,10 @@ jobs:
       matrix:
         include:
         # Linux
-          - cc: gcc-11
-            cxx: g++-11
-            clang_major_version: null
-            clang_repo_suffix: null
-            runs-on: ubuntu-latest
           - cc: gcc-12
             cxx: g++-12
             clang_major_version: null
             clang_repo_suffix: null
-            runs-on: ubuntu-latest
-          - cc: clang-15
-            cxx: clang++-15
-            clang_major_version: 15
-            clang_repo_suffix: -15
             runs-on: ubuntu-latest
           - cc: clang-16
             cxx: clang++-16
@@ -46,16 +36,6 @@ jobs:
             clang_major_version: null
             clang_repo_suffix: null
             runs-on: macos-11
-          - cc: gcc-10
-            cxx: g++-10
-            clang_major_version: null
-            clang_repo_suffix: null
-            runs-on: macos-11
-          - cc: gcc-11
-            cxx: g++-11
-            clang_major_version: null
-            clang_repo_suffix: null
-            runs-on: macos-12
           - cc: gcc-12
             cxx: g++-12
             clang_major_version: null
