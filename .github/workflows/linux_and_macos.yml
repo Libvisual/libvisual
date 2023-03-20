@@ -31,8 +31,8 @@ jobs:
             clang_repo_suffix:
             runs-on: ubuntu-latest
         # macOS
-          - cc: gcc-9
-            cxx: g++-9
+          - cc: gcc-10
+            cxx: g++-10
             clang_major_version: null
             clang_repo_suffix: null
             runs-on: macos-11
