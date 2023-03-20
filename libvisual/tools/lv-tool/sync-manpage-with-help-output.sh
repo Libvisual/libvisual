@@ -21,7 +21,7 @@
 
 set -e -u -o pipefail
 
-_BUILD_MONTH=2023-02  # for reproducible builds; bump when doing releases
+_BUILD_MONTH=2023-03  # for reproducible builds; bump when doing releases
 
 help2man_args=(
     --no-info
