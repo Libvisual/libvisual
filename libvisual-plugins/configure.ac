@@ -4,7 +4,7 @@ AC_PREREQ(2.57)
 
 m4_define([lv_plugins_version_major], [0])
 m4_define([lv_plugins_version_minor], [4])
-m4_define([lv_plugins_version_micro], [1])
+m4_define([lv_plugins_version_micro], [2])
 m4_define([lv_plugins_version], [lv_plugins_version_major.lv_plugins_version_minor.lv_plugins_version_micro])
 m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_version_minor])
 
