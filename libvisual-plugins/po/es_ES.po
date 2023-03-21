@@ -302,7 +302,7 @@ msgid "This plugin shows an openGL bar analyzer like the xmms one"
 msgstr "Éste plugin muestra un analizador de barras OpenGL como el de xmms"
 
 #: plugins/actor/lv_gltest/actor_lv_gltest.c:154
-msgid "Transparant bars"
+msgid "Transparent bars"
 msgstr "Barras transparentes"
 
 #: plugins/actor/lv_scope/actor_lv_scope.c:68

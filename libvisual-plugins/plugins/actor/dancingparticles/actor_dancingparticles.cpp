@@ -128,7 +128,7 @@ extern "C" int lv_dancingparticles_init (VisPluginData *plugin)
 
 	visual_param_container_add_many (paramcontainer, params);
 
-	checkbox = visual_ui_checkbox_new ("Transparant bars", TRUE);
+	checkbox = visual_ui_checkbox_new ("Transparent bars", TRUE);
 	visual_ui_mutator_set_param (VISUAL_UI_MUTATOR (checkbox), visual_param_container_get (paramcontainer, "transparent bars"));
 
 	visual_plugin_set_userinterface (plugin, checkbox);
