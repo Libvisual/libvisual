@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 SUBDIRS = plugins po
 
-EXTRA_DIST = libvisual-plugins.spec gettext.h po/Makevars.in
+EXTRA_DIST = autogen.sh libvisual-plugins.spec gettext.h po/Makevars.in
 
 CLEANFILES = po/Makevars
 DISTCLEANFILES = $(CLEANFILES)
