@@ -23,7 +23,7 @@ stamp-gc-h: config.status
 	cd $(top_builddir) && $(SHELL) ./config.status libvisual/lvconfig.h
 	echo timestamp > stamp-gc-h
 
-EXTRA_DIST = Doxyfile config.rpath libvisual.pc.in po/Makevars.in
+EXTRA_DIST = autogen.sh Doxyfile config.rpath libvisual.pc.in po/Makevars.in
 
 DISTCLEANFILES = libvisual/lvconfig.h $(PKG_CONFIG_FILE) po/Makevars
 
