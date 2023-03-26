@@ -352,7 +352,7 @@ build_subdirs="libvisual"
 VISUAL_PKG_CONFIG_DEP=""
 
 VISUAL_CFLAGS=""
-if test x"$LV_THREAD_CFLAGS" == xgthread2; then
+if test x"$LV_THREAD_CFLAGS" = xgthread2; then
   VISUAL_PKG_CONFIG_DEP="$VISUAL_PKG_CONFIG_DEP gthread-2.0"
 elif test x"$LV_THREAD_CFLAGS" != x; then
   VISUAL_CFLAGS=$LV_THREAD_CFLAGS
