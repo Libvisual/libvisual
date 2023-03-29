@@ -4,5 +4,9 @@ IF(HAVE_SDL)
     simple_example.cpp
   )
 
-  TARGET_LINK_LIBRARIES(simple PRIVATE libvisual SDL::SDL)
+  TARGET_LINK_LIBRARIES(simple
+    PRIVATE
+    Libvisual::Libvisual
+    SDL::SDL
+  )
 ENDIF()

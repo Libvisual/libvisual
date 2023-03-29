@@ -141,6 +141,8 @@ LV_GENERATE_ORC_INLINE_SOURCE(
 
 ADD_LIBRARY(libvisual SHARED ${libvisual_SOURCES})
 
+ADD_LIBRARY(Libvisual::Libvisual ALIAS libvisual)
+
 SET_TARGET_PROPERTIES(libvisual
   PROPERTIES
   EXPORT_NAME Libvisual
