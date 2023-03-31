@@ -1,6 +1,7 @@
 #ifndef _LV_SINGLETON_HPP
 #define _LV_SINGLETON_HPP
 
+#include <libvisual/lv_defines.h>
 #include <memory>
 
 namespace LV {
@@ -12,7 +13,7 @@ namespace LV {
   //! @note Singleton is implemented using the curiously recurring template pattern (CRTP).
   //!
   template <class T>
-  class Singleton
+  class LV_API Singleton
   {
   public:
 
