@@ -22,9 +22,11 @@
 #include "config.h"
 #include "lv_video_png.hpp"
 #include "lv_common.h"
-#include <png.h>
-#include <istream>
+#include <iostream>
+#include <vector>
 #include <csetjmp>
+#include <png.h>
+#include <zlib.h>
 
 namespace LV {
 
@@ -40,18 +42,50 @@ namespace LV {
         }
     }
 
-    void handle_png_warning (png_structp png_ptr, char const* message)
+    void handle_png_write (png_structp png_ptr, png_bytep data, png_size_t length)
+    {
+        auto  io_ptr = png_get_io_ptr (png_ptr);
+        auto& output = *static_cast<std::ostream*> (io_ptr);
+
+        if (!output.write(reinterpret_cast<char*>(data), length)) {
+            std::longjmp (png_jmpbuf (png_ptr), -1);
+        }
+    }
+
+    void handle_png_flush (png_structp png_ptr)
+    {
+        auto  io_ptr = png_get_io_ptr (png_ptr);
+        auto& output = *static_cast<std::ostream*> (io_ptr);
+
+        output.flush ();
+    }
+
+    void handle_png_load_warning (png_structp png_ptr, char const* message)
     {
         (void)png_ptr;
 
         visual_log (VISUAL_LOG_WARNING, "PNG load error: %s", message);
     }
 
-    void handle_png_error (png_structp png_ptr, char const* message)
+    void handle_png_load_error (png_structp png_ptr, char const* message)
     {
         (void)png_ptr;
 
         visual_log (VISUAL_LOG_ERROR, "PNG load error: %s", message);
+    }
+
+    void handle_png_save_warning (png_structp png_ptr, char const* message)
+    {
+        (void)png_ptr;
+
+        visual_log (VISUAL_LOG_WARNING, "PNG save error: %s", message);
+    }
+
+    void handle_png_save_error (png_structp png_ptr, char const* message)
+    {
+        (void)png_ptr;
+
+        visual_log (VISUAL_LOG_ERROR, "PNG save error: %s", message);
     }
 
   } // anonymous
@@ -80,7 +114,10 @@ namespace LV {
           return nullptr;
       }
 
-      auto png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr, handle_png_error, handle_png_warning);
+      auto png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING,
+                                             nullptr,
+                                             handle_png_load_error,
+                                             handle_png_load_warning);
       if (!png_ptr) {
           return nullptr;
       }
@@ -210,6 +247,105 @@ namespace LV {
       delete[] pixel_row_ptrs;
 
       return video;
+  }
+
+  bool bitmap_save_png(Video const& bitmap, std::ostream &output)
+  {
+      auto saved_stream_pos = output.tellp ();
+
+      auto png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING,
+                                              nullptr,
+                                              handle_png_save_error,
+                                              handle_png_save_warning);
+      if (!png_ptr) {
+          visual_log (VISUAL_LOG_ERROR, "Failed to create PNG write struct.");
+          return false;
+      }
+
+      auto info_ptr = png_create_info_struct (png_ptr);
+      if (!info_ptr) {
+          visual_log (VISUAL_LOG_ERROR, "Failed to create PNG info struct.");
+          png_destroy_write_struct (&png_ptr, nullptr);
+          return false;
+      }
+
+      auto bitmap_width = bitmap.get_width ();
+      auto bitmap_height = bitmap.get_height ();
+
+      std::vector<png_byte*> pixel_row_ptrs;
+      pixel_row_ptrs.reserve (bitmap_height);
+
+      for (auto y = 0; y < bitmap_height; y++) {
+          pixel_row_ptrs.push_back (static_cast<png_byte *> (bitmap.get_pixel_ptr (0, y)));
+      }
+
+      if (setjmp (png_jmpbuf (png_ptr))) {
+          visual_log (VISUAL_LOG_ERROR, "Some error occurred.");
+          output.seekp (saved_stream_pos);
+          png_destroy_write_struct (&png_ptr, &info_ptr);
+      }
+
+      int bit_depth = 0;
+      int color_type = 0;
+
+      switch (bitmap.get_depth ()) {
+          case VISUAL_VIDEO_DEPTH_8BIT: {
+              bit_depth = 8;
+              color_type = PNG_COLOR_TYPE_PALETTE;
+              break;
+          }
+          case VISUAL_VIDEO_DEPTH_24BIT: {
+              bit_depth = 8;
+              color_type = PNG_COLOR_TYPE_RGB;
+              break;
+          }
+          case VISUAL_VIDEO_DEPTH_32BIT: {
+              bit_depth = 8;
+              color_type = PNG_COLOR_TYPE_RGB_ALPHA;
+              break;
+          }
+          default: {
+              visual_log (VISUAL_LOG_ERROR, "Invalid depth or depth not supported.");
+              return false;
+          }
+      }
+
+#if VISUAL_LITTLE_ENDIAN
+      png_set_bgr (png_ptr);
+#endif
+
+      png_set_filter (png_ptr, 0, PNG_FILTER_NONE);
+
+      png_set_compression_level (png_ptr, Z_BEST_COMPRESSION);
+
+      png_set_IHDR (png_ptr, info_ptr, bitmap_width, bitmap_height,
+                    bit_depth, color_type, PNG_INTERLACE_NONE,
+                    PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+
+      if (color_type == PNG_COLOR_TYPE_PALETTE) {
+          auto const& colors = bitmap.get_palette ().colors;
+
+          std::vector<png_color> out_palette;
+          out_palette.reserve (colors.size ());
+
+          for (auto const& color : colors) {
+              out_palette.push_back ({color.r, color.g, color.b});
+          }
+
+          png_set_PLTE (png_ptr, info_ptr, out_palette.data (), out_palette.size ());
+      }
+
+      png_set_sRGB (png_ptr, info_ptr, PNG_sRGB_INTENT_PERCEPTUAL);
+
+      png_set_write_fn (png_ptr, &output, handle_png_write, handle_png_flush);
+
+      png_write_info (png_ptr, info_ptr);
+      png_write_rows (png_ptr, pixel_row_ptrs.data (), bitmap_height);
+      png_write_end (png_ptr, info_ptr);
+
+      png_destroy_write_struct (&png_ptr, &info_ptr);
+
+      return true;
   }
 
 } // LV namespace

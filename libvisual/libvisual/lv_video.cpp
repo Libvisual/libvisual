@@ -37,9 +37,13 @@
 #include "private/lv_video_bmp.hpp"
 #include "private/lv_video_png.hpp"
 #include <cstring>
+#include <iostream>
 #include <fstream>
+#include <filesystem>
 
 namespace LV {
+
+  namespace fs = std::filesystem;
 
   namespace {
 
@@ -258,6 +262,21 @@ namespace LV {
   bool Video::has_allocated_buffer () const
   {
       return m_impl->buffer->is_allocated ();
+  }
+
+  bool Video::save_to_file (std::string const& path) const
+  {
+      auto extension = fs::path {path}.extension ();
+
+      std::ofstream file {path};
+
+      if (extension == ".png") {
+          return bitmap_save_png (*this, file);
+      }
+
+      visual_log (VISUAL_LOG_ERROR, "Unsupported format with extension '%s'.", extension.c_str ());
+
+      return false;
   }
 
   void Video::copy_attrs (VideoConstPtr const& src)
