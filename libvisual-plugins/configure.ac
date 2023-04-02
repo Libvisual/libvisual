@@ -154,7 +154,7 @@ if test "$ENABLE_PLUGIN_GDKPIXBUF" = "yes"; then
   if test "$HAVE_GTK" = "yes"; then
     build_actor_plugins="$build_actor_plugins gdkpixbuf"
   else
-    AC_MSG_WARN([*** GTK+ >= ${gtk_required_version} is not found.
+    AC_MSG_WARN([*** GTK+ >= gtk_required_version is not found.
 	  	The libvisual GdkPixbuf image loader plugin won't be built.
 		GdkPixbuf is included within gtk+-3.0 and newer, which can be
 		downloaded at https://www.gtk.org/])
@@ -175,7 +175,7 @@ if test "$ENABLE_GSTREAMER_PLUGIN" = "yes"; then
   if test "$HAVE_GSTREAMER" = "yes"; then
     build_actor_plugins="$build_actor_plugins gstreamer"
   else
-    AC_MSG_WARN([*** GStreamer >= ${gst_required_version} is not found.
+    AC_MSG_WARN([*** GStreamer >= gst_required_version is not found.
 	  	The libvisual GStreamer viewer plugin won't be build.
 		GStreamer can be downloaded from https://gstreamer.freedesktop.org/])
   fi
