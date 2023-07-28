@@ -25,9 +25,9 @@ jobs:
             clang_major_version: 16
             clang_repo_suffix: -16
             runs-on: ubuntu-latest
-          - cc: clang-17
-            cxx: clang++-17
-            clang_major_version: 17
+          - cc: clang-18
+            cxx: clang++-18
+            clang_major_version: 18
             clang_repo_suffix:
             runs-on: ubuntu-latest
         # macOS
