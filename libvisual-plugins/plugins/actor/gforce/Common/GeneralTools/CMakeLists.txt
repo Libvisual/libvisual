@@ -35,5 +35,6 @@ TARGET_INCLUDE_DIRECTORIES(gforce_gt
 )
 
 TARGET_LINK_LIBRARIES(gforce_gt
+  PRIVATE
   Libvisual::Libvisual
 )

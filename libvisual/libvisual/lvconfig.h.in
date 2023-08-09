@@ -2,7 +2,7 @@
 #define __LV_CONFIG_H__
 
 #define VISUAL_VERSION     "@LV_VERSION@"
-#define VISUAL_PLUGIN_PATH "@LV_PLUGIN_DIR_FULL@"
+#define VISUAL_PLUGIN_PATH "@LV_PLUGIN_FULL_DIR@"
 
 #cmakedefine VISUAL_BIG_ENDIAN    1
 #cmakedefine VISUAL_LITTLE_ENDIAN 1

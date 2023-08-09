@@ -29,5 +29,6 @@ TARGET_INCLUDE_DIRECTORIES(gforce_ui
 )
 
 TARGET_LINK_LIBRARIES(gforce_ui
+  PRIVATE
   Libvisual::Libvisual
 )

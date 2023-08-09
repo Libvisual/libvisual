@@ -30,5 +30,6 @@ TARGET_INCLUDE_DIRECTORIES(gforce_math
 )
 
 TARGET_LINK_LIBRARIES(gforce_math
+  PRIVATE
   Libvisual::Libvisual
 )

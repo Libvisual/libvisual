@@ -5,6 +5,7 @@ SET(gforce_unix_mfl_SOURCES
 ADD_LIBRARY(gforce_unix_mfl STATIC ${gforce_unix_mfl_SOURCES})
 
 TARGET_LINK_LIBRARIES(gforce_unix_mfl
+  PRIVATE
   Libvisual::Libvisual
 )
 
