@@ -4,6 +4,8 @@ CMakeOutput.log
 cmake_install.cmake
 cmake_uninstall.cmake
 CPack*Config.cmake
+libvisual-config.cmake
+libvisual-config-version.cmake
 Makefile
 
 po/Makefile
