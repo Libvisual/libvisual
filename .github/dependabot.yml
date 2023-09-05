@@ -15,7 +15,7 @@ updates:
     target-branch: "0.4.x"
     commit-message:
       include: "scope"
-      prefix: "Actions"
+      prefix: "[0.4.x] Actions"
     directory: "/"
     labels:
       - "enhancement"
