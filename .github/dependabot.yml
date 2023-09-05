@@ -8,6 +8,7 @@ updates:
     directory: "/"
     labels:
       - "enhancement"
+      - "porting: done"
     schedule:
       interval: "weekly"
 
@@ -19,5 +20,6 @@ updates:
     directory: "/"
     labels:
       - "enhancement"
+      - "porting: done"
     schedule:
       interval: "weekly"
