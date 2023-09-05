@@ -8,6 +8,7 @@ updates:
     directory: "/"
     labels:
       - "enhancement"
+      - "porting: done"
     schedule:
       interval: "weekly"
 
@@ -15,9 +16,10 @@ updates:
     target-branch: "0.4.x"
     commit-message:
       include: "scope"
-      prefix: "Actions"
+      prefix: "[0.4.x] Actions"
     directory: "/"
     labels:
       - "enhancement"
+      - "porting: done"
     schedule:
       interval: "weekly"
