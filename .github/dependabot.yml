@@ -10,3 +10,14 @@ updates:
       - "enhancement"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    target-branch: "0.4.x"
+    commit-message:
+      include: "scope"
+      prefix: "Actions"
+    directory: "/"
+    labels:
+      - "enhancement"
+    schedule:
+      interval: "weekly"
