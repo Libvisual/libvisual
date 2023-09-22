@@ -45,17 +45,17 @@ jobs:
       - name: Install packages
         run: |
           pacman -Sy --needed --ask=20 --noconfirm `
-            mingw-w64-x86_64-dlfcn `
-            mingw-w64-x86_64-orc `
-            mingw-w64-x86_64-pkgconf `
             mingw-w64-x86_64-cmake `
+            mingw-w64-x86_64-dlfcn `
             mingw-w64-x86_64-gcc `
-            mingw-w64-x86_64-ninja `
+            mingw-w64-x86_64-gettext `
             mingw-w64-x86_64-gstreamer `
             mingw-w64-x86_64-libpng `
+            mingw-w64-x86_64-ninja `
+            mingw-w64-x86_64-orc `
+            mingw-w64-x86_64-pkgconf `
             mingw-w64-x86_64-portaudio `
-            mingw-w64-x86_64-SDL `
-            mingw-w64-x86_64-gettext
+            mingw-w64-x86_64-SDL
 
       - name: Checkout Git branch
         uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac  # v4.0.0
