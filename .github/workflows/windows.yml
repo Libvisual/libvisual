@@ -47,6 +47,7 @@ jobs:
           pacman -Sy --needed --ask=20 --noconfirm `
             mingw-w64-x86_64-cmake `
             mingw-w64-x86_64-dlfcn `
+            mingw-w64-x86_64-doxygen `
             mingw-w64-x86_64-gcc `
             mingw-w64-x86_64-gettext `
             mingw-w64-x86_64-gstreamer `
