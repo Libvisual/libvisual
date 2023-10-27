@@ -138,7 +138,9 @@ void GenericSerial::SerialClose() {
 int GenericSerial::SerialPoll(unsigned char *string, int len) {
     if(!connected_)
         return -1;
-    char buff[len + 1];
+    char * const buff = new char[len + 1];
+    if(!buff)
+        return -1;
     int ret = read(fd_, buff, len);
     if( ret < 0 && errno != EAGAIN ) {
         LCDError("%s: read(%s) failed: %s", device_name_.c_str(), port_.c_str(), strerror(errno));
@@ -146,6 +148,7 @@ int GenericSerial::SerialPoll(unsigned char *string, int len) {
     for(int i = 0; i < ret; i++ ) {
         string[i] = buff[i];
     }
+    delete []buff;
     return ret;
 }
 

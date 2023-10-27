@@ -158,7 +158,10 @@ void LCDText::TextBlit(int row, int col, int height,
     int dr, dc;                        /* display row/col */
     int p1, p2;                        /* start/end positon of changed area */
     int eq;                        /* counter for equal contents */
-    char fb[LROWS * LCOLS];
+    char * const fb = new char[LROWS * LCOLS];
+
+    if (!fb)
+        return;
 
     memset(fb, ' ', LROWS * LCOLS);
     for(int r = row; r < LROWS && r < row + height; r++) {
@@ -207,6 +210,8 @@ void LCDText::TextBlit(int row, int col, int height,
                     DisplayFB + dr * DCOLS + p1, p2 - p1 + 1);
         }
     }
+
+    delete []fb;
 }
 
 void LCDText::CleanBuffer(unsigned char **buf) {
@@ -769,7 +774,11 @@ void LCDText::TransitionLeftRight() {
     int direction = visitor_->GetDirection();
     int col;
     unsigned char *left, *right;
-    unsigned char layout[LROWS * LCOLS], transition[LROWS * LCOLS];
+    unsigned char * const layout = new unsigned char[LROWS * LCOLS];
+    unsigned char * const transition = new unsigned char[LROWS * LCOLS];
+
+    if (!layout || !transition)
+        return;
 
     // Hide last layout's special chars if new layout has special chars.
     for(int l = 0; special_chars.size() > 0 && l < LAYERS; l++) {
@@ -827,6 +836,9 @@ void LCDText::TransitionLeftRight() {
         }
         TextBlit(0, 0, LROWS, LCOLS);
     }
+
+    delete []layout;
+    delete []transition;
 }
 
 void LCDText::TransitionUpDown() {
@@ -834,7 +846,11 @@ void LCDText::TransitionUpDown() {
     int direction = visitor_->GetDirection();
     int row;
     unsigned char *top, *bottom;
-    unsigned char layout[LROWS * LCOLS], transition[LROWS * LCOLS];
+    unsigned char * const layout = new unsigned char[LROWS * LCOLS];
+    unsigned char * const transition = new unsigned char[LROWS * LCOLS];
+
+    if (!layout || !transition)
+        return;
 
     // Hide last layout's special chars if new layout has special chars.
     for(int l = LAYERS - 1; l>=0; l--) {
@@ -884,6 +900,9 @@ void LCDText::TransitionUpDown() {
         }
         TextBlit(0, 0, LROWS, LCOLS);
     }
+
+    delete []layout;
+    delete []transition;
 }
 
 void SaneCoords(LCDText *lcd, int *x, int *y1, int *y2) {
@@ -929,7 +948,10 @@ void LCDText::TransitionTentacle() {
     double multiplier = 0;
     double multiadd = 1.0 / LCOLS;
     double rate = (LCOLS - transition_tick_) / (double)LCOLS;
-    unsigned char layout[LCOLS * LROWS];
+    unsigned char * const layout = new unsigned char[LCOLS * LROWS];
+
+    if (!layout)
+        return;
 
     memset(DisplayFB, (int)' ', LCOLS * LROWS);
     memset(layout, (int)' ', LCOLS * LROWS);
@@ -982,6 +1004,8 @@ void LCDText::TransitionTentacle() {
         }
         TextBlit(0, 0, LROWS, LCOLS);
     }
+
+    delete []layout;
 }
 
 void LCDText::TransitionCheckerBoard() {
