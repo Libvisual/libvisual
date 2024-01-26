@@ -26,6 +26,10 @@ jobs:
             cxx: g++-12
             clang_major_version: null
             clang_repo_suffix: null
+          - cc: gcc-13
+            cxx: g++-13
+            clang_major_version: null
+            clang_repo_suffix: null
           - cc: clang-15
             cxx: clang++-15
             clang_major_version: 15
