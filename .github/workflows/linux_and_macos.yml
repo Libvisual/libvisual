@@ -26,21 +26,11 @@ jobs:
             clang_repo_suffix: -18
             runs-on: ubuntu-latest
         # macOS
-          - cc: gcc-10
-            cxx: g++-10
-            clang_major_version: null
-            clang_repo_suffix: null
-            runs-on: macos-11
           - cc: gcc-12
             cxx: g++-12
             clang_major_version: null
             clang_repo_suffix: null
             runs-on: macos-12
-          - cc: clang
-            cxx: clang++
-            clang_major_version: null
-            clang_repo_suffix: null
-            runs-on: macos-11
           - cc: clang
             cxx: clang++
             clang_major_version: null
