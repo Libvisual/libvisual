@@ -15,16 +15,16 @@ jobs:
       matrix:
         include:
         # Linux
-          - cc: gcc-13
-            cxx: g++-13
+          - cc: gcc-14
+            cxx: g++-14
             clang_major_version: null
             clang_repo_suffix: null
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-24.04
           - cc: clang-18
             cxx: clang++-18
             clang_major_version: 18
             clang_repo_suffix: -18
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-22.04
         # macOS
           - cc: gcc-13
             cxx: g++-13
