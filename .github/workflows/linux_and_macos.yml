@@ -30,12 +30,12 @@ jobs:
             cxx: g++-13
             clang_major_version: null
             clang_repo_suffix: null
-            runs-on: macos-12
+            runs-on: macos-13
           - cc: clang
             cxx: clang++
             clang_major_version: null
             clang_repo_suffix: null
-            runs-on: macos-12
+            runs-on: macos-13
     steps:
       - name: Add Clang/LLVM repositories (Linux)
         if: "${{ runner.os == 'Linux' && contains(matrix.cxx, 'clang') }}"
