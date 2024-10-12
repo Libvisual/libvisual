@@ -261,7 +261,7 @@ static int get_hash (VisHashmap *hashmap, void *key, VisHashmapKeyType keytype)
 {
 	if (keytype == VISUAL_HASHMAP_KEY_TYPE_INTEGER)
 		return integer_hash (*((uint32_t *) key)) % hashmap->tablesize;
-	else if (keytype = VISUAL_HASHMAP_KEY_TYPE_STRING)
+	else if (keytype == VISUAL_HASHMAP_KEY_TYPE_STRING)
 		return string_hash ((char *) key) % hashmap->tablesize;
 
 	return 0;
