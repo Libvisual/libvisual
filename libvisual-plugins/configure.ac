@@ -8,6 +8,16 @@ m4_define([lv_plugins_version_micro], [2])
 m4_define([lv_plugins_version], [lv_plugins_version_major.lv_plugins_version_minor.lv_plugins_version_micro])
 m4_define([lv_plugins_version_suffix], [lv_plugins_version_major.lv_plugins_version_minor])
 
+dnl We're collecting all names of used macros that are not core GNU Autoconf
+dnl (but e.g. from autoconf-archive or pkg.m4) so that users running autoconf
+dnl get proper error messages about missing macros at autoconf runtime rather
+dnl than weird error messages from broken shell code later at configure runtime.
+m4_pattern_forbid([^AX_CHECK_GL$])
+m4_pattern_forbid([^AX_CHECK_GLU$])
+m4_pattern_forbid([^AX_CXX_COMPILE_STDCXX_11$])
+m4_pattern_forbid([^PKG_CHECK_MODULES$])
+m4_pattern_forbid([^PKG_PROG_PKG_CONFIG$])
+
 AC_INIT([Libvisual plugins], [lv_plugins_version], [https://github.com/Libvisual/libvisual/issues], [libvisual-plugins], [https://github.com/Libvisual/libvisual])
 AM_INIT_AUTOMAKE([1.7.0 dist-bzip2])
 
