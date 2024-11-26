@@ -37,6 +37,7 @@ FUNCTION(LV_BUILD_TEST TEST_NAME)
 
   TARGET_LINK_LIBRARIES(${TEST_NAME}
     PRIVATE
+    test_common
     Libvisual::Libvisual
     Threads::Threads
     ${PARSED_ARGS_LINK_LIBS}
