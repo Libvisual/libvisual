@@ -41,22 +41,18 @@ static void *mem_copy_c (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_mmx (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_mmx2 (void *dest, const void *src, visual_size_t n);
 static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n);
-static void *mem_copy_altivec (void *dest, const void *src, visual_size_t n);
 
 static void *mem_set8_c (void *dest, int c, visual_size_t n);
 static void *mem_set8_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n);
-static void *mem_set8_altivec (void *dest, int c, visual_size_t n);
 
 static void *mem_set16_c (void *dest, int c, visual_size_t n);
 static void *mem_set16_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n);
-static void *mem_set16_altivec (void *dest, int c, visual_size_t n);
 
 static void *mem_set32_c (void *dest, int c, visual_size_t n);
 static void *mem_set32_mmx (void *dest, int c, visual_size_t n);
 static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n);
-static void *mem_set32_altivec (void *dest, int c, visual_size_t n);
 
 /* Optimal performance functions set by visual_mem_initialize(). */
 VisMemCopyFunc visual_mem_copy = mem_copy_c;
@@ -373,11 +369,6 @@ static void *mem_copy_3dnow (void *dest, const void *src, visual_size_t n)
 	return dest;
 }
 
-static void *mem_copy_altivec (void *dest, const void *src, visual_size_t n)
-{
-
-}
-
 /* Memset functions, 1 byte memset */
 static void *mem_set8_c (void *dest, int c, visual_size_t n)
 {
@@ -523,11 +514,6 @@ static void *mem_set8_mmx2 (void *dest, int c, visual_size_t n)
 	return dest;
 }
 
-static void *mem_set8_altivec (void *dest, int c, visual_size_t n)
-{
-
-}
-
 /* Memset functions, 2 byte memset */
 static void *mem_set16_c (void *dest, int c, visual_size_t n)
 {
@@ -667,11 +653,6 @@ static void *mem_set16_mmx2 (void *dest, int c, visual_size_t n)
 	return dest;
 }
 
-static void *mem_set16_altivec (void *dest, int c, visual_size_t n)
-{
-
-}
-
 /* Memset functions, 4 byte memset */
 static void *mem_set32_c (void *dest, int c, visual_size_t n)
 {
@@ -776,11 +757,6 @@ static void *mem_set32_mmx2 (void *dest, int c, visual_size_t n)
 		*d++ = setflag32;
 
 	return dest;
-}
-
-static void *mem_set32_altivec (void *dest, int c, visual_size_t n)
-{
-
 }
 
 /**
