@@ -101,6 +101,15 @@ jobs:
             portaudio \
             sdl12-compat
 
+          # Patch ax_check_gl.m4 of autoconf-archive 2024.10.16 as needed
+          # https://github.com/Homebrew/homebrew-core/issues/202234
+          set -x -o pipefail
+          ax_check_gl_m4=/usr/local/Cellar/autoconf-archive/2024.10.16/share/aclocal/ax_check_gl.m4
+          if [[ -e "${ax_check_gl_m4}" ]] && ! grep -qF '[m4_fatal' "${ax_check_gl_m4}" ; then
+            wget -O- https://github.com/autoconf-archive/autoconf-archive/commit/427e226a2fe3980388abffd6de25ed6b9591cce3.patch \
+                | sudo patch -N "${ax_check_gl_m4}"
+          fi
+
       - name: Setting dynamic environment variables
         run: |-
           set -x
