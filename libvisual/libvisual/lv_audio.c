@@ -36,9 +36,6 @@ static int audio_samplepool_dtor (VisObject *object);
 static int audio_samplepool_channel_dtor (VisObject *object);
 static int audio_sample_dtor (VisObject *object);
 
-static int audio_band_total (VisAudio *audio, int begin, int end);
-static int audio_band_energy (VisAudio *audio, int band, int length);
-
 /* Format transform functions */
 static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
 static int transform_format_buffer_to_float (VisBuffer *dest, VisBuffer *src, int size, int sign);
@@ -111,34 +108,6 @@ static int audio_sample_dtor (VisObject *object)
 	return VISUAL_OK;
 }
 
-
-static int audio_band_total (VisAudio *audio, int begin, int end)
-{
-	int bpmtotal = 0;
-	int i;
-
-//	for (i = begin; i < end; i++)
-//		bpmtotal += audio->freq[2][i];
-
-	if (bpmtotal > 0)
-		return bpmtotal / (end - begin);
-	else
-		return 0;
-}
-
-static int audio_band_energy (VisAudio *audio, int band, int length)
-{
-	int energytotal = 0;
-	int i;
-
-//	for (i = 0; i < length; i++)
-//		energytotal += audio->bpmhistory[i][band];
-
-	if (energytotal > 0)
-		return energytotal / length;
-	else
-		return 0;
-}
 
 /**
  * @defgroup VisAudio VisAudio
@@ -311,30 +280,6 @@ int visual_audio_analyze (VisAudio *audio)
 		}
 	}
 
-#endif
-#if 0
-	/* BPM stuff, used for the audio energy only right now */
-	for (i = 1023; i > 0; i--) {
-		visual_mem_copy (&audio->bpmhistory[i], &audio->bpmhistory[i - 1], 6 * sizeof (short int));
-		visual_mem_copy (&audio->bpmdata[i], &audio->bpmdata[i - 1], 6 * sizeof (short int));
-	}
-
-	/* Calculate the audio energy */
-	audio->energy = 0;
-
-	for (i = 0; i < 6; i++)	{
-		audio->bpmhistory[0][i] = audio_band_total (audio, i * 2, (i * 2) + 3);
-		audio->bpmenergy[i] = audio_band_energy (audio, i, 10);
-
-		audio->bpmdata[0][i] = audio->bpmhistory[0][i] - audio->bpmenergy[i];
-
-		audio->energy += audio_band_energy(audio, i, 50);
-	}
-
-	audio->energy >>= 7;
-
-	if (audio->energy > 100)
-		audio->energy = 100;
 #endif
 
 	return VISUAL_OK;
