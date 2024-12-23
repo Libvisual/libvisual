@@ -532,7 +532,7 @@ const char *visual_plugin_get_prev_by_name (VisList *list, const char *name)
 static int plugin_add_dir_to_list (VisList *list, const char *dir)
 {
 	VisPluginRef **ref;
-	char temp[FILENAME_MAX];
+	char temp[FILENAME_MAX + 1 + FILENAME_MAX + 1];
 	int i, j, n;
 	size_t len;
 	int cnt = 0;
@@ -562,7 +562,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 
 		if (!(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 
-			snprintf (temp, 1023, "%s\\%s", dir, FileData.cFileName);
+			snprintf (temp, sizeof (temp), "%s\\%s", dir, FileData.cFileName);
 
 			len = strlen (temp);
 			if (len > 5 && (strncmp (&temp[len - 5], ".dll", 5) == 0))
@@ -602,7 +602,7 @@ static int plugin_add_dir_to_list (VisList *list, const char *dir)
 	for (i = 2; i < n; i++) {
 		ref = NULL;
 
-		snprintf (temp, 1023, "%s/%s", dir, namelist[i]->d_name);
+		snprintf (temp, sizeof (temp), "%s/%s", dir, namelist[i]->d_name);
 
 		len = strlen (temp);
 		if (len > 3 && (strncmp (&temp[len - 3], ".so", 3) == 0))
