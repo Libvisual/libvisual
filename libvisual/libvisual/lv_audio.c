@@ -1053,7 +1053,7 @@ static int transform_format_buffer_from_float (VisBuffer *dest, VisBuffer *src, 
 	int signedcorr;
 	int i;
 
-	signedcorr += byte_max_numeric (size) / 2;
+	signedcorr = byte_max_numeric (size) / 2;
 
 	if (size == 1)
 		FORMAT_BUFFER_FROM_FLOAT(int8_t, uint8_t)
