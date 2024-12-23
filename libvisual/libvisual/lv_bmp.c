@@ -29,6 +29,7 @@
 #include <string.h>
 #include <math.h>
 #include <gettext.h>
+#include <stdint.h>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -72,7 +73,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 4 bpp pixels aka 2 pixels per byte */
 				uint8_t *col = data - video->pitch;
-				uint8_t *end = (uint8_t *) ((int)data & ~1);
+				uint8_t *end = (uint8_t *) ((uintptr_t)data & ~1);
 				data = col;
 
 				while (col < end) {
@@ -93,7 +94,7 @@ static int load_uncompressed (FILE *fp, VisVideo *video, int depth)
 			while (data > (uint8_t *) visual_video_get_pixels (video)) {
 				/* Unpack 1 bpp pixels aka 8 pixels per byte */
 				uint8_t *col = data - video->pitch;
-				uint8_t *end = (uint8_t *) ((int)data & ~7);
+				uint8_t *end = (uint8_t *) ((uintptr_t)data & ~7);
 				data = col;
 
 				while (col < end) {
