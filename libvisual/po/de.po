@@ -196,24 +196,24 @@ msgstr "handeln ohne Ereignis"
 msgid "end negotiate without event"
 msgstr "handeln ohne Ereignis beenden"
 
-#: libvisual/lv_bmp.c:125 libvisual/lv_bmp.c:229
+#: libvisual/lv_bmp.c:126 libvisual/lv_bmp.c:230
 msgid "Bitmap data is not complete"
 msgstr "Bitmap-Daten nicht vollständig"
 
-#: libvisual/lv_bmp.c:280
+#: libvisual/lv_bmp.c:281
 #, c-format
 msgid "Bitmap file not found: %s"
 msgstr "Bitmap-Datei nicht gefunden: %s"
 
-#: libvisual/lv_bmp.c:287
+#: libvisual/lv_bmp.c:290
 msgid "Not a bitmap file"
 msgstr "Keine Bitmap-Datei"
 
-#: libvisual/lv_bmp.c:352
+#: libvisual/lv_bmp.c:377
 msgid "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"
 msgstr "Nur Bitmaps mit 1, 4, 8 Bits pro Punkt werden unterstützt"
 
-#: libvisual/lv_bmp.c:358
+#: libvisual/lv_bmp.c:383
 msgid "Bitmap uses an invalid or unsupported compression scheme"
 msgstr "Bitmap benutzt ein ungültiges oder nicht unterstütztes Packschema"
 
@@ -757,7 +757,7 @@ msgstr "Der an visual_error_to_string() gegebene Fehlerwert ist ungültig"
 msgid "Cannot create a new VisEvent structure"
 msgstr "Neue VisEvent-Struktur kann nicht erzeugt werden"
 
-#: libvisual/lv_mem.c:134
+#: libvisual/lv_mem.c:130
 msgid "Cannot get %"
 msgstr "% kann nicht erlangt werden"
 
@@ -896,7 +896,7 @@ msgstr ""
 "Es wird versucht einen Speicherpuffer für eine VisVideo-Struktur zu setzen, "
 "die auf einen zugewiesenen Videopuffer verweist."
 
-#: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
+#: libvisual/lv_video.c:2774 libvisual/lv_video.c:2921
 msgid "Invalid depth passed to the scaler"
 msgstr "Ungültige Tiefe an Scaler übergeben"
 

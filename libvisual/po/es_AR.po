@@ -194,27 +194,27 @@ msgstr "negociando sin evento"
 msgid "end negotiate without event"
 msgstr "fin de negociación sin evento"
 
-#: libvisual/lv_bmp.c:125 libvisual/lv_bmp.c:229
+#: libvisual/lv_bmp.c:126 libvisual/lv_bmp.c:230
 msgid "Bitmap data is not complete"
 msgstr "Los datos del mapa de bits están incompletos"
 
-#: libvisual/lv_bmp.c:280
+#: libvisual/lv_bmp.c:281
 #, c-format
 msgid "Bitmap file not found: %s"
 msgstr "Archivo de mapa de bits no encontrado: %s"
 
-#: libvisual/lv_bmp.c:287
+#: libvisual/lv_bmp.c:290
 msgid "Not a bitmap file"
 msgstr "No es un archivo de mapa de bits"
 
-#: libvisual/lv_bmp.c:352
+#: libvisual/lv_bmp.c:377
 #, fuzzy
 msgid "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"
 msgstr ""
 "Sólo se soportan mapas de bits con 8 o 24 bits por pixel de profundidad de "
 "color"
 
-#: libvisual/lv_bmp.c:358
+#: libvisual/lv_bmp.c:383
 msgid "Bitmap uses an invalid or unsupported compression scheme"
 msgstr ""
 
@@ -790,7 +790,7 @@ msgstr "El valor de error dado a visual_error_to_string() es inválido"
 msgid "Cannot create a new VisEvent structure"
 msgstr "No se puede crear una nueva estructura VisEvent"
 
-#: libvisual/lv_mem.c:134
+#: libvisual/lv_mem.c:130
 msgid "Cannot get %"
 msgstr "No se pueden obtener %"
 
@@ -914,7 +914,7 @@ msgid ""
 "allocated screen buffer"
 msgstr ""
 
-#: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
+#: libvisual/lv_video.c:2774 libvisual/lv_video.c:2921
 msgid "Invalid depth passed to the scaler"
 msgstr "Profundidad pasada al escalador inválida"
 
