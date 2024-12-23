@@ -194,24 +194,24 @@ msgstr ""
 msgid "end negotiate without event"
 msgstr ""
 
-#: libvisual/lv_bmp.c:125 libvisual/lv_bmp.c:229
+#: libvisual/lv_bmp.c:126 libvisual/lv_bmp.c:230
 msgid "Bitmap data is not complete"
 msgstr ""
 
-#: libvisual/lv_bmp.c:280
+#: libvisual/lv_bmp.c:281
 #, c-format
 msgid "Bitmap file not found: %s"
 msgstr ""
 
-#: libvisual/lv_bmp.c:287
+#: libvisual/lv_bmp.c:290
 msgid "Not a bitmap file"
 msgstr ""
 
-#: libvisual/lv_bmp.c:352
+#: libvisual/lv_bmp.c:377
 msgid "Only bitmaps with 1, 4, 8 or 24 bits per pixel are supported"
 msgstr ""
 
-#: libvisual/lv_bmp.c:358
+#: libvisual/lv_bmp.c:383
 msgid "Bitmap uses an invalid or unsupported compression scheme"
 msgstr ""
 
@@ -744,7 +744,7 @@ msgstr ""
 msgid "Cannot create a new VisEvent structure"
 msgstr ""
 
-#: libvisual/lv_mem.c:134
+#: libvisual/lv_mem.c:130
 msgid "Cannot get %"
 msgstr ""
 
@@ -867,7 +867,7 @@ msgid ""
 "allocated screen buffer"
 msgstr ""
 
-#: libvisual/lv_video.c:2775 libvisual/lv_video.c:2922
+#: libvisual/lv_video.c:2774 libvisual/lv_video.c:2921
 msgid "Invalid depth passed to the scaler"
 msgstr ""
 
