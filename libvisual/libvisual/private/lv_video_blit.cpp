@@ -61,30 +61,36 @@ namespace LV {
       }
   }
 
-  void VideoBlit::blit_overlay_alphasrc (Video* dest, Video* src)
+  void VideoBlit::blit_overlay_alphasrc (Video* dst, Video* src)
   {
-      auto destbuf = static_cast<uint8_t*> (dest->get_pixels ());
-      auto srcbuf  = static_cast<uint8_t const*> (src->get_pixels ());
-
       if (visual_cpu_has_mmx ()) {
-          blit_overlay_alphasrc_mmx (dest, src);
+          blit_overlay_alphasrc_mmx (dst, src);
           return;
       }
 
+      auto dst_pixel_row_ptr = static_cast<uint8_t*> (dst->get_pixels ());
+      auto src_pixel_row_ptr = static_cast<uint8_t const*> (src->get_pixels ());
+
       for (int y = 0; y < src->m_impl->height; y++) {
+          auto dst_pixel = dst_pixel_row_ptr;
+          auto src_pixel = src_pixel_row_ptr;
+
           for (int x = 0; x < src->m_impl->width; x++) {
-              uint8_t alpha = srcbuf[3];
+              uint8_t const src_alpha = src_pixel[3];
 
-              destbuf[0] = (alpha * (srcbuf[0] - destbuf[0]) >> 8) + destbuf[0];
-              destbuf[1] = (alpha * (srcbuf[1] - destbuf[1]) >> 8) + destbuf[1];
-              destbuf[2] = (alpha * (srcbuf[2] - destbuf[2]) >> 8) + destbuf[2];
+              // NOTE: This is effectively
+              //       "(src_alpha / 255) * src_pixel[i] + (1 - src_alpha / 255) * dst_pixel[i]"
+              //       but with only a single multiplication, a single division by 256 rather than 255, for speed.
+              dst_pixel[0] = (src_alpha * (src_pixel[0] - dst_pixel[0]) >> 8) + dst_pixel[0];
+              dst_pixel[1] = (src_alpha * (src_pixel[1] - dst_pixel[1]) >> 8) + dst_pixel[1];
+              dst_pixel[2] = (src_alpha * (src_pixel[2] - dst_pixel[2]) >> 8) + dst_pixel[2];
 
-              destbuf += dest->m_impl->bpp;
-              srcbuf  += src->m_impl->bpp;
+              src_pixel += 4;
+              dst_pixel += 4;
           }
 
-          destbuf += dest->m_impl->pitch - (dest->m_impl->width * dest->m_impl->bpp);
-          srcbuf  += src->m_impl->pitch  - (src->m_impl->width  * src->m_impl->bpp);
+          dst_pixel_row_ptr += dst->m_impl->pitch;
+          src_pixel_row_ptr += src->m_impl->pitch;
       }
   }
 
