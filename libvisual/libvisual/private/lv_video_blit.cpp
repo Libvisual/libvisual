@@ -78,6 +78,9 @@ namespace LV {
           for (int x = 0; x < src->m_impl->width; x++) {
               uint8_t const src_alpha = src_pixel[3];
 
+              // NOTE: This is effectively
+              //       "(src_alpha / 255) * src_pixel[i] + (1 - src_alpha / 255) * dst_pixel[i]"
+              //       but with only a single multiplication, a single division by 256 rather than 255, for speed.
               dst_pixel[0] = (src_alpha * (src_pixel[0] - dst_pixel[0]) >> 8) + dst_pixel[0];
               dst_pixel[1] = (src_alpha * (src_pixel[1] - dst_pixel[1]) >> 8) + dst_pixel[1];
               dst_pixel[2] = (src_alpha * (src_pixel[2] - dst_pixel[2]) >> 8) + dst_pixel[2];
