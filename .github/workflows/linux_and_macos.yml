@@ -83,6 +83,8 @@ jobs:
       - name: Install build dependencies (macOS)
         if: runner.os == 'macOS'
         run: |-
+          set -x
+          brew update
           brew install \
             autoconf-archive \
             automake \
