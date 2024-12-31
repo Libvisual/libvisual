@@ -37,6 +37,7 @@
 
 #include <libvisual/lv_intrusive_ptr.hpp>
 #include <memory>
+#include <span>
 #include <cstdlib>
 
 namespace LV {
@@ -87,6 +88,24 @@ namespace LV {
        * Destroys the buffer content.
        */
       void destroy_content ();
+
+      /**
+       * Returns an std::span that is a view of the entire buffer.
+       */
+      template <typename T>
+      std::span<T> as_span () noexcept
+      {
+          return {static_cast<T*> (get_data ()), get_size () / sizeof (T)};
+      }
+
+      /**
+       * Returns an std::span that is a view of the entire buffer.
+       */
+      template <typename T>
+      std::span<T const> as_span () const noexcept
+      {
+          return {static_cast<T const*> (get_data ()), get_size () / sizeof (T)};
+      }
 
       /**
        * Sets the data pair (data and its size).
