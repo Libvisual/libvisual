@@ -91,6 +91,9 @@ namespace
 
   void test_load_indexed8 ()
   {
+      auto bmp_image {LV::Video::create_from_file ("../images/additive-colors-indexed8.bmp")};
+      LV_TEST_ASSERT (bmp_image);
+
       auto png_image {LV::Video::create_from_file ("../images/additive-colors-indexed8.png")};
       LV_TEST_ASSERT (png_image);
 
@@ -102,11 +105,15 @@ namespace
       auto raw_image_rgb24 {LV::Video::create (raw_image->get_width (), raw_image->get_height (), VISUAL_VIDEO_DEPTH_24BIT)};
       raw_image_rgb24->convert_depth (raw_image);
 
+      LV_TEST_ASSERT (bmp_image->has_same_content (raw_image));
       LV_TEST_ASSERT (png_image->has_same_content (raw_image_rgb24));
   }
 
   void test_load_rgb24 ()
   {
+      auto bmp_image {LV::Video::create_from_file ("../images/additive-colors-rgb24.bmp")};
+      LV_TEST_ASSERT (bmp_image);
+
       auto png_image {LV::Video::create_from_file ("../images/additive-colors-rgb24.png")};
       LV_TEST_ASSERT (png_image);
 
@@ -115,6 +122,7 @@ namespace
                                       png_image->get_height (),
                                       VISUAL_VIDEO_DEPTH_24BIT)};
 
+      LV_TEST_ASSERT (bmp_image->has_same_content (raw_image));
       LV_TEST_ASSERT (png_image->has_same_content (raw_image));
   }
 
