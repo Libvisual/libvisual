@@ -5,3 +5,11 @@ Description: Geological wonder "The Painted Desert" in Arizona
 Author     : katsrcool
 URL        : http://www.flickr.com/photos/katsrcool/7275923984/
 License    : CC BY 2.0
+
+additive_color.svg
+------------------
+Name       : AdditiveColor.svg
+Description: This image demonstrates the principle of additive color mixing, and is not meant as an exhibition of any particular color space. Original by Mike Horvath.
+Author     : SharkD at English Wikipedia
+URL        : https://commons.wikimedia.org/wiki/File:AdditiveColor.svg
+License    : CC0
