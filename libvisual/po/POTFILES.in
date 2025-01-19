@@ -1,7 +1,7 @@
 libvisual/lv_libvisual.cpp
 libvisual/lv_libvisual_c.cpp
 libvisual/lv_actor.cpp
-libvisual/lv_alpha_blend.c
+libvisual/lv_alpha_blend.cpp
 libvisual/lv_audio.cpp
 libvisual/lv_audio_c.cpp
 libvisual/lv_buffer.cpp
