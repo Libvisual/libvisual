@@ -28,7 +28,7 @@ void visual_alpha_blend_16 (uint8_t *LV_RESTRICT dest, const uint8_t *LV_RESTRIC
     rgb16_t *src2r = (rgb16_t *) src2;
     visual_size_t i;
 
-    for (i = 0; i < size / 2; i++) {
+    for (i = 0; i < size; i++) {
         destr[i].r = (alpha * (src2r[i].r - src1r[i].r)) / 255 + src1r[i].r;
         destr[i].g = (alpha * (src2r[i].g - src1r[i].g)) / 255 + src1r[i].g;
         destr[i].b = (alpha * (src2r[i].b - src1r[i].b)) / 255 + src1r[i].b;
