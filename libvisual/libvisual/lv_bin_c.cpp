@@ -54,11 +54,11 @@ void visual_bin_connect (VisBin *bin, const char *actname, const char *inname)
     bin->connect (actname, inname);
 }
 
-void visual_bin_sync (VisBin *bin, int noevent)
+void visual_bin_sync (VisBin *bin)
 {
     visual_return_if_fail (bin != nullptr);
 
-    bin->sync (noevent);
+    bin->sync ();
 }
 
 void visual_bin_set_video (VisBin *bin, VisVideo *video)
@@ -75,6 +75,13 @@ void visual_bin_set_supported_depth (VisBin *bin, VisVideoDepth depthflag)
     bin->set_supported_depth (depthflag);
 }
 
+VisVideoDepth visual_bin_get_supported_depth (VisBin *bin)
+{
+    visual_return_val_if_fail (bin != nullptr, VISUAL_VIDEO_DEPTH_NONE);
+
+    return bin->get_supported_depth ();
+}
+
 void visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depth)
 {
     visual_return_if_fail (bin != nullptr);
@@ -82,25 +89,11 @@ void visual_bin_set_preferred_depth (VisBin *bin, VisBinDepth depth)
     bin->set_preferred_depth (depth);
 }
 
-void visual_bin_set_depth (VisBin *bin, VisVideoDepth depth)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->set_depth (depth);
-}
-
 VisVideoDepth visual_bin_get_depth (VisBin *bin)
 {
     visual_return_val_if_fail (bin != nullptr, VISUAL_VIDEO_DEPTH_NONE);
 
     return bin->get_depth ();
-}
-
-int visual_bin_depth_changed (VisBin *bin)
-{
-    visual_return_val_if_fail (bin != nullptr, FALSE);
-
-    return bin->depth_changed ();
 }
 
 const VisPalette *visual_bin_get_palette (VisBin *bin)
@@ -115,13 +108,6 @@ void visual_bin_switch_actor (VisBin *bin, const char *actname)
     visual_return_if_fail (bin != nullptr);
 
     bin->switch_actor (actname);
-}
-
-void visual_bin_switch_finalize (VisBin *bin)
-{
-    visual_return_if_fail (bin != nullptr);
-
-    bin->switch_finalize ();
 }
 
 void visual_bin_use_morph (VisBin *bin, int use)

@@ -142,6 +142,11 @@ namespace LV {
       m_impl->progress = std::clamp (progress, 0.0f, 1.0f);
   }
 
+  VideoPtr Morph::get_video () const
+  {
+      return m_impl->dest;
+  }
+
   Palette const* Morph::get_palette ()
   {
       // FIXME: This should return nullptr if there is no palette
