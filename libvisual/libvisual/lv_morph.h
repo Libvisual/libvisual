@@ -124,6 +124,11 @@ namespace LV {
       void set_progress (float progress);
 
       /**
+       * Returns the rendering video target.
+       */
+      VideoPtr get_video () const;
+
+      /**
        * Returns the colour palette used.
        *
        * @note Only 8-bit morphs will have colour palettes.

@@ -503,7 +503,6 @@ int main (int argc, char **argv)
         // create new VisBin for video output
         LV::Bin bin;
         bin.set_supported_depth(VISUAL_VIDEO_DEPTH_ALL);
-        bin.use_morph(false);
 
         // Apply dynamic actor default, as needed
         if (actor_name.empty()) {
@@ -546,8 +545,6 @@ int main (int argc, char **argv)
             depth = visual_video_depth_get_highest (depthflag);
         }
 
-        bin.set_depth (depth);
-
         auto vidoptions = actor->get_video_attribute_options ();
 
         // initialize display
@@ -565,8 +562,7 @@ int main (int argc, char **argv)
         // put it all together
         bin.set_video(video);
         bin.realize();
-        bin.sync(false);
-        bin.depth_changed();
+        bin.sync();
 
         bin.set_morph(morph_name);
 
@@ -739,25 +735,10 @@ int main (int argc, char **argv)
                 video = display.create(depth, vidoptions, width, height, true);
                 display.set_title(_("lv-tool"));
 
-                bin.set_video (video);
-                bin.sync(false);
+                bin.set_video(video);
+                bin.sync();
 
                 resize_request.mark_as_applied();
-            }
-
-            if (bin.depth_changed())
-            {
-                DisplayLock lock {display};
-
-                int depthflag = bin.get_depth();
-                VisVideoDepth depth = visual_video_depth_get_highest(depthflag);
-
-                display.create(depth, vidoptions, width, height, true);
-
-                video = display.get_video();
-                bin.set_video(video);
-
-                bin.sync(true);
             }
         }
 

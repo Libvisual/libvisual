@@ -77,10 +77,8 @@ SimpleExample::SimpleExample ()
 
     SDL_WM_SetCaption (m_actor_name.c_str (), 0);
 
-    m_bin.depth_changed ();
-
     m_bin.realize ();
-    m_bin.sync (false);
+    m_bin.sync ();
 
     m_bin.use_morph (true);
     m_bin.set_morph (m_morph_name);
@@ -126,7 +124,7 @@ void SimpleExample::resize_display (int width, int height)
     create_display (width, height, m_bin.get_depth ());
 
     m_bin.set_video (m_screen);
-    m_bin.sync (false);
+    m_bin.sync ();
 }
 
 void SimpleExample::set_palette (LV::Palette const& pal)
@@ -218,17 +216,6 @@ void SimpleExample::run ()
 
         if (!handle_events ()) {
             break;
-        }
-
-        if (m_bin.depth_changed ())
-        {
-            int depthflag = m_bin.get_depth ();
-            VisVideoDepth depth = visual_video_depth_get_highest (depthflag);
-
-            create_display (m_screen->get_width (), m_screen->get_height (), depth);
-            m_bin.set_video (m_screen);
-
-            m_bin.sync (true);
         }
     }
 }
