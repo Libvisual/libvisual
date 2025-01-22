@@ -611,6 +611,7 @@ void __blursk_cleanup (BlurskPrivate *priv) {
     visual_mem_free(config.cpu_speed);
     visual_mem_free(config.show_info);
 
+    visual_mem_set(&config, 0, sizeof(config));
 }
 
 
