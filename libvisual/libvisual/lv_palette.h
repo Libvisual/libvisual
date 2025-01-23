@@ -35,6 +35,7 @@
 
 #ifdef __cplusplus
 
+#include <algorithm>
 #include <vector>
 
 namespace LV {
@@ -68,6 +69,16 @@ namespace LV {
       {
           colors.swap (rhs.colors);
           return *this;
+      }
+
+      constexpr friend bool operator== (Palette const& lhs, Palette const& rhs)
+      {
+          return lhs.colors == rhs.colors;
+      }
+
+      constexpr friend bool operator!= (Palette const& lhs, Palette const& rhs)
+      {
+          return !(lhs == rhs);
       }
 
       bool empty () const
