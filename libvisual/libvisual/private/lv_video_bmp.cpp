@@ -341,7 +341,7 @@ namespace LV {
           return nullptr;
       }
 
-      if (bi_compression > 3) {
+      if (bi_compression >= 3) {
           visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
           fp.seekg (saved_stream_pos);
           return nullptr;
