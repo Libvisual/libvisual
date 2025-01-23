@@ -392,6 +392,10 @@ namespace LV {
           }
       }
 
+      // Videos must have the same palette.
+      if (m_impl->palette != video->m_impl->palette)
+          return false;
+
       return true;
   }
 
