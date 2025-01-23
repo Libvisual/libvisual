@@ -286,6 +286,8 @@ namespace LV {
       fp.read (reinterpret_cast<char*> (&bf_bits), 4);
       bf_bits = VISUAL_ENDIAN_LEI32 (bf_bits);
 
+      auto dib_header_pos = fp.tellg ();
+
       /* Read the info structure size */
       fp.read (reinterpret_cast<char*> (&bi_size), 4);
       bi_size = VISUAL_ENDIAN_LEI32 (bi_size);
@@ -346,6 +348,8 @@ namespace LV {
           fp.seekg (saved_stream_pos);
           return nullptr;
       }
+
+      fp.seekg (dib_header_pos + std::streampos {bi_size}, std::ios::beg);
 
       /* Load the palette */
       if (bi_bitcount < 24) {
