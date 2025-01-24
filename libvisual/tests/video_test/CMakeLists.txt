@@ -13,6 +13,11 @@ LV_BUILD_TEST(video_load_test
   LINK_LIBS video_test_common
 )
 
+LV_BUILD_TEST(video_save_test
+  SOURCES video_save_test.cpp
+  LINK_LIBS video_test_common
+)
+
 ADD_LIBRARY(video_test_common STATIC common.cpp)
 TARGET_LINK_LIBRARIES(video_test_common PUBLIC libvisual)
 
