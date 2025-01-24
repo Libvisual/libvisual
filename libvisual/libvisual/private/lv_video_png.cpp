@@ -62,6 +62,11 @@ namespace LV {
 
       png_byte signature[8];
       input.read (reinterpret_cast<char*> (signature), sizeof (signature));
+      input.seekg (saved_stream_pos);
+
+      if (!input) {
+          return nullptr;
+      }
 
       bool is_png = !png_sig_cmp (signature, 0, sizeof (signature));
 
@@ -99,6 +104,8 @@ namespace LV {
 
           return nullptr;
       }
+
+      input.seekg (sizeof (signature), std::ios::cur);
 
       png_set_read_fn (png_ptr, &input, handle_png_read);
 
