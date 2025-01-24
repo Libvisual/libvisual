@@ -112,7 +112,7 @@ namespace LV {
 
           png_destroy_read_struct (&png_ptr, &info_ptr, &end_info);
 
-          delete []pixel_row_ptrs;
+          delete[] pixel_row_ptrs;
           visual_mem_free (pixels);
 
           return nullptr;
@@ -189,7 +189,7 @@ namespace LV {
 
       png_destroy_read_struct (&png_ptr, &info_ptr, &end_info);
 
-      delete []pixel_row_ptrs;
+      delete[] pixel_row_ptrs;
 
       return Video::wrap (pixels, true, width, height, depth);
   }
