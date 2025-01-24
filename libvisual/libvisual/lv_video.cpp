@@ -79,9 +79,9 @@ namespace LV {
     // TODO: Factor this out into a string utility library
     std::string to_lower_ascii (std::string const& s)
     {
-        std::string result {s};
-        std::transform (result.begin (), result.end (), result.begin (),
-                        [=] (unsigned char c) { return std::tolower (c); });
+        auto result {s};
+        for (auto& c : result)
+            c = std::tolower (c);
         return result;
     }
 
@@ -295,9 +295,10 @@ namespace LV {
 
   bool Video::save_to_file (std::string const& path) const
   {
-      std::string extension {to_lower_ascii (fs::path {path}.extension ())};
+      auto extension {fs::path {path}.extension ()};
+      auto extension_lower (to_lower_ascii (extension.string ()));
 
-      auto entry {bitmap_format_extension_map.find (extension)};
+      auto entry {bitmap_format_extension_map.find (extension_lower)};
       if (entry == bitmap_format_extension_map.end ()) {
           visual_log (VISUAL_LOG_ERROR, "Could not deduce format from filename (%s)", path.c_str ());
           return false;
