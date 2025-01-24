@@ -37,15 +37,23 @@
 #include "private/lv_video_bmp.hpp"
 #include "private/lv_video_png.hpp"
 #include <cstring>
-#include <iostream>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <functional>
+#include <unordered_map>
 
 namespace LV {
 
   namespace fs = std::filesystem;
 
   namespace {
+
+    using BitmapLoad = std::function<VideoPtr (std::istream&)>;
+    std::unordered_map<std::string, BitmapLoad> const bitmap_load_map =
+    {
+        { "bmp", bitmap_load_bmp },
+        { "png", bitmap_load_png }
+    };
 
     bool is_valid_scale_method (VisVideoScaleMethod scale_method)
     {
@@ -195,17 +203,14 @@ namespace LV {
 
   VideoPtr Video::create_from_stream (std::istream& input)
   {
-      auto image = bitmap_load_bmp (input);
-      if (image) {
-          return image;
+      for (auto entry : bitmap_load_map) {
+          auto image {entry.second (input)};
+          if (image) {
+              return image;
+          }
       }
 
-      image = bitmap_load_png (input);
-      if (image) {
-          return image;
-      }
-
-      return {};
+      return nullptr;
   }
 
   VideoPtr Video::create_scale_depth (VideoConstPtr const& src,
