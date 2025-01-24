@@ -269,6 +269,15 @@ namespace LV {
       bool save_to_file (std::string const& path) const;
 
       /**
+       * Saves contents to a stream.
+       *
+       * @param output stream
+       *
+       * @return true if file was successfully saved, false otherwise.
+       */
+      bool save_to_stream (std::ostream& output, std::string const& format) const;
+
+      /**
        * Sets all attributes.
        *
        * @param width  width in pixels

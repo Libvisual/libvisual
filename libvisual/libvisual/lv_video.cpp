@@ -36,6 +36,8 @@
 #include "private/lv_video_transform.hpp"
 #include "private/lv_video_bmp.hpp"
 #include "private/lv_video_png.hpp"
+#include <algorithm>
+#include <cctype>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -49,16 +51,38 @@ namespace LV {
   namespace {
 
     using BitmapLoad = std::function<VideoPtr (std::istream&)>;
+    using BitmapSave = std::function<bool (Video const&, std::ostream&)>;
+
     std::unordered_map<std::string, BitmapLoad> const bitmap_load_map =
     {
         { "bmp", bitmap_load_bmp },
         { "png", bitmap_load_png }
     };
 
+    std::unordered_map<std::string, BitmapSave> const bitmap_save_map =
+    {
+        { "png", bitmap_save_png }
+    };
+
+    std::unordered_map<std::string, std::string> const bitmap_format_extension_map =
+    {
+        { ".png", "png" },
+        { ".bmp", "bmp" }
+    };
+
     bool is_valid_scale_method (VisVideoScaleMethod scale_method)
     {
         return scale_method == VISUAL_VIDEO_SCALE_NEAREST
             || scale_method == VISUAL_VIDEO_SCALE_BILINEAR;
+    }
+
+    // TODO: Factor this out into a string utility library
+    std::string to_lower_ascii (std::string const& s)
+    {
+        std::string result {s};
+        std::transform (result.begin (), result.end (), result.begin (),
+                        [=] (unsigned char c) { return std::tolower (c); });
+        return result;
     }
 
   } // anonymous namespace
@@ -271,17 +295,33 @@ namespace LV {
 
   bool Video::save_to_file (std::string const& path) const
   {
-      auto extension = fs::path {path}.extension ();
+      std::string extension {to_lower_ascii (fs::path {path}.extension ())};
 
-      std::ofstream file {path};
-
-      if (extension == ".png") {
-          return bitmap_save_png (*this, file);
+      auto entry {bitmap_format_extension_map.find (extension)};
+      if (entry == bitmap_format_extension_map.end ()) {
+          visual_log (VISUAL_LOG_ERROR, "Could not deduce format from filename (%s)", path.c_str ());
+          return false;
       }
 
-      visual_log (VISUAL_LOG_ERROR, "Unsupported format with extension '%s'.", extension.c_str ());
+      std::ofstream output {path};
+      if (!output) {
+          visual_log (VISUAL_LOG_ERROR, "Could not create file '%s'", path.c_str ());
+          return false;
+      }
 
-      return false;
+      return save_to_stream (output, entry->second);
+  }
+
+  bool Video::save_to_stream (std::ostream& output, std::string const& format) const
+  {
+      auto entry {bitmap_save_map.find (format)};
+      if (entry == bitmap_save_map.end ()) {
+          std::string format_str {format};
+          visual_log (VISUAL_LOG_ERROR, "Saving to %s format is not supported", format_str.c_str ());
+          return false;
+      }
+
+      return entry->second (*this, output);
   }
 
   void Video::copy_attrs (VideoConstPtr const& src)
