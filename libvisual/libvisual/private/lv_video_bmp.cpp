@@ -352,9 +352,13 @@ namespace LV {
           return nullptr;
       }
 
+      /* Load the palette */
+
+      /* Skip past DIB header to color table */
+      /* BI_BITFIELDS and BI_ALPHABITFIELDS are unsupported, so there are
+         no bitmasks after the DIB header. */
       fp.seekg (dib_header_pos + std::streampos {bi_size}, std::ios::beg);
 
-      /* Load the palette */
       if (bi_bitcount < 24) {
           if (bi_clrused == 0) {
               /* When the colors used variable is zero, use the
@@ -391,6 +395,8 @@ namespace LV {
 
       if (palette)
           video->set_palette (*palette);
+
+      /* Read and decode image data */
 
       /* Set to the beginning of image data, note that MickeySoft likes stuff upside down .. */
       fp.seekg (bf_bits, std::ios::beg);
