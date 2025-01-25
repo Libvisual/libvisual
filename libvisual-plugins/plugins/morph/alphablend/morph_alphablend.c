@@ -88,9 +88,9 @@ static void lv_morph_alpha_apply (VisPluginData *plugin, float progress, VisAudi
 	                    progress);
 }
 
-static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)
+static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float progress)
 {
-	uint8_t a = alpha * (1/255.0);
+	uint8_t a = progress * 255;
 
 	switch (depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
