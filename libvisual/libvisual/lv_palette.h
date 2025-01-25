@@ -45,6 +45,9 @@ namespace LV {
   //!
   struct LV_API Palette
   {
+      using const_iterator = std::vector<Color>::const_iterator;
+      using iterator = std::vector<Color>::iterator;
+
       std::vector<Color> colors;
 
       /**
@@ -68,6 +71,46 @@ namespace LV {
       {
           colors.swap (rhs.colors);
           return *this;
+      }
+
+      constexpr friend bool operator== (Palette const& lhs, Palette const& rhs)
+      {
+          return lhs.colors == rhs.colors;
+      }
+
+      constexpr friend bool operator!= (Palette const& lhs, Palette const& rhs)
+      {
+          return !(lhs == rhs);
+      }
+
+      constexpr const_iterator cbegin () const noexcept
+      {
+          return colors.cbegin ();
+      }
+
+      constexpr const_iterator cend () const noexcept
+      {
+          return colors.cend ();
+      }
+
+      constexpr const_iterator begin () const noexcept
+      {
+          return colors.begin ();
+      }
+
+      constexpr const_iterator end () const noexcept
+      {
+          return colors.end ();
+      }
+
+      constexpr iterator begin () noexcept
+      {
+          return colors.begin ();
+      }
+
+      constexpr iterator end () noexcept
+      {
+          return colors.end ();
       }
 
       bool empty () const
