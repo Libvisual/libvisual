@@ -31,9 +31,12 @@
 #include <istream>
 #include <cstring>
 
-#define BI_RGB  0
-#define BI_RLE8 1
-#define BI_RLE4 2
+/* BMP compression methods */
+#define BI_RGB       0
+#define BI_RLE8      1
+#define BI_RLE4      2
+#define BI_BITFIELDS 3
+
 
 namespace LV {
 
@@ -343,7 +346,7 @@ namespace LV {
           return nullptr;
       }
 
-      if (bi_compression >= 3) {
+      if (bi_compression >= BI_BITFIELDS) {
           visual_log (VISUAL_LOG_ERROR, "Bitmap uses an invalid or unsupported compression scheme");
           fp.seekg (saved_stream_pos);
           return nullptr;
