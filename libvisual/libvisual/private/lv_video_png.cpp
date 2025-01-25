@@ -58,12 +58,23 @@ namespace LV {
 
   VideoPtr bitmap_load_png (std::istream& input)
   {
-      auto saved_stream_pos = input.tellg ();
+      auto start_stream_pos = input.tellg ();
+
+      // Check PNG signature.
 
       png_byte signature[8];
-      input.read (reinterpret_cast<char*> (signature), sizeof (signature));
+      if (!input.read (reinterpret_cast<char*> (signature), sizeof (signature))) {
+          input.clear ();
+          input.seekg (start_stream_pos);
+          return nullptr;
+      }
 
       bool is_png = !png_sig_cmp (signature, 0, sizeof (signature));
+
+      // Clean up test by rewinding to the beginning, like we have read nothing.
+      if (!input.seekg (start_stream_pos)) {
+          return nullptr;
+      }
 
       if (!is_png) {
           return nullptr;
@@ -86,15 +97,22 @@ namespace LV {
           return nullptr;
       }
 
+      // Read PNG image data
+
+      // Skip to the first chunk, which comes right after the signature.
+      input.seekg (start_stream_pos + std::streampos {sizeof (signature)});
+
       uint8_t*  pixels = nullptr;
       uint8_t** pixel_row_ptrs = nullptr;
 
       if (setjmp (png_jmpbuf (png_ptr))) {
-          input.seekg (saved_stream_pos);
+          // Some error happened during reading. Rewind to the beginning, like we have read nothing.
+          input.clear ();
+          input.seekg (start_stream_pos);
 
           png_destroy_read_struct (&png_ptr, &info_ptr, &end_info);
 
-          delete []pixel_row_ptrs;
+          delete[] pixel_row_ptrs;
           visual_mem_free (pixels);
 
           return nullptr;
@@ -171,7 +189,7 @@ namespace LV {
 
       png_destroy_read_struct (&png_ptr, &info_ptr, &end_info);
 
-      delete []pixel_row_ptrs;
+      delete[] pixel_row_ptrs;
 
       return Video::wrap (pixels, true, width, height, depth);
   }
