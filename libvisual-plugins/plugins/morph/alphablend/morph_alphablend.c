@@ -24,6 +24,7 @@
 #include "config.h"
 #include "gettext.h"
 #include <libvisual/libvisual.h>
+#include <stdlib.h>
 
 VISUAL_PLUGIN_API_VERSION_VALIDATOR
 
@@ -31,7 +32,9 @@ static int  lv_morph_alpha_init    (VisPluginData *plugin);
 static void lv_morph_alpha_cleanup (VisPluginData *plugin);
 static void lv_morph_alpha_apply   (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2);
 
-static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha);
+typedef void (*BlendFunc) (uint8_t *, const uint8_t *, const uint8_t *, visual_size_t, uint8_t);
+
+static BlendFunc get_blend_func (VisVideoDepth depth);
 
 const VisPluginInfo *get_plugin_info (void)
 {
@@ -80,33 +83,39 @@ static void lv_morph_alpha_cleanup (VisPluginData *plugin)
 
 static void lv_morph_alpha_apply (VisPluginData *plugin, float progress, VisAudio *audio, VisVideo *dest, VisVideo *src1, VisVideo *src2)
 {
-	alpha_blend_buffer (visual_video_get_pixels (dest),
-	                    visual_video_get_pixels (src1),
-	                    visual_video_get_pixels (src2),
-	                    visual_video_get_size (dest),
-	                    visual_video_get_depth (dest),
-	                    progress);
+	int width  = visual_video_get_width (dest);
+	int height = visual_video_get_height (dest);
+	int depth  = visual_video_get_depth (dest);
+	int pitch  = visual_video_get_pitch (dest);
+
+	uint8_t *src1_row_ptr = visual_video_get_pixels (src1);
+	uint8_t *src2_row_ptr = visual_video_get_pixels (src2);
+	uint8_t *dest_row_ptr = visual_video_get_pixels (dest);
+
+	uint8_t alpha = progress * 255;
+	BlendFunc blend_func = get_blend_func (depth);
+
+	for (int y = 0; y < height; y++) {
+		blend_func (dest_row_ptr, src1_row_ptr, src2_row_ptr, width, alpha);
+		src1_row_ptr += pitch;
+		src2_row_ptr += pitch;
+		dest_row_ptr += pitch;
+	}
 }
 
-static inline void alpha_blend_buffer (uint8_t *dest, uint8_t *src1, uint8_t *src2, int size, int depth, float alpha)
+static BlendFunc get_blend_func (VisVideoDepth depth)
 {
-	uint8_t a = alpha * (1/255.0);
-
 	switch (depth) {
 		case VISUAL_VIDEO_DEPTH_8BIT:
-			visual_alpha_blend_8 (dest, src1, src2, size, a);
-			break;
-
+			return visual_alpha_blend_8;
 		case VISUAL_VIDEO_DEPTH_16BIT:
-			visual_alpha_blend_16 (dest, src1, src2, size, a);
-			break;
-
+			return visual_alpha_blend_16;
 		case VISUAL_VIDEO_DEPTH_24BIT:
-			visual_alpha_blend_24 (dest, src1, src2, size, a);
-			break;
-
+			return visual_alpha_blend_24;
 		case VISUAL_VIDEO_DEPTH_32BIT:
-			visual_alpha_blend_32 (dest, src1, src2, size, a);
-			break;
+			return visual_alpha_blend_32;
+		default:
+            visual_log (VISUAL_LOG_CRITICAL, "Unsupported depth for blending (%d)", depth);
+			abort ();
 	}
 }
