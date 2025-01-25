@@ -102,11 +102,8 @@ namespace
                                               png_image->get_width (),
                                               png_image->get_height ())};
 
-      auto raw_image_rgb24 {LV::Video::create (raw_image->get_width (), raw_image->get_height (), VISUAL_VIDEO_DEPTH_24BIT)};
-      raw_image_rgb24->convert_depth (raw_image);
-
       LV_TEST_ASSERT (bmp_image->has_same_content (raw_image));
-      LV_TEST_ASSERT (png_image->has_same_content (raw_image_rgb24));
+      LV_TEST_ASSERT (png_image->has_same_content (raw_image));
   }
 
   void test_load_rgb24 ()

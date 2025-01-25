@@ -127,10 +127,6 @@ namespace LV {
       auto color_type = png_get_color_type (png_ptr, info_ptr);
       auto bit_depth  = png_get_bit_depth (png_ptr, info_ptr);
 
-      if (color_type == PNG_COLOR_TYPE_PALETTE) {
-          png_set_palette_to_rgb (png_ptr);
-      }
-
       if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
           png_set_expand_gray_1_2_4_to_8 (png_ptr);
       }
@@ -161,6 +157,9 @@ namespace LV {
       VisVideoDepth depth = VISUAL_VIDEO_DEPTH_NONE;
 
       switch (png_get_color_type (png_ptr, info_ptr)) {
+          case PNG_COLOR_TYPE_PALETTE:
+              depth = VISUAL_VIDEO_DEPTH_8BIT;
+              break;
           case PNG_COLOR_TYPE_RGB:
               depth = VISUAL_VIDEO_DEPTH_24BIT;
               break;
@@ -187,11 +186,30 @@ namespace LV {
 
       png_read_image (png_ptr, pixel_row_ptrs);
 
+      auto video = Video::wrap (pixels, true, width, height, depth);
+
+      if (depth == VISUAL_VIDEO_DEPTH_8BIT) {
+          png_colorp file_palette = nullptr;
+          int file_color_count = 0;
+          png_get_PLTE (png_ptr, info_ptr, &file_palette, &file_color_count);
+
+          LV::Palette palette (256);
+          int color_count = std::min (256, file_color_count);
+
+          for (int i = 0; i < color_count; i++) {
+              auto& color = palette.colors[i];
+              color.r = file_palette[i].red;
+              color.g = file_palette[i].green;
+              color.b = file_palette[i].blue;
+          }
+          video->set_palette (std::move (palette));
+      }
+
       png_destroy_read_struct (&png_ptr, &info_ptr, &end_info);
 
       delete[] pixel_row_ptrs;
 
-      return Video::wrap (pixels, true, width, height, depth);
+      return video;
   }
 
 } // LV namespace
