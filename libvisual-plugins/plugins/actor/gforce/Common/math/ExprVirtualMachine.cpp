@@ -21,7 +21,7 @@
 #include <libvisual/libvisual.h>
 #include <limits>
 #include <stdlib.h>
-
+#include <string.h>
 
 #define __addInst( opcode, data16 )		long op = (opcode) | (data16);	\
 										mProgram.Append( &op, sizeof(long) );
@@ -85,8 +85,8 @@ ExprUserFcn ExprVirtualMachine::sZeroFcn = { 0, { 0 } };
 							case cABS:	r = fabs( r );	break;		\
 							case cSIN:	r = sin( r );	break;		\
 							case cCOS:	r = cos( r );	break;		\
-							case cSEED: i = *((long*) &r);						\
-										size = i % 31;							\
+							case cSEED: i = pun_float_to_int32( r );	\
+										size = i % 31;					\
 										srand( ( i << size ) | ( i >> ( 32 - size ) )  ); 	break;				\
 							case cTAN:	r = tan( r );	break;		\
 							case cSGN:	r = ( r >= 0 ) ? 1 : -1;	break;		\
@@ -113,6 +113,12 @@ ExprUserFcn ExprVirtualMachine::sZeroFcn = { 0, { 0 } };
 								case '^':	r1 = pow( r1, r2 );					break;	\
 								case '%':	{ long tt = r2; r1 = (tt != 0) ? (( (long) r1 ) % tt) : 0.0; 	break; }	\
 							}
+
+int32_t pun_float_to_int32(float x) {
+	int32_t result = 0;
+	memcpy( &result, &x, sizeof( result ) );
+	return result;
+}
 
 ExprVirtualMachine::ExprVirtualMachine() {
 	mPCStart	= 0;
