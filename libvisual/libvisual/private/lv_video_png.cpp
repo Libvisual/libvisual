@@ -286,22 +286,22 @@ namespace LV {
           png_destroy_write_struct (&png_ptr, &info_ptr);
       }
 
-      auto bit_depth {0};
+      auto bits_per_channel {0};
       auto color_type {0};
 
       switch (bitmap.get_depth ()) {
           case VISUAL_VIDEO_DEPTH_8BIT: {
-              bit_depth = 8;
+              bits_per_channel = 8;
               color_type = PNG_COLOR_TYPE_PALETTE;
               break;
           }
           case VISUAL_VIDEO_DEPTH_24BIT: {
-              bit_depth = 8;
+              bits_per_channel = 8;
               color_type = PNG_COLOR_TYPE_RGB;
               break;
           }
           case VISUAL_VIDEO_DEPTH_32BIT: {
-              bit_depth = 8;
+              bits_per_channel = 8;
               color_type = PNG_COLOR_TYPE_RGB_ALPHA;
               break;
           }
@@ -320,7 +320,7 @@ namespace LV {
       png_set_compression_level (png_ptr, Z_BEST_COMPRESSION);
 
       png_set_IHDR (png_ptr, info_ptr, bitmap_width, bitmap_height,
-                    bit_depth, color_type, PNG_INTERLACE_NONE,
+                    bits_per_channel, color_type, PNG_INTERLACE_NONE,
                     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
       if (color_type == PNG_COLOR_TYPE_PALETTE) {
