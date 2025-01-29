@@ -68,6 +68,14 @@ VisVideo *visual_video_load_from_file (const char *path)
     return self.get ();
 }
 
+int visual_video_save_to_file (VisVideo *self, const char *path)
+{
+    visual_return_val_if_fail (self != nullptr, FALSE);
+    visual_return_val_if_fail (path != nullptr, FALSE);
+
+    return self->save_to_file (path);
+}
+
 int visual_video_has_allocated_buffer (VisVideo *self)
 {
     visual_return_val_if_fail (self != nullptr, FALSE);

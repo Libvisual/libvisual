@@ -26,7 +26,11 @@
 #include <iosfwd>
 
 namespace LV {
+
   VideoPtr bitmap_load_png (std::istream& input);
-}
+
+  bool bitmap_save_png (Video const& bitmap, std::ostream& output);
+
+} // LV namespace
 
 #endif // _LV_VIDEO_BMP_HPP
