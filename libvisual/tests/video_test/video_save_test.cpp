@@ -8,7 +8,7 @@ void test_save_indexed8 ()
       LV_TEST_ASSERT (png_image);
 
       std::stringstream buffer;
-      LV_TEST_ASSERT (png_image->save_to_stream (buffer, "png"));
+      LV_TEST_ASSERT (png_image->save_to_stream (buffer, LV::ImageFormat::PNG));
 
       auto png_saved_image {LV::Video::create_from_stream (buffer)};
       LV_TEST_ASSERT (png_saved_image);
@@ -21,7 +21,7 @@ void test_save_rgb24 ()
       LV_TEST_ASSERT (png_image);
 
       std::stringstream buffer;
-      LV_TEST_ASSERT (png_image->save_to_stream (buffer, "png"));
+      LV_TEST_ASSERT (png_image->save_to_stream (buffer, LV::ImageFormat::PNG));
 
       auto png_saved_image {LV::Video::create_from_stream (buffer)};
       LV_TEST_ASSERT (png_saved_image);
@@ -34,7 +34,7 @@ void test_save_argb32 ()
       LV_TEST_ASSERT (png_image);
 
       std::stringstream buffer;
-      LV_TEST_ASSERT (png_image->save_to_stream (buffer, "png"));
+      LV_TEST_ASSERT (png_image->save_to_stream (buffer, LV::ImageFormat::PNG));
 
       auto png_saved_image {LV::Video::create_from_stream (buffer)};
       LV_TEST_ASSERT (png_saved_image);

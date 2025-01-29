@@ -96,6 +96,14 @@ typedef enum {
     VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM      /**< Custom compose function (looks up on the source VisVideo. */
 } VisVideoComposeType;
 
+/**
+ * The set of known and supported image formats.
+ */
+typedef enum {
+    VISUAL_IMAGE_FORMAT_BMP = 0,
+    VISUAL_IMAGE_FORMAT_PNG
+} VisImageFormat;
+
 typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
 
 #ifdef __cplusplus
@@ -124,6 +132,15 @@ struct _VisVideoAttrOptions {
 #include <string>
 
 namespace LV {
+
+  /**
+   * The set of known and supported image formats.
+   */
+  enum class ImageFormat
+  {
+      BMP = VISUAL_IMAGE_FORMAT_BMP,
+      PNG = VISUAL_IMAGE_FORMAT_PNG
+  };
 
   class Video;
 
@@ -271,11 +288,12 @@ namespace LV {
       /**
        * Saves contents to a stream.
        *
-       * @param output stream
+       * @param output stream to write contents to.
+       * @param format image file format to encode contents in.
        *
        * @return true if file was successfully saved, false otherwise.
        */
-      bool save_to_stream (std::ostream& output, std::string const& format) const;
+      bool save_to_stream (std::ostream& output, ImageFormat format) const;
 
       /**
        * Sets all attributes.
