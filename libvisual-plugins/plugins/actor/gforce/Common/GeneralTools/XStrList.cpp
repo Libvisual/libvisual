@@ -95,13 +95,12 @@ long XStrList::Add( const UtilStr& inStr ) {
 
 
 long XStrList::FetchBestMatch( const UtilStr& inStr ) {
-	long			best, bestScore, score, i;
-	UtilStr*		str;
+	long     bestScore = 0;
+	long     best = 0;
+	UtilStr* str;
 
-	best = 0;
-
-	for ( i = 1; mStrings.Fetch( i, (void**) &str ); i++ ) {
-		score = str -> LCSMatchScore( inStr );
+	for ( long i = 1; mStrings.Fetch( i, (void**) &str ); i++ ) {
+		long score = str -> LCSMatchScore( inStr );
 		if ( score > bestScore || i == 1 ) {
 			best = i;
 			bestScore = score;

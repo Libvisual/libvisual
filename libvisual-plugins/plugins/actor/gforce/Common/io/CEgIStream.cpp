@@ -1,6 +1,6 @@
 #include "CEgIStream.h"
-
-//#include <string.h>
+#include <stdint.h>
+#include <string.h>
 
 
 UtilStr CEgIStream::sTemp;
@@ -32,8 +32,20 @@ long CEgIStream::GetLong() {
 
 
 float CEgIStream::GetFloat() {
-	long v = GetLong();
-	return *( (float*) &v );
+	uint32_t c, n = GetByte();
+
+	c = GetByte();
+	n = n | ( c << 8 );
+
+	c = GetByte();
+	n = n | ( c << 16 );
+
+	c = GetByte();
+	n = n | ( c << 24 );
+
+	float result;
+	memcpy(&result, &n, sizeof(result));
+	return result;
 }
 
 
@@ -50,7 +62,7 @@ short int CEgIStream::GetShort() {
 
 
 unsigned char CEgIStream::GetByte() {
-	unsigned char c;
+	unsigned char c = 0;
 
 	if ( mIsTied ) {
 		if ( mPos != 0 ) {
@@ -74,7 +86,7 @@ unsigned char CEgIStream::GetByte() {
 
 
 unsigned char CEgIStream::PeekByte() {
-	unsigned char c;
+	unsigned char c = 0;
 
 	if ( mIsTied ) {
 		if ( mPos != 0 )
