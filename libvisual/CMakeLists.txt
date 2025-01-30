@@ -82,8 +82,11 @@ IF(NOT HAVE_STDC_MATH)
   MESSAGE(FATAL_ERROR "Libvisual requires libm to build")
 ENDIF()
 
+# Check for Zlib
+FIND_PACKAGE(ZLIB 1.2 REQUIRED)
+
 # Check for libpng
-FIND_PACKAGE(PNG REQUIRED)
+FIND_PACKAGE(PNG 1.4 REQUIRED)
 
 # Internationalization
 SET(GETTEXT_PACKAGE "libvisual-${LV_VERSION_SUFFIX}")

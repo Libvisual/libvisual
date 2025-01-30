@@ -96,6 +96,14 @@ typedef enum {
     VISUAL_VIDEO_COMPOSE_TYPE_CUSTOM      /**< Custom compose function (looks up on the source VisVideo. */
 } VisVideoComposeType;
 
+/**
+ * The set of known and supported image formats.
+ */
+typedef enum {
+    VISUAL_IMAGE_FORMAT_BMP = 0,
+    VISUAL_IMAGE_FORMAT_PNG
+} VisImageFormat;
+
 typedef struct _VisVideoAttrOptions VisVideoAttrOptions;
 
 #ifdef __cplusplus
@@ -124,6 +132,15 @@ struct _VisVideoAttrOptions {
 #include <string>
 
 namespace LV {
+
+  /**
+   * The set of known and supported image formats.
+   */
+  enum class ImageFormat
+  {
+      BMP = VISUAL_IMAGE_FORMAT_BMP,
+      PNG = VISUAL_IMAGE_FORMAT_PNG
+  };
 
   class Video;
 
@@ -258,6 +275,25 @@ namespace LV {
        * @return the Buffer object
        */
       BufferPtr get_buffer () const;
+
+      /**
+       * Saves contents to a file.
+       *
+       * @param path Path name of file to save to. Specify the file format by using the appropriate extension.
+       *
+       * @return true if file was successfully saved, false otherwise.
+       */
+      bool save_to_file (std::string const& path) const;
+
+      /**
+       * Saves contents to a stream.
+       *
+       * @param output stream to write contents to.
+       * @param format image file format to encode contents in.
+       *
+       * @return true if file was successfully saved, false otherwise.
+       */
+      bool save_to_stream (std::ostream& output, ImageFormat format) const;
 
       /**
        * Sets all attributes.
@@ -512,6 +548,8 @@ LV_NODISCARD LV_API VisVideo *visual_video_new (void);
 LV_NODISCARD LV_API VisVideo *visual_video_new_with_buffer (int width, int height, VisVideoDepth depth);
 LV_NODISCARD LV_API VisVideo *visual_video_new_wrap_buffer (void *buffer, int owner, int width, int height, VisVideoDepth depth, int pitch);
 LV_NODISCARD LV_API VisVideo *visual_video_load_from_file  (const char *path);
+
+LV_API int visual_video_save_to_file (VisVideo *video);
 
 LV_API void visual_video_ref   (VisVideo *video);
 LV_API void visual_video_unref (VisVideo *video);

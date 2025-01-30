@@ -29,6 +29,7 @@
 #include "lv_color.h"
 #include "lv_common.h"
 #include "lv_cpu.h"
+#include "private/lv_string_hash.hpp"
 #include "private/lv_video_private.hpp"
 #include "private/lv_video_blit.hpp"
 #include "private/lv_video_convert.hpp"
@@ -36,17 +37,77 @@
 #include "private/lv_video_transform.hpp"
 #include "private/lv_video_bmp.hpp"
 #include "private/lv_video_png.hpp"
+#include <algorithm>
+#include <cctype>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
+#include <functional>
+#include <optional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace LV {
 
+  namespace fs = std::filesystem;
+
   namespace {
+
+    using BitmapReader = std::function<VideoPtr (std::istream&)>;
+    using BitmapWriter = std::function<bool (Video const&, std::ostream&)>;
+
+    struct ImageFormatInfo
+    {
+        std::string              name;
+        BitmapReader             reader;
+        BitmapWriter             writer;
+        std::vector<std::string> extensions;
+    };
+
+    using ImageFormatExtensionLookup = std::unordered_map<
+        std::string, ImageFormat, StringHash, std::equal_to<>>;
+
+    std::unordered_map<ImageFormat, ImageFormatInfo> const supported_image_formats
+    {
+        {ImageFormat::BMP, {"BMP", bitmap_load_bmp, nullptr, {".bmp"}}},
+        {ImageFormat::PNG, {"PNG", bitmap_load_png, bitmap_save_png, {".png"}}}
+    };
+
+    ImageFormatExtensionLookup build_image_format_extension_lookup ()
+    {
+        ImageFormatExtensionLookup map;
+
+        for (auto const& entry : supported_image_formats)
+            for (auto const& extension : entry.second.extensions)
+                map.emplace (extension, entry.first);
+
+        return map;
+    }
+
+    std::optional<ImageFormat> find_image_format_by_extension (std::string_view extension)
+    {
+        static auto const lookup {build_image_format_extension_lookup ()};
+
+        auto match {lookup.find (extension)};
+        if (match == lookup.end ())
+            return std::nullopt;
+        return match->second;
+    }
 
     bool is_valid_scale_method (VisVideoScaleMethod scale_method)
     {
         return scale_method == VISUAL_VIDEO_SCALE_NEAREST
             || scale_method == VISUAL_VIDEO_SCALE_BILINEAR;
+    }
+
+    // TODO: Factor this out into a string utility library
+    std::string to_lower_ascii (std::string const& s)
+    {
+        auto result {s};
+        for (auto& c : result)
+            c = std::tolower (c);
+        return result;
     }
 
   } // anonymous namespace
@@ -191,17 +252,16 @@ namespace LV {
 
   VideoPtr Video::create_from_stream (std::istream& input)
   {
-      auto image = bitmap_load_bmp (input);
-      if (image) {
-          return image;
+      for (auto entry : supported_image_formats) {
+          if (entry.second.reader) {
+              auto image {entry.second.reader (input)};
+              if (image) {
+                  return image;
+              }
+          }
       }
 
-      image = bitmap_load_png (input);
-      if (image) {
-          return image;
-      }
-
-      return {};
+      return nullptr;
   }
 
   VideoPtr Video::create_scale_depth (VideoConstPtr const& src,
@@ -258,6 +318,43 @@ namespace LV {
   bool Video::has_allocated_buffer () const
   {
       return m_impl->buffer->is_allocated ();
+  }
+
+  bool Video::save_to_file (std::string const& path) const
+  {
+      auto extension {fs::path {path}.extension ()};
+      auto extension_lower (to_lower_ascii (extension.string ()));
+
+      auto format {find_image_format_by_extension (extension_lower)};
+      if (!format.has_value ()) {
+          visual_log (VISUAL_LOG_ERROR, "Could not deduce format from filename (%s)", path.c_str ());
+          return false;
+      }
+
+      std::ofstream output {path};
+      if (!output) {
+          visual_log (VISUAL_LOG_ERROR, "Could not create file '%s'", path.c_str ());
+          return false;
+      }
+
+      return save_to_stream (output, format.value ());
+  }
+
+  bool Video::save_to_stream (std::ostream& output, ImageFormat format) const
+  {
+      auto entry {supported_image_formats.find (format)};
+
+      if (entry == supported_image_formats.end ()) {
+          visual_log (VISUAL_LOG_ERROR, "Saving to unknown format (%d).", static_cast<int> (format));
+          return false;
+      }
+
+      if (!entry->second.writer) {
+          visual_log (VISUAL_LOG_ERROR, "Saving to %s is unsupported.", entry->second.name.c_str ());
+          return false;
+      }
+
+      return entry->second.writer (*this, output);
   }
 
   void Video::copy_attrs (VideoConstPtr const& src)
