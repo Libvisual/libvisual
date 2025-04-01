@@ -4,6 +4,7 @@
 
 set -e -u
 
+# NOTE: We're running things twice to workaround bug "too many loops" in aclocal
 autoreconf --install --verbose --force || \
 autoreconf --install --verbose --force
 

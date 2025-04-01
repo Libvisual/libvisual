@@ -24,6 +24,7 @@ elif [[ ! -f m4/alsa.m4 ]]; then
     exit 1
 fi
 
+# NOTE: We're running things twice to workaround bug "too many loops" in aclocal
 autoreconf --install --verbose --force || \
 autoreconf --install --verbose --force
 
