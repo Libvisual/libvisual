@@ -23,208 +23,186 @@
 #include "lv_audio_convert.hpp"
 #include "lv_audio.h"
 #include "lv_mem.h"
+#include <algorithm>
 #include <array>
 #include <concepts>
-#include <type_traits>
 #include <limits>
+#include <span>
+#include <type_traits>
 
 using namespace LV;
 
 namespace {
 
-  template <typename D, typename S>
-  constexpr bool is_same_signedness_v =
-      (std::is_signed_v<D> && std::is_signed_v<S>) ||
-      (std::is_unsigned_v<D> && std::is_unsigned_v<S>);
+  // Checks whether two integral types are both signed or unsigned.
+  template <std::integral T, std::integral U>
+  constexpr bool is_same_signedness_v = std::is_signed_v<T> == std::is_signed_v<U>;
 
-  template <std::signed_integral T>
-  constexpr T half_range ()
-  {
-      return std::numeric_limits<T>::max ();
-  }
+  // Checks whether an integral type is promoted to unsigned or signed int in arithmetic operations.
+  template <std::integral T>
+  constexpr bool int_promotable_v = sizeof (T) <= sizeof (int);
 
-  template <std::unsigned_integral T>
-  constexpr T half_range ()
-  {
-      return std::numeric_limits<T>::max () / 2 + 1;
-  }
+  // Checks if an integral type can be exactly representable with a float i.e. fits within the
+  // mantissa without loss.
+  template <std::integral T>
+  constexpr bool is_float_representable_v = std::numeric_limits<T>::digits <= std::numeric_limits<float>::digits;
 
-  template <std::signed_integral T>
-  constexpr T zero ()
-  {
-      return 0;
-  }
-
-  template <std::unsigned_integral T>
-  constexpr T zero ()
-  {
-      return std::numeric_limits<T>::max () / 2 + 1;
-  }
-
-  template <typename D, typename S>
-  constexpr int shifter()
-  {
-      if constexpr (sizeof (S) > sizeof (D))
-          return int (sizeof (S) - sizeof (D)) << 3;
-      else
-          return int (sizeof (D) - sizeof (S)) << 3;
-  }
-
-  // same format conversion
+  // Type constraint for integral samples.
   template <typename T>
-  inline void convert_sample_array (T* dst, T const* src, std::size_t count)
+  concept integral_sample = std::integral<T> && int_promotable_v<T>;
+
+  // Type constraint for signed integral samples.
+  template <typename T>
+  concept signed_integral_sample = std::signed_integral<T> && int_promotable_v<T>;
+
+  // Type constraint for unsigned integral samples.
+  template <typename T>
+  concept unsigned_integral_sample = std::unsigned_integral<T> && int_promotable_v<T>;
+
+  // Returns the 'bias' of an unsigned integral type i.e. the offset that can be added to the minimum value of its
+  // signed counterpart to get 0.
+  // Example: The bias for uint8_t is 128 as the minimum value of an int8_t is -128.
+  template <unsigned_integral_sample T>
+  constexpr auto bias () -> unsigned int
   {
-      visual_mem_copy (dst, src, sizeof (T) * count);
+      return 1U << (std::numeric_limits<T>::digits - 1);
   }
 
-  // signed->unsigned int conversion (same width)
-  template <std::unsigned_integral D, std::signed_integral S>
-  requires (sizeof (D) == sizeof (S))
-  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
+  // Converts an integral sample to an unsigned integral sample of the same width.
+  // Reduces to an identity function if handed an unsigned integral sample.
+  // Example: int16_t and uint16_t samples are both converted to uint16_t.
+  template <integral_sample T>
+  constexpr auto to_unsigned_sample (T x) -> std::make_unsigned_t<T>
   {
-      constexpr auto a {zero<D> ()};
-
-      auto src_end {src + count};
-
-      while (src != src_end) {
-          *dst = *src + a;
-          dst++;
-          src++;
-      }
-  }
-
-  // unsigned->signed int conversion (same width)
-  template <std::signed_integral D, std::unsigned_integral S>
-  requires (sizeof (D) == sizeof (S))
-  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
-  {
-      constexpr auto a {zero<S> ()};
-
-      auto src_end {src + count};
-
-      while (src != src_end) {
-          *dst = *src - a;
-          dst++;
-          src++;
-      }
-  }
-
-  // int->float conversions
-  template <std::integral S>
-  inline void convert_sample_array (float* dst, S const* src, std::size_t count)
-  {
-      constexpr float a {1.0 / float (half_range<S> ())};
-      constexpr float b {-zero<S>() * a};
-
-      S const* src_end = src + count;
-
-      while (src != src_end) {
-          *dst = *src * a + b;
-          dst++;
-          src++;
-      }
-  }
-
-  // float->int conversions
-  template <std::integral D>
-  inline void convert_sample_array (D* dst, float const* src, std::size_t count)
-  {
-      constexpr auto a {float (half_range<D> ())};
-      constexpr auto b {zero<D> ()};
-
-      auto src_end {src + count};
-
-      while (src != src_end) {
-          *dst = *src * a + b;
-          dst++;
-          src++;
-      }
-  }
-
-  // narrowing/widening int conversion (same signedness)
-  template <std::integral D, std::integral S>
-  requires (is_same_signedness_v<D, S> && sizeof (D) != sizeof (S))
-  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
-  {
-      constexpr auto shift {shifter<D, S> ()};
-
-      auto src_end {src + count};
-
-      if constexpr (sizeof (S) > sizeof (D)) {
-          // narrowing
-          while (src != src_end) {
-              *dst = *src >> shift;
-              dst++;
-              src++;
-          }
+      if constexpr (std::is_signed_v<T>) {
+          using U = std::make_unsigned_t<T>;
+          return x + bias<U> ();
       } else {
-          // widening
-          while (src != src_end) {
-              *dst = *src << shift;
-              dst++;
-              src++;
-          }
+          return x;
       }
   }
 
-  // narrowing/widening unsigned->signed int conversion
-  template <std::signed_integral D, std::unsigned_integral S>
-  requires (sizeof (D) != sizeof (S))
-  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
+  // Converts an integral sample to an signed integral sample of the same width.
+  // Reduces to an identity function if input is already unsigned.
+  // Example: int16_t and uint16_t samples are both converted to uint16_t.
+  template <integral_sample T>
+  constexpr auto to_signed_sample (T x) -> std::make_signed_t<T>
   {
-      constexpr auto a {zero<D>()};
-      constexpr auto shift {shifter<D, S> ()};
-
-      auto src_end {src + count};
-
-      if constexpr (sizeof (D) < sizeof (S)) {
-          // narrowing
-          while (src != src_end) {
-              *dst = D(*src >> shift) - a;
-              dst++;
-              src++;
-          }
+      if constexpr (!std::is_signed_v<T>) {
+          return x - bias<T> ();
       } else {
-          // widening
-          while (src != src_end) {
-              *dst = D(*src << shift) - a;
-              dst++;
-              src++;
-          }
+          return x;
       }
   }
 
-  // narrowing/widening signed->unsigned int conversion
-  template <std::unsigned_integral D, std::signed_integral S>
-  requires (sizeof (D) != sizeof (S))
-  inline void convert_sample_array (D* dst, S const* src, std::size_t count)
+  // Converts an integral sample to a narrower or wider integral type with the
+  // same signedness.
+  //
+  // Caveat: Due to the use of shifts for performance instead of float multiplications, the relative error in _widening_
+  // conversions can get as large as 0.038 to 0.039% of the true value (e.g. converting from 8-bit to 16/32-bit).
+  template <integral_sample T, integral_sample U>
+  constexpr auto widen_or_narrow_sample (T x) -> U
+      requires is_same_signedness_v<T, U>
   {
-      constexpr auto a {zero<D>()};
-      constexpr auto shift {shifter<D, S> ()};
+      constexpr auto n_t {std::numeric_limits<T>::digits};
+      constexpr auto n_u {std::numeric_limits<U>::digits};
 
-      auto src_end {src + count};
-
-      if constexpr (sizeof (D) < sizeof (S)) {
-          // narrowing
-          while (src != src_end) {
-              *dst = D(*src >> shift) + a;
-              dst++;
-              src++;
-          }
+      if constexpr (n_t > n_u) {
+          return x >> (n_t - n_u);
+      } else if constexpr (n_t < n_u) {
+          return x << (n_u - n_t);
       } else {
-          // widening
-          while (src != src_end) {
-              *dst = D(*src << shift) + a;
-              dst++;
-              src++;
-          }
+          return x;
       }
   }
 
+  // Converts an integral sample to 32-bit float.
+  template <integral_sample T>
+  constexpr auto to_float_sample (T x) -> float
+  {
+      using U = std::make_unsigned_t<T>;
+      using F = std::conditional_t<is_float_representable_v<T>, float, double>;
+
+      constexpr F factor = 1.0 / (0.5 * std::numeric_limits<U>::max ());
+      constexpr F one = 1.0;
+
+      return to_unsigned_sample (x) * factor - one;
+  }
+
+  // Converts a 32-bit float sample to an integral type.
+  template <integral_sample T>
+  constexpr auto from_float_sample (float x) -> T
+  {
+      using U = std::make_unsigned_t<T>;
+      using F = std::conditional_t<is_float_representable_v<T>, float, double>;
+
+      constexpr F factor = 0.5 * std::numeric_limits<U>::max ();
+      constexpr F one = 1.0;
+
+      auto y {static_cast<U> ((x + one) * factor)};
+
+      if constexpr (std::is_signed_v<T>) {
+          return to_signed_sample (y);
+      } else {
+          return y;
+      }
+  }
+
+  // Overload for same format conversions.
+  template <typename T>
+  constexpr void convert_samples (std::span<T> dst, std::span<T const> src)
+  {
+      auto count {std::min (src.size (), dst.size ())};
+      visual_mem_copy (dst.data (), src.data (), count * sizeof (T));
+  }
+
+  // Overload for unsigned to unsigned integral conversions.
+  template <unsigned_integral_sample D, integral_sample S>
+  constexpr void convert_samples (std::span<D> dst, std::span<S const> src)
+  {
+      auto const count {std::min (src.size (), dst.size ())};
+      std::transform (src.begin (), src.begin () + count, dst.begin (),
+                      [=] (auto x) {
+                          auto y {to_unsigned_sample (x)};
+                          return widen_or_narrow_sample<decltype (y), D> (y);
+                      });
+  }
+
+  // Overload for signed/unsigned to signed integral conversions.
+  template <signed_integral_sample D, integral_sample S>
+  constexpr void convert_samples (std::span<D> dst, std::span<S const> src)
+  {
+      auto const count {std::min (src.size (), dst.size ())};
+      std::transform (src.begin (), src.begin () + count, dst.begin (),
+                      [=] (auto x) {
+                          auto y {to_signed_sample (x)};
+                          return widen_or_narrow_sample<decltype (y), D> (y);
+                      });
+  }
+
+  // Overload for integral to float conversions.
+  template <integral_sample T>
+  constexpr void convert_samples (std::span<float> dst, std::span<T const> src)
+  {
+      auto const count {std::min (src.size (), dst.size ())};
+      std::transform (src.begin (), src.begin () + count, dst.begin (), to_float_sample<T>);
+  }
+
+  // Overload for float to integral conversions.
+  template <integral_sample T>
+  constexpr void convert_samples (std::span<T> dst, std::span<float const> src)
+  {
+      auto const count {std::min (src.size (), dst.size ())};
+      std::transform (src.begin (), src.begin () + count, dst.begin (), from_float_sample<T>);
+  }
+
+  // Wrapper for convert_samples() for storing all of its variants in a single table.
   template <typename D, typename S>
-  void convert (void* dst, void const* src, std::size_t size)
+  void convert (void* dst, void const* src, std::size_t count)
   {
-      convert_sample_array (static_cast<D*> (dst), static_cast<S const*> (src), size / sizeof (S));
+      std::span const src_span {static_cast<S const*> (src), count};
+      std::span const dst_span {static_cast<D*> (dst), count};
+      convert_samples (dst_span, src_span);
   }
 
   using ConvertFunc = void (*) (void*, void const*, std::size_t);
