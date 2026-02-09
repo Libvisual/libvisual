@@ -64,7 +64,7 @@ void XFloatList::FindMeans( long inNumMeans, float outMeans[], float inSigmaScal
 		
 		// If this a local max.  (Note: this could/should be improved for neighbors that are equal)
 		if ( ( cen > left && cen >= right ) ) {
-			sepCandidates.Put( i, *((void**) &cen) );
+			sepCandidates.Put( i, float_to_void_ptr( cen ) );
 		}
 	}
 	
@@ -284,7 +284,7 @@ void XFloatList::Rank( XLongList& outRank, long inNumToRank ) const {
 
 
 int XFloatList::sQSFloatComparitor( const void* inA, const void* inB ) {
-	float diff =  *((float*) inB) - *((float*) inA);
+	float diff =  void_ptr_to_float(inB) - void_ptr_to_float(inA);
 	if ( diff > 0.0 )
 		return 1;
 	else if ( diff < 0.0 )
@@ -296,7 +296,7 @@ int XFloatList::sQSFloatComparitor( const void* inA, const void* inB ) {
 		
 
 int XFloatList::sFloatComparitor( const void* inA, const void* inB ) {
-	float diff =  *((float*) &inB) - *((float*) &inA);
+	float diff = void_ptr_to_float(inA) - void_ptr_to_float(inB);
 	if ( diff > 0.0 )
 		return 1;
 	else if ( diff < 0.0 )

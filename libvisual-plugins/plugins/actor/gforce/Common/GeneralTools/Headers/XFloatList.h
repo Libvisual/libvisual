@@ -4,9 +4,23 @@
 // by Andrew O'Meara
 
 #include "XPtrList.h"
+#include <string.h>
 
 class XLongList;
 
+inline float void_ptr_to_float(const void* value)
+{
+    float result;
+    memcpy( &result, &value, sizeof( result ) );
+    return result;
+}
+
+inline void* float_to_void_ptr(float value)
+{
+    void* result = 0;
+    memcpy( &result, &value, sizeof( value ) );
+    return result;
+}
 
 class XFloatList {
 
@@ -14,11 +28,11 @@ class XFloatList {
 		XFloatList( ListOrderingT inOrdering = cOrderNotImportant );		// See XPtrList.h for ListOrderingT choices
 
 		// See XPtrList.h for description of functions.
-		virtual long			Add( float inNum )								{ return mList.Add( *((void**) &inNum) );			}
+		virtual long			Add( float inNum )								{ return mList.Add( float_to_void_ptr( inNum ) );	}
 		virtual void			Add( const XFloatList& inList )					{ mList.Add( inList.mList );						}
 		virtual bool			RemoveElement( long inIndex )					{ return mList.RemoveElement( inIndex );			}
 		virtual void			RemoveAll()										{ mList.RemoveAll(); 								}
-		virtual float			Fetch( long inIndex )							{ long t = (long) mList.Fetch( inIndex ); return *((float*) &t);}
+		virtual float			Fetch( long inIndex )							{ return void_ptr_to_float( mList.Fetch( inIndex ) ); }
 		virtual bool			Fetch( long inIndex, float* ioPtrDest ) const	{ return mList.Fetch( inIndex, (void**)ioPtrDest );	}
 		virtual long			Count()	const									{ return mList.Count();								}
 
@@ -36,7 +50,7 @@ class XFloatList {
 		// Smoothes all the floats in this list
 		void					GaussSmooth( float inSigma );
 
-		float					operator[] ( const long inIndex )				{ long t = (long) mList.Fetch( inIndex ); return *((float*) &t); }
+		float					operator[] ( const long inIndex )				{ return void_ptr_to_float(mList.Fetch( inIndex )); }
 
 		// Generic utility fcn to gauss-smooth a 1D curve.
 		static void				GaussSmooth( float inSigma, long inN, float inSrceDest[] );
