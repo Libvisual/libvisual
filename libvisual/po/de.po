@@ -2,19 +2,21 @@
 # Copyright (C) Chris Leick <c.leick@vollbio.de>, 2008.
 # This file is distributed under the same license as the libvisual package.
 # Chris Leick <c.leick@vollbio.de>, 2008-2017.
+# Christoph Brinkhaus <c.brinkhaus@t-online.de>, 2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libvisual 0.4.0-2.2\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
 "POT-Creation-Date: 2023-03-20 02:00+0100\n"
-"PO-Revision-Date: 2017-08-10 18:46+GMT\n"
-"Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
+"PO-Revision-Date: 2023-11-09 09:30+0100\n"
+"Last-Translator: Christoph Brinkhaus <c.brinkhaus@t-online.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: libvisual/lv_libvisual.c:138
 msgid "Show info for"
@@ -424,7 +426,6 @@ msgid "VisMorph it's plugin is NULL"
 msgstr "Erweiterung von VisMorph ist NULL"
 
 #: libvisual/lv_error.c:109
-#, fuzzy
 msgid "The scheduler related call wasn't successful."
 msgstr "Der Aufruf des verwendeten Zeitplaners war nicht erfolgreich."
 
@@ -741,7 +742,6 @@ msgid "Given coordinates are out of bounds"
 msgstr "Angegebene Koordinaten befinden sich außerhalb der Begrenzung"
 
 #: libvisual/lv_error.c:201
-#, fuzzy
 msgid "Given VisVideos are not identical"
 msgstr "Angegebene VisVideos sind nicht gleich"
 
@@ -902,7 +902,7 @@ msgstr "Ungültige Tiefe an Scaler übergeben"
 
 #: tools/lv-tool/lv-tool.cpp:892 tools/lv-tool/lv-tool.cpp:1073
 msgid "lv-tool"
-msgstr ""
+msgstr "lv-tool"
 
 #~ msgid " bytes of memory"
 #~ msgstr " Bytes des Speichers"
