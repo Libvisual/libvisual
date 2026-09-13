@@ -5,20 +5,22 @@
 #               2005 yodor, Andrew Birck, Jean-Christophe Hoelt.
 # This file is distributed under the same license as
 # the libvisual-plugins package.
-# Chris Leick <c.leick@vollbio.de>, 2017.
+# Chris Leick <c.leick@vollbio.de>, 2017, 2023.
+# Federico Molara <federico@molara.net>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libvisual-plugins 0.4.0\n"
+"Project-Id-Version: libvisual-plugins 0.4.2\n"
 "Report-Msgid-Bugs-To: https://github.com/Libvisual/libvisual/issues/\n"
 "POT-Creation-Date: 2023-03-20 02:00+0100\n"
-"PO-Revision-Date: 2017-11-23 18:08:07+0200\n"
-"Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
+"PO-Revision-Date: 2026-09-13 22:50+0200\n"
+"Last-Translator: Federico Molara <federico@molara.net>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: plugins/actor/bumpscope/actor_bumpscope.c:62
 msgid ""
@@ -35,7 +37,7 @@ msgstr "visuelle Bumpscope-Erweiterung"
 
 #: plugins/actor/bumpscope/actor_bumpscope.c:65
 msgid "This is the libvisual port of the xmms Bumpscope plugin"
-msgstr "Dies ist die Libvisual-Portierung der XMMS-Erweiterung Bumpscore"
+msgstr "Dies ist die Libvisual-Portierung der XMMS-Erweiterung Bumpscope"
 
 #: plugins/actor/bumpscope/actor_bumpscope.c:126
 msgid "The color of the light"
@@ -433,7 +435,7 @@ msgstr "Libvisual-Debug-Erfassung"
 
 #: plugins/input/debug/input_debug.c:55
 msgid "this will generate random PCM data for debugging purposes"
-msgstr ""
+msgstr "Dies erzeugt zufällige PCM-Daten zur Fehlersuche."
 
 #: plugins/input/jack/input_jack.c:72
 msgid "Jackit capture plugin"
