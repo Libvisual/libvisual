@@ -387,8 +387,8 @@ void render_blur(JessPrivate *priv, int blur)
 	/* Il y avait des overflows sur les boucles (indice supérieur trop élevé de 1) */
 	if (priv->video == 8)
 	{
+		bmax = priv->resx * (priv->resy-1) + (intptr_t) priv->pixel;
 		if (visual_cpu_get_mmx ()) {
-			bmax = priv->resx * (priv->resy-1) + (intptr_t) priv->pixel;
 #if defined(VISUAL_ARCH_X86) || defined(VISUAL_ARCH_X86_64)
 			__asm __volatile
 				("\n\t pxor %%mm6, %%mm6"
