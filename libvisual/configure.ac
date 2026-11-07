@@ -45,7 +45,7 @@ case "$host_cpu" in
 	sparc)          lv_sparc=yes;;
 	i*86)           lv_ix86=yes;;
 	x86_64*)	lv_x86_64=yes;;
-       	powerpc|ppc)    lv_powerpc=yes;;
+	powerpc|powerpc64|powerpc64le|ppc)    lv_powerpc=yes;;
 	*)		lv_arch_unknown=yes;;
 esac
 
