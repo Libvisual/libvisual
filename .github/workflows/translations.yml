@@ -56,7 +56,7 @@ jobs:
         run: |-
           cd libvisual
           ./configure \
-            --prefix ${LV_INSTALL_PREFIX} \
+            --prefix ${LV_INSTALL_PREFIX}
 
       - name: '[LV] Run "make"'
         run: |-
